@@ -153,7 +153,7 @@
 
     <nav>
         <a href="#" class="logo">UNSTOPPABLE</a>
-        <div class="menu-toggle" id="mobile-menu-btn">☰</div>
+        <div class="menu-toggle" id="mobile-menu-btn" role="button" tabindex="0" aria-label="Toggle mobile menu" aria-expanded="false">☰</div>
         <div class="nav-links" id="nav-links">
             <a href="#process" onclick="closeMenu()">Process</a>
             <a href="#pricing" onclick="closeMenu()">Pricing</a>
@@ -279,14 +279,23 @@
         const navLinks = document.getElementById('nav-links');
         
         menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+            const isActive = navLinks.classList.toggle('active');
+            menuBtn.textContent = isActive ? '✕' : '☰';
+            menuBtn.setAttribute('aria-expanded', isActive);
+        });
+
+        menuBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                menuBtn.click();
+            }
         });
 
         window.closeMenu = () => {
             if(window.innerWidth < 768) {
                 navLinks.classList.remove('active');
                 menuBtn.textContent = '☰';
+                menuBtn.setAttribute('aria-expanded', 'false');
             }
         };
 
