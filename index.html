@@ -321,6 +321,7 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(e) {
+                console.error("Error subscribing to newsletter:", e);
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
             }
