@@ -35,6 +35,7 @@
         
         .menu-toggle {
             color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: block; user-select: none;
+            background: none; border: none; padding: 0;
         }
         
         .nav-links {
@@ -153,7 +154,7 @@
 
     <nav>
         <a href="#" class="logo">UNSTOPPABLE</a>
-        <div class="menu-toggle" id="mobile-menu-btn" role="button" tabindex="0" aria-label="Toggle mobile menu" aria-expanded="false">☰</div>
+        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" onclick="closeMenu()">Process</a>
             <a href="#pricing" onclick="closeMenu()">Pricing</a>
@@ -281,14 +282,7 @@
         menuBtn.addEventListener('click', () => {
             const isActive = navLinks.classList.toggle('active');
             menuBtn.textContent = isActive ? '✕' : '☰';
-            menuBtn.setAttribute('aria-expanded', isActive);
-        });
-
-        menuBtn.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                menuBtn.click();
-            }
+            menuBtn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
         });
 
         window.closeMenu = () => {
