@@ -241,17 +241,31 @@
 
     <section id="reviews">
         <h2>Client Testimonials</h2>
-        <div class="reviews-container">
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Absolutely flawless. My 911 looks better than the day I bought it. The attention to detail is unmatched in Buford."<br><br>- James T.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Professional, on time, and my Range Rover's interior smells incredible. Highly recommend the ceramic spray."<br><br>- Sarah M.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Used them for our company Sprinter van. Fast, efficient, and very premium service."<br><br>- David L.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"The monthly membership is a lifesaver. My Model S is always spotless."<br><br>- Elena R.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Took out a scratch I thought needed a body shop. Magic."<br><br>- Marcus K.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Best mobile detailer in Gwinnett. Period."<br><br>- Thomas W.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"They respect the paint. No cheap brushes used here."<br><br>- Chris A.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"My truck was caked in mud. Unstoppable made it look like a mall crawler again."<br><br>- Mike B.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Incredible attention to the leather seats in my BMW."<br><br>- Alicia V.</p></div>
-            <div class="review-card"><div class="stars">★★★★★</div><p>"Easy booking, great communication, stunning results."<br><br>- Robert D.</p></div>
+
+        <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
+            <h3 style="margin-top: 0;">Leave a Review</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
+            <div style="margin-bottom: 15px;">
+                <label for="review-rating" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Rating:</label>
+                <select id="review-rating" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);">
+                    <option value="5">★★★★★ - Excellent</option>
+                    <option value="4">★★★★☆ - Good</option>
+                    <option value="3">★★★☆☆ - Average</option>
+                    <option value="2">★★☆☆☆ - Poor</option>
+                    <option value="1">★☆☆☆☆ - Terrible</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
+                <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+            </div>
+            <button id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
+        </div>
+
+        <div class="reviews-container" id="reviews-container-el">
+            <!-- Reviews will be dynamically injected here -->
+            <div style="width: 100%; text-align: center; color: var(--text-muted);">Loading reviews...</div>
         </div>
     </section>
 
@@ -273,7 +287,7 @@
     <script type="module">
         import { auth, db } from '/js/auth.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -294,11 +308,120 @@
         };
 
         // Update Nav based on Auth Status
-        onAuthStateChanged(auth, (user) => {
+        let currentUser = null;
+        let currentUserName = "Anonymous User";
+        onAuthStateChanged(auth, async (user) => {
             const authBtn = document.getElementById('nav-auth-btn');
+            const reviewContainer = document.getElementById('review-submission-container');
             if (user) {
+                currentUser = user;
                 authBtn.textContent = "My Account";
                 authBtn.href = "account.html";
+                reviewContainer.style.display = 'block';
+
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
+                    }
+                } catch (e) {
+                    console.error("Could not fetch user profile", e);
+                }
+            } else {
+                currentUser = null;
+                reviewContainer.style.display = 'none';
+            }
+        });
+
+        // Load Reviews
+        async function loadReviews() {
+            const container = document.getElementById('reviews-container-el');
+            try {
+                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
+                const querySnapshot = await getDocs(q);
+
+                const reviews = querySnapshot.docs.map(doc => doc.data());
+                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+
+                if (reviews.length === 0) {
+                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                function escapeHTML(str) {
+                    if (str == null) return '';
+                    return String(str)
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                }
+
+                reviews.forEach(r => {
+                    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+                    const name = escapeHTML(r.userName || "Anonymous");
+                    const comment = escapeHTML(r.comment || "");
+
+                    const el = document.createElement('div');
+                    el.className = 'review-card';
+                    el.innerHTML = \`<div class="stars">\${stars}</div><p>"\${comment}"<br><br>- \${name}</p>\`;
+                    container.appendChild(el);
+                });
+            } catch (e) {
+                console.error("Error loading reviews", e);
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
+            }
+        }
+
+        // Load reviews on page load
+        loadReviews();
+
+        // Submit Review
+        document.getElementById('submit-review-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('submit-review-btn');
+            const msgEl = document.getElementById('review-msg');
+            const rating = parseInt(document.getElementById('review-rating').value, 10);
+            const comment = document.getElementById('review-comment').value.trim();
+
+            if (!currentUser) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "You must be signed in to leave a review.";
+                return;
+            }
+
+            if (!comment) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Please enter a comment.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Submitting...";
+            msgEl.textContent = "";
+
+            try {
+                await addDoc(collection(db, "reviews"), {
+                    userId: currentUser.uid,
+                    userName: currentUserName,
+                    rating: rating,
+                    comment: comment,
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
+                document.getElementById('review-comment').value = '';
+            } catch (e) {
+                console.error("Error submitting review", e);
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Error submitting review. Try again later.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Submit Review";
             }
         });
 
