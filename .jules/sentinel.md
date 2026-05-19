@@ -1,4 +1,4 @@
-## 2026-05-18 - Type Confusion XSS Bypass
-**Vulnerability:** The `escapeHTML` function returned input as-is if `typeof str !== 'string'`, allowing array-based XSS payloads (e.g., `["<script>alert(1)</script>"]`) to bypass escaping.
-**Learning:** Type checks that fail open (`!== string`) can be bypassed when the consuming context (like template literals) implicitly calls `.toString()` on complex objects.
-**Prevention:** Always coerce input to string (`String(str)`) before applying security-critical regex replacements, rather than skipping non-strings.
+## 2025-05-17 - [Type Coercion XSS Vulnerability]
+**Vulnerability:** Found a Stored XSS vulnerability in `admin.html`. The `escapeHTML` function checked if `typeof str !== 'string'` and returned the raw input if it wasn't. When non-string types like arrays (e.g. `['<script>alert(1)</script>']`) were processed, they bypassed escaping and were later implicitly converted to strings during HTML string interpolation, allowing script execution.
+**Learning:** Type checking alone is insufficient for escaping functions when the output will be implicitly coerced back to a string later (like in template literals).
+**Prevention:** Always explicitly coerce variables to Strings (`String(str)`) before escaping, rather than ignoring non-strings. Also check for `null`/`undefined` before string coercion to avoid `null` or `undefined` strings in output.

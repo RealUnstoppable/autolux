@@ -96,13 +96,13 @@
 <body style="display: none;"> 
     <div class="mobile-header">
         <h2 style="margin:0; color: var(--accent-blue);">Admin</h2>
-        <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <button class="hamburger-btn" aria-label="Open sidebar" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
     </div>
 
     <div class="admin-layout">
         <aside class="sidebar" id="sidebar">
             <div class="mobile-header" style="justify-content: flex-end;">
-                <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
+                <button class="hamburger-btn" aria-label="Close sidebar" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
             </div>
             <div class="sidebar-header">
                 <h2>Admin Panel</h2>
@@ -279,7 +279,7 @@
         });
 
         function escapeHTML(str) {
-            if (str === null || str === undefined) return "";
+            if (str == null) return '';
             return String(str)
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
@@ -296,42 +296,63 @@
 
         async function loadAdminData() {
             try {
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
+                const usersPromise = getDocs(collection(db, "users"));
+                const cartsPromise = getDocs(collection(db, "carts"));
+                const ordersPromise = getDocs(collection(db, "orders"));
+                const newsletterPromise = getDocs(collection(db, "newsletterSubscribers"));
+                const bookingsPromise = getDocs(collection(db, "bookings"));
+                const quotesPromise = getDocs(collection(db, "quotes"));
+                const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
+                const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
+
+                // We catch errors immediately to avoid unhandled rejection warnings in the console,
+                // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
+                usersPromise.catch(() => {});
+                cartsPromise.catch(() => {});
+                ordersPromise.catch(() => {});
+                newsletterPromise.catch(() => {});
+                bookingsPromise.catch(() => {});
+                quotesPromise.catch(() => {});
+                featureRequestsPromise.catch(() => {});
+                statsPromise.catch(() => {});
+
                 // Fetch Core Data
                 let users = [];
                 try {
-                    const usersSnapshot = await getDocs(collection(db, "users"));
+                    const usersSnapshot = await usersPromise;
                     users = usersSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 } catch (e) { console.error("Error fetching users:", e); }
 
                 let carts = [];
                 try {
-                    const cartsSnapshot = await getDocs(collection(db, "carts"));
+                    const cartsSnapshot = await cartsPromise;
                     carts = cartsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 } catch (e) { console.error("Error fetching carts:", e); }
 
                 let orders = [];
                 try {
-                    const ordersSnapshot = await getDocs(collection(db, "orders"));
+                    const ordersSnapshot = await ordersPromise;
                     orders = ordersSnapshot.docs.map(d => d.data());
                 } catch (e) { console.error("Error fetching orders:", e); }
 
                 let subscribers = [];
                 try {
-                    const newsletterSnapshot = await getDocs(collection(db, "newsletterSubscribers"));
+                    const newsletterSnapshot = await newsletterPromise;
                     subscribers = newsletterSnapshot.docs.map(d => d.data());
                 } catch (e) { console.error("Error fetching newsletter:", e); }
 
                 // Fetch Detailing Bookings & Quotes
                 let bookings = [];
                 try {
-                    const bookingsSnap = await getDocs(collection(db, "bookings"));
+                    const bookingsSnap = await bookingsPromise;
                     bookings = bookingsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                     bookings.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
                 } catch (e) { console.error("Error fetching bookings:", e); }
 
                 let quotes = [];
                 try {
-                    const quotesSnap = await getDocs(collection(db, "quotes"));
+                    const quotesSnap = await quotesPromise;
                     quotes = quotesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 } catch (e) { console.error("Error fetching quotes:", e); }
 
@@ -350,7 +371,7 @@
                 
                 // Fetch Feature Requests
                 try {
-                    const featureRequestsSnapshot = await getDocs(collection(db, "feature_requests"));
+                    const featureRequestsSnapshot = await featureRequestsPromise;
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
@@ -360,8 +381,7 @@
                 
                 // Download Stats
                 try {
-                    const statsRef = doc(db, "site_stats", "downloads");
-                    const statsDoc = await getDoc(statsRef);
+                    const statsDoc = await statsPromise;
                     if (statsDoc.exists()) {
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
