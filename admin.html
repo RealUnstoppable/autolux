@@ -115,6 +115,7 @@
                     <li><a href="#bookings" class="nav-link">Bookings</a></li>
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
                     <li><a href="#users" class="nav-link">User Management</a></li>
+                    <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
                     <li><a href="#downloads" class="nav-link">Downloads</a></li>
                     <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
@@ -207,6 +208,27 @@
                             </tr>
                         </thead>
                         <tbody id="user-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="reviews-admin" class="content-section">
+                <h3>Review Management</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviews-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading reviews...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -304,6 +326,7 @@
                 const bookingsPromise = getDocs(collection(db, "bookings"));
                 const quotesPromise = getDocs(collection(db, "quotes"));
                 const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
+                const reviewsPromise = getDocs(collection(db, "reviews"));
                 const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
@@ -315,6 +338,7 @@
                 bookingsPromise.catch(() => {});
                 quotesPromise.catch(() => {});
                 featureRequestsPromise.catch(() => {});
+                reviewsPromise.catch(() => {});
                 statsPromise.catch(() => {});
 
                 // Fetch Core Data
@@ -369,6 +393,16 @@
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
                 
+                // Fetch Reviews
+                try {
+                    const reviewsSnapshot = await reviewsPromise;
+                    const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderReviewsTable(reviews);
+                } catch (revError) {
+                    console.log("Could not load reviews. Missing Firestore rules?", revError);
+                    document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
                 // Fetch Feature Requests
                 try {
                     const featureRequestsSnapshot = await featureRequestsPromise;
@@ -465,6 +499,35 @@
                     <td>${statusBadge}</td>
                     <td>${actionButton}</td>`;
                 userListBody.appendChild(row);
+            });
+        }
+
+        function renderReviewsTable(reviews) {
+            const listBody = document.getElementById('reviews-list-body');
+            listBody.innerHTML = '';
+            if(reviews.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
+            }
+            reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            reviews.forEach(review => {
+                const row = document.createElement('tr');
+                const revDate = review.createdAt ? new Date(review.createdAt.toDate ? review.createdAt.toDate() : review.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isApproved = review.status === 'approved';
+                const statusStr = isApproved ? `<span class="status-badge active">Approved</span>` : `<span class="status-badge pending">Pending</span>`;
+                const approveButton = isApproved
+                     ? `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${escapeHTML(review.id)}">Unapprove</button>`
+                     : `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${escapeHTML(review.id)}">Approve</button>`;
+                const deleteButton = `<button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(review.id)}">Delete</button>`;
+                const stars = '★'.repeat(review.rating || 5) + '☆'.repeat(5 - (review.rating || 5));
+
+                row.innerHTML = `
+                    <td>${revDate}</td>
+                    <td>${escapeHTML(review.userName) || "Unknown User"}</td>
+                    <td style="color: var(--gold);">${stars}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
+                    <td>${statusStr}</td>
+                    <td>${approveButton} ${deleteButton}</td>`;
+                listBody.appendChild(row);
             });
         }
 
@@ -594,6 +657,23 @@
                     await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
                 } else if (action === 'complete') {
                     await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                }
+                loadAdminData();
+            });
+
+            // Reviews Action Buttons
+            document.getElementById('reviews-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'review') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+
+                if (action === 'approve') {
+                    await updateDoc(doc(db, "reviews", id), { status: 'approved' });
+                } else if (action === 'unapprove') {
+                    await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+                } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
+                    await deleteDoc(doc(db, "reviews", id));
                 }
                 loadAdminData();
             });
