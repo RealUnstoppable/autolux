@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // Assuming admins have a custom claim 'admin' or an 'isAdmin' field on their user document
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
+      );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Bookings Collection (Detailing Requests)
+    match /bookings/{bookingId} {
+      // Clients can read their own bookings, admins can read all
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Clients can create new bookings, ensuring their own userId is attached
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Clients can update their own bookings (e.g. cancel), admins can update all
+      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Only admins can delete bookings
+      allow delete: if isAdmin();
+    }
+
+    // Detailing Plans Collection
+    match /detailingPlans/{planId} {
+      // Clients can read their own plans, admins can read all
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Only admins can create/update/delete detailing plans
+      allow write: if isAdmin();
+    }
+
+    // Reviews Collection
+    match /reviews/{reviewId} {
+      // Anyone can read approved reviews
+      allow read: if resource.data.status == 'approved' || isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Authenticated users can create reviews
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Only admins can update (e.g. approve) or delete reviews
+      allow update, delete: if isAdmin();
+    }
+
+    // Default deny for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
