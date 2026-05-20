@@ -55,7 +55,8 @@
         /* Hero Section */
         .hero {
             min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
-            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000') center/cover;
+            /* ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats */
+            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format') center/cover;
             padding: 80px 20px 20px 20px; box-sizing: border-box;
         }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
@@ -231,11 +232,12 @@
     <section id="gallery">
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
+        <!-- ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600" alt="G-Wagon Wash" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
         </div>
     </section>
 

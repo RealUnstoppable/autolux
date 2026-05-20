@@ -1,3 +1,7 @@
 ## 2025-02-24 - [Parallelizing independent DB reads]
 **Learning:** In Firebase (and JavaScript in general), placing multiple `await` keywords sequentially for independent network requests causes the main thread to wait for each request to finish before starting the next one. This codebase exhibited this anti-pattern in `admin.html`, creating unnecessary delays in rendering the dashboard.
 **Action:** When making multiple independent Firebase reads, start the requests concurrently by executing the queries (creating Promises) and storing them in variables, then `await` those variables when the data is actually needed. This preserves precise try/catch error handling while allowing the network requests to resolve in parallel, taking the page load time from O(A+B+C+D+E+F) to O(max(A,B,C,D,E,F)).
+
+## 2026-05-20 - [Unsplash Image Format Optimization]
+**Learning:** Unsplash image URLs use Imgix under the hood. Serving default format images (often large JPEGs) hurts frontend performance, specifically First Contentful Paint (FCP) and bandwidth usage.
+**Action:** Append `&auto=format` to Unsplash URLs. This allows the backend to automatically negotiate and serve the most optimal, modern image format (like WebP or AVIF) supported by the user's browser, safely falling back if needed.
