@@ -272,10 +272,10 @@
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
-        <div class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" required>
-            <button onclick="subscribeNewsletter()">Subscribe</button>
-        </div>
+        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address" required>
+            <button type="submit">Subscribe</button>
+        </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
         
         <div class="socials">
@@ -426,7 +426,8 @@
         });
 
         // Newsletter Logic
-        window.subscribeNewsletter = async () => {
+        window.subscribeNewsletter = async (event) => {
+            if (event) event.preventDefault();
             const email = document.getElementById('news-email').value;
             const msg = document.getElementById('news-msg');
             if(!email) {
