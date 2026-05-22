@@ -361,7 +361,9 @@
                 }
 
                 reviews.forEach(r => {
-                    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+                    // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                    const ratingValue = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
