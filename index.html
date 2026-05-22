@@ -286,6 +286,7 @@
 
     <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -325,7 +326,7 @@
                         currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                     }
                 } catch (e) {
-                    console.error("Could not fetch user profile", e);
+                    console.error("Could not fetch user profile", e.code, e);
                 }
             } else {
                 currentUser = null;
@@ -350,16 +351,6 @@
 
                 container.innerHTML = '';
 
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str)
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#039;");
-                }
-
                 reviews.forEach(r => {
                     const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
                     const name = escapeHTML(r.userName || "Anonymous");
@@ -371,7 +362,7 @@
                     container.appendChild(el);
                 });
             } catch (e) {
-                console.error("Error loading reviews", e);
+                console.error("Error loading reviews", e.code, e);
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
             }
         }
@@ -416,7 +407,7 @@
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
             } catch (e) {
-                console.error("Error submitting review", e);
+                console.error("Error submitting review", e.code, e);
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
@@ -444,7 +435,7 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(e) {
-                console.error("Error subscribing to newsletter:", e);
+                console.error("Error subscribing to newsletter:", e.code, e);
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
             }
