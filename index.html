@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -55,7 +56,8 @@
         /* Hero Section */
         .hero {
             min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
-            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000') center/cover;
+            /* ⚡ Bolt: Appended &auto=format to Unsplash URL to optimize FCP and network payload */
+            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format') center/cover;
             padding: 80px 20px 20px 20px; box-sizing: border-box;
         }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
@@ -153,16 +155,16 @@
 <body>
 
     <nav>
-        <a href="#" class="logo">UNSTOPPABLE</a>
+        <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
-            <a href="#process" onclick="closeMenu()">Process</a>
-            <a href="#pricing" onclick="closeMenu()">Pricing</a>
-            <a href="#gallery" onclick="closeMenu()">Gallery</a>
-            <a href="#reviews" onclick="closeMenu()">Reviews</a>
-            <a href="#contact" onclick="closeMenu()">Contact</a>
-            <a href="booking.html">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
+            <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
+            <a href="#pricing" aria-label="Go to Pricing section" onclick="closeMenu()">Pricing</a>
+            <a href="#gallery" aria-label="Go to Gallery section" onclick="closeMenu()">Gallery</a>
+            <a href="#reviews" aria-label="Go to Reviews section" onclick="closeMenu()">Reviews</a>
+            <a href="#contact" aria-label="Go to Contact section" onclick="closeMenu()">Contact</a>
+            <a href="booking.html" aria-label="Book a detailing appointment">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
         </div>
     </nav>
 
@@ -231,18 +233,19 @@
     <section id="gallery">
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
+        <!-- ⚡ Bolt: Appended &auto=format to Unsplash URLs to optimize image loading performance -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600" alt="G-Wagon Wash" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
         </div>
     </section>
 
     <section id="reviews">
         <h2>Client Testimonials</h2>
 
-        <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
+        <form id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0;">Leave a Review</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
             <div style="margin-bottom: 15px;">
@@ -259,9 +262,9 @@
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
                 <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
-            <button id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
-        </div>
+        </form>
 
         <div class="reviews-container" id="reviews-container-el">
             <!-- Reviews will be dynamically injected here -->
@@ -272,20 +275,25 @@
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
-        <div class="newsletter" id="newsletter-form">
+        <form class="newsletter" id="newsletter-form">
             <input type="email" id="news-email" placeholder="Enter your email address" required>
-            <button onclick="subscribeNewsletter()">Subscribe</button>
-        </div>
+        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email Address for Newsletter" required>
+            <button type="submit">Subscribe</button>
+        </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
         
         <div class="socials">
-            <a href="#">Instagram</a> | <a href="#">Facebook</a> | <a href="#">YouTube</a>
+            <a href="#" aria-label="Visit our Instagram page">Instagram</a> | <a href="#" aria-label="Visit our Facebook page">Facebook</a> | <a href="#" aria-label="Visit our YouTube channel">YouTube</a>
         </div>
         <p style="color: #666; margin-top: 40px; font-size: 0.8rem;">&copy; 2026 Unstoppable Detailing Services. Buford, GA.</p>
     </footer>
 
     <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -325,7 +333,9 @@
                         currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                     }
                 } catch (e) {
-                    console.error("Could not fetch user profile", e);
+                    console.error("Could not fetch user profile", e.code, e);
+                } catch (error) {
+                    console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
                 }
             } else {
                 currentUser = null;
@@ -350,19 +360,14 @@
 
                 container.innerHTML = '';
 
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str)
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#039;");
-                }
-
                 reviews.forEach(r => {
                     const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
                     const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+                    const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+                    // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                    const ratingValue = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
@@ -372,8 +377,11 @@
                     container.appendChild(el);
                 });
             } catch (e) {
-                console.error("Error loading reviews", e);
+                console.error("Error loading reviews", e.code, e);
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
+            } catch (error) {
+                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
             }
         }
 
@@ -381,7 +389,8 @@
         loadReviews();
 
         // Submit Review
-        document.getElementById('submit-review-btn').addEventListener('click', async () => {
+        document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
+            e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');
             const rating = parseInt(document.getElementById('review-rating').value, 10);
@@ -417,7 +426,9 @@
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
             } catch (e) {
-                console.error("Error submitting review", e);
+                console.error("Error submitting review", e.code, e);
+            } catch (error) {
+                console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
@@ -427,7 +438,12 @@
         });
 
         // Newsletter Logic
-        window.subscribeNewsletter = async () => {
+        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+        window.subscribeNewsletter = async (event) => {
+            if (event) {
+                event.preventDefault();
+            }
             const email = document.getElementById('news-email').value;
             const msg = document.getElementById('news-msg');
             if(!email) {
@@ -445,11 +461,13 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(e) {
-                console.error("Error subscribing to newsletter:", e);
+                console.error("Error subscribing to newsletter:", e.code, e);
+            } catch(error) {
+                console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
             }
-        };
+        });
     </script>
 </body>
 </html>

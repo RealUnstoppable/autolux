@@ -6,3 +6,7 @@
 **Vulnerability:** Found a client-side Denial of Service (DoS) vulnerability in `admin.html` and `index.html` where `String.repeat()` was called with an unvalidated user input (`review.rating`). A malicious user could submit a rating > 5, causing `5 - review.rating` to be negative, which throws a `RangeError` and crashes the JavaScript execution for the entire page.
 **Learning:** Unsanitized numeric input passed to built-in functions that expect a specific range (like `String.repeat()`) can cause unhandled exceptions that break the application for all users.
 **Prevention:** Always clamp numeric inputs from untrusted sources to a safe range (e.g. `Math.max(0, Math.min(MAX_VAL, val))`) before using them in operations that have strict bounds.
+## 2026-05-22 - [String.repeat() DoS Vulnerability]
+**Vulnerability:** Unsanitized user input (`rating`) was passed directly to `String.repeat()`.
+**Learning:** If non-numeric or extreme values are passed from an unvalidated database write to `String.repeat()`, it throws a RangeError which halts JavaScript execution, causing a Persistent Client-Side DoS.
+**Prevention:** Always sanitize and clamp numbers expected by `String.repeat()` to a safe range (e.g., `Math.max(0, Math.min(5, Number(rating) || 5))`) before use.
