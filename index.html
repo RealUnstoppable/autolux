@@ -394,6 +394,12 @@
                 container.innerHTML = '';
 
                 reviews.forEach(r => {
+                    // Sanitize rating to prevent DoS via RangeError in String.repeat
+                    let rawRating = parseInt(r.rating, 10);
+                    if (isNaN(rawRating)) rawRating = 5;
+                    const safeRating = Math.max(0, Math.min(5, rawRating));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+
                     const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
                     const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
                     const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
@@ -439,6 +445,12 @@
             if (!comment) {
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Please enter a comment.";
+                return;
+            }
+
+            if (comment.length > 1000) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Comment is too long (max 1000 characters).";
                 return;
             }
 
@@ -488,6 +500,14 @@
             if(!email) {
                 msg.style.color = "#ef4444";
                 msg.textContent = "Please enter an email address.";
+                return;
+            }
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                msg.style.color = "#ef4444";
+                msg.textContent = "Please enter a valid email address.";
                 return;
             }
             
