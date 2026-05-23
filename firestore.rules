@@ -4,6 +4,28 @@ service cloud.firestore {
 
     // Function to check if the user is an admin
     function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /bookings/{bookingId} {
+      // Users can create a booking request if they are authenticated
+      allow create: if request.auth != null;
+      // Users can only read, update, or delete their own bookings
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Admins have full access to all bookings
+      allow read, write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      // Users can read/write their own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Admins have full access to users
+      allow read, write: if isAdmin();
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
       // Check the users collection for the isAdmin field
       return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
