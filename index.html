@@ -333,6 +333,10 @@
         </div>
 
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+        </form>
         <div class="newsletter" id="newsletter-form">
             <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
             <button onclick="subscribeNewsletter()">Subscribe</button>

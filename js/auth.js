@@ -1,4 +1,14 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+const getEnvVar = (key, fallback) => {
+    if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
+        return process.env[`REACT_APP_${key}`];
+    }
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
+        return import.meta.env[`VITE_${key}`];
+    }
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -26,6 +36,7 @@ const getEnvVar = (key, fallback) => {
     return fallback;
 };
 
+const apiKey = getEnvVar('FIREBASE_API_KEY', 'YOUR_API_KEY');
 const apiKey = getEnvVar('FIREBASE_API_KEY');
 
 if (!apiKey) {
@@ -60,6 +71,21 @@ try {
 
     auth = getAuth(app);
     db = getFirestore(app);
+} catch (error) {
+    console.error("Firebase Initialization Error", error);
+}
+
+// Debounce utility function
+export function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
     console.log("Firebase initialized successfully for autolux.realunstoppable.store");
     if (apiKey) {
         // Ensure no cross-contamination by checking if the SPECIFIC app already exists

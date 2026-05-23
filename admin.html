@@ -332,6 +332,7 @@
                     document.body.style.display = 'flex';
                     initializeAdminPage(user);
                 } else {
+                    if (window.location.pathname !== '/account.html') {
                     safeRedirect('account.html');
                 }
             } catch (error) {
@@ -342,6 +343,7 @@
                     }
                 }
             } else {
+                if (window.location.pathname !== '/sign in beta.html') {
                 if (!window.location.pathname.includes('sign in beta.html')) {
                     window.location.replace('sign in beta.html');
                 }
