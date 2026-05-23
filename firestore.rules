@@ -3,6 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper function to check if the user is an admin
+    // Function to check if the user is an admin
     function isAdmin() {
       return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
@@ -24,6 +25,92 @@ service cloud.firestore {
     // Default catch-all: deny everything else
     match /{document=**} {
       allow read, write: if false;
+    }
+  }
+}
+      // Users can create a booking request if they are authenticated
+      allow create: if request.auth != null;
+      // Users can only read, update, or delete their own bookings
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Admins have full access to all bookings
+      allow read, write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      // Users can read/write their own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Admins have full access to users
+      allow read, write: if isAdmin();
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read, write: if false;
+      // Check the users collection for the isAdmin field
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // Default rule: Deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Rules for detailing requests
+    match /detailingRequests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+    }
+
+    // Rules for reviews
+    match /reviews/{reviewId} {
+      allow create: if request.auth != null;
+      allow read: if resource.data.status == "approved" || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Rules for newsletter subscribers
+    match /newsletterSubscribers/{email} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Rules for users
+    match /users/{userId} {
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow read, update: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow delete: if isAdmin();
+    }
+
+    // Additional rules needed for admin.html
+    match /carts/{cartId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
+      allow write: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+      allow create: if true;
+    }
+
+    match /quotes/{quoteId} {
+      allow read, write: if isAdmin();
+      allow create: if true;
+    }
+
+    match /feature_requests/{requestId} {
+      allow read, write: if isAdmin();
+      allow create: if request.auth != null;
+    }
+
+    match /site_stats/{docId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
     }
   }
 }
