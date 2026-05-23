@@ -730,6 +730,7 @@
                         row.remove();
                     }
                 } catch (err) {
+                    console.error("Error managing review:", err);
                     console.error("Error updating review status:", err.code, err);
                 }
             });
