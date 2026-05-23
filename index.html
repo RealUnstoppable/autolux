@@ -309,6 +309,29 @@
 
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
+
+        <!-- Contact Inquiries Form -->
+        <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
+            <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
+            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
+                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
+                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
+                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
+                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+            </form>
+        </div>
+
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <div class="newsletter" id="newsletter-form">
             <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
@@ -551,6 +574,48 @@
                 btn.disabled = false;
                 btn.textContent = "Subscribe";
             }
+        };
+
+        // Submit Inquiry Logic
+        window.submitInquiry = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-inquiry-btn');
+            const msgEl = document.getElementById('inquiry-msg');
+            const name = document.getElementById('inq-name').value.trim();
+            const email = document.getElementById('inq-email').value.trim();
+            const message = document.getElementById('inq-message').value.trim();
+
+            if (!name || !email || !message) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Please fill out all fields.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Sending...";
+            msgEl.textContent = "";
+
+            try {
+                await addDoc(collection(db, "inquiries"), {
+                    name: name,
+                    email: email,
+                    message: message,
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Message sent successfully! We'll be in touch.";
+                document.getElementById('inquiry-form').reset();
+            } catch (error) {
+                console.error("Error submitting inquiry:", error.message, error.code);
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Error sending message. Please try again later.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Send Message";
+            }
+        };
         });
     </script>
 </body>

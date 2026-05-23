@@ -114,6 +114,7 @@
                     <li><a href="#performance" class="nav-link active">Performance</a></li>
                     <li><a href="#bookings" class="nav-link">Bookings</a></li>
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
+                    <li><a href="#inquiries-admin" class="nav-link">Inquiries</a></li>
                     <li><a href="#users" class="nav-link">User Management</a></li>
                     <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
@@ -188,6 +189,27 @@
                         </thead>
                         <tbody id="quotes-list-body">
                             <tr><td colspan="4" style="text-align: center;">Loading quotes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="inquiries-admin" class="content-section">
+                <h3>General Inquiries</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inquiries-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading inquiries...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -329,6 +351,7 @@
                 const newsletterPromise = getDocs(collection(db, "newsletterSubscribers"));
                 const bookingsPromise = getDocs(collection(db, "bookings"));
                 const quotesPromise = getDocs(collection(db, "quotes"));
+                const inquiriesPromise = getDocs(collection(db, "inquiries"));
                 const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
                 const reviewsPromise = getDocs(collection(db, "reviews"));
                 const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
@@ -341,6 +364,7 @@
                 newsletterPromise.catch(() => {});
                 bookingsPromise.catch(() => {});
                 quotesPromise.catch(() => {});
+                inquiriesPromise.catch(() => {});
                 featureRequestsPromise.catch(() => {});
                 reviewsPromise.catch(() => {});
                 statsPromise.catch(() => {});
@@ -375,6 +399,16 @@
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
                 
+                // Fetch Inquiries
+                try {
+                    const inquiriesSnapshot = await inquiriesPromise;
+                    const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderInquiriesTable(inquiries);
+                } catch (inqError) {
+                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    document.getElementById('inquiries-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
                 // Fetch Reviews
                 try {
                     const reviewsSnapshot = await reviewsPromise;
@@ -470,6 +504,35 @@
                     <td>
                         ${q.status !== 'responded' ? `<button class="btn-sm btn-action action-btn" data-type="quote" data-action="responded" data-id="${escapeHTML(q.id)}">Responded</button>` : ''}
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderInquiriesTable(inquiries) {
+            const tbody = document.getElementById('inquiries-list-body');
+            tbody.innerHTML = '';
+            if(inquiries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
+            }
+            inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            inquiries.forEach(inq => {
+                const row = document.createElement('tr');
+                const inqDate = inq.createdAt ? new Date(inq.createdAt.toDate ? inq.createdAt.toDate() : inq.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isResolved = inq.status === 'resolved';
+                const badgeClass = isResolved ? 'active' : 'pending';
+                const statusStr = isResolved ? 'resolved' : 'pending';
+
+                row.innerHTML = `
+                    <td>${inqDate}</td>
+                    <td>${escapeHTML(inq.name)}</td>
+                    <td>${escapeHTML(inq.email)}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(inq.message)}</td>
+                    <td><span class="status-badge ${badgeClass}">${statusStr}</span></td>
+                    <td>
+                        ${!isResolved ? `<button class="btn-sm btn-action action-btn" data-type="inquiry" data-action="resolve" data-id="${escapeHTML(inq.id)}">Mark Resolved</button>` : ''}
+                        <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -758,10 +821,32 @@
                 }
             });
 
+            // Inquiries Action Buttons
+            document.getElementById('inquiries-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'inquiry') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                try {
+                    const row = btn.closest('tr');
+
+                    if (action === 'resolve') {
+                        await updateDoc(doc(db, "inquiries", id), { status: 'resolved' });
+                        row.cells[4].innerHTML = `<span class="status-badge active">resolved</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Delete this inquiry?")) {
+                        await deleteDoc(doc(db, "inquiries", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error modifying inquiry:", err);
+                }
+            });
+
             // Quotes Action Buttons
             document.getElementById('quotes-list-body').addEventListener('click', async (e) => {
                 const btn = e.target.closest('.action-btn');
-                if(!btn) return;
+                if(!btn || btn.dataset.type !== 'quote') return;
                 const action = btn.dataset.action;
                 const id = btn.dataset.id;
                 try {
