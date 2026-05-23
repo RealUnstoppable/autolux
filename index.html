@@ -285,9 +285,8 @@
     </footer>
 
     <script type="module">
-        import { auth, db } from '/js/auth.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise, ensureUserDocument } from '/js/auth.js';
+        import { doc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -310,28 +309,33 @@
         // Update Nav based on Auth Status
         let currentUser = null;
         let currentUserName = "Anonymous User";
-        onAuthStateChanged(auth, async (user) => {
-            const authBtn = document.getElementById('nav-auth-btn');
-            const reviewContainer = document.getElementById('review-submission-container');
-            if (user) {
-                currentUser = user;
-                authBtn.textContent = "My Account";
-                authBtn.href = "account.html";
-                reviewContainer.style.display = 'block';
 
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
+        async function initIndexAuth() {
+            try {
+                const user = await getAuthStatePromise();
+                const authBtn = document.getElementById('nav-auth-btn');
+                const reviewContainer = document.getElementById('review-submission-container');
+
+                if (user) {
+                    currentUser = user;
+                    authBtn.textContent = "My Account";
+                    authBtn.href = "account.html";
+                    reviewContainer.style.display = 'block';
+
+                    const userData = await ensureUserDocument(user);
+                    if (userData) {
+                        currentUserName = userData.name || userData.username || "Anonymous User";
                     }
-                } catch (e) {
-                    console.error("Could not fetch user profile", e);
+                } else {
+                    currentUser = null;
+                    reviewContainer.style.display = 'none';
                 }
-            } else {
-                currentUser = null;
-                reviewContainer.style.display = 'none';
+            } catch (e) {
+                console.error("Error checking auth status on index:", e);
             }
-        });
+        }
+
+        initIndexAuth();
 
         // Load Reviews
         async function loadReviews() {
