@@ -4,3 +4,7 @@
 ## 2024-05-20 - Unsplash FCP Optimization
 **Learning:** Using raw Unsplash image URLs without format optimization parameters leads to slower First Contentful Paint (FCP) and network loading performance.
 **Action:** When using Unsplash image URLs for the UI, append `&auto=format` to optimize the delivery format.
+
+## 2026-05-20 - [Unsplash Image Format Optimization]
+**Learning:** Unsplash image URLs use Imgix under the hood. Serving default format images (often large JPEGs) hurts frontend performance, specifically First Contentful Paint (FCP) and bandwidth usage.
+**Action:** Append `&auto=format` to Unsplash URLs. This allows the backend to automatically negotiate and serve the most optimal, modern image format (like WebP or AVIF) supported by the user's browser, safely falling back if needed.
