@@ -242,7 +242,7 @@
     <section id="reviews">
         <h2>Client Testimonials</h2>
 
-        <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
+        <form id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0;">Leave a Review</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
             <div style="margin-bottom: 15px;">
@@ -259,9 +259,9 @@
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
                 <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
-            <button id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
-        </div>
+        </form>
 
         <div class="reviews-container" id="reviews-container-el">
             <!-- Reviews will be dynamically injected here -->
@@ -272,10 +272,10 @@
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
-        <div class="newsletter" id="newsletter-form">
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
             <input type="email" id="news-email" placeholder="Enter your email address" required>
-            <button onclick="subscribeNewsletter()">Subscribe</button>
-        </div>
+            <button type="submit">Subscribe</button>
+        </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
         
         <div class="socials">
@@ -380,7 +380,8 @@
         loadReviews();
 
         // Submit Review
-        document.getElementById('submit-review-btn').addEventListener('click', async () => {
+        document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
+            e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');
             const rating = parseInt(document.getElementById('review-rating').value, 10);
