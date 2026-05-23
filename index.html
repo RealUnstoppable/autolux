@@ -291,6 +291,7 @@
 
     <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -329,6 +330,8 @@
                     if (userDoc.exists()) {
                         currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                     }
+                } catch (e) {
+                    console.error("Could not fetch user profile", e.code, e);
                 } catch (error) {
                     console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
                 }
@@ -355,16 +358,6 @@
 
                 container.innerHTML = '';
 
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str)
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#039;");
-                }
-
                 reviews.forEach(r => {
                     const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
                     const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
@@ -379,6 +372,9 @@
                     el.innerHTML = \`<div class="stars">\${stars}</div><p>"\${comment}"<br><br>- \${name}</p>\`;
                     container.appendChild(el);
                 });
+            } catch (e) {
+                console.error("Error loading reviews", e.code, e);
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
             } catch (error) {
                 console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
@@ -425,6 +421,8 @@
                 msgEl.style.color = "#16A34A";
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
+            } catch (e) {
+                console.error("Error submitting review", e.code, e);
             } catch (error) {
                 console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
                 msgEl.style.color = "#ef4444";
@@ -458,6 +456,8 @@
                 msg.style.color = "#16A34A";
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
+            } catch(e) {
+                console.error("Error subscribing to newsletter:", e.code, e);
             } catch(error) {
                 console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
                 msg.style.color = "#ef4444";

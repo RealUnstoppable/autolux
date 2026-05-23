@@ -279,6 +279,7 @@
 
    <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -300,16 +301,6 @@
             }
         });
 
-        function escapeHTML(str) {
-            if (str == null) return '';
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
         function initializeAdminPage(adminUser) {
             document.getElementById('user-email-sidebar').textContent = adminUser.email;
             loadAdminData();
@@ -320,6 +311,8 @@
             try {
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
+            } catch (e) {
+                console.error(`Error fetching ${collectionName}:`, e.code, e);
             } catch (error) {
                 console.error(`Error fetching ${collectionName}:`, error, error.code ? `(Code: ${error.code})` : '');
                 return [];
@@ -385,6 +378,8 @@
                     const reviewsSnapshot = await reviewsPromise;
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
+                } catch (revError) {
+                    console.error("Could not load reviews. Missing Firestore rules?", revError.code, revError);
                 } catch (error) {
                     console.log("Could not load reviews. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
@@ -395,6 +390,8 @@
                     const featureRequestsSnapshot = await featureRequestsPromise;
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
+                } catch (frError) {
+                    console.error("Could not load feature requests. Missing Firestore rules?", frError.code, frError);
                 } catch (error) {
                     console.log("Could not load feature requests. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
@@ -406,12 +403,15 @@
                     if (statsDoc.exists()) {
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
+                } catch (e) {
+                    console.error("Could not fetch site stats:", e.code, e);
                 } catch (error) {
                     console.error("Error loading stats:", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
+                console.error("Error loading admin data:", error.code, error);
                 console.error("Error loading admin data:", error, error.code ? `(Code: ${error.code})` : '');
             }
         }
@@ -646,7 +646,7 @@
                             actionCell.innerHTML = `<button class="btn-sm btn-ban" data-id="${userId}">Ban</button>`;
                         }
                     } catch (err) {
-                        console.error("Error updating user ban status:", err);
+                        console.error("Error updating user ban status:", err.code, err);
                     }
                 }
             });
@@ -665,7 +665,7 @@
                         row.cells[4].innerHTML = `<span style="color:var(--accent-green);">Completed</span>`;
                         row.cells[5].innerHTML = `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`;
                     } catch (err) {
-                        console.error("Error updating feature request status:", err);
+                        console.error("Error updating feature request status:", err.code, err);
                     }
                 }
             });
@@ -699,7 +699,7 @@
                         el.textContent = Math.max(0, parseInt(el.textContent) - 1);
                     }
                 } catch (err) {
-                    console.error("Error updating booking status:", err);
+                    console.error("Error updating booking status:", err.code, err);
                 }
             });
 
@@ -710,14 +710,26 @@
                 const action = btn.dataset.action;
                 const id = btn.dataset.id;
 
-                if (action === 'approve') {
-                    await updateDoc(doc(db, "reviews", id), { status: 'approved' });
-                } else if (action === 'unapprove') {
-                    await updateDoc(doc(db, "reviews", id), { status: 'pending' });
-                } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
-                    await deleteDoc(doc(db, "reviews", id));
+                try {
+                    const row = btn.closest('tr');
+                    const statusCell = row.cells[4];
+                    const actionCell = row.cells[5];
+
+                    if (action === 'approve') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'approved' });
+                        statusCell.innerHTML = `<span class="status-badge active">Approved</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${id}">Unapprove</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'unapprove') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+                        statusCell.innerHTML = `<span class="status-badge pending">Pending</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${id}">Approve</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
+                        await deleteDoc(doc(db, "reviews", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error updating review status:", err.code, err);
                 }
-                loadAdminData();
             });
 
             // Quotes Action Buttons
@@ -748,7 +760,7 @@
                         }
                     }
                 } catch (err) {
-                    console.error("Error modifying quote:", err);
+                    console.error("Error modifying quote:", err.code, err);
                 }
             });
 
