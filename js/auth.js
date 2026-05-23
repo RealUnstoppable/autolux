@@ -1,3 +1,6 @@
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
@@ -172,6 +175,33 @@ try {
     console.error(error);
 }
 
+// Utility to wrap onAuthStateChanged in a promise
+export function waitForAuthState() {
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            unsubscribe();
+            resolve(user);
+        }, reject);
+    });
+}
+
+// Utility to determine redirect path safely
+export async function getUserRedirectPath(user) {
+    if (!user) return 'sign in beta.html';
+
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists() && userDoc.data().isAdmin) {
+            return 'admin.html';
+        }
+    } catch (e) {
+        console.error("Error determining user role:", e);
+    }
+
+    return 'account.html';
+}
+
+export { auth, db };
 export { auth, db };
 } catch (error) {
     console.error("Firebase initialization error:", error.message);
