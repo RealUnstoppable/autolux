@@ -282,6 +282,7 @@
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         let performanceChart;
 
@@ -379,6 +380,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
+                    console.error("Could not load reviews. Missing Firestore rules?", revError);
                     console.error("Could not load reviews. Missing Firestore rules?", revError.code, revError);
                 } catch (error) {
                     console.log("Could not load reviews. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
@@ -391,6 +393,7 @@
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
+                    console.error("Could not load feature requests. Missing Firestore rules?", frError);
                     console.error("Could not load feature requests. Missing Firestore rules?", frError.code, frError);
                 } catch (error) {
                     console.log("Could not load feature requests. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
@@ -404,6 +407,7 @@
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
                 } catch (e) {
+                    console.error("Error loading download stats:", e);
                     console.error("Could not fetch site stats:", e.code, e);
                 } catch (error) {
                     console.error("Error loading stats:", error, error.code ? `(Code: ${error.code})` : '');
