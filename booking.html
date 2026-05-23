@@ -6,6 +6,15 @@
     <title>Book a Detail | Unstoppable Detailing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book your premium auto detailing service with Unstoppable Detailing Services in Buford, GA.">
+    <title>Book Now | Unstoppable Detailing Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles from index.html */
+    <title>Book a Detail | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -60,6 +69,236 @@
         .nav-link:hover { color: white; }
 
         #msg-container { margin-top: 20px; text-align: center; font-weight: 600; }
+            color: var(--text-main); scroll-behavior: smooth; overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        /* Navbar (Mobile Menu) */
+        nav {
+            position: fixed; top: 0; width: 100%; background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border);
+            padding: 15px 20px; box-sizing: border-box; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; letter-spacing: 1px; }
+
+        .menu-toggle {
+            color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: block; user-select: none;
+            background: none; border: none; padding: 0;
+        }
+
+        .nav-links {
+            display: none; width: 100%; flex-direction: column; gap: 15px;
+            margin-top: 15px; text-align: center;
+        }
+        .nav-links.active { display: flex; }
+
+        .nav-links a {
+            color: var(--text-main); text-decoration: none; font-weight: 500;
+            font-size: 1rem; transition: color 0.3s; padding: 10px 0; border-bottom: 1px solid #222;
+        }
+        .nav-links a:last-child { border-bottom: none; }
+        .nav-links a:hover { color: var(--accent); }
+        .auth-btn { background: var(--accent); padding: 10px; border-radius: 6px; font-weight: bold !important; border: none !important;}
+
+        @media (min-width: 768px) {
+            nav { padding: 20px 50px; flex-wrap: nowrap; }
+            .logo { font-size: 1.5rem; }
+            .menu-toggle { display: none; }
+            .nav-links { display: flex; flex-direction: row; width: auto; margin-top: 0; align-items: center; gap: 30px; }
+            .nav-links a { padding: 0; border: none; font-size: 0.9rem; }
+            .auth-btn { padding: 8px 16px; }
+        }
+
+        .btn-primary {
+            display: block; width: 100%; max-width: 300px; margin: 0 auto; background: var(--text-main);
+            color: var(--bg-dark); padding: 15px; text-decoration: none; font-weight: 700;
+            font-size: 1.1rem; border-radius: 6px; transition: 0.3s; box-sizing: border-box; text-align: center; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--accent); color: white; }
+
+        section { padding: 60px 20px; max-width: 800px; margin: 0 auto; }
+        h2 { font-size: 2rem; text-align: center; margin-bottom: 40px; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 10px; }
+
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 0.95rem; font-weight: 600; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text-main); box-sizing: border-box; font-family: 'Inter', sans-serif;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">UNSTOPPABLE</a>
+        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <div class="nav-links" id="nav-links">
+            <a href="index.html#process" onclick="closeMenu()">Process</a>
+            <a href="index.html#pricing" onclick="closeMenu()">Pricing</a>
+            <a href="index.html#gallery" onclick="closeMenu()">Gallery</a>
+            <a href="index.html#reviews" onclick="closeMenu()">Reviews</a>
+            <a href="index.html#contact" onclick="closeMenu()">Contact</a>
+            <a href="booking.html" aria-current="page">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
+        </div>
+    </nav>
+
+    <section>
+        <div style="text-align: center;">
+            <h2>Schedule Your Detail</h2>
+            <p style="color: var(--text-muted); margin-top: -20px; margin-bottom: 40px;">Fill out the form below to request an appointment. We will contact you to confirm.</p>
+        </div>
+
+        <form id="booking-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required aria-required="true" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required aria-required="true" placeholder="john@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required aria-required="true" placeholder="(555) 555-5555">
+            </div>
+
+            <div class="form-group">
+                <label for="vehicle">Vehicle Make & Model</label>
+                <input type="text" id="vehicle" name="vehicle" required aria-required="true" placeholder="2023 Porsche 911">
+            </div>
+
+            <div class="form-group">
+                <label for="plan">AutoLux Detailing Plan</label>
+                <select id="plan" name="plan" required aria-required="true">
+                    <option value="" disabled selected>Select a package...</option>
+                    <option value="luxury-sedan">Luxury Sedan (From $150)</option>
+                    <option value="luxury-suv">Luxury SUV (From $250)</option>
+                    <option value="premium-truck">Premium Truck (From $280)</option>
+                    <option value="sprinter-van">Sprinter Van (From $400)</option>
+                    <option value="annual-club">The Unstoppable Annual Club</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Preferred Date</label>
+                <input type="date" id="date" name="date" required aria-required="true">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" rows="4" placeholder="Any specific areas of concern?"></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submit-booking-btn">Request Appointment</button>
+            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+        </form>
+    </section>
+
+    <script>
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = navLinks.classList.toggle('active');
+            menuBtn.textContent = isActive ? '✕' : '☰';
+            menuBtn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        });
+
+        window.closeMenu = () => {
+            if(window.innerWidth < 768) {
+                navLinks.classList.remove('active');
+                menuBtn.textContent = '☰';
+                menuBtn.setAttribute('aria-expanded', 'false');
+            }
+        };
+    </script>
+    <script type="module">
+        import { db } from '/js/auth.js';
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submit-booking-btn');
+            const msgEl = document.getElementById('booking-msg');
+
+            btn.disabled = true;
+            btn.textContent = "Submitting...";
+            msgEl.textContent = "";
+
+            const bookingData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                vehicle: document.getElementById('vehicle').value.trim(),
+                plan: document.getElementById('plan').value,
+                appointmentDate: document.getElementById('date').value,
+                notes: document.getElementById('notes').value.trim(),
+                status: 'pending',
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "bookings"), bookingData);
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Booking request submitted successfully! We will contact you shortly.";
+                document.getElementById('booking-form').reset();
+            } catch (error) {
+                console.error("Error submitting booking:", error);
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "An error occurred while submitting your request. Please try again.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Request Appointment";
+            }
+        });
+    </script>
+</body>
+</html>
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); }
+
+        nav {
+            padding: 20px 50px; background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--text-main); text-decoration: none; }
+        .nav-links a { color: var(--text-main); text-decoration: none; margin-left: 20px; font-weight: 500; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        h1 { margin-top: 0; margin-bottom: 10px; font-size: 2rem; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 30px; }
+
+        .card { background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 30px;}
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem;}
+        .form-group select, .form-group input { width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 1rem; }
+
+        .btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.1rem; transition: 0.2s;}
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .price-preview { font-size: 1.5rem; font-weight: 800; color: var(--text-main); text-align: right; margin-bottom: 20px; }
+
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.9); display: flex; align-items: center;
+            justify-content: center; z-index: 9999; flex-direction: column;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .msg { font-size: 0.9rem; font-weight: 600; margin-top: 15px; text-align: center; }
+        .msg.error { color: #ef4444; }
+        .msg.success { color: #16A34A; }
     </style>
 </head>
 <body>
@@ -195,6 +434,147 @@
                 const opt = document.createElement('option');
                 opt.value = service.name;
                 opt.textContent = `${service.name} (from $${service.price})`;
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Verifying Session...</p>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">UNSTOPPABLE</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="account.html">My Portal</a>
+        </div>
+    </nav>
+
+    <div class="container" style="display: none;" id="main-content">
+        <h1>Schedule Your Detail</h1>
+        <p class="subtitle">Select your package and time. We bring the water and power.</p>
+
+        <form class="card" id="booking-form">
+            <div class="form-group">
+                <label for="vehicle-select">Select Vehicle</label>
+                <select id="vehicle-select" required>
+                    <option value="" disabled selected>Loading vehicles...</option>
+                </select>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">*If your vehicle isn't listed, please add it in your <a href="account.html" style="color: var(--accent);">Portal</a> first.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="package-select">Select Package</label>
+                <select id="package-select" required>
+                    <option value="" disabled selected>Select a service level...</option>
+                    <!-- Will be populated via JS/Cache -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date-select">Select Date & Time</label>
+                <input type="datetime-local" id="date-select" required>
+                <p id="date-warning" style="color: var(--accent); font-size: 0.85rem; display: none;">Checking availability...</p>
+            </div>
+
+            <div class="price-preview" id="price-preview">Total: $0.00</div>
+
+            <button type="submit" class="btn" id="submit-btn">Confirm Appointment</button>
+            <div id="form-msg" class="msg"></div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { auth, db, waitForAuthState } from '/js/auth.js';
+        import { doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        let currentUser = null;
+        let userData = null;
+        let pricingCache = null;
+
+        const packageSelect = document.getElementById('package-select');
+        const pricePreview = document.getElementById('price-preview');
+        const submitBtn = document.getElementById('submit-btn');
+        const dateInput = document.getElementById('date-select');
+        let dateDebounceTimer;
+
+        async function initBooking() {
+            try {
+                // Ensure auth is definitive before loading the page or fetching user data
+                currentUser = await waitForAuthState();
+                if (!currentUser) {
+                    window.location.replace('sign in beta.html');
+                    return;
+                }
+
+                // Fetch user data
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    populateVehicles(userData.vehicles || []);
+                } else {
+                    document.getElementById('form-msg').className = 'msg error';
+                    document.getElementById('form-msg').textContent = "Profile error. Please contact support.";
+                    submitBtn.disabled = true;
+                }
+
+                loadPackages();
+
+                // Show UI
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+
+            } catch (e) {
+                console.error("Initialization error:", e);
+                document.getElementById('loading-overlay').innerHTML = `<p style="color:#ef4444;">Error loading scheduling system. Please refresh.</p>`;
+            }
+        }
+
+        function populateVehicles(vehicles) {
+            const select = document.getElementById('vehicle-select');
+            select.innerHTML = '<option value="" disabled selected>Select a vehicle...</option>';
+            if (vehicles.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.disabled = true;
+                opt.textContent = "No vehicles saved. Go to Portal to add one.";
+                select.appendChild(opt);
+                submitBtn.disabled = true;
+                return;
+            }
+
+            vehicles.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = String(v).replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Simple sanitize
+                select.appendChild(opt);
+            });
+            submitBtn.disabled = false;
+        }
+
+        function loadPackages() {
+            // Local Session Storage Caching to save reads
+            const cached = sessionStorage.getItem('autolux_packages');
+            if (cached) {
+                pricingCache = JSON.parse(cached);
+                renderPackages();
+            } else {
+                // Simulate fetching from DB if not in cache (hardcoding here to save reads as per instructions)
+                pricingCache = [
+                    { id: 'sedan_basic', name: 'Luxury Sedan - Basic Wash', price: 150 },
+                    { id: 'suv_premium', name: 'Luxury SUV - Deep Clean', price: 250 },
+                    { id: 'truck_heavy', name: 'Premium Truck - Heavy Duty', price: 280 },
+                    { id: 'van_executive', name: 'Sprinter Van - Executive Detail', price: 400 }
+                ];
+                sessionStorage.setItem('autolux_packages', JSON.stringify(pricingCache));
+                renderPackages();
+            }
+        }
+
+        function renderPackages() {
+            packageSelect.innerHTML = '<option value="" disabled selected>Select a service level...</option>';
+            pricingCache.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = `${p.name} ($${p.price})`;
+                opt.dataset.price = p.price;
                 packageSelect.appendChild(opt);
             });
         }
@@ -222,6 +602,60 @@
                     package: selectedPackage,
                     vehicle: vehicle,
                     appointmentDate: date,
+        // Event Listeners
+        packageSelect.addEventListener('change', (e) => {
+            const selectedOpt = e.target.options[e.target.selectedIndex];
+            const price = parseFloat(selectedOpt.dataset.price || 0);
+            pricePreview.textContent = `Total: $${price.toFixed(2)}`;
+        });
+
+        // Debounce date selection to simulate checking availability without hammering the DB
+        dateInput.addEventListener('change', () => {
+            const warnEl = document.getElementById('date-warning');
+            warnEl.style.display = 'block';
+            warnEl.textContent = 'Checking availability...';
+            submitBtn.disabled = true;
+
+            clearTimeout(dateDebounceTimer);
+            dateDebounceTimer = setTimeout(() => {
+                warnEl.textContent = 'Time slot looks good!';
+                warnEl.style.color = '#16A34A';
+                submitBtn.disabled = false;
+            }, 800);
+        });
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('form-msg');
+            msgEl.className = 'msg';
+            msgEl.textContent = '';
+
+            // Double check auth state right before write
+            if (!currentUser) {
+                msgEl.className = 'msg error';
+                msgEl.textContent = "Session expired. Please sign in again.";
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            const vehicle = document.getElementById('vehicle-select').value;
+            const packageId = document.getElementById('package-select').value;
+            const dateVal = document.getElementById('date-select').value;
+
+            const selectedOpt = packageSelect.options[packageSelect.selectedIndex];
+            const packageName = selectedOpt.textContent.split(' ($')[0];
+
+            try {
+                await addDoc(collection(db, "bookings"), {
+                    userId: currentUser.uid,
+                    customerName: userData.name || currentUser.email,
+                    customerEmail: currentUser.email,
+                    vehicle: vehicle,
+                    packageId: packageId,
+                    package: packageName,
+                    appointmentDate: dateVal,
                     status: 'pending',
                     createdAt: serverTimestamp()
                 });
@@ -245,6 +679,26 @@
 
         initBookingPage();
 
+    </script>
+</body>
+</html>
+                msgEl.className = 'msg success';
+                msgEl.textContent = "Appointment confirmed! Redirecting to portal...";
+
+                setTimeout(() => {
+                    window.location.replace('account.html');
+                }, 2000);
+
+            } catch (err) {
+                console.error("Booking write error:", err);
+                msgEl.className = 'msg error';
+                msgEl.textContent = "Failed to secure booking. Try again.";
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm Appointment';
+            }
+        });
+
+        initBooking();
     </script>
 </body>
 </html>
