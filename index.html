@@ -164,6 +164,14 @@
         <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
+            <a href="#process" onclick="closeMenu()">Process</a>
+            <a href="#pricing" onclick="closeMenu()">Pricing</a>
+            <a href="#gallery" onclick="closeMenu()">Gallery</a>
+            <a href="#reviews" onclick="closeMenu()">Reviews</a>
+            <a href="#faq" onclick="closeMenu()">FAQ</a>
+            <a href="#contact" onclick="closeMenu()">Contact</a>
+            <a href="booking.html">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
             <a href="#process" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Process</a>
             <a href="#pricing" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Pricing</a>
             <a href="#gallery" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Gallery</a>
@@ -254,6 +262,13 @@
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
+        </div>
+    </section>
+
+    <section id="faq" style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
+        <h2 style="text-align: center; color: var(--gold); margin-bottom: 40px; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px;">Frequently Asked Questions</h2>
+        <div class="faq-accordion" id="faq-container" style="display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto;">
+            <!-- FAQs will be dynamically inserted here -->
         </div>
     </section>
 
@@ -458,6 +473,76 @@
 
         initIndexAuth();
 
+        // Load FAQs
+        async function loadFaqs() {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
+
+            try {
+                const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No FAQs available at the moment.</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const question = escapeHTML(data.question || "");
+                    const answer = escapeHTML(data.answer || "");
+
+                    const el = document.createElement('div');
+                    el.className = 'faq-item';
+                    el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
+                    el.innerHTML = `
+                        <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                            ${question}
+                            <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                            <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
+                        </div>
+                    `;
+
+                    // Add click event for accordion toggle
+                    const btn = el.querySelector('.faq-question');
+                    const answerDiv = el.querySelector('.faq-answer');
+                    const icon = el.querySelector('.faq-icon');
+
+                    btn.addEventListener('click', () => {
+                        const isActive = el.classList.contains('active');
+
+                        // Close all others
+                        document.querySelectorAll('.faq-item').forEach(item => {
+                            item.classList.remove('active');
+                            item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                            item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                            item.querySelector('.faq-answer').style.maxHeight = '0';
+                        });
+
+                        // Toggle current
+                        if (!isActive) {
+                            el.classList.add('active');
+                            btn.setAttribute('aria-expanded', 'true');
+                            icon.style.transform = 'rotate(45deg)';
+                            // Approximate height calculation or set to scrollHeight
+                            answerDiv.style.maxHeight = answerDiv.scrollHeight + 20 + "px"; // +20 for padding
+                        }
+                    });
+
+                    container.appendChild(el);
+                });
+            } catch (e) {
+                console.error("Error loading FAQs", e);
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
+            }
+        }
+
+        // Load FAQs on page load
+        loadFaqs();
+
         // Load Reviews
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
@@ -494,7 +579,7 @@
 
                     const el = document.createElement('div');
                     el.className = 'review-card';
-                    el.innerHTML = \`<div class="stars">\${stars}</div><p>"\${comment}"<br><br>- \${name}</p>\`;
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
             } catch (e) {
