@@ -320,8 +320,8 @@
             try {
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
-            } catch (e) {
-                console.error(`Error fetching ${collectionName}:`, e);
+            } catch (error) {
+                console.error(`Error fetching ${collectionName}:`, error, error.code ? `(Code: ${error.code})` : '');
                 return [];
             }
         }
@@ -359,7 +359,11 @@
 
                 // Fetch Detailing Bookings & Quotes
                 const bookings = await resolveQuery(bookingsPromise, "bookings");
-                bookings.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+                bookings.sort((a, b) => {
+                    const dateA = a.appointmentDate?.toDate ? a.appointmentDate.toDate() : new Date(a.appointmentDate);
+                    const dateB = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                    return dateB - dateA;
+                });
 
                 const quotes = await resolveQuery(quotesPromise, "quotes");
 
@@ -381,8 +385,8 @@
                     const reviewsSnapshot = await reviewsPromise;
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
-                } catch (revError) {
-                    console.log("Could not load reviews. Missing Firestore rules?", revError);
+                } catch (error) {
+                    console.log("Could not load reviews. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
@@ -391,8 +395,8 @@
                     const featureRequestsSnapshot = await featureRequestsPromise;
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
-                } catch (frError) {
-                    console.log("Could not load feature requests. Missing Firestore rules?", frError);
+                } catch (error) {
+                    console.log("Could not load feature requests. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
                 }
                 
@@ -402,12 +406,13 @@
                     if (statsDoc.exists()) {
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
-                } catch (e) {
+                } catch (error) {
+                    console.error("Error loading stats:", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
-                console.error("Error loading admin data:", error);
+                console.error("Error loading admin data:", error, error.code ? `(Code: ${error.code})` : '');
             }
         }
 
@@ -422,7 +427,8 @@
                 const name = b.customerName || 'N/A';
                 const phone = b.customerPhone || 'N/A';
                 const email = b.customerEmail || 'N/A';
-                const formattedDate = new Date(b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
                 if(b.status === 'cancelled') badgeClass = 'cancelled';
                 if(b.status === 'completed') badgeClass = 'active'; 
@@ -471,7 +477,8 @@
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
                 const actionButton = user.isBanned ? `<button class="btn-sm btn-unban" data-id="${escapeHTML(user.id)}">Unban</button>` : `<button class="btn-sm btn-ban" data-id="${escapeHTML(user.id)}">Ban</button>`;
-                const signupDate = user.signupDate?.toDate().toLocaleDateString() || 'N/A';
+                const parsedDate = user.signupDate?.toDate ? user.signupDate.toDate() : new Date(user.signupDate);
+                const signupDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 const subStatus = user.subscription?.status === 'active' ? `<span class="subscription-text">Active Pro</span>` : `<span style="color: var(--text-secondary);">Free</span>`;
                 
                 row.innerHTML = `
@@ -552,7 +559,8 @@
             }
             subscribers.forEach(subscriber => {
                 const row = document.createElement('tr');
-                const subscriptionDate = subscriber.subscribedAt?.toDate().toLocaleDateString() || 'N/A';
+                const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
+                const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
                 newsletterListBody.appendChild(row);
             });
@@ -568,7 +576,11 @@
             const avgOrders = totalUsers > 0 ? (totalOrders / totalUsers).toFixed(2) : 0;
 
             const now = new Date();
-            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate) >= now);
+            const upcoming = bookings.filter(b => {
+                if (b.status === 'cancelled') return false;
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                return parsedDate && !isNaN(parsedDate) && parsedDate >= now;
+            });
             const pendingQuotes = quotes.filter(q => q.status === 'pending');
 
             document.getElementById('total-users').textContent = totalUsers;
