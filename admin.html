@@ -508,6 +508,8 @@
                      ? `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${escapeHTML(review.id)}">Unapprove</button>`
                      : `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${escapeHTML(review.id)}">Approve</button>`;
                 const deleteButton = `<button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(review.id)}">Delete</button>`;
+                const safeRating = Math.max(0, Math.min(5, Number(review.rating) || 5));
+                const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
                 // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                 const ratingValue = Math.max(0, Math.min(5, Number(review.rating) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);

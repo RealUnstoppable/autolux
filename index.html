@@ -361,6 +361,8 @@
                 container.innerHTML = '';
 
                 reviews.forEach(r => {
+                    const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
                     const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
                     const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
