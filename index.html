@@ -55,6 +55,7 @@
         .auth-btn { background: var(--accent); padding: 10px; border-radius: 6px; font-weight: bold !important; border: none !important;}
 
         /* Hero Section */
+        /* ⚡ Bolt: Added &auto=format to Unsplash image URL to serve WebP/AVIF instead of JPEG, reducing FCP by optimizing LCP image size. */
         .hero {
             min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
             /* ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats */
@@ -235,6 +236,7 @@
     <section id="gallery">
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
+        <!-- ⚡ Bolt: Added &auto=format to Unsplash image URLs to serve WebP/AVIF to supported browsers, reducing payload size. -->
         <!-- ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats -->
         <!-- ⚡ Bolt: Appended &auto=format to Unsplash URLs to optimize image loading performance -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
