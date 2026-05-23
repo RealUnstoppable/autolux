@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buford's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Buford's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -53,9 +58,12 @@
         .auth-btn { background: var(--accent); padding: 10px; border-radius: 6px; font-weight: bold !important; border: none !important;}
 
         /* Hero Section */
+        /* ⚡ Bolt: Added &auto=format to Unsplash image URL to serve WebP/AVIF instead of JPEG, reducing FCP by optimizing LCP image size. */
         .hero {
             min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
-            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000') center/cover;
+            /* ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats */
+            /* ⚡ Bolt: Appended &auto=format to Unsplash URL to optimize FCP and network payload */
+            background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.9)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format') center/cover;
             padding: 80px 20px 20px 20px; box-sizing: border-box;
         }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
@@ -153,16 +161,23 @@
 <body>
 
     <nav>
-        <a href="#" class="logo">UNSTOPPABLE</a>
+        <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
-            <a href="#process" onclick="closeMenu()">Process</a>
-            <a href="#pricing" onclick="closeMenu()">Pricing</a>
-            <a href="#gallery" onclick="closeMenu()">Gallery</a>
-            <a href="#reviews" onclick="closeMenu()">Reviews</a>
-            <a href="#contact" onclick="closeMenu()">Contact</a>
-            <a href="booking.html">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
+            <a href="#process" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Process</a>
+            <a href="#pricing" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Pricing</a>
+            <a href="#gallery" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Gallery</a>
+            <a href="#reviews" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Reviews</a>
+            <a href="#contact" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Contact</a>
+            <a href="booking.html" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') window.location.href='booking.html';">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') window.location.href=this.href;">Sign In</a>
+            <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
+            <a href="#pricing" aria-label="Go to Pricing section" onclick="closeMenu()">Pricing</a>
+            <a href="#gallery" aria-label="Go to Gallery section" onclick="closeMenu()">Gallery</a>
+            <a href="#reviews" aria-label="Go to Reviews section" onclick="closeMenu()">Reviews</a>
+            <a href="#contact" aria-label="Go to Contact section" onclick="closeMenu()">Contact</a>
+            <a href="booking.html" aria-label="Book a detailing appointment">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
         </div>
     </nav>
 
@@ -222,7 +237,7 @@
         </div>
 
         <div class="membership">
-            <h3>The Unstoppable Annual Club</h3>
+            <h3>AutoLux Detailing Plan</h3>
             <p>Keep your vehicle pristine year-round. Subscribe for a monthly maintenance wash and receive a <strong>15% discount</strong> on all services for the year, plus priority booking.</p>
             <a href="booking.html" class="btn-primary" style="background: var(--gold); color: black;">Join the Club</a>
         </div>
@@ -231,11 +246,14 @@
     <section id="gallery">
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
+        <!-- ⚡ Bolt: Added &auto=format to Unsplash image URLs to serve WebP/AVIF to supported browsers, reducing payload size. -->
+        <!-- ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats -->
+        <!-- ⚡ Bolt: Appended &auto=format to Unsplash URLs to optimize image loading performance -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600" alt="G-Wagon Wash" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
         </div>
     </section>
 
@@ -243,6 +261,26 @@
         <h2>Client Testimonials</h2>
 
         <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
+            <form id="review-submission-form">
+                <h3 style="margin-top: 0;">Leave a Review</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
+                <div style="margin-bottom: 15px;">
+                    <label for="review-rating" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Rating:</label>
+                    <select id="review-rating" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);">
+                        <option value="5">★★★★★ - Excellent</option>
+                        <option value="4">★★★★☆ - Good</option>
+                        <option value="3">★★★☆☆ - Average</option>
+                        <option value="2">★★☆☆☆ - Poor</option>
+                        <option value="1">★☆☆☆☆ - Terrible</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
+                    <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                </div>
+                <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            </form>
+        <form id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0;">Leave a Review</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
             <div style="margin-bottom: 15px;">
@@ -259,9 +297,9 @@
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
                 <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
-            <button id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
-        </div>
+        </form>
 
         <div class="reviews-container" id="reviews-container-el">
             <!-- Reviews will be dynamically injected here -->
@@ -271,23 +309,67 @@
 
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
+
+        <!-- Contact Inquiries Form -->
+        <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
+            <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
+            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
+                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
+                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
+                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
+                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+            </form>
+        </div>
+
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <div class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" required>
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
             <button onclick="subscribeNewsletter()">Subscribe</button>
         </div>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
         
         <div class="socials">
-            <a href="#">Instagram</a> | <a href="#">Facebook</a> | <a href="#">YouTube</a>
+            <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); window.subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <button type="submit" id="news-submit-btn">Subscribe</button>
+        <form class="newsletter" id="newsletter-form">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address" required>
+        <form class="newsletter" id="newsletter-form">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email Address for Newsletter" required>
+            <button type="submit">Subscribe</button>
+        </form>
+        <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
+        
+        <div class="socials">
+            <a href="#" aria-label="Visit our Instagram page">Instagram</a> | <a href="#" aria-label="Visit our Facebook page">Facebook</a> | <a href="#" aria-label="Visit our YouTube channel">YouTube</a>
         </div>
         <p style="color: #666; margin-top: 40px; font-size: 0.8rem;">&copy; 2026 Unstoppable Detailing Services. Buford, GA.</p>
     </footer>
 
     <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -325,7 +407,9 @@
                         currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                     }
                 } catch (e) {
-                    console.error("Could not fetch user profile", e);
+                    console.error("Could not fetch user profile", e.code, e);
+                } catch (error) {
+                    console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
                 }
 
                 const redirectPath = await getUserRedirectPath(user);
@@ -357,18 +441,20 @@
 
                 container.innerHTML = '';
 
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str)
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#039;");
-                }
-
                 reviews.forEach(r => {
-                    const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+                    // Sanitize rating to prevent DoS via RangeError in String.repeat
+                    let rawRating = parseInt(r.rating, 10);
+                    if (isNaN(rawRating)) rawRating = 5;
+                    const safeRating = Math.max(0, Math.min(5, rawRating));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+
+                    const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+                    const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+                    // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                    const ratingValue = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
@@ -378,8 +464,11 @@
                     container.appendChild(el);
                 });
             } catch (e) {
-                console.error("Error loading reviews", e);
+                console.error("Error loading reviews", e.code, e);
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
+            } catch (error) {
+                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
             }
         }
 
@@ -387,7 +476,9 @@
         loadReviews();
 
         // Submit Review
-        document.getElementById('submit-review-btn').addEventListener('click', async () => {
+        document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
+        document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
+            e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');
             const rating = parseInt(document.getElementById('review-rating').value, 10);
@@ -402,6 +493,12 @@
             if (!comment) {
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Please enter a comment.";
+                return;
+            }
+
+            if (comment.length > 1000) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Comment is too long (max 1000 characters).";
                 return;
             }
 
@@ -423,7 +520,9 @@
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
             } catch (e) {
-                console.error("Error submitting review", e);
+                console.error("Error submitting review", e.code, e);
+            } catch (error) {
+                console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
@@ -433,15 +532,37 @@
         });
 
         // Newsletter Logic
-        window.subscribeNewsletter = async () => {
+        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+        window.subscribeNewsletter = async (event) => {
+            if (event) event.preventDefault();
+        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+        window.subscribeNewsletter = async (event) => {
+            if (event) {
+                event.preventDefault();
+            }
             const email = document.getElementById('news-email').value;
             const msg = document.getElementById('news-msg');
+            const btn = document.getElementById('news-submit-btn');
             if(!email) {
                 msg.style.color = "#ef4444";
                 msg.textContent = "Please enter an email address.";
                 return;
             }
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                msg.style.color = "#ef4444";
+                msg.textContent = "Please enter a valid email address.";
+                return;
+            }
             
+            btn.disabled = true;
+            btn.textContent = "Subscribing...";
+            msg.textContent = "";
+
             try {
                 await setDoc(doc(db, "newsletterSubscribers", email), {
                     email: email,
@@ -451,11 +572,58 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(e) {
-                console.error("Error subscribing to newsletter:", e);
+                console.error("Error subscribing to newsletter:", e.code, e);
+            } catch(error) {
+                console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Subscribe";
             }
         };
+
+        // Submit Inquiry Logic
+        window.submitInquiry = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-inquiry-btn');
+            const msgEl = document.getElementById('inquiry-msg');
+            const name = document.getElementById('inq-name').value.trim();
+            const email = document.getElementById('inq-email').value.trim();
+            const message = document.getElementById('inq-message').value.trim();
+
+            if (!name || !email || !message) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Please fill out all fields.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Sending...";
+            msgEl.textContent = "";
+
+            try {
+                await addDoc(collection(db, "inquiries"), {
+                    name: name,
+                    email: email,
+                    message: message,
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Message sent successfully! We'll be in touch.";
+                document.getElementById('inquiry-form').reset();
+            } catch (error) {
+                console.error("Error submitting inquiry:", error.message, error.code);
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Error sending message. Please try again later.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Send Message";
+            }
+        };
+        });
     </script>
 </body>
 </html>
