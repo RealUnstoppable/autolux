@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Client Portal | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --text-main: #F5F5F7;
+            --text-muted: #A3A3A3;
+            --accent: #2563EB;
+            --gold: #D4AF37;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main);
+        }
+
+        /* Nav Header */
+        header {
+            padding: 20px; border-bottom: 1px solid var(--border); background: var(--bg-card);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .container {
+            max-width: 1000px; margin: 40px auto; padding: 0 20px;
+        }
+
+        .grid-layout {
+            display: grid; grid-template-columns: 1fr 2fr; gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;
+        }
+
+        .card h2 { margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; color: var(--gold); }
+
+        .btn-logout {
+            background: none; border: 1px solid var(--text-muted); color: var(--text-main); padding: 8px 15px; border-radius: 6px; cursor: pointer;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+        .list-item {
+            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;
+        }
+        .list-item:last-child { border-bottom: none; }
+
+        .badge {
+            background: rgba(37, 99, 235, 0.2); color: #60A5FA; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600;
+        }
+
+        /* Loading Overlay to block premature rendering */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 50%;
+            border-left-color: var(--gold); animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Explicit Loading State to Fix Race Conditions -->
+    <div id="auth-loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div style="color: var(--text-muted); font-weight: 600;">Authenticating...</div>
+    </div>
+
+    <!-- Hidden until auth and data load completes -->
+    <div id="app-content" style="display: none;">
+        <header>
+            <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">Unstoppable Portal</div>
+            <nav>
+                <a href="index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 20px;">Home</a>
+                <button id="logout-btn" class="btn-logout">Sign Out</button>
+            </nav>
+        </header>
+
+        <div class="container">
+            <h1 style="margin-bottom: 10px;">Welcome, <span id="profile-name">...</span></h1>
+            <p style="color: var(--text-muted); margin-bottom: 40px;">Manage your appointments and saved vehicles.</p>
+
+            <div class="grid-layout">
+                <!-- Sidebar -->
+                <div>
+                    <div class="card">
+                        <h2>My Profile</h2>
+                        <div style="margin-bottom: 10px;"><strong>Email:</strong> <span id="profile-email">...</span></div>
+                        <div style="margin-bottom: 10px;"><strong>Phone:</strong> <span id="profile-phone">Not Provided</span></div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div>
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0; border: none; padding: 0;">Upcoming Appointments</h2>
+                            <a href="booking.html" style="color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600;">+ Book New</a>
+                        </div>
+                        <div id="appointments-container">
+                            <div style="color: var(--text-muted);">Loading appointments...</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Saved Vehicles</h2>
+                        <div id="vehicles-container">
+                            <div style="color: var(--text-muted);">Loading vehicles...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '/js/auth.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const appContent = document.getElementById('app-content');
+        const loadingOverlay = document.getElementById('auth-loading');
+
+        // Centralized Router and Auth Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Not authenticated, redirect to login
+                window.location.replace('sign in beta.html');
+                return;
+            }
+
+            try {
+                // 2. Fallback Instantiation for Blank Profile Fix
+                const userRef = doc(db, "users", user.uid);
+
+                // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+
+                // Fire them off concurrently
+                const [userSnap, appointmentsSnap] = await Promise.all([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery).catch(e => { console.error("Error fetching bookings:", e); return { docs: [] }; })
+                ]);
+
+                let userData = {};
+
+                if (!userSnap.exists()) {
+                    // Graceful fallback instantiation
+                    userData = {
+                        email: user.email,
+                        name: "Valued Client",
+                        phone: "",
+                        vehicles: [], // Initialize empty arrays for bindings
+                        createdAt: new Date().toISOString()
+                    };
+                    await setDoc(userRef, userData).catch(e => console.error("Failed to init profile:", e));
+                } else {
+                    userData = userSnap.data();
+
+                    // Route admins directly to the management dashboard to prevent getting stuck here
+                    if (userData.isAdmin) {
+                        window.location.replace('admin.html');
+                        return;
+                    }
+                }
+
+                // Render Profile Data
+                document.getElementById('profile-name').textContent = userData.name || "Valued Client";
+                document.getElementById('profile-email').textContent = user.email;
+                if (userData.phone) document.getElementById('profile-phone').textContent = userData.phone;
+
+                // Render Vehicles
+                const vContainer = document.getElementById('vehicles-container');
+                if (!userData.vehicles || userData.vehicles.length === 0) {
+                    vContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No vehicles saved yet. They will appear here when you book.</div>';
+                } else {
+                    vContainer.innerHTML = userData.vehicles.map(v =>
+                        `<div class="list-item"><div><strong>${escapeHTML(v.make)} ${escapeHTML(v.model)}</strong> <br><span style="color:var(--text-muted); font-size: 0.85rem;">${escapeHTML(v.year)}</span></div></div>`
+                    ).join('');
+                }
+
+                // Render Appointments
+                const apptContainer = document.getElementById('appointments-container');
+                if (appointmentsSnap.docs.length === 0) {
+                    apptContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem;">No upcoming appointments.</div>';
+                } else {
+                    // Sort descending by date
+                    const sortedAppts = appointmentsSnap.docs
+                        .map(doc => doc.data())
+                        .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+                    apptContainer.innerHTML = sortedAppts.map(appt => `
+                        <div class="list-item">
+                            <div>
+                                <div style="font-weight: 600;">${escapeHTML(appt.serviceName)}</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">${escapeHTML(appt.vehicle)} - ${new Date(appt.appointmentDate).toLocaleString()}</div>
+                            </div>
+                            <div><span class="badge">${escapeHTML(appt.status).toUpperCase()}</span></div>
+                        </div>
+                    `).join('');
+                }
+
+                // Unblock rendering once data is securely bound
+                loadingOverlay.style.display = 'none';
+                appContent.style.display = 'block';
+
+            } catch (error) {
+                console.error("Critical error loading portal:", error);
+                loadingOverlay.innerHTML = `<div style="color: #ef4444; font-weight: 600;">Failed to load portal data. Please refresh.</div>`;
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.replace('index.html');
+            }).catch(e => console.error("Logout failed:", e));
+        });
+
+        // Basic HTML escape helper to prevent XSS in rendering
+        function escapeHTML(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
