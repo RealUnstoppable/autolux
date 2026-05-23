@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Client Portal | Unstoppable Detailing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>My Account | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0A0A;
@@ -68,6 +73,130 @@
             border: 4px solid rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 50%;
             border-left-color: var(--gold); animation: spin 1s linear infinite; margin-bottom: 20px;
         }
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main); padding: 20px; max-width: 800px; margin: 0 auto;
+        }
+
+        /* Navbar */
+        nav { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; letter-spacing: 1px; }
+        .nav-links a { color: var(--text-main); text-decoration: none; margin-left: 15px; font-weight: 500;}
+        .nav-links a:hover { color: var(--accent); }
+
+        /* Loading Spinner */
+        #loading-spinner { text-align: center; margin-top: 100px; font-size: 1.2rem; color: var(--text-muted); }
+
+        /* Portal Content */
+        #portal-content { display: none; }
+        .section { background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .section h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 20px;}
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
+        .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: white; box-sizing: border-box; }
+
+        .list-item { background: var(--bg-dark); padding: 15px; border-radius: 6px; border: 1px solid #222; margin-bottom: 10px; }
+        .btn-primary { background: var(--accent); color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+            --accent-red: #ef4444;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main); padding: 20px;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); display: flex; align-items: center; justify-content: center;
+            z-index: 9999; flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1); border-left-color: var(--accent);
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Layout */
+        .container {
+            max-width: 1000px; margin: 60px auto; display: none; /* Hidden until auth resolves */
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        h1 { margin: 0; font-size: 2rem; }
+
+        .btn-logout { background: transparent; color: var(--accent-red); border: 1px solid var(--accent-red); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .btn-primary { background: var(--accent); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block;}
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 768px) { .grid { grid-template-columns: 1fr 2fr; } }
+
+        .card { background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); }
+        .card h2 { font-size: 1.2rem; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+        /* Form elements */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
+        .form-group input {
+            width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border);
+            color: white; border-radius: 4px; box-sizing: border-box;
+        }
+
+        /* Lists */
+        .list-item { background: var(--bg-dark); padding: 15px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
+        .list-item p { margin: 0 0 5px 0; }
+        .list-item small { color: var(--text-muted); }
+        .status-badge { font-size: 0.8rem; padding: 4px 8px; border-radius: 12px; background: rgba(255,255,255,0.1); }
+        .status-badge.pending { color: #FBBF24; background: rgba(251, 191, 36, 0.2); }
+        .status-badge.completed { color: #16A34A; background: rgba(22, 163, 74, 0.2); }
+
+        .nav-link { position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+        .nav-link:hover { color: white; }
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); }
+
+        nav {
+            padding: 20px 50px; background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--text-main); text-decoration: none; }
+        .nav-links a { color: var(--text-main); text-decoration: none; margin-left: 20px; font-weight: 500; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        h1 { margin-top: 0; margin-bottom: 30px; font-size: 2rem; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 10px;}
+        h2 { font-size: 1.5rem; margin-top: 0; margin-bottom: 20px;}
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+        .card { background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 30px;}
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem;}
+        .form-group input { width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; box-sizing: border-box; }
+
+        .btn { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-danger { background: rgba(220, 38, 38, 0.2); color: #ef4444; }
+
+        .appointment-item, .vehicle-item { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;}
+        .appointment-item:last-child, .vehicle-item:last-child { border-bottom: none; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; background-color: rgba(37, 99, 235, 0.2); color: var(--accent); }
+        .status-badge.cancelled { background-color: rgba(220, 38, 38, 0.2); color: #ef4444; }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); display: flex; align-items: center;
+            justify-content: center; z-index: 9999; flex-direction: column;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -120,6 +249,139 @@
                         <div id="vehicles-container">
                             <div style="color: var(--text-muted);">Loading vehicles...</div>
                         </div>
+    <a href="index.html" class="nav-link">← Back to Home</a>
+
+    <!-- Blocking Loading State -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; color: var(--text-muted);">Authenticating...</p>
+    </div>
+
+    <div class="container" id="main-content">
+        <header>
+            <div>
+                <h1 id="welcome-msg">Welcome</h1>
+                <p style="color: var(--text-muted); margin: 5px 0 0 0;" id="user-email"></p>
+            </div>
+            <div>
+                 <a href="booking.html" class="btn-primary" style="margin-right: 10px;">Book New Detail</a>
+                 <button class="btn-logout" id="logout-btn">Sign Out</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Sidebar: Profile & Vehicles -->
+            <div>
+                <div class="card" style="margin-bottom: 30px;">
+                    <h2>Profile Information</h2>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="profile-name" placeholder="Loading...">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="profile-phone" placeholder="Add phone number">
+                    </div>
+                    <p id="profile-msg" style="font-size: 0.85rem; color: #16A34A; display: none;">Saved</p>
+                </div>
+
+                <div class="card">
+                    <h2>My Vehicles</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Primary vehicle for detailing:</p>
+                    <div class="form-group">
+                        <label>Make & Model</label>
+                        <input type="text" id="vehicle-make-model" placeholder="e.g. 2022 Porsche 911">
+                    </div>
+                    <p id="vehicle-msg" style="font-size: 0.85rem; color: #16A34A; display: none;">Saved</p>
+                </div>
+            </div>
+
+            <!-- Main Area: Appointments -->
+            <div class="card">
+                <h2>My Appointments</h2>
+                <div id="appointments-container">
+                    <p style="color: var(--text-muted); text-align: center; padding: 20px;">Loading appointments...</p>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading Profile...</p>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">UNSTOPPABLE</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" id="sign-out-btn">Sign Out</a>
+        </div>
+    </nav>
+
+    <div id="loading-spinner">Loading your profile...</div>
+
+    <div id="portal-content">
+        <h1>My Account</h1>
+
+        <div class="section" id="profile-section">
+            <h2>Profile</h2>
+            <form id="profile-form">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="profile-name">
+                </div>
+                <div class="input-group">
+                    <label>Phone</label>
+                    <input type="text" id="profile-phone">
+                </div>
+                <p id="profile-save-msg" style="color: #16A34A; font-size: 0.85rem; display: none;">Saved</p>
+            </form>
+        </div>
+
+        <div class="section" id="vehicles-section">
+            <h2>Saved Vehicles</h2>
+            <div id="vehicles-list"></div>
+        </div>
+
+        <div class="section" id="appointments-section">
+            <h2>Upcoming Appointments</h2>
+            <div id="appointments-list"></div>
+            <a href="booking.html">Book Service</a>
+            <a href="#" id="sign-out-btn" style="color: #ef4444;">Sign Out</a>
+        </div>
+    </nav>
+
+    <div class="container" style="display: none;" id="main-content">
+        <h1>Client Portal</h1>
+
+        <div class="grid">
+            <div>
+                <div class="card">
+                    <h2>Profile Information</h2>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profile-name" placeholder="Loading...">
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Read Only)</label>
+                        <input type="email" id="profile-email" disabled>
+                    </div>
+                    <p id="profile-msg" style="color: #16A34A; font-size: 0.85rem; display: none;">Saved</p>
+                </div>
+
+                <div class="card">
+                    <h2>Saved Vehicles</h2>
+                    <div id="vehicles-list">
+                        <!-- Vehicles injected here -->
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn" id="add-vehicle-btn">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>Your Appointments</h2>
+                    <div id="appointments-list">
+                        <!-- Appointments injected here -->
                     </div>
                 </div>
             </div>
@@ -230,6 +492,195 @@
         });
 
         // Basic HTML escape helper to prevent XSS in rendering
+        import { auth, db, debounce } from '/js/auth.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const spinner = document.getElementById('loading-spinner');
+        const portal = document.getElementById('portal-content');
+        let currentUser = null;
+
+        // Sign Out Logic
+        document.getElementById('sign-out-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth);
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadPortalData(user.uid);
+            } else {
+                if (window.location.pathname !== '/sign in beta.html') {
+                    window.location.replace('sign in beta.html');
+                }
+            }
+        });
+
+        async function loadPortalData(uid) {
+            try {
+                // Fetch data concurrently
+                const userRef = doc(db, "users", uid);
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", uid), orderBy("createdAt", "desc"));
+
+                const [userDoc, appointmentsSnapshot] = await Promise.all([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery)
+                ]);
+
+                // Render Profile & Vehicles
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    document.getElementById('profile-name').value = data.name || '';
+                    document.getElementById('profile-phone').value = data.phone || '';
+
+                    // Setup Debounced Auto-Save
+                    const saveProfile = debounce(async () => {
+                        const msg = document.getElementById('profile-save-msg');
+                        msg.style.display = 'none';
+                        try {
+                            await updateDoc(userRef, {
+                                name: document.getElementById('profile-name').value,
+                                phone: document.getElementById('profile-phone').value
+                            });
+                            msg.style.display = 'block';
+                            setTimeout(() => msg.style.display = 'none', 2000);
+                        } catch (e) {
+                            console.error("Error saving profile", e);
+                        }
+                    }, 1000);
+
+                    document.getElementById('profile-form').addEventListener('input', saveProfile);
+
+                    // Render Vehicles (Assuming stored in user doc as array for this example)
+                    // Escape helper to prevent XSS
+                    const escapeHTML = (str) => {
+                        if (str == null) return '';
+                        return String(str)
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/"/g, "&quot;")
+                            .replace(/'/g, "&#039;");
+                    };
+
+                    const vList = document.getElementById('vehicles-list');
+                    vList.innerHTML = '';
+                    if (data.vehicles && data.vehicles.length > 0) {
+                        data.vehicles.forEach(v => {
+                            const el = document.createElement('div');
+                            el.className = 'list-item';
+                            el.textContent = `${v.year} ${v.make} ${v.model}`;
+                            vList.appendChild(el);
+                        });
+                    } else {
+                        vList.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No vehicles saved yet.</p>';
+                    }
+                }
+
+                // Escape helper scoped to the outer block or redefine if needed
+                const escapeHTML = (str) => {
+                    if (str == null) return '';
+                    return String(str)
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                };
+
+                // Render Appointments
+                const aList = document.getElementById('appointments-list');
+                aList.innerHTML = '';
+                if (!appointmentsSnapshot.empty) {
+                    appointmentsSnapshot.forEach(doc => {
+                        const apt = doc.data();
+                        const dateStr = escapeHTML(apt.appointmentDate || 'Date Pending');
+                        const vehicleStr = escapeHTML(apt.vehicle || 'Unknown Vehicle');
+                        const status = escapeHTML(apt.status || 'Pending');
+
+                        const el = document.createElement('div');
+                        el.className = 'list-item';
+                        el.innerHTML = `<strong>${dateStr}</strong> - ${vehicleStr}<br><span style="font-size: 0.85rem; color: var(--text-muted);">Status: ${status}</span>`;
+                        aList.appendChild(el);
+                    });
+                } else {
+                    aList.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No upcoming appointments.</p>';
+                }
+
+                // Reveal Content
+                spinner.style.display = 'none';
+                portal.style.display = 'block';
+
+            } catch (error) {
+                console.error("Error loading portal data:", error);
+                spinner.textContent = "Error loading data. Please try again.";
+            }
+        }
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, updateDoc, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const mainContent = document.getElementById('main-content');
+        let currentUser = null;
+
+        // Initialize page by resolving auth state definitively
+        async function initPage() {
+            try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                currentUser = user;
+
+                // Fetch independent data streams concurrently (Fixes N+1 issue)
+                const [userData, appointments] = await Promise.all([
+                    ensureUserDocument(user),
+                    fetchAppointments(user.uid)
+                ]);
+
+                // Verify routing rules
+                const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath) {
+                    safeRedirect(redirectPath);
+                    return;
+                }
+
+                // Render UI
+                renderProfile(userData);
+                renderAppointments(appointments);
+
+                // Reveal content
+                loadingOverlay.style.display = 'none';
+                mainContent.style.display = 'block';
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                loadingOverlay.innerHTML = `<p style="color: #ef4444;">Error loading profile. Please refresh.</p>`;
+            }
+        }
+
+        async function fetchAppointments(uid) {
+            try {
+                const q = query(
+                    collection(db, "bookings"),
+                    where("userId", "==", uid)
+                );
+                const snapshot = await getDocs(q);
+                const docs = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                // Sort client-side if no index exists
+                docs.sort((a,b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+                return docs;
+            } catch (e) {
+                console.error("Error fetching appointments:", e);
+                return [];
+            }
+        }
+
         function escapeHTML(str) {
             if (str == null) return '';
             return String(str)
@@ -239,6 +690,295 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        function renderProfile(userData) {
+            document.getElementById('welcome-msg').textContent = `Welcome, ${escapeHTML(userData.name || 'User')}`;
+            document.getElementById('user-email').textContent = escapeHTML(userData.email);
+
+            document.getElementById('profile-name').value = userData.name || '';
+            document.getElementById('profile-phone').value = userData.contactInfo?.phone || '';
+
+            // Assume first vehicle is primary for this simple UI
+            if (userData.vehicles && userData.vehicles.length > 0) {
+                document.getElementById('vehicle-make-model').value = userData.vehicles[0];
+            }
+        }
+
+        function renderAppointments(appointments) {
+            const container = document.getElementById('appointments-container');
+            container.innerHTML = '';
+
+            if (appointments.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">You have no upcoming appointments.<br><br><a href="booking.html" class="btn-primary" style="display:inline-block; margin-top:10px;">Book Now</a></p>`;
+                return;
+            }
+
+            appointments.forEach(appt => {
+                const dateObj = new Date(appt.appointmentDate);
+                const dateStr = isNaN(dateObj) ? 'Date Pending' : dateObj.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                const status = appt.status || 'pending';
+
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `
+                    <div>
+                        <p><strong>${escapeHTML(appt.package || 'Detailing Service')}</strong></p>
+                        <small>${dateStr} • ${escapeHTML(appt.vehicle || 'Vehicle not specified')}</small>
+                    </div>
+                    <span class="status-badge ${status}">${escapeHTML(status)}</span>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        // --- DEBOUNCED AUTO-SAVE LOGIC ---
+        let profileDebounceTimer;
+        let vehicleDebounceTimer;
+
+        function debounceProfileSave(fn, delay = 1000) {
+            clearTimeout(profileDebounceTimer);
+            profileDebounceTimer = setTimeout(fn, delay);
+        }
+
+        function debounceVehicleSave(fn, delay = 1000) {
+            clearTimeout(vehicleDebounceTimer);
+            vehicleDebounceTimer = setTimeout(fn, delay);
+        }
+
+        async function saveProfileData() {
+            if (!currentUser) return;
+            const name = document.getElementById('profile-name').value.trim();
+            const phone = document.getElementById('profile-phone').value.trim();
+            const msgEl = document.getElementById('profile-msg');
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, {
+                    name: name,
+                    "contactInfo.phone": phone
+                });
+                msgEl.style.display = 'block';
+                setTimeout(() => msgEl.style.display = 'none', 2000);
+            } catch (e) {
+                console.error("Failed to save profile:", e);
+            }
+        }
+
+        async function saveVehicleData() {
+             if (!currentUser) return;
+             const vehicle = document.getElementById('vehicle-make-model').value.trim();
+             const msgEl = document.getElementById('vehicle-msg');
+
+             try {
+                const userRef = doc(db, "users", currentUser.uid);
+                // Simple implementation: overwrite the vehicles array with the primary vehicle
+                const vehicles = vehicle ? [vehicle] : [];
+                await updateDoc(userRef, { vehicles: vehicles });
+                msgEl.style.display = 'block';
+                setTimeout(() => msgEl.style.display = 'none', 2000);
+             } catch (e) {
+                 console.error("Failed to save vehicle:", e);
+             }
+        }
+
+        document.getElementById('profile-name').addEventListener('input', () => debounceProfileSave(saveProfileData));
+        document.getElementById('profile-phone').addEventListener('input', () => debounceProfileSave(saveProfileData));
+        document.getElementById('vehicle-make-model').addEventListener('input', () => debounceVehicleSave(saveVehicleData));
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await signOut(auth);
+            safeRedirect('index.html');
+        });
+
+        // Start
+        initPage();
+
+        import { auth, db, waitForAuthState, getUserRedirectPath } from '/js/auth.js';
+        import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        let currentUser = null;
+        let debounceTimer;
+
+        // Debounce utility for writes
+        function debounceUpdate(func, delay = 1000) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(func, delay);
+        }
+
+        async function initPortal() {
+            try {
+                // Wait firmly for auth state
+                currentUser = await waitForAuthState();
+
+                if (!currentUser) {
+                    window.location.replace('sign in beta.html');
+                    return;
+                }
+
+                // Concurrent Data Fetching
+                const userDocPromise = getDoc(doc(db, "users", currentUser.uid));
+                const appointmentsPromise = getDocs(query(collection(db, "bookings"), where("userId", "==", currentUser.uid)));
+
+                const [userDoc, appointmentsSnap] = await Promise.all([userDocPromise, appointmentsPromise]);
+
+                if (!userDoc.exists()) {
+                    console.error("User profile document missing. Fallback failed.");
+                    // In a robust system, we might trigger a recreation here.
+                } else {
+                    const userData = userDoc.data();
+
+                    // Admin redirect safety
+                    if (userData.isAdmin) {
+                         const path = await getUserRedirectPath(currentUser);
+                         if(!window.location.pathname.includes(path)) window.location.replace(path);
+                    }
+
+                    document.getElementById('profile-email').value = currentUser.email;
+                    document.getElementById('profile-name').value = userData.name || '';
+
+                    renderVehicles(userData.vehicles || []);
+                }
+
+                // Process Appointments
+                const appointments = appointmentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                appointments.sort((a,b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+                renderAppointments(appointments);
+
+                // Reveal UI
+                document.getElementById('loading-overlay').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+
+                setupEventListeners();
+
+            } catch (error) {
+                console.error("Error loading portal:", error);
+                document.getElementById('loading-overlay').innerHTML = `<p style="color:var(--error);">Error loading data. Please refresh.</p>`;
+            }
+        }
+
+        function renderVehicles(vehicles) {
+            const list = document.getElementById('vehicles-list');
+            list.innerHTML = '';
+            if (vehicles.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No vehicles saved.</p>';
+                return;
+            }
+
+            vehicles.forEach((v, index) => {
+                const el = document.createElement('div');
+                el.className = 'vehicle-item';
+
+                function escapeHTML(str) {
+                    if (str == null) return '';
+                    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                }
+
+                el.innerHTML = `
+                    <span>${escapeHTML(v)}</span>
+                    <button class="btn btn-danger btn-sm remove-vehicle-btn" style="padding: 5px 10px;" data-index="${index}">Remove</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function renderAppointments(appointments) {
+            const list = document.getElementById('appointments-list');
+            list.innerHTML = '';
+            if (appointments.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No appointments found.</p>';
+                return;
+            }
+
+            appointments.forEach(a => {
+                const el = document.createElement('div');
+                el.className = 'appointment-item';
+                const date = new Date(a.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                let badgeClass = 'status-badge';
+                if(a.status === 'cancelled') badgeClass += ' cancelled';
+
+                function escapeHTML(str) {
+                    if (str == null) return '';
+                    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                }
+
+                el.innerHTML = `
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 5px;">${escapeHTML(a.package)}</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">${date} • ${escapeHTML(a.vehicle)}</div>
+                    </div>
+                    <div class="${badgeClass}">${escapeHTML(a.status).replace('_', ' ')}</div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function setupEventListeners() {
+            // Debounced Name Update
+            document.getElementById('profile-name').addEventListener('input', (e) => {
+                const newName = e.target.value.trim();
+                const msg = document.getElementById('profile-msg');
+                msg.style.display = 'none';
+
+                debounceUpdate(async () => {
+                    try {
+                        await updateDoc(doc(db, "users", currentUser.uid), { name: newName });
+                        msg.style.display = 'block';
+                        setTimeout(() => msg.style.display = 'none', 2000);
+                    } catch (err) {
+                        console.error("Error updating name:", err);
+                    }
+                });
+            });
+
+            // Add Vehicle
+            document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
+                const input = document.getElementById('new-vehicle');
+                const val = input.value.trim();
+                if (!val) return;
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    const userSnap = await getDoc(userRef);
+                    const vehicles = userSnap.data().vehicles || [];
+                    vehicles.push(val);
+
+                    await updateDoc(userRef, { vehicles: vehicles });
+                    renderVehicles(vehicles);
+                    input.value = '';
+                } catch (err) {
+                    console.error("Error adding vehicle:", err);
+                }
+            });
+
+            // Remove Vehicle
+            document.getElementById('vehicles-list').addEventListener('click', async (e) => {
+                if (e.target.classList.contains('remove-vehicle-btn')) {
+                    const index = parseInt(e.target.dataset.index, 10);
+                    try {
+                        const userRef = doc(db, "users", currentUser.uid);
+                        const userSnap = await getDoc(userRef);
+                        let vehicles = userSnap.data().vehicles || [];
+                        vehicles.splice(index, 1);
+
+                        await updateDoc(userRef, { vehicles: vehicles });
+                        renderVehicles(vehicles);
+                    } catch (err) {
+                        console.error("Error removing vehicle:", err);
+                    }
+                }
+            });
+
+            document.getElementById('sign-out-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).then(() => {
+                    window.location.replace('sign in beta.html');
+                });
+            });
+        }
+
+        initPortal();
     </script>
 </body>
 </html>

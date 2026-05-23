@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sign In | Unstoppable Detailing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Sign In | Unstoppable Detailing Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Sign In | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0A0A;
@@ -59,6 +66,76 @@
             display: inline-block; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
         }
         .back-link:hover { color: var(--text-main); }
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .login-card {
+            background: var(--bg-card); padding: 40px; border-radius: 8px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-sizing: border-box; text-align: center;
+        }
+        .login-card h1 { margin-top: 0; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        .input-group input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: white; box-sizing: border-box; font-size: 1rem; }
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 15px; min-height: 20px; }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            background: var(--bg-card); padding: 40px; border-radius: 8px; border: 1px solid var(--border);
+            width: 100%; max-width: 400px; box-sizing: border-box; text-align: center;
+        }
+
+        h2 { margin-top: 0; margin-bottom: 30px; font-size: 2rem; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        .form-group input {
+            width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border);
+            color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem;
+        }
+
+        .btn-primary {
+            display: block; width: 100%; background: var(--accent); color: white;
+            padding: 15px; border: none; font-weight: 700; font-size: 1.1rem;
+            border-radius: 6px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        .toggle-text { margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); }
+        .toggle-text a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        #error-msg { color: #ef4444; font-size: 0.9rem; margin-top: 15px; min-height: 20px;}
+
+        .nav-link { position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+        .nav-link:hover { color: white; }
+            --accent: #2563EB;
+            --border: rgba(255, 255, 255, 0.1);
+            --error: #ef4444;
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .auth-container { background: var(--bg-card); padding: 40px; border-radius: 8px; border: 1px solid var(--border); width: 100%; max-width: 400px; box-sizing: border-box; text-align: center; }
+        .auth-container h1 { margin-top: 0; font-size: 1.8rem; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        .btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: opacity 0.2s; font-family: inherit; font-size: 1rem; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toggle-mode { background: none; border: none; color: var(--text-main); text-decoration: underline; cursor: pointer; margin-top: 20px; font-family: inherit; font-size: 0.9rem; }
+        .error-msg { color: var(--error); font-size: 0.85rem; margin-top: 10px; display: none; }
+        .home-link { display: inline-block; margin-bottom: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+        .home-link:hover { color: var(--text-main); }
     </style>
 </head>
 <body>
@@ -101,6 +178,208 @@
 
                 const currentPath = window.location.pathname;
                 if (!currentPath.endsWith(redirectPath)) {
+    <div class="login-card">
+        <h1>Welcome Back</h1>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+        </form>
+        <div id="error-msg" class="error-msg"></div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '/js/auth.js';
+        import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Check if user is already logged in
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // If they are an admin, redirect to admin.html, else account.html.
+                // We'll check the 'isAdmin' flag if possible, but default to account.html
+                try {
+                     const userDoc = await getDoc(doc(db, "users", user.uid));
+                     if (userDoc.exists() && userDoc.data().isAdmin) {
+                          if (window.location.pathname !== '/admin.html') {
+                              window.location.replace('admin.html');
+                          }
+                     } else {
+                          if (window.location.pathname !== '/account.html') {
+                              window.location.replace('account.html');
+                          }
+                     }
+                } catch(e) {
+                     console.error("Error fetching user profile", e);
+                     if (window.location.pathname !== '/account.html') {
+                         window.location.replace('account.html');
+                     }
+                }
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+            errorMsg.textContent = '';
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Missing Document Fallback
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
+
+                if (!userDoc.exists()) {
+                    await setDoc(userRef, {
+                        email: user.email,
+                        createdAt: new Date(),
+                        vehicles: [],
+                        appointments: []
+                    });
+                }
+
+                // onAuthStateChanged will handle the redirect
+            } catch (error) {
+                console.error("Login Error:", error);
+                errorMsg.textContent = 'Invalid email or password.';
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+    <a href="index.html" class="nav-link">← Back to Home</a>
+
+    <div class="auth-container">
+        <h2 id="form-title">Sign In</h2>
+
+        <!-- Semantic form ensures keyboard accessibility (Enter key submits) -->
+    <div class="auth-container">
+        <a href="index.html" class="home-link">← Back to Home</a>
+        <h1 id="auth-title">Sign In</h1>
+
+        <form id="auth-form">
+            <div class="form-group" id="name-group" style="display: none;">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" id="submit-btn">Sign In</button>
+        </form>
+
+        <div id="error-msg"></div>
+
+        <div class="toggle-text">
+            <span id="toggle-desc">Don't have an account?</span>
+            <a id="toggle-btn">Sign Up</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        let isSignUp = false;
+
+        const form = document.getElementById('auth-form');
+        const title = document.getElementById('form-title');
+        const nameGroup = document.getElementById('name-group');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleDesc = document.getElementById('toggle-desc');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const errorMsg = document.getElementById('error-msg');
+        const nameInput = document.getElementById('name');
+
+        // Check if user is already logged in
+        async function checkInitialAuth() {
+            try {
+                const user = await getAuthStatePromise();
+                if (user) {
+                    const userData = await ensureUserDocument(user);
+                    const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
+                    if (redirectPath) {
+                        safeRedirect(redirectPath);
+                    }
+                }
+            } catch (e) {
+                 console.error("Initial auth check failed", e);
+            }
+        }
+
+        checkInitialAuth();
+
+        toggleBtn.addEventListener('click', () => {
+            isSignUp = !isSignUp;
+            errorMsg.textContent = '';
+
+            if (isSignUp) {
+                title.textContent = 'Create Account';
+                nameGroup.style.display = 'block';
+                nameInput.required = true;
+                submitBtn.textContent = 'Sign Up';
+                toggleDesc.textContent = 'Already have an account?';
+                toggleBtn.textContent = 'Sign In';
+            } else {
+                title.textContent = 'Sign In';
+                nameGroup.style.display = 'none';
+                nameInput.required = false;
+                submitBtn.textContent = 'Sign In';
+                toggleDesc.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Sign Up';
+            }
+                <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn" id="submit-btn">Sign In</button>
+            <div class="error-msg" id="error-msg"></div>
+        </form>
+
+        <button class="toggle-mode" id="toggle-mode-btn">Need an account? Sign up</button>
+    </div>
+
+    <script type="module">
+        import { auth, db, getUserRedirectPath, waitForAuthState } from '/js/auth.js';
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        let isSignUpMode = false;
+
+        const form = document.getElementById('auth-form');
+        const title = document.getElementById('auth-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleModeBtn = document.getElementById('toggle-mode-btn');
+        const nameGroup = document.getElementById('name-group');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('error-msg');
+
+        // Check if already logged in securely
+        waitForAuthState().then(async (user) => {
+            if (user) {
+                const redirectPath = await getUserRedirectPath(user);
+                // Prevent redirect loop
+                if (!window.location.pathname.includes(redirectPath)) {
                     window.location.replace(redirectPath);
                 }
             }
@@ -134,6 +413,117 @@
         passwordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 loginBtn.click();
+        toggleModeBtn.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            title.textContent = isSignUpMode ? 'Create Account' : 'Sign In';
+            submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+            toggleModeBtn.textContent = isSignUpMode ? 'Already have an account? Sign in' : 'Need an account? Sign up';
+            nameGroup.style.display = isSignUpMode ? 'block' : 'none';
+            nameInput.required = isSignUpMode;
+            errorMsg.style.display = 'none';
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const name = nameInput.value.trim();
+
+            errorMsg.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                let userCredential;
+                if (isSignUp) {
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    // Update display name immediately
+                    if (name) {
+                        await updateProfile(userCredential.user, { displayName: name });
+                    }
+                } else {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+                }
+
+                // Ensure document exists and route them correctly
+                const userData = await ensureUserDocument(userCredential.user);
+                const redirectPath = getUserRedirectPath(userCredential.user, userData, window.location.pathname);
+
+                if (redirectPath) {
+                    safeRedirect(redirectPath);
+                } else {
+                    // Fallback to home if no specific path
+                    safeRedirect('index.html');
+                }
+
+            } catch (error) {
+                console.error("Auth Error:", error);
+
+                // Friendly error messages
+                let msg = "An error occurred. Please try again.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "Invalid email or password.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    msg = "An account with this email already exists.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "Password should be at least 6 characters.";
+                } else if (error.code === 'auth/invalid-credential') {
+                     msg = "Invalid login credentials.";
+                }
+
+                errorMsg.textContent = msg;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+            errorMsg.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            try {
+                let userCredential;
+                if (isSignUpMode) {
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+                    // Create base user document immediately
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        name: nameInput.value.trim(),
+                        email: email,
+                        signupDate: serverTimestamp(),
+                        isAdmin: false,
+                        vehicles: [],
+                        appointments: []
+                    });
+                } else {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                    // Fallback: Check if document exists, if not create empty one to prevent soft-locks
+                    const userRef = doc(db, "users", userCredential.user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (!userSnap.exists()) {
+                        await setDoc(userRef, {
+                            email: email,
+                            signupDate: serverTimestamp(),
+                            isAdmin: false,
+                            vehicles: [],
+                            appointments: []
+                        });
+                    }
+                }
+
+                // Redirect safely
+                const redirectPath = await getUserRedirectPath(userCredential.user);
+                window.location.replace(redirectPath);
+
+            } catch (error) {
+                console.error("Auth error:", error);
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
             }
         });
     </script>
