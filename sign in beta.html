@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sign In | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Unstoppable Detailing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -10,6 +13,45 @@
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
             --text-main: #F5F5F7;
+            --text-muted: #A3A3A3;
+            --accent: #2563EB;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark);
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            background: var(--bg-card); padding: 40px; border-radius: 8px; border: 1px solid var(--border);
+            width: 100%; max-width: 400px; box-sizing: border-box; text-align: center;
+        }
+
+        h2 { margin-top: 0; margin-bottom: 30px; font-size: 2rem; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted); }
+        .form-group input {
+            width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border);
+            color: white; border-radius: 6px; box-sizing: border-box; font-size: 1rem;
+        }
+
+        .btn-primary {
+            display: block; width: 100%; background: var(--accent); color: white;
+            padding: 15px; border: none; font-weight: 700; font-size: 1.1rem;
+            border-radius: 6px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        .toggle-text { margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); }
+        .toggle-text a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+        #error-msg { color: #ef4444; font-size: 0.9rem; margin-top: 15px; min-height: 20px;}
+
+        .nav-link { position: absolute; top: 20px; left: 20px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+        .nav-link:hover { color: white; }
             --accent: #2563EB;
             --border: rgba(255, 255, 255, 0.1);
             --error: #ef4444;
@@ -31,6 +73,12 @@
 </head>
 <body>
 
+    <a href="index.html" class="nav-link">← Back to Home</a>
+
+    <div class="auth-container">
+        <h2 id="form-title">Sign In</h2>
+
+        <!-- Semantic form ensures keyboard accessibility (Enter key submits) -->
     <div class="auth-container">
         <a href="index.html" class="home-link">← Back to Home</a>
         <h1 id="auth-title">Sign In</h1>
@@ -42,6 +90,75 @@
             </div>
             <div class="form-group">
                 <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" id="submit-btn">Sign In</button>
+        </form>
+
+        <div id="error-msg"></div>
+
+        <div class="toggle-text">
+            <span id="toggle-desc">Don't have an account?</span>
+            <a id="toggle-btn">Sign Up</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        let isSignUp = false;
+
+        const form = document.getElementById('auth-form');
+        const title = document.getElementById('form-title');
+        const nameGroup = document.getElementById('name-group');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleDesc = document.getElementById('toggle-desc');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const errorMsg = document.getElementById('error-msg');
+        const nameInput = document.getElementById('name');
+
+        // Check if user is already logged in
+        async function checkInitialAuth() {
+            try {
+                const user = await getAuthStatePromise();
+                if (user) {
+                    const userData = await ensureUserDocument(user);
+                    const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
+                    if (redirectPath) {
+                        safeRedirect(redirectPath);
+                    }
+                }
+            } catch (e) {
+                 console.error("Initial auth check failed", e);
+            }
+        }
+
+        checkInitialAuth();
+
+        toggleBtn.addEventListener('click', () => {
+            isSignUp = !isSignUp;
+            errorMsg.textContent = '';
+
+            if (isSignUp) {
+                title.textContent = 'Create Account';
+                nameGroup.style.display = 'block';
+                nameInput.required = true;
+                submitBtn.textContent = 'Sign Up';
+                toggleDesc.textContent = 'Already have an account?';
+                toggleBtn.textContent = 'Sign In';
+            } else {
+                title.textContent = 'Sign In';
+                nameGroup.style.display = 'none';
+                nameInput.required = false;
+                submitBtn.textContent = 'Sign In';
+                toggleDesc.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Sign Up';
+            }
                 <input type="email" id="email" required placeholder="you@example.com">
             </div>
             <div class="form-group">
@@ -95,6 +212,56 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const name = nameInput.value.trim();
+
+            errorMsg.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                let userCredential;
+                if (isSignUp) {
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    // Update display name immediately
+                    if (name) {
+                        await updateProfile(userCredential.user, { displayName: name });
+                    }
+                } else {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+                }
+
+                // Ensure document exists and route them correctly
+                const userData = await ensureUserDocument(userCredential.user);
+                const redirectPath = getUserRedirectPath(userCredential.user, userData, window.location.pathname);
+
+                if (redirectPath) {
+                    safeRedirect(redirectPath);
+                } else {
+                    // Fallback to home if no specific path
+                    safeRedirect('index.html');
+                }
+
+            } catch (error) {
+                console.error("Auth Error:", error);
+
+                // Friendly error messages
+                let msg = "An error occurred. Please try again.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    msg = "Invalid email or password.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    msg = "An account with this email already exists.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "Password should be at least 6 characters.";
+                } else if (error.code === 'auth/invalid-credential') {
+                     msg = "Invalid login credentials.";
+                }
+
+                errorMsg.textContent = msg;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
             errorMsg.style.display = 'none';
             submitBtn.disabled = true;
             submitBtn.textContent = 'Processing...';

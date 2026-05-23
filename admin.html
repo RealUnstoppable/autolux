@@ -300,6 +300,9 @@
     </div>
 
    <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { auth, db } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -308,15 +311,32 @@
 
         let performanceChart;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
+        async function initAdminPage() {
+            try {
+                const user = await getAuthStatePromise();
 
-                if (userDoc.exists() && userDoc.data().isAdmin) {
+                if (!user) {
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                const userData = await ensureUserDocument(user);
+
+                const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath) {
+                    safeRedirect(redirectPath);
+                    return;
+                }
+
+                if (userData && userData.isAdmin) {
                     document.body.style.display = 'flex';
                     initializeAdminPage(user);
                 } else {
+                    safeRedirect('account.html');
+                }
+            } catch (error) {
+                console.error("Admin init error:", error);
+                safeRedirect('sign in beta.html');
                     if (!window.location.pathname.includes('account.html')) {
                         window.location.replace('account.html');
                     }
@@ -326,7 +346,9 @@
                     window.location.replace('sign in beta.html');
                 }
             }
-        });
+        }
+
+        initAdminPage();
 
         function initializeAdminPage(adminUser) {
             document.getElementById('user-email-sidebar').textContent = adminUser.email;

@@ -365,6 +365,8 @@
     </footer>
 
     <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument } from '/js/auth.js';
+        import { doc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { auth, db } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -394,6 +396,29 @@
         // Update Nav based on Auth Status
         let currentUser = null;
         let currentUserName = "Anonymous User";
+
+        async function initIndexAuth() {
+            try {
+                const user = await getAuthStatePromise();
+                const authBtn = document.getElementById('nav-auth-btn');
+                const reviewContainer = document.getElementById('review-submission-container');
+
+                if (user) {
+                    currentUser = user;
+                    authBtn.textContent = "My Account";
+                    authBtn.href = "account.html";
+                    reviewContainer.style.display = 'block';
+
+                    const userData = await ensureUserDocument(user);
+                    if (userData) {
+                        currentUserName = userData.name || userData.username || "Anonymous User";
+                    }
+                } else {
+                    currentUser = null;
+                    reviewContainer.style.display = 'none';
+                }
+            } catch (e) {
+                console.error("Error checking auth status on index:", e);
         onAuthStateChanged(auth, async (user) => {
             const authBtn = document.getElementById('nav-auth-btn');
             const reviewContainer = document.getElementById('review-submission-container');
@@ -422,7 +447,9 @@
                 authBtn.href = "sign in beta.html";
                 reviewContainer.style.display = 'none';
             }
-        });
+        }
+
+        initIndexAuth();
 
         // Load Reviews
         async function loadReviews() {
