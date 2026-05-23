@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Buford's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -225,7 +226,7 @@
         </div>
 
         <div class="membership">
-            <h3>The Unstoppable Annual Club</h3>
+            <h3>AutoLux Detailing Plan</h3>
             <p>Keep your vehicle pristine year-round. Subscribe for a monthly maintenance wash and receive a <strong>15% discount</strong> on all services for the year, plus priority booking.</p>
             <a href="booking.html" class="btn-primary" style="background: var(--gold); color: black;">Join the Club</a>
         </div>
@@ -247,6 +248,26 @@
     <section id="reviews">
         <h2>Client Testimonials</h2>
 
+        <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
+            <form id="review-submission-form">
+                <h3 style="margin-top: 0;">Leave a Review</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
+                <div style="margin-bottom: 15px;">
+                    <label for="review-rating" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Rating:</label>
+                    <select id="review-rating" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);">
+                        <option value="5">★★★★★ - Excellent</option>
+                        <option value="4">★★★★☆ - Good</option>
+                        <option value="3">★★★☆☆ - Average</option>
+                        <option value="2">★★☆☆☆ - Poor</option>
+                        <option value="1">★☆☆☆☆ - Terrible</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
+                    <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                </div>
+                <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
+            </form>
         <form id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0;">Leave a Review</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
@@ -277,6 +298,8 @@
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
+        <form class="newsletter" id="newsletter-form">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
         <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
             <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address" required>
         <form class="newsletter" id="newsletter-form">
@@ -393,6 +416,7 @@
         loadReviews();
 
         // Submit Review
+        document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
         document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
@@ -442,6 +466,8 @@
         });
 
         // Newsletter Logic
+        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
         window.subscribeNewsletter = async (event) => {
             if (event) event.preventDefault();
         document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
