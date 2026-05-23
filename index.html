@@ -307,6 +307,8 @@
             }
         };
 
+        import { getUserRedirectPath } from '/js/auth.js';
+
         // Update Nav based on Auth Status
         let currentUser = null;
         let currentUserName = "Anonymous User";
@@ -316,8 +318,6 @@
             if (user) {
                 currentUser = user;
                 authBtn.textContent = "My Account";
-                authBtn.href = "account.html";
-                reviewContainer.style.display = 'block';
 
                 try {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -327,8 +327,15 @@
                 } catch (e) {
                     console.error("Could not fetch user profile", e);
                 }
+
+                const redirectPath = await getUserRedirectPath(user);
+                authBtn.href = redirectPath;
+                reviewContainer.style.display = 'block';
+
             } else {
                 currentUser = null;
+                authBtn.textContent = "Sign In";
+                authBtn.href = "sign in beta.html";
                 reviewContainer.style.display = 'none';
             }
         });

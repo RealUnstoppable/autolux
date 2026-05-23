@@ -293,10 +293,14 @@
                     document.body.style.display = 'flex';
                     initializeAdminPage(user);
                 } else {
-                    window.location.replace('account.html');
+                    if (!window.location.pathname.includes('account.html')) {
+                        window.location.replace('account.html');
+                    }
                 }
             } else {
-                window.location.replace('sign in beta.html');
+                if (!window.location.pathname.includes('sign in beta.html')) {
+                    window.location.replace('sign in beta.html');
+                }
             }
         });
 
