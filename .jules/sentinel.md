@@ -14,3 +14,7 @@
 **Vulnerability:** Unsanitized user input (`rating`) was passed directly to `String.repeat()`.
 **Learning:** If non-numeric or extreme values are passed from an unvalidated database write to `String.repeat()`, it throws a RangeError which halts JavaScript execution, causing a Persistent Client-Side DoS.
 **Prevention:** Always sanitize and clamp numbers expected by `String.repeat()` to a safe range (e.g., `Math.max(0, Math.min(5, Number(rating) || 5))`) before use.
+## 2026-05-24 - [Stored XSS via innerHTML rendering]
+**Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
+**Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
+**Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.

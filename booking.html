@@ -83,6 +83,7 @@
 
     <script type="module">
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -144,7 +145,7 @@
         function renderServices(data, selectEl) {
             selectEl.innerHTML = '<option value="">-- Choose a Package --</option>';
             data.forEach(pkg => {
-                selectEl.innerHTML += \`<option value="\${pkg.name}">\${pkg.name}</option>\`;
+                selectEl.innerHTML += `<option value="${escapeHTML(pkg.name)}">${escapeHTML(pkg.name)}</option>`;
             });
         }
 
@@ -616,6 +617,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { addDoc, collection, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         const overlay = document.getElementById('auth-overlay');
@@ -701,9 +703,9 @@
                 const card = document.createElement('div');
                 card.className = 'service-card';
                 card.innerHTML = `
-                    <div style="font-weight: 600;">${pkg.name}</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">${pkg.desc}</div>
-                    <div class="service-price">${pkg.price}</div>
+                    <div style="font-weight: 600;">${escapeHTML(pkg.name)}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">${escapeHTML(pkg.desc)}</div>
+                    <div class="service-price">${escapeHTML(pkg.price)}</div>
                 `;
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
