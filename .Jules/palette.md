@@ -14,3 +14,6 @@
 ## $(date +%Y-%m-%d) - Semantic Forms over Custom Divs
 **Learning:** The application occasionally uses custom `div` containers with inline `onclick` buttons for forms (like the newsletter signup in `index.html`). This is bad UX as it prevents standard "Enter" key submission and natively validating inputs (`required`).
 **Action:** When implementing or fixing text inputs meant to act as submissions, wrap them in a semantic `<form>` with a `onsubmit` handler (e.g. `onsubmit="event.preventDefault(); submitFunc();"`) and use `<button type="submit">` to ensure full keyboard and form validation accessibility.
+## 2026-05-23 - Focus Visible Outline Pattern
+**Learning:** The application lacks a global focus visible state, meaning keyboard users (navigating via Tab) cannot easily see which element is currently active. The codebase uses raw static HTML with internal `<style>` blocks and no external CSS frameworks.
+**Action:** Always inject standard `:focus-visible` CSS rules (`outline: 2px solid var(--accent); outline-offset: 2px;`) into the internal `<style>` tags to ensure accessibility compliance when adding interactive elements in a purely static environment like this.

@@ -153,6 +153,11 @@
             .newsletter input { width: auto; flex-grow: 1; margin-bottom: 0; }
             .newsletter button { width: auto; }
         }
+
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>
@@ -161,6 +166,14 @@
         <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
+            <a href="#process" onclick="closeMenu()">Process</a>
+            <a href="#pricing" onclick="closeMenu()">Pricing</a>
+            <a href="#gallery" onclick="closeMenu()">Gallery</a>
+            <a href="#reviews" onclick="closeMenu()">Reviews</a>
+            <a href="#faq" onclick="closeMenu()">FAQ</a>
+            <a href="#contact" onclick="closeMenu()">Contact</a>
+            <a href="booking.html">Book Now</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
             <a href="#process" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Process</a>
             <a href="#pricing" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Pricing</a>
             <a href="#gallery" onclick="closeMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ') closeMenu();">Gallery</a>
@@ -254,6 +267,13 @@
         </div>
     </section>
 
+    <section id="faq" style="max-width: 1200px; margin: 60px auto; padding: 0 20px;">
+        <h2 style="text-align: center; color: var(--gold); margin-bottom: 40px; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px;">Frequently Asked Questions</h2>
+        <div class="faq-accordion" id="faq-container" style="display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto;">
+            <!-- FAQs will be dynamically inserted here -->
+        </div>
+    </section>
+
     <section id="reviews">
         <h2>Client Testimonials</h2>
 
@@ -286,7 +306,49 @@
 
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
+
+        <!-- Contact Inquiries Form -->
+        <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
+            <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
+            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
+                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
+                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
+                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
+                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+            </form>
+        </div>
+
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+        </form>
+        <div class="newsletter" id="newsletter-form">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <button onclick="subscribeNewsletter()">Subscribe</button>
+        </div>
+        <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
+        
+        <div class="socials">
+            <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
+        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); window.subscribeNewsletter();">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <button type="submit" id="news-submit-btn">Subscribe</button>
+        <form class="newsletter" id="newsletter-form">
+            <input type="email" id="news-email" placeholder="Enter your email address" required>
+        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address" required>
         <form class="newsletter" id="newsletter-form">
             <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email Address for Newsletter" required>
             <button type="submit" id="news-submit-btn">Subscribe</button>
@@ -300,11 +362,10 @@
     </footer>
 
     <script type="module">
-        import { auth, db } from '/js/auth.js';
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from './js/utils.js';
+        import { escapeHTML } from '/js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -327,30 +388,110 @@
         // Update Nav based on Auth Status
         let currentUser = null;
         let currentUserName = "Anonymous User";
-        onAuthStateChanged(auth, async (user) => {
-            const authBtn = document.getElementById('nav-auth-btn');
-            const reviewContainer = document.getElementById('review-submission-container');
-            if (user) {
-                currentUser = user;
-                authBtn.textContent = "My Account";
-                authBtn.href = "account.html";
-                reviewContainer.style.display = 'block';
 
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
+        function initIndexAuth() {
+            onAuthStateChanged(auth, async (user) => {
+                const authBtn = document.getElementById('nav-auth-btn');
+                const reviewContainer = document.getElementById('review-submission-container');
+                if (user) {
+                    currentUser = user;
+                    authBtn.textContent = "My Account";
+                    reviewContainer.style.display = 'block';
+
+                    try {
+                        const userDoc = await getDoc(doc(db, "users", user.uid));
+                        if (userDoc.exists()) {
+                            currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
+                        }
+                    } catch (error) {
+                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
                     }
-                } catch (e) {
-                    console.error("Could not fetch user profile", e.code, e);
-                } catch (error) {
-                    console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+
+                    const redirectPath = await getUserRedirectPath(user);
+                    if(redirectPath) {
+                        authBtn.href = redirectPath;
+                    }
+
+                } else {
+                    currentUser = null;
+                    authBtn.textContent = "Sign In";
+                    authBtn.href = "sign in beta.html";
+                    reviewContainer.style.display = 'none';
                 }
-            } else {
-                currentUser = null;
-                reviewContainer.style.display = 'none';
+            });
+        }
+
+        initIndexAuth();
+
+        // Load FAQs
+        async function loadFaqs() {
+            const container = document.getElementById('faq-container');
+            container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
+
+            try {
+                const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No FAQs available at the moment.</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const question = escapeHTML(data.question || "");
+                    const answer = escapeHTML(data.answer || "");
+
+                    const el = document.createElement('div');
+                    el.className = 'faq-item';
+                    el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
+                    el.innerHTML = `
+                        <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                            ${question}
+                            <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
+                        </button>
+                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                            <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
+                        </div>
+                    `;
+
+                    // Add click event for accordion toggle
+                    const btn = el.querySelector('.faq-question');
+                    const answerDiv = el.querySelector('.faq-answer');
+                    const icon = el.querySelector('.faq-icon');
+
+                    btn.addEventListener('click', () => {
+                        const isActive = el.classList.contains('active');
+
+                        // Close all others
+                        document.querySelectorAll('.faq-item').forEach(item => {
+                            item.classList.remove('active');
+                            item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                            item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                            item.querySelector('.faq-answer').style.maxHeight = '0';
+                        });
+
+                        // Toggle current
+                        if (!isActive) {
+                            el.classList.add('active');
+                            btn.setAttribute('aria-expanded', 'true');
+                            icon.style.transform = 'rotate(45deg)';
+                            // Approximate height calculation or set to scrollHeight
+                            answerDiv.style.maxHeight = answerDiv.scrollHeight + 20 + "px"; // +20 for padding
+                        }
+                    });
+
+                    container.appendChild(el);
+                });
+            } catch (e) {
+                console.error("Error loading FAQs", e);
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
             }
-        });
+        }
+
+        // Load FAQs on page load
+        loadFaqs();
 
         // Load Reviews
         async function loadReviews() {
@@ -373,12 +514,18 @@
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                     const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+                    // Sanitize rating to prevent DoS via RangeError in String.repeat
+                    let rawRating = parseInt(r.rating, 10);
+                    if (isNaN(rawRating)) rawRating = 5;
+                    const safeRating = Math.max(0, Math.min(5, rawRating));
+                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
+
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
                     const el = document.createElement('div');
                     el.className = 'review-card';
-                    el.innerHTML = \`<div class="stars">\${stars}</div><p>"\${comment}"<br><br>- \${name}</p>\`;
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
             } catch (error) {
@@ -392,6 +539,7 @@
 
         // Submit Review
         document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
+        document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');
@@ -483,6 +631,48 @@
                 btn.disabled = false;
                 btn.textContent = "Subscribe";
             }
+        };
+
+        // Submit Inquiry Logic
+        window.submitInquiry = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-inquiry-btn');
+            const msgEl = document.getElementById('inquiry-msg');
+            const name = document.getElementById('inq-name').value.trim();
+            const email = document.getElementById('inq-email').value.trim();
+            const message = document.getElementById('inq-message').value.trim();
+
+            if (!name || !email || !message) {
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Please fill out all fields.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Sending...";
+            msgEl.textContent = "";
+
+            try {
+                await addDoc(collection(db, "inquiries"), {
+                    name: name,
+                    email: email,
+                    message: message,
+                    status: "pending",
+                    createdAt: serverTimestamp()
+                });
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Message sent successfully! We'll be in touch.";
+                document.getElementById('inquiry-form').reset();
+            } catch (error) {
+                console.error("Error submitting inquiry:", error.message, error.code);
+                msgEl.style.color = "#ef4444";
+                msgEl.textContent = "Error sending message. Please try again later.";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Send Message";
+            }
+        };
         });
     </script>
 </body>
