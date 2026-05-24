@@ -40,7 +40,6 @@
         .nav-links {
             display: none; width: 100%; flex-direction: column; gap: 15px; 
             margin-top: 15px; text-align: center;
-            max-height: calc(100vh - 70px); overflow-y: auto;
         }
         .nav-links.active { display: flex; }
         
@@ -114,77 +113,6 @@
         .newsletter button { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem;}
         .socials { margin-top: 30px; }
         .socials a { color: var(--text-muted); margin: 0 10px; text-decoration: none; font-size: 0.9rem;}
-
-        /* Sweepstakes Progress Bar */
-        .sweepstakes-section {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            padding: 40px 20px;
-            margin: 60px auto;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
-        }
-        .sweep-title { color: var(--gold); font-size: 2rem; margin-bottom: 10px;}
-        .sweep-subtitle { color: var(--text-main); font-size: 1.1rem; margin-bottom: 30px;}
-        
-        .progress-container {
-            width: 100%;
-            height: 40px;
-            background-color: #222;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-        }
-        
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #2563EB, #D4AF37);
-            width: 0.1%; /* Default $100 / $100k */
-            border-radius: 20px;
-            transition: width 1s ease-in-out;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            box-sizing: border-box;
-        }
-        
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            font-weight: 800;
-            color: white;
-            line-height: 40px;
-            z-index: 10;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-            pointer-events: none;
-        }
-
-        .milestones-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .milestone-card {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border);
-            padding: 15px 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }
-        
-        .milestone-goal { font-weight: bold; color: var(--accent); display: block; margin-bottom: 5px; font-size: 1.1rem;}
-        .milestone-reward { color: var(--text-muted); }
-        .milestone-card.reached { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); }
-        .milestone-card.reached .milestone-goal { color: var(--gold); }
-
         
         /* =========================================
            DESKTOP STYLES (Min-width 768px)
@@ -303,31 +231,19 @@
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600" alt="G-Wagon Wash" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" alt="Polished Porsche"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600" alt="Mercedes Interior"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600" alt="G-Wagon Wash"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Sprinter Detail"></div>
         </div>
     </section>
 
     <section id="reviews">
         <h2>Client Testimonials</h2>
         <div class="reviews-container">
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=150" alt="Reviewer Car" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 10px;">
-                <p>"Absolutely flawless. My 911 looks better than the day I bought it. The attention to detail is unmatched in Buford."<br><br>- James T.</p>
-            </div>
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=150" alt="Reviewer Car" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 10px;">
-                <p>"Professional, on time, and my Range Rover's interior smells incredible. Highly recommend the ceramic spray."<br><br>- Sarah M.</p>
-            </div>
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=150" alt="Reviewer Car" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 10px;">
-                <p>"Used them for our company Sprinter van. Fast, efficient, and very premium service."<br><br>- David L.</p>
-            </div>
+            <div class="review-card"><div class="stars">★★★★★</div><p>"Absolutely flawless. My 911 looks better than the day I bought it. The attention to detail is unmatched in Buford."<br><br>- James T.</p></div>
+            <div class="review-card"><div class="stars">★★★★★</div><p>"Professional, on time, and my Range Rover's interior smells incredible. Highly recommend the ceramic spray."<br><br>- Sarah M.</p></div>
+            <div class="review-card"><div class="stars">★★★★★</div><p>"Used them for our company Sprinter van. Fast, efficient, and very premium service."<br><br>- David L.</p></div>
             <div class="review-card"><div class="stars">★★★★★</div><p>"The monthly membership is a lifesaver. My Model S is always spotless."<br><br>- Elena R.</p></div>
             <div class="review-card"><div class="stars">★★★★★</div><p>"Took out a scratch I thought needed a body shop. Magic."<br><br>- Marcus K.</p></div>
             <div class="review-card"><div class="stars">★★★★★</div><p>"Best mobile detailer in Gwinnett. Period."<br><br>- Thomas W.</p></div>
@@ -336,34 +252,6 @@
             <div class="review-card"><div class="stars">★★★★★</div><p>"Incredible attention to the leather seats in my BMW."<br><br>- Alicia V.</p></div>
             <div class="review-card"><div class="stars">★★★★★</div><p>"Easy booking, great communication, stunning results."<br><br>- Robert D.</p></div>
         </div>
-    </section>
-
-    <section id="sweepstakes" class="sweepstakes-section">
-        <h2 class="sweep-title" style="border: none; margin-bottom: 10px;">Community Sweepstakes & Rewards</h2>
-        <p class="sweep-subtitle">Donate to unlock community milestones and earn entries to win massive prizes!</p>
-        
-        <div class="progress-container">
-            <div class="progress-text">$100 / $100,000 Raised!</div>
-            <div class="progress-bar-fill" style="width: 0.1%;"></div>
-        </div>
-
-        <p style="font-size: 0.9rem; color: var(--text-muted);">
-            <strong>Extra Rewards Pool:</strong> We are giving away 100 50% Off Detail Cards and 50 Free Wash Recording Coupons randomly to donors along the way!
-        </p>
-
-        <div class="milestones-grid">
-            <div class="milestone-card"><span class="milestone-goal">$1k</span><span class="milestone-reward">Basic Wash Package</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$5k</span><span class="milestone-reward">Premium Detail</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$10k</span><span class="milestone-reward">Ceramic Coating</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$15k</span><span class="milestone-reward">Interior Overhaul</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$20k</span><span class="milestone-reward">Paint Correction</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$25k</span><span class="milestone-reward">1 Month Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$50k</span><span class="milestone-reward">3 Months Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$75k</span><span class="milestone-reward">6 Months Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$100k</span><span class="milestone-reward" style="color:var(--gold); font-weight:bold;">1 Year Pro Membership!</span></div>
-        </div>
-
-        <button onclick="mockDonate()" class="btn-primary" style="margin-top: 30px; background: var(--gold); color: black;">Donate & Enter to Win</button>
     </section>
 
     <footer id="contact">
@@ -432,46 +320,6 @@
             } catch(e) {
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
-            }
-        };
-
-        // Mock Donation Logic
-        window.mockDonate = async () => {
-            const amount = prompt("Enter donation amount ($):", "50");
-            if (!amount || isNaN(amount) || amount <= 0) return;
-
-            const currentUser = auth.currentUser;
-            if (!currentUser) {
-                alert("Please sign in to donate and earn sweepstakes entries!");
-                window.location.href = "sign in beta.html";
-                return;
-            }
-
-            try {
-                // Record the donation
-                await setDoc(doc(db, "donations", currentUser.uid + "_" + Date.now()), {
-                    userId: currentUser.uid,
-                    amount: Number(amount),
-                    timestamp: serverTimestamp()
-                });
-
-                alert(`Thank you for donating $${amount}! Your entries have been logged.`);
-                
-                // Note: In a real app, a Cloud Function would aggregate these and update the global total
-                // For now, we mock the UI update:
-                const bar = document.querySelector('.progress-bar-fill');
-                const text = document.querySelector('.progress-text');
-                
-                // Parse current fake total, add amount
-                let currentStr = text.textContent.split(' / ')[0].replace('$', '').replace(',', '');
-                let newTotal = Number(currentStr) + Number(amount);
-                
-                text.textContent = `$${newTotal.toLocaleString()} / $100,000 Raised!`;
-                bar.style.width = `${(newTotal / 100000) * 100}%`;
-
-            } catch (e) {
-                console.error("Donation error:", e);
-                alert("Error processing donation. Please try again.");
             }
         };
     </script>

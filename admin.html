@@ -80,6 +80,13 @@
         .btn-action:hover { background-color: var(--text-primary); color: var(--bg-color); }
         .btn-danger { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
 
+        /* Wheel CSS */
+        .wheel-container { position: relative; width: 300px; height: 300px; margin: 20px auto; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--border-color); overflow: hidden; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: #222; }
+        .wheel-slice { position: absolute; top: 0; right: 0; width: 50%; height: 50%; transform-origin: 0% 100%; text-align: right; padding-right: 10px; padding-top: 10px; font-weight: bold; box-sizing: border-box; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--accent-red); z-index: 10;}
+        .spin-btn { display: block; margin: 20px auto; padding: 15px 30px; font-size: 1.2rem; background: var(--accent-yellow); color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
+
         @media (max-width: 768px) {
             body { padding: 10px; flex-direction: column; }
             .mobile-header { display: flex; }
@@ -114,6 +121,7 @@
                     <li><a href="#performance" class="nav-link active">Performance</a></li>
                     <li><a href="#bookings" class="nav-link">Bookings</a></li>
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
+                    <li><a href="#sweepstakes" class="nav-link">Sweepstakes</a></li>
                     <li><a href="#users" class="nav-link">User Management</a></li>
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
                     <li><a href="#downloads" class="nav-link">Downloads</a></li>
@@ -192,6 +200,49 @@
                 </div>
             </section>
 
+            <section id="sweepstakes" class="content-section">
+                <h3>Sweepstakes & Rewards</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card"><div class="value" id="sweep-total-raised">$0</div><div class="label">Total Raised</div></div>
+                    <div class="metric-card"><div class="value" id="sweep-total-donors">0</div><div class="label">Total Donors</div></div>
+                </div>
+
+                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 300px;">
+                        <h4>Leaderboard</h4>
+                        <div class="user-table-container">
+                            <table class="user-table">
+                                <thead><tr><th>User</th><th>Total Donated ($)</th><th>Entries</th></tr></thead>
+                                <tbody id="sweep-leaderboard-body">
+                                    <tr><td colspan="3">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; min-width: 300px; background: var(--primary-card-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                        <h4>Spin the Wheel</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Selects a random donor weighted by their entries.</p>
+                        <div class="wheel-container">
+                            <div class="wheel-pointer"></div>
+                            <div class="wheel" id="random-wheel"></div>
+                        </div>
+                        <button class="spin-btn" id="spin-wheel-btn">Spin Wheel!</button>
+                        
+                        <div id="winner-display" style="display: none; margin-top: 20px; padding: 15px; border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.1); border-radius: 8px;">
+                            <h4 style="color: var(--gold); margin-top: 0;">Winner Selected!</h4>
+                            <p id="winner-name" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;"></p>
+                            <select id="reward-select" style="padding: 8px; width: 100%; margin-bottom: 10px; background: var(--bg-color); color: white; border: 1px solid var(--border-color);">
+                                <option value="50% Off Detail Card">50% Off Detail Card</option>
+                                <option value="Free Wash Recording Coupon">Free Wash Recording Coupon</option>
+                                <option value="1 Year Pro Membership">1 Year Pro Membership</option>
+                            </select>
+                            <button class="btn-sm btn-action" id="credit-reward-btn">Credit Reward to Account</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="users" class="content-section">
                 <h3>User Management</h3>
                 <div class="user-table-container">
@@ -255,12 +306,14 @@
         </main>
     </div>
 
-   <script type="module">
+    <script type="module">
         import { auth, db } from '/js/auth.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         let performanceChart;
+        let globalDonors = [];
+        let currentWinnerId = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -335,6 +388,13 @@
                     quotes = quotesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 } catch (e) { console.error("Error fetching quotes:", e); }
 
+                // Fetch Donations
+                let donations = [];
+                try {
+                    const donationsSnap = await getDocs(collection(db, "donations"));
+                    donations = donationsSnap.docs.map(d => d.data());
+                } catch (e) { console.error("Error fetching donations:", e); }
+
                 // Core Calculations
                 const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
                 document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
@@ -347,6 +407,7 @@
                 renderChart('summary', users);
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
+                renderSweepstakesData(donations, users);
                 
                 // Fetch Feature Requests
                 try {
@@ -425,6 +486,83 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        function renderSweepstakesData(donations, users) {
+            let totalRaised = 0;
+            const donorMap = {}; // uid -> total amount
+
+            donations.forEach(d => {
+                totalRaised += (d.amount || 0);
+                if (!donorMap[d.userId]) donorMap[d.userId] = 0;
+                donorMap[d.userId] += (d.amount || 0);
+            });
+
+            document.getElementById('sweep-total-raised').textContent = `$${totalRaised.toLocaleString()}`;
+            document.getElementById('sweep-total-donors').textContent = Object.keys(donorMap).length;
+
+            // Map back to user info for leaderboard
+            globalDonors = Object.keys(donorMap).map(uid => {
+                const u = users.find(user => user.id === uid);
+                return {
+                    uid: uid,
+                    email: u ? u.email : 'Unknown',
+                    username: u ? u.username : 'Unknown',
+                    amount: donorMap[uid]
+                };
+            }).sort((a, b) => b.amount - a.amount);
+
+            const tbody = document.getElementById('sweep-leaderboard-body');
+            tbody.innerHTML = '';
+            
+            if (globalDonors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No donations yet.</td></tr>';
+            } else {
+                globalDonors.forEach(donor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${escapeHTML(donor.username)}<br><small style="color:var(--text-secondary)">${escapeHTML(donor.email)}</small></td>
+                        <td style="color:var(--accent-green); font-weight:bold;">$${donor.amount}</td>
+                        <td>${donor.amount}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // Draw Wheel
+                drawWheel(globalDonors);
+            }
+        }
+
+        function drawWheel(donors) {
+            const wheel = document.getElementById('random-wheel');
+            wheel.innerHTML = '';
+            wheel.style.transform = `rotate(0deg)`; // reset
+            
+            if (donors.length === 0) return;
+
+            const totalEntries = donors.reduce((sum, d) => sum + d.amount, 0);
+            let currentAngle = 0;
+            const colors = ['#2563EB', '#DC2626', '#16A34A', '#FBBF24', '#8B5CF6', '#EC4899'];
+
+            donors.forEach((donor, i) => {
+                const sliceAngle = (donor.amount / totalEntries) * 360;
+                const slice = document.createElement('div');
+                slice.className = 'wheel-slice';
+                // A true dynamic CSS pie chart requires complex conic-gradients or SVG. 
+                // For a mock UI, we will just visually divide it equally if many users, or use conic-gradient.
+            });
+            
+            // Generate conic gradient for the wheel
+            let gradientStr = [];
+            let startPct = 0;
+            donors.forEach((donor, i) => {
+                const pct = (donor.amount / totalEntries) * 100;
+                const endPct = startPct + pct;
+                gradientStr.push(`${colors[i % colors.length]} ${startPct}% ${endPct}%`);
+                startPct = endPct;
+            });
+            
+            wheel.style.background = `conic-gradient(${gradientStr.join(', ')})`;
         }
 
         function renderUserTable(users) {
@@ -602,6 +740,66 @@
                     document.querySelector(e.currentTarget.getAttribute('href')).classList.add('active');
                     if (window.innerWidth <= 768) { document.getElementById('sidebar').classList.remove('open'); }
                 });
+            });
+
+            // Wheel Spin Logic
+            document.getElementById('spin-wheel-btn').addEventListener('click', () => {
+                if (globalDonors.length === 0) {
+                    alert("No donors to spin for!"); return;
+                }
+                
+                const wheel = document.getElementById('random-wheel');
+                document.getElementById('winner-display').style.display = 'none';
+                
+                // Random spins (at least 5 full rotations + random angle)
+                const randomDeg = Math.floor(Math.random() * 360);
+                const totalRotation = (360 * 5) + randomDeg;
+                
+                wheel.style.transform = `rotate(${totalRotation}deg)`;
+                
+                // Select winner weighted by amount
+                setTimeout(() => {
+                    const totalEntries = globalDonors.reduce((sum, d) => sum + d.amount, 0);
+                    let rand = Math.random() * totalEntries;
+                    let winner = null;
+                    
+                    for (let d of globalDonors) {
+                        if (rand < d.amount) { winner = d; break; }
+                        rand -= d.amount;
+                    }
+                    
+                    if (winner) {
+                        currentWinnerId = winner.uid;
+                        document.getElementById('winner-name').textContent = winner.email;
+                        document.getElementById('winner-display').style.display = 'block';
+                    }
+                }, 4000); // Matches CSS transition duration
+            });
+
+            // Credit Reward
+            document.getElementById('credit-reward-btn').addEventListener('click', async () => {
+                if (!currentWinnerId) return;
+                const reward = document.getElementById('reward-select').value;
+                const btn = document.getElementById('credit-reward-btn');
+                
+                btn.disabled = true;
+                btn.textContent = "Crediting...";
+                
+                try {
+                    const userRef = doc(db, "users", currentWinnerId);
+                    await updateDoc(userRef, {
+                        rewards: arrayUnion(reward)
+                    });
+                    
+                    alert(`Successfully credited "${reward}" to user!`);
+                    document.getElementById('winner-display').style.display = 'none';
+                } catch (e) {
+                    console.error(e);
+                    alert("Error crediting reward.");
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Credit Reward to Account";
+                }
             });
 
             document.getElementById('graph-selector').addEventListener('change', (e) => { renderChart(e.target.value); });

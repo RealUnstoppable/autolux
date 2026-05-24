@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script type="module" src="/js/theme-loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | DTS HUB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/images/dreams-favicon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/themes.css">
+    <style>
+        :root {
+            --bg-color: #0A0A0A;
+            --primary-card-color: #141414;
+            --secondary-card-color: #1f1f1f;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #F5F5F7;
+            --text-secondary: #A3A3A3;
+            --accent-blue: #2563EB;
+            --accent-red: #DC2626;
+            --accent-green: #16A34A;
+            --accent-yellow: #FBBF24;
+            --font-main: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .account-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            gap: 30px;
+        }
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+        }
+        .btn-admin-back {
+            display: none;
+            background-color: var(--accent-yellow);
+            color: var(--bg-color);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+        .btn-admin-back:hover {
+            opacity: 0.85;
+        }
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary-card-color);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            margin: 0 0 5px 0;
+            line-height: 1.2;
+        }
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+            word-wrap: break-word;
+        }
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-nav a:hover {
+            background-color: var(--primary-card-color);
+            color: var(--text-primary);
+        }
+        .sidebar-nav a.active {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        .sign-out-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary-card-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sign-out-btn:hover {
+            background-color: var(--accent-red);
+            color: var(--text-primary);
+            border-color: var(--accent-red);
+        }
+        .main-content {
+            flex-grow: 1;
+        }
+        .content-section {
+            display: none;
+            background-color: var(--primary-card-color);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .content-section.active {
+            display: block;
+        }
+        .content-section h3 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: var(--secondary-card-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .card h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            background-color: #2c2c2c;
+            color: var(--text-primary);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .btn-primary { background-color: var(--accent-blue); color: white; }
+        .btn-primary:hover { background-color: #1D4ED8; }
+        .btn-danger { background-color: var(--accent-red); color: white; }
+        .btn-danger:hover { background-color: #B91C1C; }
+        #delete-account-card { border-color: var(--accent-red); }
+        .notification { padding: 10px; border-radius: 6px; font-size: 0.9rem; margin-top: 15px; display: none; }
+        .notification.success { background-color: rgba(22, 163, 74, 0.2); color: var(--accent-green); }
+        .notification.error { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
+
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            .account-layout { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .main-content { width: 100%; }
+            .content-section { padding: 25px; }
+        }
+    </style>
+</head>
+<body style="display: none;">
+    <div class="account-layout">
+        <aside class="sidebar">
+            <a href="admin.html" id="admin-back-button" class="btn-admin-back">← Back to Admin Dashboard</a>
+            <div class="sidebar-header">
+                <h2 id="welcome-header">Loading...</h2>
+                <p id="user-email-sidebar"></p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html">← Return to Home</a></li>
+                    <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
+                    <li><a href="#sweepstakes" class="nav-link">Sweepstakes & Rewards</a></li>
+                    <li><a href="#settings" class="nav-link">Settings</a></li>
+                    <li><a href="#support" class="nav-link">Support</a></li>
+                </ul>
+            </nav>
+            <button class="sign-out-btn" id="sign-out">Sign Out</button>
+        </aside>
+        <main class="main-content">
+            <section id="dashboard" class="content-section active">
+                <h3>Dashboard</h3>
+                <div class="card">
+                    <h4>Quick Overview</h4>
+                    <p>Welcome to your personal hub. Here you can manage your account settings, view your order history, and customize your site experience.</p>
+                </div>
+            </section>
+            
+            <section id="sweepstakes" class="content-section">
+                <h3>Sweepstakes & Rewards</h3>
+                <div class="card">
+                    <h4>My Stats</h4>
+                    <p><strong>Total Donated:</strong> $<span id="user-total-donated">0</span></p>
+                    <p><strong>Sweepstakes Entries:</strong> <span id="user-total-entries">0</span></p>
+                </div>
+                <div class="card" style="border-color: var(--gold);">
+                    <h4 style="color: var(--gold);">My Rewards</h4>
+                    <ul id="user-rewards-list" style="list-style-type: none; padding-left: 0;">
+                        <li>Loading rewards...</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="settings" class="content-section">
+                <h3>Settings</h3>
+                <div class="card">
+                    <h4>Update Profile</h4>
+                    <form id="update-profile-form">
+                        <div class="form-group">
+                            <label for="update-username">Username</label>
+                            <input type="text" id="update-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="update-email">Email (cannot be changed)</label>
+                            <input type="email" id="update-email" disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div id="profile-notification" class="notification"></div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h4>Display Settings</h4>
+                    <form id="theme-settings-form">
+                        <div class="form-group">
+                            <label for="theme-select">Theme</label>
+                            <select id="theme-select">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Accent Color</label>
+                            <div>
+                                <input type="radio" id="accent-blue" name="accent-color" value="blue">
+                                <label for="accent-blue">Blue</label>
+                                <input type="radio" id="accent-red" name="accent-color" value="red">
+                                <label for="accent-red">Red</label>
+                                <input type="radio" id="accent-green" name="accent-color" value="green">
+                                <label for="accent-green">Green</label>
+                                <input type="radio" id="accent-purple" name="accent-color" value="purple">
+                                <label for="accent-purple">Purple</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Theme</button>
+                        <div id="theme-notification" class="notification"></div>
+                    </form>
+                </div>
+
+                <div class="card" id="delete-account-card">
+                    <h4>Delete Account</h4>
+                    <p>This action is permanent and cannot be undone. All your data will be removed.</p>
+                    <button class="btn btn-danger" id="delete-account-btn">Delete My Account</button>
+                </div>
+            </section>
+            <section id="support" class="content-section">
+                <h3>Contact Support</h3>
+                <div class="card">
+                    <p>If you need help, please reach out. We're happy to assist!</p>
+                    <a href="mailto:unstoppableplays2016@hotmail.com" class="btn btn-primary">Email Support</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+  
+    <script type="module">
+        import { auth, db } from '/js/auth.js';
+        import { onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        // ADDED: getDoc was missing
+        import { doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        
+        // --- NEW: Main Entry Point (This was missing!) ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is logged in, fetch their data
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        
+                        // 1. Populate the page
+                        initializePage(user, userData);
+                        
+                        // Fetch Donations and Rewards
+                        fetchSweepstakesData(user.uid, userData);
+
+                        // 2. Activate buttons
+                        setupEventListeners(user);
+                        
+                        // 3. Show the page (Fixes white screen)
+                        document.body.style.display = 'flex';
+                    } else {
+                        console.error("User document does not exist.");
+                        // Optional: create a default doc or logout
+                    }
+                } catch (error) {
+                    console.error("Error loading profile:", error);
+                }
+            } else {
+                // Not logged in -> Go to Sign In
+                window.location.replace('sign in beta.html');
+            }
+        });
+
+        function initializePage(user, userData) {
+            if (userData.isAdmin) {
+                const adminBtn = document.getElementById('admin-back-button');
+                if (adminBtn) adminBtn.style.display = 'block';
+            }
+
+            const welcomeHeader = document.getElementById('welcome-header');
+            if (sessionStorage.getItem('newUser')) {
+                welcomeHeader.textContent = `Welcome, ${userData.username}!`;
+                sessionStorage.removeItem('newUser');
+            } else {
+                welcomeHeader.textContent = `Welcome back, ${userData.username}!`;
+            }
+
+            document.getElementById('user-email-sidebar').textContent = user.email;
+            document.getElementById('update-username').value = userData.username;
+            document.getElementById('update-email').value = user.email;
+
+            // Load theme settings
+            document.getElementById('theme-select').value = userData.theme || 'dark';
+            const currentAccent = userData.accentColor || 'blue';
+            const accentRadio = document.querySelector(`input[name="accent-color"][value="${currentAccent}"]`);
+            if (accentRadio) accentRadio.checked = true;
+        }
+
+        async function fetchSweepstakesData(uid, userData) {
+            try {
+                // Fetch Donations
+                const q = query(collection(db, "donations"), where("userId", "==", uid));
+                const querySnapshot = await getDocs(q);
+                let totalDonated = 0;
+                querySnapshot.forEach((doc) => {
+                    totalDonated += doc.data().amount || 0;
+                });
+                
+                document.getElementById('user-total-donated').textContent = totalDonated.toLocaleString();
+                // 1 entry per dollar
+                document.getElementById('user-total-entries').textContent = totalDonated.toLocaleString();
+
+                // Load Rewards from user profile
+                const rewardsList = document.getElementById('user-rewards-list');
+                rewardsList.innerHTML = '';
+                
+                if (userData.rewards && userData.rewards.length > 0) {
+                    userData.rewards.forEach(reward => {
+                        const li = document.createElement('li');
+                        li.textContent = `🎁 ${reward}`;
+                        li.style.marginBottom = "10px";
+                        rewardsList.appendChild(li);
+                    });
+                } else {
+                    rewardsList.innerHTML = '<li style="color: var(--text-secondary);">No rewards yet. Keep donating to earn entries!</li>';
+                }
+
+            } catch (error) {
+                console.error("Error fetching sweepstakes data:", error);
+                document.getElementById('user-rewards-list').innerHTML = '<li style="color: var(--accent-red);">Error loading rewards.</li>';
+            }
+        }
+
+        function setupEventListeners(user) {
+            document.getElementById('sign-out').addEventListener('click', () => {
+                signOut(auth).then(() => window.location.replace('index.html'));
+            });
+
+            document.getElementById('update-profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newUsername = document.getElementById('update-username').value;
+                const notificationEl = document.getElementById('profile-notification');
+                const userDocRef = doc(db, "users", user.uid);
+                
+                try {
+                    await updateDoc(userDocRef, { username: newUsername });
+                    showNotification(notificationEl, 'Username updated successfully!', 'success');
+                    document.getElementById('welcome-header').textContent = `Welcome back, ${newUsername}!`;
+                } catch (error) {
+                    showNotification(notificationEl, `Error: ${error.message}`, 'error');
+                }
+            });
+
+            document.getElementById('theme-settings-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const theme = document.getElementById('theme-select').value;
+                const accentColor = document.querySelector('input[name="accent-color"]:checked').value;
+                const notificationEl = document.getElementById('theme-notification');
+                const userDocRef = doc(db, "users", user.uid);
+
+                try {
+                    await updateDoc(userDocRef, { theme, accentColor });
+                    showNotification(notificationEl, 'Theme updated successfully!', 'success');
+                    // Apply theme immediately
+                    document.body.dataset.theme = theme;
+                    document.body.dataset.accent = accentColor;
+                    // Update localStorage for persistence if they log out
+                    localStorage.setItem('userTheme', theme);
+                    localStorage.setItem('userAccent', accentColor);
+                } catch (error) {
+                    showNotification(notificationEl, `Error: ${error.message}`, 'error');
+                }
+            });
+
+            document.getElementById('delete-account-btn').addEventListener('click', async () => {
+                if (!confirm('DANGER: This will permanently delete your account and all its data. This action cannot be undone. Are you sure?')) return;
+                
+                try {
+                    const userId = user.uid;
+                    await deleteUser(user);
+                    await deleteDoc(doc(db, "users", userId));
+                    alert('Your account has been permanently deleted.');
+                    window.location.replace('index.html');
+                } catch (error) {
+                    if (error.code === 'auth/requires-recent-login') {
+                        alert('This action is sensitive and requires recent authentication. Please sign out, sign back in, and then try again.');
+                        signOut(auth);
+                    } else {
+                        alert(`An error occurred while deleting your account: ${error.message}`);
+                    }
+                }
+            });
+
+            // Navigation Handling
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links and sections
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    e.currentTarget.classList.add('active');
+                    
+                    // Show target section
+                    const targetId = e.currentTarget.getAttribute('href');
+                    document.querySelector(targetId).classList.add('active');
+                });
+            });
+
+            const showNotification = (element, message, type) => {
+                element.textContent = message;
+                element.className = 'notification';
+                element.classList.add(type);
+                element.style.display = 'block';
+                setTimeout(() => { element.style.display = 'none'; }, 5000);
+            };
+        }
+    </script>
+
+</body>
+</html>

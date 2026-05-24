@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Dashboard | Unstoppable</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Mobile-First Base Styles */
+        :root {
+            --bg-color: #0A0A0A;
+            --primary-card-color: #141414;
+            --secondary-card-color: #1f1f1f;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #F5F5F7;
+            --text-secondary: #A3A3A3;
+            --accent-blue: #2563EB;
+            --accent-red: #DC2626;
+            --accent-green: #16A34A;
+            --accent-yellow: #D4AF37; /* Updated to Gold to match luxury theme */
+            --font-main: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-main); background-color: var(--bg-color); color: var(--text-primary);
+            margin: 0; padding: 10px; display: flex; flex-direction: column; min-height: 100vh;
+        }
+        
+        .admin-layout { display: flex; flex-direction: column; width: 100%; max-width: 1400px; margin: 0 auto; gap: 20px; }
+        
+        /* Sidebar Navigation */
+        .sidebar { width: 100%; flex-shrink: 0; }
+        .sidebar-header {
+            padding: 20px; background-color: var(--primary-card-color); border-radius: 12px;
+            margin-bottom: 20px; border: 1px solid var(--border-color);
+        }
+        .sidebar-header h2 { font-size: 1.2rem; margin: 0 0 5px; color: var(--accent-yellow); }
+        .sidebar-header p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; word-wrap: break-word; }
+        
+        .sidebar-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+        .sidebar-nav li { flex: 1; min-width: 120px; }
+        .sidebar-nav a {
+            display: block; padding: 12px 15px; color: var(--text-secondary); text-decoration: none;
+            border-radius: 8px; font-weight: 500; font-size: 0.9rem; text-align: center;
+            background-color: var(--primary-card-color); border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .sidebar-nav a.active { background-color: var(--accent-blue); color: var(--text-primary); border-color: var(--accent-blue); }
+        
+        .sign-out-btn {
+            width: 100%; margin-top: 15px; padding: 15px 20px; background-color: var(--primary-card-color);
+            border: 1px solid var(--border-color); color: var(--text-secondary); font-weight: 600;
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .sign-out-btn:hover { background-color: var(--accent-red); color: var(--text-primary); border-color: var(--accent-red); }
+        
+        /* Main Content Area */
+        .main-content { flex-grow: 1; width: 100%; }
+        .content-section { display: none; animation: fadeIn 0.3s ease; }
+        .content-section.active { display: block; }
+        .content-section > h3 { font-size: 1.5rem; margin-top: 0; margin-bottom: 20px; }
+        
+        /* Metrics Grid */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .metric-card {
+            background-color: var(--primary-card-color); padding: 20px; border-radius: 12px;
+            border: 1px solid var(--border-color); text-align: center;
+        }
+        .metric-card .value { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); }
+        .metric-card .label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; font-weight: 500;}
+        
+        /* Tables (Responsive scroll) */
+        .user-table-container {
+            background-color: var(--primary-card-color); border: 1px solid var(--border-color);
+            border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px;
+        }
+        .user-table { width: 100%; border-collapse: collapse; text-align: left; min-width: 600px; }
+        .user-table th, .user-table td { padding: 15px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .user-table th { font-weight: 600; color: var(--text-secondary); background: rgba(0,0,0,0.2); }
+        .user-table tr:last-child td { border-bottom: none; }
+        
+        /* Badges & Buttons */
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status-badge.active { background-color: rgba(22, 163, 74, 0.2); color: var(--accent-green); }
+        .status-badge.banned, .status-badge.cancelled { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
+        .status-badge.pending { background-color: rgba(212, 175, 55, 0.2); color: var(--accent-yellow); }
+        
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 5px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; margin-right: 5px; margin-bottom: 5px;}
+        .btn-action { background-color: var(--secondary-card-color); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-action:hover { background-color: var(--text-primary); color: var(--bg-color); }
+        .btn-danger { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+            body { padding: 40px 20px; }
+            .admin-layout { flex-direction: row; gap: 30px; }
+            .sidebar { width: 250px; }
+            .sidebar-nav ul { flex-direction: column; gap: 5px; }
+            .sidebar-nav a { text-align: left; padding: 15px 20px; font-size: 1rem; border: none; background: transparent; }
+            .sidebar-nav a:hover { background-color: var(--primary-card-color); }
+            .content-section > h3 { font-size: 1.8rem; }
+            .user-table th, .user-table td { padding: 15px 20px; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body style="display: none;">
+
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Control</h2>
+                <p id="user-email-sidebar"></p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html">← Public Site</a></li>
+                    <li><a href="#performance" class="nav-link active">Dashboard</a></li>
+                    <li><a href="#bookings" class="nav-link">Bookings</a></li>
+                    <li><a href="#quotes" class="nav-link">Quotes</a></li>
+                    <li><a href="#users" class="nav-link">Users</a></li>
+                    <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
+                </ul>
+            </nav>
+            <button class="sign-out-btn" id="sign-out">Sign Out</button>
+        </aside>
+
+        <main class="main-content">
+            
+            <section id="performance" class="content-section active">
+                <h3>Business Overview</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card"><div class="value" id="total-bookings">-</div><div class="label">Total Bookings</div></div>
+                    <div class="metric-card"><div class="value" id="upcoming-bookings">-</div><div class="label">Upcoming Appts</div></div>
+                    <div class="metric-card"><div class="value" id="pending-quotes">-</div><div class="label">Pending Quotes</div></div>
+                    <div class="metric-card"><div class="value" id="total-users">-</div><div class="label">Registered Users</div></div>
+                </div>
+                
+                <div style="background: var(--primary-card-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <h4 style="margin-top: 0; color: var(--accent-yellow);">System Status</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0;">
+                        The booking system is actively accepting appointments. Tuesdays and Thursdays from 7AM-3PM are automatically blocked by the system. Guest checkouts are enabled.
+                    </p>
+                </div>
+            </section>
+
+            <section id="bookings" class="content-section">
+                <h3>All Bookings</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Contact Info</th>
+                                <th>Vehicle</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading bookings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="quotes" class="content-section">
+                <h3>Quote Requests</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Vehicle Details & Condition</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotes-list-body">
+                            <tr><td colspan="4" style="text-align: center;">Loading quotes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="users" class="content-section">
+                <h3>Registered Users</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead><tr><th>Name/Username</th><th>Email</th><th>Sign-up Date</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="user-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="newsletter" class="content-section">
+                <h3>Newsletter Subscribers</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead><tr><th>Email</th><th>Subscription Date</th></tr></thead>
+                        <tbody id="newsletter-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+   <script type="module">
+        import { auth, db } from '/js/auth.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, getDoc, collection, getDocs, updateDoc, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Admin Auth Guard
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (userDoc.exists() && userDoc.data().isAdmin) {
+                    document.body.style.display = 'flex';
+                    initializeAdminPage(user);
+                } else {
+                    window.location.replace('account.html'); // Kick non-admins to standard account page
+                }
+            } else {
+                window.location.replace('sign in beta.html');
+            }
+        });
+
+        function initializeAdminPage(adminUser) {
+            document.getElementById('user-email-sidebar').textContent = adminUser.email;
+            loadAdminData();
+            setupNavigation();
+            
+            document.getElementById('sign-out').addEventListener('click', () => {
+                signOut(auth);
+            });
+        }
+
+        async function loadAdminData() {
+            try {
+                // 1. Fetch Bookings
+                const bookingsSnap = await getDocs(collection(db, "bookings"));
+                const bookings = bookingsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                // Sort bookings by date descending in JS to avoid needing complex Firestore indexes immediately
+                bookings.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+                
+                // 2. Fetch Quotes
+                const quotesSnap = await getDocs(collection(db, "quotes"));
+                const quotes = quotesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // 3. Fetch Users
+                const usersSnap = await getDocs(collection(db, "users"));
+                const users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // 4. Fetch Newsletter
+                const newsletterSnap = await getDocs(collection(db, "newsletterSubscribers"));
+                const newsletterSubscribers = newsletterSnap.docs.map(d => d.data());
+
+                // Render Tables
+                renderBookingsTable(bookings);
+                renderQuotesTable(quotes);
+                renderUserTable(users);
+                renderNewsletterTable(newsletterSubscribers);
+
+                // Update Overview Metrics
+                updateMetrics(users, bookings, quotes);
+
+            } catch (error) {
+                console.error("Error loading admin data:", error);
+                alert("Error loading dashboard data. Please check your console.");
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderBookingsTable(bookings) {
+            const tbody = document.getElementById('bookings-list-body');
+            tbody.innerHTML = '';
+            
+            if(bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>';
+                return;
+            }
+
+            bookings.forEach(b => {
+                const row = document.createElement('tr');
+                
+                // Handle guest vs registered user info gracefully
+                const name = b.customerName || 'N/A';
+                const phone = b.customerPhone || 'N/A';
+                const email = b.customerEmail || 'N/A';
+                
+                const dateObj = new Date(b.appointmentDate);
+                const formattedDate = dateObj.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                
+                let badgeClass = 'active';
+                if(b.status === 'cancelled') badgeClass = 'cancelled';
+                if(b.status === 'completed') badgeClass = 'active'; // could make a new color
+                
+                row.innerHTML = `
+                    <td><strong>${name}</strong></td>
+                    <td>${phone}<br><span style="font-size:0.8rem; color:var(--text-secondary);">${email}</span></td>
+                    <td style="text-transform: capitalize;">${b.vehicle}</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="status-badge ${badgeClass}">${b.status.replace('_', ' ')}</span></td>
+                    <td>
+                        ${b.status !== 'cancelled' ? `<button class="btn-sm btn-danger action-btn" data-type="booking" data-action="cancel" data-id="${b.id}">Cancel</button>` : ''}
+                        ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${b.id}">Mark Done</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            attachActionListeners();
+        }
+
+        function renderQuotesTable(quotes) {
+            const tbody = document.getElementById('quotes-list-body');
+            tbody.innerHTML = '';
+
+            if(quotes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>';
+                return;
+            }
+
+            quotes.forEach(q => {
+                const row = document.createElement('tr');
+                const badgeClass = q.status === 'responded' ? 'active' : 'pending';
+                
+                row.innerHTML = `
+                    <td>${q.email}</td>
+                    <td>${q.details}</td>
+                    <td><span class="status-badge ${badgeClass}">${q.status || 'pending'}</span></td>
+                    <td>
+                        ${q.status !== 'responded' ? `<button class="btn-sm btn-action action-btn" data-type="quote" data-action="responded" data-id="${q.id}">Mark Responded</button>` : ''}
+                        <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${q.id}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            attachActionListeners();
+        }
+
+        function renderUserTable(users) {
+            const tbody = document.getElementById('user-list-body');
+            tbody.innerHTML = '';
+            
+            users.filter(user => !user.isAdmin).forEach(user => {
+                const row = document.createElement('tr');
+                const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
+                const actionButton = user.isBanned ? 
+                    `<button class="btn-sm btn-action action-btn" data-type="user" data-action="unban" data-id="${user.id}">Unban</button>` : 
+                    `<button class="btn-sm btn-danger action-btn" data-type="user" data-action="ban" data-id="${user.id}">Ban</button>`;
+                
+                const signupDate = user.signupDate ? user.signupDate.toDate().toLocaleDateString() : 'N/A';
+                
+                row.innerHTML = `
+                    <td>${user.username || 'Unknown'}</td>
+                    <td>${user.email}</td>
+                    <td>${signupDate}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionButton}</td>`;
+                tbody.appendChild(row);
+            });
+            attachActionListeners();
+        }
+
+        function renderNewsletterTable(subscribers) {
+            const tbody = document.getElementById('newsletter-list-body');
+            tbody.innerHTML = '';
+            
+            subscribers.forEach(sub => {
+                const row = document.createElement('tr');
+                const subDate = sub.subscribedAt ? sub.subscribedAt.toDate().toLocaleDateString() : 'N/A';
+                row.innerHTML = `<td>${sub.email}</td><td>${subDate}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateMetrics(users, bookings, quotes) {
+            const now = new Date();
+            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate) >= now);
+            const pendingQuotes = quotes.filter(q => q.status === 'pending');
+
+            document.getElementById('total-users').textContent = users.filter(u => !u.isAdmin).length;
+            document.getElementById('total-bookings').textContent = bookings.length;
+            document.getElementById('upcoming-bookings').textContent = upcoming.length;
+            document.getElementById('pending-quotes').textContent = pendingQuotes.length;
+        }
+
+        // --- EVENT LISTENERS & LOGIC ---
+
+        function setupNavigation() {
+            document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    // Remove active from all links and sections
+                    document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    
+                    // Add active to clicked target
+                    e.currentTarget.classList.add('active');
+                    document.querySelector(e.currentTarget.getAttribute('href')).classList.add('active');
+                });
+            });
+        }
+
+        function attachActionListeners() {
+            // Remove old listeners to prevent double-firing when re-rendering
+            const oldBtns = document.querySelectorAll('.action-btn');
+            oldBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const type = e.target.getAttribute('data-type');
+                    const action = e.target.getAttribute('data-action');
+                    const id = e.target.getAttribute('data-id');
+                    
+                    try {
+                        if (type === 'booking') {
+                            if (action === 'cancel' && confirm("Cancel this booking?")) {
+                                await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
+                            } else if (action === 'complete') {
+                                await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                            }
+                        } 
+                        else if (type === 'quote') {
+                            if (action === 'responded') {
+                                await updateDoc(doc(db, "quotes", id), { status: 'responded' });
+                            } else if (action === 'delete' && confirm("Delete this quote request?")) {
+                                await deleteDoc(doc(db, "quotes", id));
+                            }
+                        }
+                        else if (type === 'user') {
+                            if (confirm(`Are you sure you want to ${action} this user?`)) {
+                                await updateDoc(doc(db, "users", id), { isBanned: action === 'ban' });
+                            }
+                        }
+                        
+                        // Reload data to reflect changes
+                        loadAdminData();
+                    } catch (error) {
+                        console.error("Action error:", error);
+                        alert("Error performing action: " + error.message);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
