@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buford's premier luxury mobile detailing. We bring the showroom back to your driveway.">
-    <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Buford's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -260,26 +257,6 @@
     <section id="reviews">
         <h2>Client Testimonials</h2>
 
-        <div id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
-            <form id="review-submission-form">
-                <h3 style="margin-top: 0;">Leave a Review</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
-                <div style="margin-bottom: 15px;">
-                    <label for="review-rating" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Rating:</label>
-                    <select id="review-rating" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);">
-                        <option value="5">★★★★★ - Excellent</option>
-                        <option value="4">★★★★☆ - Good</option>
-                        <option value="3">★★★☆☆ - Average</option>
-                        <option value="2">★★☆☆☆ - Poor</option>
-                        <option value="1">★☆☆☆☆ - Terrible</option>
-                    </select>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
-                    <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
-                </div>
-                <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
-            </form>
         <form id="review-submission-container" style="display: none; margin-bottom: 40px; text-align: center; background: var(--bg-card); padding: 25px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0;">Leave a Review</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">How was your service? Let us know!</p>
@@ -310,33 +287,14 @@
     <footer id="contact">
         <h2>Stay Unstoppable</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
-        <div class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
-            <button onclick="subscribeNewsletter()">Subscribe</button>
-        </div>
-        <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
-        
-        <div class="socials">
-            <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
-        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); window.subscribeNewsletter();">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
-            <button type="submit" id="news-submit-btn">Subscribe</button>
         <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" required>
-        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address" required>
-        <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" required>
-        <form class="newsletter" id="newsletter-form" onsubmit="subscribeNewsletter(event)">
-            <input type="email" id="news-email" placeholder="Enter your email address" required>
-        <form class="newsletter" id="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter();">
             <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email Address for Newsletter" required>
-            <button type="submit">Subscribe</button>
+            <button type="submit" id="news-submit-btn">Subscribe</button>
         </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;"></p>
         
         <div class="socials">
-            <a href="#" aria-label="Visit our Instagram page">Instagram</a> | <a href="#" aria-label="Visit our Facebook page">Facebook</a> | <a href="#" aria-label="Visit our YouTube channel">YouTube</a>
+            <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
         </div>
         <p style="color: #666; margin-top: 40px; font-size: 0.8rem;">&copy; 2026 Unstoppable Detailing Services. Buford, GA.</p>
     </footer>
@@ -412,18 +370,8 @@
                 container.innerHTML = '';
 
                 reviews.forEach(r => {
-                    // Sanitize rating to prevent DoS via RangeError in String.repeat
-                    let rawRating = parseInt(r.rating, 10);
-                    if (isNaN(rawRating)) rawRating = 5;
-                    const safeRating = Math.max(0, Math.min(5, rawRating));
-                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
-
-                    const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
-                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
-                    const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
-                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                    const ratingValue = Math.max(0, Math.min(5, Number(r.rating) || 5));
+                    const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
@@ -433,9 +381,6 @@
                     el.innerHTML = \`<div class="stars">\${stars}</div><p>"\${comment}"<br><br>- \${name}</p>\`;
                     container.appendChild(el);
                 });
-            } catch (e) {
-                console.error("Error loading reviews", e.code, e);
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
             } catch (error) {
                 console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
@@ -446,7 +391,6 @@
         loadReviews();
 
         // Submit Review
-        document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
         document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
@@ -489,8 +433,6 @@
                 msgEl.style.color = "#16A34A";
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
-            } catch (e) {
-                console.error("Error submitting review", e.code, e);
             } catch (error) {
                 console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
                 msgEl.style.color = "#ef4444";
@@ -504,14 +446,6 @@
         // Newsletter Logic
         document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-        window.subscribeNewsletter = async (event) => {
-            if (event) event.preventDefault();
-        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-        window.subscribeNewsletter = async (event) => {
-            if (event) {
-                event.preventDefault();
-            }
             const email = document.getElementById('news-email').value;
             const msg = document.getElementById('news-msg');
             const btn = document.getElementById('news-submit-btn');
@@ -541,8 +475,6 @@
                 msg.style.color = "#16A34A";
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
-            } catch(e) {
-                console.error("Error subscribing to newsletter:", e.code, e);
             } catch(error) {
                 console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
                 msg.style.color = "#ef4444";
