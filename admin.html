@@ -102,13 +102,13 @@
 <body style="display: none;"> 
     <div class="mobile-header">
         <h2 style="margin:0; color: var(--accent-blue);">Admin</h2>
-        <button class="hamburger-btn" aria-label="Open sidebar" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <button class="hamburger-btn" id="mobile-menu-btn" aria-label="Open sidebar" aria-expanded="false">☰</button>
     </div>
 
     <div class="admin-layout">
         <aside class="sidebar" id="sidebar">
             <div class="mobile-header" style="justify-content: flex-end;">
-                <button class="hamburger-btn" aria-label="Close sidebar" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
+                <button class="hamburger-btn" id="mobile-close-btn" aria-label="Close sidebar" aria-expanded="true">✕</button>
             </div>
             <div class="sidebar-header">
                 <h2>Admin Panel</h2>
@@ -959,6 +959,22 @@
             });
 
             // Navigation
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileCloseBtn = document.getElementById('mobile-close-btn');
+            const sidebar = document.getElementById('sidebar');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'true');
+                mobileCloseBtn.setAttribute('aria-expanded', 'true');
+            });
+
+            mobileCloseBtn.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                mobileCloseBtn.setAttribute('aria-expanded', 'false');
+            });
+
             document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
@@ -966,7 +982,11 @@
                     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
                     e.currentTarget.classList.add('active');
                     document.querySelector(e.currentTarget.getAttribute('href')).classList.add('active');
-                    if (window.innerWidth <= 768) { document.getElementById('sidebar').classList.remove('open'); }
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        mobileCloseBtn.setAttribute('aria-expanded', 'false');
+                    }
                 });
             });
 

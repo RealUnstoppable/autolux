@@ -17,3 +17,6 @@
 ## 2026-05-23 - Focus Visible Outline Pattern
 **Learning:** The application lacks a global focus visible state, meaning keyboard users (navigating via Tab) cannot easily see which element is currently active. The codebase uses raw static HTML with internal `<style>` blocks and no external CSS frameworks.
 **Action:** Always inject standard `:focus-visible` CSS rules (`outline: 2px solid var(--accent); outline-offset: 2px;`) into the internal `<style>` tags to ensure accessibility compliance when adding interactive elements in a purely static environment like this.
+## $(date +%Y-%m-%d) - Mobile Menu ARIA State Management
+**Learning:** The mobile hamburger menu toggles in `admin.html` were missing `aria-expanded` attributes, and their toggle logic was bound via inline HTML `onclick` handlers, making state synchronization difficult and inaccessible to screen readers.
+**Action:** When implementing or fixing mobile menu toggles, always ensure `aria-expanded` is present. Move inline `onclick` handlers to dedicated JavaScript event listeners to reliably synchronize the `aria-expanded` state with the visual state of the menu (e.g., updating it to 'true'/'false' when the sidebar opens or closes, including auto-closing on navigation).
