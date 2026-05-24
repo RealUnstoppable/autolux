@@ -98,18 +98,24 @@
             }
             .sidebar.open { transform: translateX(100%); }
         }
+
+
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body style="display: none;"> 
     <div class="mobile-header">
         <h2 style="margin:0; color: var(--accent-blue);">Admin</h2>
-        <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <button class="hamburger-btn" id="mobile-menu-btn" aria-label="Open sidebar" aria-expanded="false">☰</button>
     </div>
 
     <div class="admin-layout">
         <aside class="sidebar" id="sidebar">
             <div class="mobile-header" style="justify-content: flex-end;">
-                <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
+                <button class="hamburger-btn" id="mobile-close-btn" aria-label="Close sidebar" aria-expanded="true">✕</button>
             </div>
             <div class="sidebar-header">
                 <h2>Admin Panel</h2>
@@ -121,11 +127,13 @@
                     <li><a href="#performance" class="nav-link active">Performance</a></li>
                     <li><a href="#bookings" class="nav-link">Bookings</a></li>
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
-                    <li><a href="#sweepstakes" class="nav-link">Sweepstakes</a></li>
+                    <li><a href="#inquiries-admin" class="nav-link">Inquiries</a></li>
                     <li><a href="#users" class="nav-link">User Management</a></li>
+                    <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
                     <li><a href="#downloads" class="nav-link">Downloads</a></li>
                     <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
+                    <li><a href="#faqs-admin" class="nav-link">FAQ Management</a></li>
                     <li><a href="account.html">My Account Settings</a></li>
                 </ul>
             </nav>
@@ -150,7 +158,7 @@
                 <div class="graph-container">
                     <div class="graph-header">
                         <h4 id="graph-title">Summary</h4>
-                        <select id="graph-selector" class="graph-dropdown">
+                        <select id="graph-selector" class="graph-dropdown" aria-label="Select graph type">
                             <option value="summary">Summary</option>
                             <option value="signups">Sign-ups</option>
                             <option value="purchases">Purchases</option>
@@ -200,46 +208,24 @@
                 </div>
             </section>
 
-            <section id="sweepstakes" class="content-section">
-                <h3>Sweepstakes & Rewards</h3>
-                <div class="metrics-grid">
-                    <div class="metric-card"><div class="value" id="sweep-total-raised">$0</div><div class="label">Total Raised</div></div>
-                    <div class="metric-card"><div class="value" id="sweep-total-donors">0</div><div class="label">Total Donors</div></div>
-                </div>
-
-                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 300px;">
-                        <h4>Leaderboard</h4>
-                        <div class="user-table-container">
-                            <table class="user-table">
-                                <thead><tr><th>User</th><th>Total Donated ($)</th><th>Entries</th></tr></thead>
-                                <tbody id="sweep-leaderboard-body">
-                                    <tr><td colspan="3">Loading...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div style="flex: 1; min-width: 300px; background: var(--primary-card-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
-                        <h4>Spin the Wheel</h4>
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Selects a random donor weighted by their entries.</p>
-                        <div class="wheel-container">
-                            <div class="wheel-pointer"></div>
-                            <div class="wheel" id="random-wheel"></div>
-                        </div>
-                        <button class="spin-btn" id="spin-wheel-btn">Spin Wheel!</button>
-                        
-                        <div id="winner-display" style="display: none; margin-top: 20px; padding: 15px; border: 1px solid var(--gold); background: rgba(212, 175, 55, 0.1); border-radius: 8px;">
-                            <h4 style="color: var(--gold); margin-top: 0;">Winner Selected!</h4>
-                            <p id="winner-name" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;"></p>
-                            <select id="reward-select" style="padding: 8px; width: 100%; margin-bottom: 10px; background: var(--bg-color); color: white; border: 1px solid var(--border-color);">
-                                <option value="50% Off Detail Card">50% Off Detail Card</option>
-                                <option value="Free Wash Recording Coupon">Free Wash Recording Coupon</option>
-                                <option value="1 Year Pro Membership">1 Year Pro Membership</option>
-                            </select>
-                            <button class="btn-sm btn-action" id="credit-reward-btn">Credit Reward to Account</button>
-                        </div>
-                    </div>
+            <section id="inquiries-admin" class="content-section">
+                <h3>General Inquiries</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inquiries-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading inquiries...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -258,6 +244,27 @@
                             </tr>
                         </thead>
                         <tbody id="user-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="reviews-admin" class="content-section">
+                <h3>Review Management</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviews-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading reviews...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -303,43 +310,92 @@
                     </table>
                 </div>
             </section>
+
+            <section id="faqs-admin" class="content-section">
+                <h3>FAQ Management</h3>
+                <div class="metric-card" style="margin-bottom: 20px;">
+                    <form id="add-faq-form" style="display: flex; flex-direction: column; gap: 15px;">
+                        <div>
+                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question:</label>
+                            <input type="text" id="faq-question" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" placeholder="Enter question">
+                        </div>
+                        <div>
+                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer:</label>
+                            <textarea id="faq-answer" required rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); font-family: inherit;" placeholder="Enter answer"></textarea>
+                        </div>
+                        <button type="submit" class="auth-btn" style="align-self: flex-start;">Add FAQ</button>
+                    </form>
+                    <p id="faq-msg" style="margin-top: 10px; font-size: 0.9rem;"></p>
+                </div>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Question</th>
+                                <th>Answer</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="faqs-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
-    <script type="module">
+   <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { doc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { auth, db } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         let performanceChart;
-        let globalDonors = [];
-        let currentWinnerId = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
+        async function initAdminPage() {
+            try {
+                const user = await getAuthStatePromise();
 
-                if (userDoc.exists() && userDoc.data().isAdmin) {
+                if (!user) {
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                const userData = await ensureUserDocument(user);
+
+                const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath) {
+                    safeRedirect(redirectPath);
+                    return;
+                }
+
+                if (userData && userData.isAdmin) {
                     document.body.style.display = 'flex';
                     initializeAdminPage(user);
                 } else {
-                    window.location.replace('account.html');
+                    if (window.location.pathname !== '/account.html') {
+                    safeRedirect('account.html');
+                }
+            } catch (error) {
+                console.error("Admin init error:", error);
+                safeRedirect('sign in beta.html');
+                    if (!window.location.pathname.includes('account.html')) {
+                        window.location.replace('account.html');
+                    }
                 }
             } else {
-                window.location.replace('sign in beta.html');
+                if (window.location.pathname !== '/sign in beta.html') {
+                if (!window.location.pathname.includes('sign in beta.html')) {
+                    window.location.replace('sign in beta.html');
+                }
             }
-        });
-
-        function escapeHTML(str) {
-            if (typeof str !== 'string') return str;
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
         }
+
+        initAdminPage();
 
         function initializeAdminPage(adminUser) {
             document.getElementById('user-email-sidebar').textContent = adminUser.email;
@@ -347,53 +403,63 @@
             setupEventListeners();
         }
 
+        async function resolveQuery(promise, collectionName, mapper = d => ({ id: d.id, ...d.data() })) {
+            try {
+                const snapshot = await promise;
+                return snapshot.docs ? snapshot.docs.map(mapper) : [];
+            } catch (e) {
+                console.error(`Error fetching ${collectionName}:`, e.code, e);
+            } catch (error) {
+                console.error(`Error fetching ${collectionName}:`, error, error.code ? `(Code: ${error.code})` : '');
+                return [];
+            }
+        }
+
         async function loadAdminData() {
             try {
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
+                const usersPromise = getDocs(collection(db, "users"));
+                const cartsPromise = getDocs(collection(db, "carts"));
+                const ordersPromise = getDocs(collection(db, "orders"));
+                const newsletterPromise = getDocs(collection(db, "newsletterSubscribers"));
+                const bookingsPromise = getDocs(collection(db, "bookings"));
+                const quotesPromise = getDocs(collection(db, "quotes"));
+                const inquiriesPromise = getDocs(collection(db, "inquiries"));
+                const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
+                const reviewsPromise = getDocs(collection(db, "reviews"));
+                const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
+                const faqsPromise = getDocs(collection(db, "faqs"));
+
+                // We catch errors immediately to avoid unhandled rejection warnings in the console,
+                // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
+                usersPromise.catch(() => {});
+                cartsPromise.catch(() => {});
+                ordersPromise.catch(() => {});
+                newsletterPromise.catch(() => {});
+                bookingsPromise.catch(() => {});
+                quotesPromise.catch(() => {});
+                inquiriesPromise.catch(() => {});
+                featureRequestsPromise.catch(() => {});
+                reviewsPromise.catch(() => {});
+                statsPromise.catch(() => {});
+                faqsPromise.catch(() => {});
+
                 // Fetch Core Data
-                let users = [];
-                try {
-                    const usersSnapshot = await getDocs(collection(db, "users"));
-                    users = usersSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                } catch (e) { console.error("Error fetching users:", e); }
-
-                let carts = [];
-                try {
-                    const cartsSnapshot = await getDocs(collection(db, "carts"));
-                    carts = cartsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                } catch (e) { console.error("Error fetching carts:", e); }
-
-                let orders = [];
-                try {
-                    const ordersSnapshot = await getDocs(collection(db, "orders"));
-                    orders = ordersSnapshot.docs.map(d => d.data());
-                } catch (e) { console.error("Error fetching orders:", e); }
-
-                let subscribers = [];
-                try {
-                    const newsletterSnapshot = await getDocs(collection(db, "newsletterSubscribers"));
-                    subscribers = newsletterSnapshot.docs.map(d => d.data());
-                } catch (e) { console.error("Error fetching newsletter:", e); }
+                const users = await resolveQuery(usersPromise, "users");
+                const carts = await resolveQuery(cartsPromise, "carts");
+                const orders = await resolveQuery(ordersPromise, "orders", d => d.data());
+                const subscribers = await resolveQuery(newsletterPromise, "newsletter", d => d.data());
 
                 // Fetch Detailing Bookings & Quotes
-                let bookings = [];
-                try {
-                    const bookingsSnap = await getDocs(collection(db, "bookings"));
-                    bookings = bookingsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    bookings.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
-                } catch (e) { console.error("Error fetching bookings:", e); }
+                const bookings = await resolveQuery(bookingsPromise, "bookings");
+                bookings.sort((a, b) => new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) - new Date(a.appointmentDate?.toDate ? a.appointmentDate.toDate() : a.appointmentDate));
+                bookings.sort((a, b) => {
+                    const dateA = a.appointmentDate?.toDate ? a.appointmentDate.toDate() : new Date(a.appointmentDate);
+                    const dateB = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                    return dateB - dateA;
+                });
 
-                let quotes = [];
-                try {
-                    const quotesSnap = await getDocs(collection(db, "quotes"));
-                    quotes = quotesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-                } catch (e) { console.error("Error fetching quotes:", e); }
-
-                // Fetch Donations
-                let donations = [];
-                try {
-                    const donationsSnap = await getDocs(collection(db, "donations"));
-                    donations = donationsSnap.docs.map(d => d.data());
-                } catch (e) { console.error("Error fetching donations:", e); }
+                const quotes = await resolveQuery(quotesPromise, "quotes");
 
                 // Core Calculations
                 const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
@@ -407,31 +473,69 @@
                 renderChart('summary', users);
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
-                renderSweepstakesData(donations, users);
                 
+                // Fetch Inquiries
+                try {
+                    const inquiriesSnapshot = await inquiriesPromise;
+                    const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderInquiriesTable(inquiries);
+                } catch (inqError) {
+                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    document.getElementById('inquiries-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
+                // Fetch Reviews
+                try {
+                    const reviewsSnapshot = await reviewsPromise;
+                    const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderReviewsTable(reviews);
+                } catch (revError) {
+                    console.error("Could not load reviews. Missing Firestore rules?", revError);
+                    console.error("Could not load reviews. Missing Firestore rules?", revError.code, revError);
+                } catch (error) {
+                    console.log("Could not load reviews. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
+                    document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
+                try {
+                    const faqsSnapshot = await faqsPromise;
+                    const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderFaqsTable(faqs);
+                } catch (faqError) {
+                    console.log("Could not load FAQs", faqError);
+                    document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
+                }
+
                 // Fetch Feature Requests
                 try {
-                    const featureRequestsSnapshot = await getDocs(collection(db, "feature_requests"));
+                    const featureRequestsSnapshot = await featureRequestsPromise;
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
-                    console.log("Could not load feature requests. Missing Firestore rules?", frError);
+                    console.error("Could not load feature requests. Missing Firestore rules?", frError);
+                    console.error("Could not load feature requests. Missing Firestore rules?", frError.code, frError);
+                } catch (error) {
+                    console.log("Could not load feature requests. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
                 }
                 
                 // Download Stats
                 try {
-                    const statsRef = doc(db, "site_stats", "downloads");
-                    const statsDoc = await getDoc(statsRef);
+                    const statsDoc = await statsPromise;
                     if (statsDoc.exists()) {
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
                 } catch (e) {
+                    console.error("Error loading download stats:", e);
+                    console.error("Could not fetch site stats:", e.code, e);
+                } catch (error) {
+                    console.error("Error loading stats:", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
-                console.error("Error loading admin data:", error);
+                console.error("Error loading admin data:", error.code, error);
+                console.error("Error loading admin data:", error, error.code ? `(Code: ${error.code})` : '');
             }
         }
 
@@ -446,7 +550,9 @@
                 const name = b.customerName || 'N/A';
                 const phone = b.customerPhone || 'N/A';
                 const email = b.customerEmail || 'N/A';
-                const formattedDate = new Date(b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                const formattedDate = new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
                 if(b.status === 'cancelled') badgeClass = 'cancelled';
                 if(b.status === 'completed') badgeClass = 'active'; 
@@ -488,81 +594,33 @@
             });
         }
 
-        function renderSweepstakesData(donations, users) {
-            let totalRaised = 0;
-            const donorMap = {}; // uid -> total amount
-
-            donations.forEach(d => {
-                totalRaised += (d.amount || 0);
-                if (!donorMap[d.userId]) donorMap[d.userId] = 0;
-                donorMap[d.userId] += (d.amount || 0);
-            });
-
-            document.getElementById('sweep-total-raised').textContent = `$${totalRaised.toLocaleString()}`;
-            document.getElementById('sweep-total-donors').textContent = Object.keys(donorMap).length;
-
-            // Map back to user info for leaderboard
-            globalDonors = Object.keys(donorMap).map(uid => {
-                const u = users.find(user => user.id === uid);
-                return {
-                    uid: uid,
-                    email: u ? u.email : 'Unknown',
-                    username: u ? u.username : 'Unknown',
-                    amount: donorMap[uid]
-                };
-            }).sort((a, b) => b.amount - a.amount);
-
-            const tbody = document.getElementById('sweep-leaderboard-body');
+        function renderInquiriesTable(inquiries) {
+            const tbody = document.getElementById('inquiries-list-body');
             tbody.innerHTML = '';
-            
-            if (globalDonors.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No donations yet.</td></tr>';
-            } else {
-                globalDonors.forEach(donor => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${escapeHTML(donor.username)}<br><small style="color:var(--text-secondary)">${escapeHTML(donor.email)}</small></td>
-                        <td style="color:var(--accent-green); font-weight:bold;">$${donor.amount}</td>
-                        <td>${donor.amount}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                
-                // Draw Wheel
-                drawWheel(globalDonors);
+            if(inquiries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
-        }
+            inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            inquiries.forEach(inq => {
+                const row = document.createElement('tr');
+                const inqDate = inq.createdAt ? new Date(inq.createdAt.toDate ? inq.createdAt.toDate() : inq.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isResolved = inq.status === 'resolved';
+                const badgeClass = isResolved ? 'active' : 'pending';
+                const statusStr = isResolved ? 'resolved' : 'pending';
 
-        function drawWheel(donors) {
-            const wheel = document.getElementById('random-wheel');
-            wheel.innerHTML = '';
-            wheel.style.transform = `rotate(0deg)`; // reset
-            
-            if (donors.length === 0) return;
-
-            const totalEntries = donors.reduce((sum, d) => sum + d.amount, 0);
-            let currentAngle = 0;
-            const colors = ['#2563EB', '#DC2626', '#16A34A', '#FBBF24', '#8B5CF6', '#EC4899'];
-
-            donors.forEach((donor, i) => {
-                const sliceAngle = (donor.amount / totalEntries) * 360;
-                const slice = document.createElement('div');
-                slice.className = 'wheel-slice';
-                // A true dynamic CSS pie chart requires complex conic-gradients or SVG. 
-                // For a mock UI, we will just visually divide it equally if many users, or use conic-gradient.
+                row.innerHTML = `
+                    <td>${inqDate}</td>
+                    <td>${escapeHTML(inq.name)}</td>
+                    <td>${escapeHTML(inq.email)}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(inq.message)}</td>
+                    <td><span class="status-badge ${badgeClass}">${statusStr}</span></td>
+                    <td>
+                        ${!isResolved ? `<button class="btn-sm btn-action action-btn" data-type="inquiry" data-action="resolve" data-id="${escapeHTML(inq.id)}">Mark Resolved</button>` : ''}
+                        <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
             });
-            
-            // Generate conic gradient for the wheel
-            let gradientStr = [];
-            let startPct = 0;
-            donors.forEach((donor, i) => {
-                const pct = (donor.amount / totalEntries) * 100;
-                const endPct = startPct + pct;
-                gradientStr.push(`${colors[i % colors.length]} ${startPct}% ${endPct}%`);
-                startPct = endPct;
-            });
-            
-            wheel.style.background = `conic-gradient(${gradientStr.join(', ')})`;
         }
 
         function renderUserTable(users) {
@@ -572,7 +630,8 @@
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
                 const actionButton = user.isBanned ? `<button class="btn-sm btn-unban" data-id="${escapeHTML(user.id)}">Unban</button>` : `<button class="btn-sm btn-ban" data-id="${escapeHTML(user.id)}">Ban</button>`;
-                const signupDate = user.signupDate?.toDate().toLocaleDateString() || 'N/A';
+                const parsedDate = user.signupDate?.toDate ? user.signupDate.toDate() : new Date(user.signupDate);
+                const signupDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 const subStatus = user.subscription?.status === 'active' ? `<span class="subscription-text">Active Pro</span>` : `<span style="color: var(--text-secondary);">Free</span>`;
                 
                 row.innerHTML = `
@@ -586,16 +645,70 @@
             });
         }
 
+        function renderFaqsTable(faqs) {
+            const listBody = document.getElementById('faqs-list-body');
+            listBody.innerHTML = '';
+            if(faqs.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
+            }
+            faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            faqs.forEach(faq => {
+                const row = document.createElement('tr');
+                const qText = escapeHTML(faq.question || "N/A");
+                const aText = escapeHTML(faq.answer || "N/A");
+
+                const deleteBtn = `<button class="auth-btn" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;" onclick="deleteFaq('${faq.id}')">Delete</button>`;
+
+                row.innerHTML = `
+                    <td>${qText}</td>
+                    <td>${aText}</td>
+                    <td>${deleteBtn}</td>`;
+                listBody.appendChild(row);
+            });
+        }
+
+        function renderReviewsTable(reviews) {
+            const listBody = document.getElementById('reviews-list-body');
+            listBody.innerHTML = '';
+            if(reviews.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
+            }
+            reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            reviews.forEach(review => {
+                const row = document.createElement('tr');
+                const revDate = review.createdAt ? new Date(review.createdAt.toDate ? review.createdAt.toDate() : review.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isApproved = review.status === 'approved';
+                const statusStr = isApproved ? `<span class="status-badge active">Approved</span>` : `<span class="status-badge pending">Pending</span>`;
+                const approveButton = isApproved
+                     ? `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${escapeHTML(review.id)}">Unapprove</button>`
+                     : `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${escapeHTML(review.id)}">Approve</button>`;
+                const deleteButton = `<button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(review.id)}">Delete</button>`;
+
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(review.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                row.innerHTML = `
+                    <td>${revDate}</td>
+                    <td>${escapeHTML(review.userName) || "Unknown User"}</td>
+                    <td style="color: var(--gold);">${stars}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
+                    <td>${statusStr}</td>
+                    <td>${approveButton} ${deleteButton}</td>`;
+                listBody.appendChild(row);
+            });
+        }
+
         function renderFeatureRequestsTable(requests) {
             const listBody = document.getElementById('feature-request-list-body');
             listBody.innerHTML = '';
             if(requests.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
             }
-            requests.sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
             requests.forEach(req => {
                 const row = document.createElement('tr');
-                const reqDate = req.timestamp ? new Date(req.timestamp).toLocaleDateString() : new Date().toLocaleDateString();
+                const reqDate = req.timestamp ? new Date(req.timestamp.toDate ? req.timestamp.toDate() : req.timestamp).toLocaleDateString() : new Date().toLocaleDateString();
                 const tierBadge = req.isPro ? `<span class="status-badge pro">Priority (Pro)</span>` : `<span class="status-badge">Free Tier</span>`;
                 const isComplete = req.status === 'completed';
                 const statusStr = isComplete ? `<span style="color:var(--accent-green);">Completed</span>` : `<span style="color:var(--accent-yellow);">Pending</span>`;
@@ -622,7 +735,8 @@
             }
             subscribers.forEach(subscriber => {
                 const row = document.createElement('tr');
-                const subscriptionDate = subscriber.subscribedAt?.toDate().toLocaleDateString() || 'N/A';
+                const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
+                const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
                 newsletterListBody.appendChild(row);
             });
@@ -638,7 +752,12 @@
             const avgOrders = totalUsers > 0 ? (totalOrders / totalUsers).toFixed(2) : 0;
 
             const now = new Date();
-            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate) >= now);
+            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) >= now);
+            const upcoming = bookings.filter(b => {
+                if (b.status === 'cancelled') return false;
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                return parsedDate && !isNaN(parsedDate) && parsedDate >= now;
+            });
             const pendingQuotes = quotes.filter(q => q.status === 'pending');
 
             document.getElementById('total-users').textContent = totalUsers;
@@ -683,22 +802,48 @@
         function setupEventListeners() {
             // User Ban Toggle
             document.getElementById('user-list-body').addEventListener('click', async (e) => {
-                const userId = e.target.dataset.id;
+                const btn = e.target;
+                const userId = btn.dataset.id;
                 if (!userId) return;
-                const shouldBeBanned = e.target.classList.contains('btn-ban');
+                const shouldBeBanned = btn.classList.contains('btn-ban');
                 if (confirm(`Are you sure you want to ${shouldBeBanned ? 'ban' : 'unban'} this user?`)) {
-                    await updateDoc(doc(db, "users", userId), { isBanned: shouldBeBanned });
-                    loadAdminData();
+                    try {
+                        await updateDoc(doc(db, "users", userId), { isBanned: shouldBeBanned });
+
+                        // Optimistic UI Update
+                        const row = btn.closest('tr');
+                        const statusCell = row.cells[4];
+                        const actionCell = row.cells[5];
+
+                        if (shouldBeBanned) {
+                            statusCell.innerHTML = `<span class="status-badge banned">Banned</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-unban" data-id="${userId}">Unban</button>`;
+                        } else {
+                            statusCell.innerHTML = `<span class="status-badge active">Active</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-ban" data-id="${userId}">Ban</button>`;
+                        }
+                    } catch (err) {
+                        console.error("Error updating user ban status:", err.code, err);
+                    }
                 }
             });
             
             // Feature Request Complete Toggle
             document.getElementById('feature-request-list-body').addEventListener('click', async (e) => {
-                const reqId = e.target.dataset.id;
-                if (!reqId || !e.target.classList.contains('mark-complete-btn')) return;
+                const btn = e.target;
+                const reqId = btn.dataset.id;
+                if (!reqId || !btn.classList.contains('mark-complete-btn')) return;
                 if (confirm(`Mark this feature request as complete?`)) {
-                    await updateDoc(doc(db, "feature_requests", reqId), { status: 'completed' });
-                    loadAdminData();
+                    try {
+                        await updateDoc(doc(db, "feature_requests", reqId), { status: 'completed' });
+
+                        // Optimistic UI Update
+                        const row = btn.closest('tr');
+                        row.cells[4].innerHTML = `<span style="color:var(--accent-green);">Completed</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`;
+                    } catch (err) {
+                        console.error("Error updating feature request status:", err.code, err);
+                    }
                 }
             });
 
@@ -708,29 +853,135 @@
                 if(!btn) return;
                 const action = btn.dataset.action;
                 const id = btn.dataset.id;
-                if (action === 'cancel' && confirm("Cancel this booking?")) {
-                    await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
-                } else if (action === 'complete') {
-                    await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                try {
+                    const row = btn.closest('tr');
+                    const statusCell = row.cells[4];
+                    const actionCell = row.cells[5];
+
+                    if (action === 'cancel' && confirm("Cancel this booking?")) {
+                        await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
+                        statusCell.innerHTML = `<span class="status-badge cancelled">cancelled</span>`;
+                        actionCell.innerHTML = ``;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('upcoming-bookings');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    } else if (action === 'complete') {
+                        await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                        statusCell.innerHTML = `<span class="status-badge active">completed</span>`;
+                        actionCell.innerHTML = ``;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('upcoming-bookings');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    }
+                } catch (err) {
+                    console.error("Error updating booking status:", err.code, err);
                 }
-                loadAdminData();
+            });
+
+            // Reviews Action Buttons
+            document.getElementById('reviews-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'review') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                const row = btn.closest('tr');
+                const statusCell = row.cells[4];
+                const actionCell = row.cells[5];
+
+                try {
+                    if (action === 'approve') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'approved' });
+                        statusCell.innerHTML = `<span class="status-badge active">Approved</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${id}">Unapprove</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'unapprove') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+                        statusCell.innerHTML = `<span class="status-badge pending">Pending</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${id}">Approve</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
+                        await deleteDoc(doc(db, "reviews", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error managing review:", err);
+                    if (err.code) {
+                        console.error("Error code:", err.code);
+                    }
+                }
+            });
+
+            // Inquiries Action Buttons
+            document.getElementById('inquiries-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'inquiry') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                try {
+                    const row = btn.closest('tr');
+
+                    if (action === 'resolve') {
+                        await updateDoc(doc(db, "inquiries", id), { status: 'resolved' });
+                        row.cells[4].innerHTML = `<span class="status-badge active">resolved</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Delete this inquiry?")) {
+                        await deleteDoc(doc(db, "inquiries", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error modifying inquiry:", err);
+                }
             });
 
             // Quotes Action Buttons
             document.getElementById('quotes-list-body').addEventListener('click', async (e) => {
                 const btn = e.target.closest('.action-btn');
-                if(!btn) return;
+                if(!btn || btn.dataset.type !== 'quote') return;
                 const action = btn.dataset.action;
                 const id = btn.dataset.id;
-                if (action === 'responded') {
-                    await updateDoc(doc(db, "quotes", id), { status: 'responded' });
-                } else if (action === 'delete' && confirm("Delete this quote request?")) {
-                    await deleteDoc(doc(db, "quotes", id));
+                try {
+                    const row = btn.closest('tr');
+
+                    if (action === 'responded') {
+                        await updateDoc(doc(db, "quotes", id), { status: 'responded' });
+                        row.cells[2].innerHTML = `<span class="status-badge active">responded</span>`;
+                        row.cells[3].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${id}">Delete</button>`;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('pending-quotes');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    } else if (action === 'delete' && confirm("Delete this quote request?")) {
+                        await deleteDoc(doc(db, "quotes", id));
+                        row.remove();
+
+                        // Check if it was pending to update metrics
+                        if (row.cells[2].textContent.trim().toLowerCase() === 'pending') {
+                            const el = document.getElementById('pending-quotes');
+                            el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error modifying quote:", err.code, err);
                 }
-                loadAdminData();
             });
 
             // Navigation
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileCloseBtn = document.getElementById('mobile-close-btn');
+            const sidebar = document.getElementById('sidebar');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'true');
+                mobileCloseBtn.setAttribute('aria-expanded', 'true');
+            });
+
+            mobileCloseBtn.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                mobileCloseBtn.setAttribute('aria-expanded', 'false');
+            });
+
             document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
@@ -738,7 +989,11 @@
                     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
                     e.currentTarget.classList.add('active');
                     document.querySelector(e.currentTarget.getAttribute('href')).classList.add('active');
-                    if (window.innerWidth <= 768) { document.getElementById('sidebar').classList.remove('open'); }
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        mobileCloseBtn.setAttribute('aria-expanded', 'false');
+                    }
                 });
             });
 
@@ -804,7 +1059,51 @@
 
             document.getElementById('graph-selector').addEventListener('change', (e) => { renderChart(e.target.value); });
             document.getElementById('sign-out').addEventListener('click', () => { signOut(auth); });
+
+            document.getElementById('add-faq-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const msgEl = document.getElementById('faq-msg');
+                const question = document.getElementById('faq-question').value.trim();
+                const answer = document.getElementById('faq-answer').value.trim();
+
+                if(!question || !answer) return;
+
+                btn.disabled = true;
+                btn.textContent = "Adding...";
+                try {
+                    await addDoc(collection(db, "faqs"), {
+                        question: question,
+                        answer: answer,
+                        createdAt: serverTimestamp()
+                    });
+                    msgEl.style.color = "#16A34A";
+                    msgEl.textContent = "FAQ added successfully!";
+                    e.target.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } catch(error) {
+                    console.error("Error adding FAQ", error);
+                    msgEl.style.color = "#ef4444";
+                    msgEl.textContent = "Error adding FAQ.";
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Add FAQ";
+                }
+            });
         }
+
+        window.deleteFaq = async (id) => {
+            if(confirm("Are you sure you want to delete this FAQ?")) {
+                try {
+                    await deleteDoc(doc(db, "faqs", id));
+                    alert("FAQ deleted.");
+                    location.reload();
+                } catch(e) {
+                    console.error("Error deleting FAQ", e);
+                    alert("Failed to delete FAQ.");
+                }
+            }
+        };
     </script>
 </body>
 </html>
