@@ -8,3 +8,6 @@
 ## 2026-05-20 - [Unsplash Image Format Optimization]
 **Learning:** Unsplash image URLs use Imgix under the hood. Serving default format images (often large JPEGs) hurts frontend performance, specifically First Contentful Paint (FCP) and bandwidth usage.
 **Action:** Append `&auto=format` to Unsplash URLs. This allows the backend to automatically negotiate and serve the most optimal, modern image format (like WebP or AVIF) supported by the user's browser, safely falling back if needed.
+## 2025-05-24 - [Avoid Git Merge Diff Botched Syntax Replacements]
+**Learning:** When using `replace_with_git_merge_diff` to replace duplicated syntax, large blocks with overlapping tokens can confuse the patching logic, leading to severely mangled syntax or the removal of unintended blocks (like important imports).
+**Action:** When deduplicating code blocks inside large files, prefer smaller, more targeted `replace_with_git_merge_diff` chunks or use bash `sed`/`awk` directly for precise in-place removal to avoid massive side-effects.

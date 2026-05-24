@@ -384,13 +384,10 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument } from '/js/auth.js';
-        import { doc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { auth, db } from '/js/auth.js';
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from './js/utils.js';
+        import { escapeHTML } from '/js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -410,65 +407,40 @@
             }
         };
 
-        import { getUserRedirectPath } from '/js/auth.js';
-
         // Update Nav based on Auth Status
         let currentUser = null;
         let currentUserName = "Anonymous User";
 
-        async function initIndexAuth() {
-            try {
-                const user = await getAuthStatePromise();
+        function initIndexAuth() {
+            onAuthStateChanged(auth, async (user) => {
                 const authBtn = document.getElementById('nav-auth-btn');
                 const reviewContainer = document.getElementById('review-submission-container');
-
                 if (user) {
                     currentUser = user;
                     authBtn.textContent = "My Account";
-                    authBtn.href = "account.html";
                     reviewContainer.style.display = 'block';
 
-                    const userData = await ensureUserDocument(user);
-                    if (userData) {
-                        currentUserName = userData.name || userData.username || "Anonymous User";
+                    try {
+                        const userDoc = await getDoc(doc(db, "users", user.uid));
+                        if (userDoc.exists()) {
+                            currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
+                        }
+                    } catch (error) {
+                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
                     }
+
+                    const redirectPath = await getUserRedirectPath(user);
+                    if(redirectPath) {
+                        authBtn.href = redirectPath;
+                    }
+
                 } else {
                     currentUser = null;
+                    authBtn.textContent = "Sign In";
+                    authBtn.href = "sign in beta.html";
                     reviewContainer.style.display = 'none';
                 }
-            } catch (e) {
-                console.error("Error checking auth status on index:", e);
-        onAuthStateChanged(auth, async (user) => {
-            const authBtn = document.getElementById('nav-auth-btn');
-            const reviewContainer = document.getElementById('review-submission-container');
-            if (user) {
-                currentUser = user;
-                authBtn.textContent = "Client Portal";
-                authBtn.href = "account.html";
-                reviewContainer.style.display = 'block';
-                authBtn.textContent = "My Account";
-
-                try {
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists()) {
-                        currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
-                    }
-                } catch (e) {
-                    console.error("Could not fetch user profile", e.code, e);
-                } catch (error) {
-                    console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
-                }
-
-                const redirectPath = await getUserRedirectPath(user);
-                authBtn.href = redirectPath;
-                reviewContainer.style.display = 'block';
-
-            } else {
-                currentUser = null;
-                authBtn.textContent = "Sign In";
-                authBtn.href = "sign in beta.html";
-                reviewContainer.style.display = 'none';
-            }
+            });
         }
 
         initIndexAuth();
@@ -567,13 +539,6 @@
                     const safeRating = Math.max(0, Math.min(5, rawRating));
                     const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
 
-                    const safeRating = Math.max(0, Math.min(5, Number(r.rating) || 5));
-                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
-                    const safeRating = Math.max(0, Math.min(5, parseInt(r.rating) || 5));
-                    const stars = '★'.repeat(safeRating) + '☆'.repeat(5 - safeRating);
-                    // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                    const ratingValue = Math.max(0, Math.min(5, Number(r.rating) || 5));
-                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
@@ -582,9 +547,6 @@
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
-            } catch (e) {
-                console.error("Error loading reviews", e.code, e);
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--accent-red);">Unable to load reviews.</div>';
             } catch (error) {
                 console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
@@ -596,7 +558,6 @@
 
         // Submit Review
         document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
-        document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');
