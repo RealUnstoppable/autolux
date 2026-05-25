@@ -1,60 +1,21 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-// Dummy Firebase config for demonstration/testing since one wasn't provided
-const firebaseConfig = {
-    apiKey: "dummy-api-key",
-    authDomain: "dummy-project.firebaseapp.com",
-    projectId: "dummy-project",
-    storageBucket: "dummy-project.appspot.com",
-    messagingSenderId: "1234567890",
-    appId: "1:1234567890:web:1234567890"
-};
-
-// Initialize Firebase App globally
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-const getEnvVar = (key, fallback) => {
-    if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
-        return process.env[`REACT_APP_${key}`];
-    }
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
-        return import.meta.env[`VITE_${key}`];
-    }
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-// Helper to safely get environment variables across different bundlers/environments
-const getEnvVar = (key, fallback) => {
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Helper to safely get environment variables across different bundlers/environments
 const getEnvVar = (key, fallback) => {
-    // Webpack / Create React App
     if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
         return process.env[`REACT_APP_${key}`];
     }
-    // Vite
     if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
         return import.meta.env[`VITE_${key}`];
     }
-    // Static HTML / window injected
     if (typeof window !== 'undefined' && window.ENV && window.ENV[key]) {
         return window.ENV[key];
     }
     return fallback;
 };
 
-const apiKey = getEnvVar('FIREBASE_API_KEY', 'YOUR_API_KEY');
 const apiKey = getEnvVar('FIREBASE_API_KEY');
 
 if (!apiKey) {
@@ -68,29 +29,33 @@ const firebaseConfig = {
     storageBucket: getEnvVar('FIREBASE_STORAGE_BUCKET', "autolux-detailing.appspot.com"),
     messagingSenderId: getEnvVar('FIREBASE_MESSAGING_SENDER_ID', "mock-sender-id"),
     appId: getEnvVar('FIREBASE_APP_ID', "mock-app-id")
-    console.error("Critical Error: Firebase API Key is not defined. Ensure environment variables are configured correctly.");
-}
-
-const firebaseConfig = {
-    apiKey: apiKey,
-    authDomain: getEnvVar('FIREBASE_AUTH_DOMAIN', "autolux.realunstoppable.store"),
-    projectId: getEnvVar('FIREBASE_PROJECT_ID', "autolux-detailing"),
-    storageBucket: getEnvVar('FIREBASE_STORAGE_BUCKET', "autolux-detailing.appspot.com"),
-    messagingSenderId: getEnvVar('FIREBASE_MESSAGING_SENDER_ID'),
-    appId: getEnvVar('FIREBASE_APP_ID')
 };
 
 let app, auth, db;
 
 try {
+    const appName = "autolux";
+
     // Ensure no cross-contamination by checking if the SPECIFIC app already exists
-    const existingApp = getApps().find(a => a.name === "autolux");
-    app = existingApp ? existingApp : initializeApp(firebaseConfig, "autolux");
+    const apps = getApps();
+    const existingApp = apps.find(a => a.name === appName);
+
+    if (existingApp) {
+        app = existingApp;
+    } else {
+        app = initializeApp(firebaseConfig, appName);
+    }
 
     auth = getAuth(app);
     db = getFirestore(app);
+
+    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
+
 } catch (error) {
-    console.error("Firebase Initialization Error", error);
+    console.error("Firebase Initialization Error", {
+        code: error.code,
+        message: error.message
+    });
 }
 
 // Debounce utility function
@@ -104,21 +69,6 @@ export function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-    if (apiKey) {
-        // Ensure no cross-contamination by checking if the SPECIFIC app already exists
-        const existingApp = getApps().find(a => a.name === "autolux");
-        app = existingApp ? existingApp : initializeApp(firebaseConfig, "autolux");
-
-        auth = getAuth(app);
-        db = getFirestore(app);
-        console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-    }
-} catch (error) {
-    console.error("Firebase Initialization Error", {
-        code: error.code,
-        message: error.message
-    });
 }
 
 /**
@@ -183,7 +133,10 @@ export function getAuthStatePromise() {
  * @param {string} currentPathname - The current window.location.pathname.
  * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
  */
-export function getUserRedirectPath(user, userData, currentPathname) {
+export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    if (!userData && !currentPathname) {
+        return getUserRedirectPathAsync(user);
+    }
     const decodedPath = decodeURIComponent(currentPathname);
 
     if (!user) {
@@ -225,6 +178,10 @@ export function safeRedirect(targetUrl) {
 
     if (currentPath !== targetPath) {
         window.location.replace(targetUrl);
+    }
+}
+
+/**
  * Submits a new detailing request to Firestore.
  * @param {Object} requestData - The data for the detailing request.
  * @param {string} requestData.customerName
@@ -260,51 +217,9 @@ export async function submitDetailingRequest(requestData) {
             message: error.message
         });
         return null;
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-let app, auth, db;
-
-try {
-    const appName = "autolux";
-
-    // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
-    // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
-    const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
-        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
-    };
-
-    if (!window.ENV) {
-        console.warn("window.ENV is missing. Falling back to default configuration.");
     }
-
-    const apps = getApps();
-    const existingApp = apps.find(a => a.name === appName);
-
-    if (existingApp) {
-        app = existingApp;
-    } else {
-        app = initializeApp(firebaseConfig, appName);
-    }
-
-    auth = getAuth(app);
-    db = getFirestore(app);
-
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
-    console.error("Firebase connection error. Check App Check, CORS, or config.");
-    if (error.code) console.error("Error code:", error.code);
-    console.error(error);
 }
 
-export { app, auth, db };
 // Utility to wrap onAuthStateChanged in a promise
 export function waitForAuthState() {
     return new Promise((resolve, reject) => {
@@ -315,8 +230,10 @@ export function waitForAuthState() {
     });
 }
 
-// Utility to determine redirect path safely
-export async function getUserRedirectPath(user) {
+export { app, auth, db };
+
+// Second utility to determine redirect path safely depending on the signature used in different files
+export async function getUserRedirectPathAsync(user) {
     if (!user) return 'sign in beta.html';
 
     try {
@@ -331,13 +248,7 @@ export async function getUserRedirectPath(user) {
     return 'account.html';
 }
 
-export { auth, db };
-export { auth, db };
-} catch (error) {
-    console.error("Firebase initialization error:", error.message);
-    if (error.code) {
-        console.error("Error code:", error.code);
-    }
+// To support the two variations seen in grep
+export async function getUserRedirectPathFallback(user) {
+    return getUserRedirectPathAsync(user);
 }
-
-export { app, auth, db };

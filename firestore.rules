@@ -23,7 +23,9 @@ service cloud.firestore {
     // Users Collection
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow write: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Bookings Collection (Detailing Requests)
@@ -42,12 +44,14 @@ service cloud.firestore {
     }
 
     // Detailing Plans Collection
-    match /detailingPlans/{planId} {
+    match /detailing_plans/{planId} {
       // Clients can read their own plans, admins can read all
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
 
       // Only admins can create/update/delete detailing plans
-      allow write: if isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
     }
 
     // Reviews Collection
@@ -59,124 +63,59 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
 
       // Only admins can update (e.g. approve) or delete reviews
-      allow update, delete: if isAdmin();
-    }
-
-    // Default deny for any other collections
-    match /{document=**} {
-      allow read, write: if false;
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // Helper function to check if the user is an admin
-    // Function to check if the user is an admin
-    function isAdmin() {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-
-    match /bookings/{bookingId} {
-      // Allow read/update/delete if the user is the owner (userId matches) or if they are an admin
-      allow read, update, delete: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
-      // Allow creation if the userId matches their auth uid
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-    }
-
-    match /detailing_plans/{planId} {
-      // Allow read/update/delete if the user is the owner (userId matches) or if they are an admin
-      allow read, update, delete: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
-      // Allow creation if the userId matches their auth uid
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Default catch-all: deny everything else
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-      // Users can create a booking request if they are authenticated
-      allow create: if request.auth != null;
-      // Users can only read, update, or delete their own bookings
-      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Admins have full access to all bookings
-      allow read, write: if isAdmin();
-    }
-
-    match /users/{userId} {
-      // Users can read/write their own profile
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      // Admins have full access to users
-      allow read, write: if isAdmin();
-    }
-
-    // Default deny for all other collections
-    match /{document=**} {
-      allow read, write: if false;
-      // Check the users collection for the isAdmin field
-      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-
-    // Default rule: Deny everything
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Rules for detailing requests
-    match /detailingRequests/{requestId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-    }
-
-    // Rules for reviews
-    match /reviews/{reviewId} {
-      allow create: if request.auth != null;
-      allow read: if resource.data.status == "approved" || isAdmin();
-      allow update, delete: if isAdmin();
-    }
-
-    // Rules for newsletter subscribers
-    match /newsletterSubscribers/{email} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
-    }
-
-    // Rules for users
-    match /users/{userId} {
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow read, update: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
-    // Additional rules needed for admin.html
+    // Carts collection (needed for admin.html according to memory)
     match /carts/{cartId} {
-      allow read: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
-      allow write: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow create: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
     }
 
     match /orders/{orderId} {
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow write: if isAdmin();
-    }
-
-    match /bookings/{bookingId} {
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow write: if isAdmin();
-      allow create: if true;
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /quotes/{quoteId} {
-      allow read, write: if isAdmin();
-      allow create: if true;
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /feature_requests/{requestId} {
-      allow read, write: if isAdmin();
-      allow create: if request.auth != null;
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /site_stats/{docId} {
       allow read: if isAdmin();
-      allow write: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /newsletterSubscribers/{email} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Default deny for any other collections
+    match /{document=**} {
+      allow read: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }
