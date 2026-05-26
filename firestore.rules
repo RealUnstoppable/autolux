@@ -23,7 +23,10 @@ service cloud.firestore {
     // Users Collection
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow write: if isOwner(userId) || isAdmin();
+      // Allow users to write their own profile, but they cannot modify loyaltyPoints
+      allow create: if isOwner(userId) && request.resource.data.loyaltyPoints == 0;
+      allow update: if isAdmin() || (isOwner(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['loyaltyPoints'])));
+      allow delete: if isAdmin();
     }
 
     // Bookings Collection (Detailing Requests)

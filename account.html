@@ -235,6 +235,21 @@
                         <div style="margin-bottom: 10px;"><strong>Email:</strong> <span id="profile-email">...</span></div>
                         <div style="margin-bottom: 10px;"><strong>Phone:</strong> <span id="profile-phone">Not Provided</span></div>
                     </div>
+
+                    <!-- Loyalty Rewards Card -->
+                    <div class="card">
+                        <h2>AutoLux Rewards</h2>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <span style="font-size: 2.5rem; font-weight: 800; color: var(--gold);" id="loyalty-points">0</span>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">Points</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; overflow: hidden; margin-bottom: 10px;">
+                            <div id="loyalty-progress" style="background: var(--gold); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;" id="loyalty-tier-msg">
+                            0 / 500 Points for a Free Maintenance Wash
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Main Content -->
@@ -448,6 +463,13 @@
                 document.getElementById('profile-name').textContent = userData.name || "Valued Client";
                 document.getElementById('profile-email').textContent = user.email;
                 if (userData.phone) document.getElementById('profile-phone').textContent = userData.phone;
+
+                // Render Loyalty Points
+                const loyaltyPoints = userData.loyaltyPoints || 0;
+                document.getElementById('loyalty-points').textContent = loyaltyPoints;
+                const progressPct = Math.min((loyaltyPoints / 500) * 100, 100);
+                document.getElementById('loyalty-progress').style.width = `${progressPct}%`;
+                document.getElementById('loyalty-tier-msg').textContent = `${loyaltyPoints} / 500 Points for a Free Maintenance Wash`;
 
                 // Render Vehicles
                 const vContainer = document.getElementById('vehicles-container');

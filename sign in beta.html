@@ -253,7 +253,8 @@
                         email: user.email,
                         createdAt: new Date(),
                         vehicles: [],
-                        appointments: []
+                        appointments: [],
+                        loyaltyPoints: 0
                     });
                 }
 
@@ -499,7 +500,8 @@
                         signupDate: serverTimestamp(),
                         isAdmin: false,
                         vehicles: [],
-                        appointments: []
+                        appointments: [],
+                        loyaltyPoints: 0
                     });
                 } else {
                     userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -513,7 +515,8 @@
                             signupDate: serverTimestamp(),
                             isAdmin: false,
                             vehicles: [],
-                            appointments: []
+                            appointments: [],
+                            loyaltyPoints: 0
                         });
                     }
                 }

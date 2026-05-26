@@ -344,7 +344,7 @@
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
         let performanceChart;
@@ -558,7 +558,7 @@
                     <td><span class="status-badge ${badgeClass}">${(escapeHTML(b.status) || 'unknown').replace('_', ' ')}</span></td>
                     <td>
                         ${b.status !== 'cancelled' ? `<button class="btn-sm btn-danger action-btn" data-type="booking" data-action="cancel" data-id="${escapeHTML(b.id)}">Cancel</button>` : ''}
-                        ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
+                        ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}" data-user-id="${escapeHTML(b.userId)}">Mark Done</button>` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -863,6 +863,12 @@
                         await updateDoc(doc(db, "bookings", id), { status: 'completed' });
                         statusCell.innerHTML = `<span class="status-badge active">completed</span>`;
                         actionCell.innerHTML = ``;
+
+                        // Add Loyalty Points
+                        const userId = btn.dataset.userId;
+                        if (userId && userId !== 'undefined') {
+                             await updateDoc(doc(db, "users", userId), { loyaltyPoints: increment(100) });
+                        }
 
                         // Update metrics optimistically
                         const el = document.getElementById('upcoming-bookings');

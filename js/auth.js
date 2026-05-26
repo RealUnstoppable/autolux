@@ -146,7 +146,8 @@ export async function ensureUserDocument(user) {
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
-                contactInfo: {}
+                contactInfo: {},
+                loyaltyPoints: 0
             };
             await setDoc(userDocRef, newUserData);
             return newUserData;
