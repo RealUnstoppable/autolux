@@ -18,6 +18,9 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isOwner(userId) || isAdmin();
       allow read, update: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
       allow delete: if isAdmin();
@@ -30,6 +33,14 @@ service cloud.firestore {
     }
 
     // Detailing Plans Collection
+    match /detailing_plans/{planId} {
+      // Clients can read their own plans, admins can read all
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Only admins can create/update/delete detailing plans
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
     match /detailingPlans/{planId} {
       allow read, update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
@@ -39,6 +50,18 @@ service cloud.firestore {
     match /reviews/{reviewId} {
       allow read: if resource.data.status == 'approved' || isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Only admins can update (e.g. approve) or delete reviews
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Carts collection (needed for admin.html according to memory)
+    match /carts/{cartId} {
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow create: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
       allow update, delete: if isAdmin();
     }
 
@@ -50,6 +73,45 @@ service cloud.firestore {
 
     match /orders/{orderId} {
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /quotes/{quoteId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /feature_requests/{requestId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /site_stats/{docId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /newsletterSubscribers/{email} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Default deny for any other collections
+    match /{document=**} {
+      allow read: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
     }

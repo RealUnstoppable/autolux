@@ -129,7 +129,10 @@ export function waitForAuthState() {
  * @param {string} currentPathname - The current window.location.pathname.
  * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
  */
-export function getUserRedirectPath(user, userData, currentPathname) {
+export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    if (!userData && !currentPathname) {
+        return getUserRedirectPathAsync(user);
+    }
     const decodedPath = decodeURIComponent(currentPathname);
 
     if (!user) {
