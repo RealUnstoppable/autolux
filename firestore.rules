@@ -9,11 +9,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // Assuming admins have a custom claim 'admin' or an 'isAdmin' field on their user document
-      return isAuthenticated() && (
-        request.auth.token.admin == true ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
-      );
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
     function isOwner(userId) {
@@ -22,161 +18,64 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow write: if isOwner(userId) || isAdmin();
+      allow read, update: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow delete: if isAdmin();
     }
 
     // Bookings Collection (Detailing Requests)
     match /bookings/{bookingId} {
-      // Clients can read their own bookings, admins can read all
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-
-      // Clients can create new bookings, ensuring their own userId is attached
+      allow read, update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-
-      // Clients can update their own bookings (e.g. cancel), admins can update all
-      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-
-      // Only admins can delete bookings
-      allow delete: if isAdmin();
     }
 
     // Detailing Plans Collection
     match /detailingPlans/{planId} {
-      // Clients can read their own plans, admins can read all
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-
-      // Only admins can create/update/delete detailing plans
-      allow write: if isAdmin();
+      allow read, update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Reviews Collection
     match /reviews/{reviewId} {
-      // Anyone can read approved reviews
       allow read: if resource.data.status == 'approved' || isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-
-      // Authenticated users can create reviews
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-
-      // Only admins can update (e.g. approve) or delete reviews
       allow update, delete: if isAdmin();
     }
 
-    // Default deny for any other collections
-    match /{document=**} {
-      allow read, write: if false;
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // Helper function to check if the user is an admin
-    // Function to check if the user is an admin
-    function isAdmin() {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    // Additional rules needed for admin.html components
+    match /carts/{cartId} {
+      allow read, update, delete: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow create: if isAuthenticated() && request.auth.uid == cartId;
     }
 
-    match /bookings/{bookingId} {
-      // Allow read/update/delete if the user is the owner (userId matches) or if they are an admin
-      allow read, update, delete: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
-      // Allow creation if the userId matches their auth uid
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-    }
-
-    match /detailing_plans/{planId} {
-      // Allow read/update/delete if the user is the owner (userId matches) or if they are an admin
-      allow read, update, delete: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
-      // Allow creation if the userId matches their auth uid
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-    }
-
-    // Default catch-all: deny everything else
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-      // Users can create a booking request if they are authenticated
-      allow create: if request.auth != null;
-      // Users can only read, update, or delete their own bookings
-      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
-      // Admins have full access to all bookings
-      allow read, write: if isAdmin();
-    }
-
-    match /users/{userId} {
-      // Users can read/write their own profile
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      // Admins have full access to users
-      allow read, write: if isAdmin();
-    }
-
-    // Default deny for all other collections
-    match /{document=**} {
-      allow read, write: if false;
-      // Check the users collection for the isAdmin field
-      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-
-    // Default rule: Deny everything
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Rules for detailing requests
-    match /detailingRequests/{requestId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-    }
-
-    // Rules for reviews
-    match /reviews/{reviewId} {
-      allow create: if request.auth != null;
-      allow read: if resource.data.status == "approved" || isAdmin();
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAdmin();
     }
 
-    // Rules for newsletter subscribers
+    match /quotes/{quoteId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+
+    match /feature_requests/{requestId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAuthenticated();
+    }
+
+    match /site_stats/{docId} {
+      allow read, write: if isAdmin();
+    }
+
     match /newsletterSubscribers/{email} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
 
-    // Rules for users
-    match /users/{userId} {
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow read, update: if isAdmin() || (request.auth != null && request.auth.uid == userId);
-      allow delete: if isAdmin();
-    }
-
-    // Additional rules needed for admin.html
-    match /carts/{cartId} {
-      allow read: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
-      allow write: if isAdmin() || (request.auth != null && request.auth.uid == cartId);
-    }
-
-    match /orders/{orderId} {
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow write: if isAdmin();
-    }
-
-    match /bookings/{bookingId} {
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow write: if isAdmin();
-      allow create: if true;
-    }
-
-    match /quotes/{quoteId} {
-      allow read, write: if isAdmin();
-      allow create: if true;
-    }
-
-    match /feature_requests/{requestId} {
-      allow read, write: if isAdmin();
-      allow create: if request.auth != null;
-    }
-
-    match /site_stats/{docId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+    // Default catch-all: deny everything else
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
