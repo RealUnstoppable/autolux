@@ -490,67 +490,83 @@
 
         initIndexAuth();
 
+        // Render FAQs
+        function renderFaqs(faqs, container) {
+            container.innerHTML = '';
+
+            if (faqs.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No FAQs available at the moment.</div>';
+                return;
+            }
+
+            faqs.forEach(data => {
+                const question = escapeHTML(data.question || "");
+                const answer = escapeHTML(data.answer || "");
+
+                const el = document.createElement('div');
+                el.className = 'faq-item';
+                el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
+                el.innerHTML = `
+                    <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                        ${question}
+                        <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
+                    </button>
+                    <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                        <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
+                    </div>
+                `;
+
+                // Add click event for accordion toggle
+                const btn = el.querySelector('.faq-question');
+                const answerDiv = el.querySelector('.faq-answer');
+                const icon = el.querySelector('.faq-icon');
+
+                btn.addEventListener('click', () => {
+                    const isActive = el.classList.contains('active');
+
+                    // Close all others
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.classList.remove('active');
+                        item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                        item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                        item.querySelector('.faq-answer').style.maxHeight = '0';
+                    });
+
+                    // Toggle current
+                    if (!isActive) {
+                        el.classList.add('active');
+                        btn.setAttribute('aria-expanded', 'true');
+                        icon.style.transform = 'rotate(45deg)';
+                        // Approximate height calculation or set to scrollHeight
+                        answerDiv.style.maxHeight = answerDiv.scrollHeight + 20 + "px"; // +20 for padding
+                    }
+                });
+
+                container.appendChild(el);
+            });
+        }
+
         // Load FAQs
         async function loadFaqs() {
             const container = document.getElementById('faq-container');
+
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
+            const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+            if (cachedFaqs) {
+                renderFaqs(JSON.parse(cachedFaqs), container);
+                return;
+            }
+
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
 
             try {
                 const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
-                container.innerHTML = '';
 
-                if (snapshot.empty) {
-                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No FAQs available at the moment.</div>';
-                    return;
-                }
+                const faqs = snapshot.docs.map(doc => doc.data());
+                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const question = escapeHTML(data.question || "");
-                    const answer = escapeHTML(data.answer || "");
-
-                    const el = document.createElement('div');
-                    el.className = 'faq-item';
-                    el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
-                    el.innerHTML = `
-                        <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
-                            ${question}
-                            <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
-                        </button>
-                        <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
-                            <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
-                        </div>
-                    `;
-
-                    // Add click event for accordion toggle
-                    const btn = el.querySelector('.faq-question');
-                    const answerDiv = el.querySelector('.faq-answer');
-                    const icon = el.querySelector('.faq-icon');
-
-                    btn.addEventListener('click', () => {
-                        const isActive = el.classList.contains('active');
-
-                        // Close all others
-                        document.querySelectorAll('.faq-item').forEach(item => {
-                            item.classList.remove('active');
-                            item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-                            item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
-                            item.querySelector('.faq-answer').style.maxHeight = '0';
-                        });
-
-                        // Toggle current
-                        if (!isActive) {
-                            el.classList.add('active');
-                            btn.setAttribute('aria-expanded', 'true');
-                            icon.style.transform = 'rotate(45deg)';
-                            // Approximate height calculation or set to scrollHeight
-                            answerDiv.style.maxHeight = answerDiv.scrollHeight + 20 + "px"; // +20 for padding
-                        }
-                    });
-
-                    container.appendChild(el);
-                });
+                renderFaqs(faqs, container);
             } catch (e) {
                 console.error("Error loading FAQs", e);
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';

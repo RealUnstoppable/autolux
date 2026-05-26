@@ -11,3 +11,6 @@
 ## 2025-05-24 - [Avoid Git Merge Diff Botched Syntax Replacements]
 **Learning:** When using `replace_with_git_merge_diff` to replace duplicated syntax, large blocks with overlapping tokens can confuse the patching logic, leading to severely mangled syntax or the removal of unintended blocks (like important imports).
 **Action:** When deduplicating code blocks inside large files, prefer smaller, more targeted `replace_with_git_merge_diff` chunks or use bash `sed`/`awk` directly for precise in-place removal to avoid massive side-effects.
+## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
+**Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
+**Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
