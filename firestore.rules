@@ -9,6 +9,8 @@ service cloud.firestore {
     }
 
     function isAdmin() {
+      // Admins are identified by an 'isAdmin' field on their user document
+      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
       return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
@@ -18,6 +20,8 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
+      allow create: if isOwner(userId);
+      allow read, update: if isOwner(userId) || isAdmin();
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isAuthenticated() && request.auth.uid == userId;
       allow update: if isOwner(userId) || isAdmin();
@@ -28,12 +32,36 @@ service cloud.firestore {
 
     // Bookings Collection (Detailing Requests)
     match /bookings/{bookingId} {
+      // Clients can create new bookings, ensuring their own userId is attached
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      // Clients can read and update their own bookings (e.g. cancel), admins can read/update all
+      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+
+      // Only admins can delete bookings
+      allow delete: if isAdmin();
       allow read, update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     // Detailing Plans Collection
     match /detailing_plans/{planId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Clients can read and update their own plans, admins can read/update all
+      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /detailingPlans/{planId} {
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // Inquiries Collection
+    match /inquiries/{inquiryId} {
+      allow create: if true; // Public can create
+      allow read, update, delete: if isAdmin();
       // Clients can read their own plans, admins can read all
       allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
 
@@ -52,6 +80,10 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
 
       // Only admins can update (e.g. approve) or delete reviews
+      allow update, delete: if isAdmin();
+    }
+
+    // Newsletter Subscribers
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -102,6 +134,34 @@ service cloud.firestore {
     match /newsletterSubscribers/{email} {
       allow read: if isAdmin();
       allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admin protected collections
+    match /carts/{cartId} {
+      allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    match /quotes/{quoteId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+    }
+
+    match /feature_requests/{requestId} {
+      allow create: if isAuthenticated();
+      allow read, write: if isAdmin();
+    }
+
+    match /site_stats/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Default catch-all deny
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
