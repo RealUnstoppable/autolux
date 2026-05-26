@@ -364,7 +364,8 @@
             </div>
             <div style="margin-bottom: 15px;">
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
-                <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <textarea id="review-comment" rows="4" maxlength="1000" aria-describedby="review-char-count" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <div id="review-char-count" style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">0 / 1000</div>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
@@ -637,9 +638,22 @@
         // Load reviews on page load
         loadReviews();
 
+        // Review Character Count
+        const reviewComment = document.getElementById('review-comment');
+        const reviewCharCount = document.getElementById('review-char-count');
+        if (reviewComment && reviewCharCount) {
+            const updateCharCount = () => {
+                const count = reviewComment.value.length;
+                reviewCharCount.textContent = `${count} / 1000`;
+            };
+            // Initialize
+            updateCharCount();
+            // Listen for input
+            reviewComment.addEventListener('input', updateCharCount);
+        }
+
         // Submit Review
         document.getElementById('review-submission-container').addEventListener('submit', async (e) => {
-        document.getElementById('review-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-review-btn');
             const msgEl = document.getElementById('review-msg');

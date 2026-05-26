@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2026-05-26 - Accessible Character Counter Initialization
+**Learning:** Adding a character counter with `aria-live="polite"` causes severe screen reader spam on every keystroke. Also, simply attaching an `input` event listener is insufficient; the counter must be initialized on load to handle browser-restored or pre-filled text.
+**Action:** When adding character counters, do NOT use `aria-live`. Instead, use `aria-describedby` on the textarea pointing to the counter's ID. Ensure the update function is explicitly called once during initialization before binding it to the `input` event.
