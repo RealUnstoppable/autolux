@@ -1,42 +1,27 @@
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-// Helper to safely get environment variables across different bundlers/environments
-const getEnvVar = (key, fallback) => {
-    if (typeof process !== 'undefined' && process.env && process.env[`REACT_APP_${key}`]) {
-        return process.env[`REACT_APP_${key}`];
-    }
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
-        return import.meta.env[`VITE_${key}`];
-    }
-    if (typeof window !== 'undefined' && window.ENV && window.ENV[key]) {
-        return window.ENV[key];
-    }
-    return fallback;
-};
-
-const apiKey = getEnvVar('FIREBASE_API_KEY');
-
-if (!apiKey) {
-    console.warn("Firebase API Key is not defined. Ensure window.ENV.FIREBASE_API_KEY is configured correctly. Mocking will be needed for testing.");
-}
-
-const firebaseConfig = {
-    apiKey: apiKey || "mock-api-key",
-    authDomain: getEnvVar('FIREBASE_AUTH_DOMAIN', "autolux.realunstoppable.store"),
-    projectId: getEnvVar('FIREBASE_PROJECT_ID', "autolux-detailing"),
-    storageBucket: getEnvVar('FIREBASE_STORAGE_BUCKET', "autolux-detailing.appspot.com"),
-    messagingSenderId: getEnvVar('FIREBASE_MESSAGING_SENDER_ID', "mock-sender-id"),
-    appId: getEnvVar('FIREBASE_APP_ID', "mock-app-id")
-};
 
 let app, auth, db;
 
 try {
     const appName = "autolux";
 
-    // Ensure no cross-contamination by checking if the SPECIFIC app already exists
+    // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
+    // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
+    const firebaseConfig = {
+        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
+        projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+        appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
+    };
+
+    if (!window.ENV) {
+        console.warn("window.ENV is missing. Falling back to default configuration.");
+    }
+
     const apps = getApps();
     const existingApp = apps.find(a => a.name === appName);
 
@@ -52,11 +37,11 @@ try {
     console.log("Firebase initialized successfully for autolux.realunstoppable.store");
 
 } catch (error) {
-    console.error("Firebase Initialization Error", {
-        code: error.code,
-        message: error.message
-    });
+    console.error("Firebase Initialization Error", error.message);
+    if (error.code) console.error("Error code:", error.code);
 }
+
+export { app, auth, db };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -102,7 +87,8 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error);
+        console.error("Error ensuring user document:", error.message);
+        if (error.code) console.error("Error code:", error.code);
         return null;
     }
 }
@@ -122,6 +108,16 @@ export function getAuthStatePromise() {
             }
             resolve(user);
         });
+    });
+}
+
+// Utility to wrap onAuthStateChanged in a promise
+export function waitForAuthState() {
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            unsubscribe();
+            resolve(user);
+        }, reject);
     });
 }
 
@@ -212,43 +208,8 @@ export async function submitDetailingRequest(requestData) {
         console.log("Detailing request submitted successfully with ID:", docRef.id);
         return docRef.id;
     } catch (error) {
-         console.error("Error submitting detailing request:", {
-            code: error.code,
-            message: error.message
-        });
+         console.error("Error submitting detailing request:", error.message);
+         if (error.code) console.error("Error code:", error.code);
         return null;
     }
-}
-
-// Utility to wrap onAuthStateChanged in a promise
-export function waitForAuthState() {
-    return new Promise((resolve, reject) => {
-        const unsubscribe = onAuthStateChanged(auth, user => {
-            unsubscribe();
-            resolve(user);
-        }, reject);
-    });
-}
-
-export { app, auth, db };
-
-// Second utility to determine redirect path safely depending on the signature used in different files
-export async function getUserRedirectPathAsync(user) {
-    if (!user) return 'sign in beta.html';
-
-    try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists() && userDoc.data().isAdmin) {
-            return 'admin.html';
-        }
-    } catch (e) {
-        console.error("Error determining user role:", e);
-    }
-
-    return 'account.html';
-}
-
-// To support the two variations seen in grep
-export async function getUserRedirectPathFallback(user) {
-    return getUserRedirectPathAsync(user);
 }
