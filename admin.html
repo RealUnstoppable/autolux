@@ -545,12 +545,13 @@
             if(bookings.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             bookings.forEach(b => {
                 const row = document.createElement('tr');
                 const name = b.customerName || 'N/A';
                 const phone = b.customerPhone || 'N/A';
                 const email = b.customerEmail || 'N/A';
-                const formattedDate = new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
                 const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
                 const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
@@ -568,8 +569,9 @@
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderQuotesTable(quotes) {
@@ -578,6 +580,8 @@
             if(quotes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             quotes.forEach(q => {
                 const row = document.createElement('tr');
                 const badgeClass = q.status === 'responded' ? 'active' : 'pending';
@@ -590,8 +594,9 @@
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderInquiriesTable(inquiries) {
@@ -600,6 +605,8 @@
             if(inquiries.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             inquiries.forEach(inq => {
                 const row = document.createElement('tr');
@@ -619,13 +626,16 @@
                         <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderUserTable(users) {
             const userListBody = document.getElementById('user-list-body');
             userListBody.innerHTML = '';
+            // ⚡ Bolt Optimization: Use DocumentFragment to batch DOM insertions, preventing layout thrashing and reducing rendering time
+            const fragment = document.createDocumentFragment();
             users.filter(user => !user.isAdmin).forEach(user => {
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
@@ -641,16 +651,19 @@
                     <td>${subStatus}</td>
                     <td>${statusBadge}</td>
                     <td>${actionButton}</td>`;
-                userListBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            userListBody.appendChild(fragment);
         }
 
         function renderFaqsTable(faqs) {
             const listBody = document.getElementById('faqs-list-body');
             listBody.innerHTML = '';
             if(faqs.length === 0) {
-                listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
+                listBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             faqs.forEach(faq => {
                 const row = document.createElement('tr');
@@ -663,16 +676,19 @@
                     <td>${qText}</td>
                     <td>${aText}</td>
                     <td>${deleteBtn}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderReviewsTable(reviews) {
             const listBody = document.getElementById('reviews-list-body');
             listBody.innerHTML = '';
             if(reviews.length === 0) {
-                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
+                listBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             reviews.forEach(review => {
                 const row = document.createElement('tr');
@@ -695,16 +711,19 @@
                     <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
                     <td>${statusStr}</td>
                     <td>${approveButton} ${deleteButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderFeatureRequestsTable(requests) {
             const listBody = document.getElementById('feature-request-list-body');
             listBody.innerHTML = '';
             if(requests.length === 0) {
-                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
+                listBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
             requests.forEach(req => {
                 const row = document.createElement('tr');
@@ -723,23 +742,27 @@
                     <td>${tierBadge}</td>
                     <td>${statusStr}</td>
                     <td>${actionButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderNewsletterTable(subscribers) {
             const newsletterListBody = document.getElementById('newsletter-list-body');
             newsletterListBody.innerHTML = '';
             if(subscribers.length === 0) {
-                newsletterListBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`; return;
+                newsletterListBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing and reduce painting times
+            const fragment = document.createDocumentFragment();
             subscribers.forEach(subscriber => {
                 const row = document.createElement('tr');
                 const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
                 const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
-                newsletterListBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            newsletterListBody.appendChild(fragment);
         }
 
         function calculatePerformanceMetrics(users, carts, orders = [], bookings = [], quotes = []) {
