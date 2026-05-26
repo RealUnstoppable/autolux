@@ -131,13 +131,13 @@
                             sessionStorage.setItem('servicesCache', JSON.stringify(defaultPackages));
                             renderServices(defaultPackages, select);
                         }
-                    } catch(e) {
-                        console.error("Failed to fetch services from DB, using fallback", e);
+                    } catch(error) {
+                        console.error("Failed to fetch services from DB, using fallback:", { code: error.code, message: error.message, details: error });
                         renderServices(defaultPackages, select);
                     }
                 }
-            } catch (e) {
-                console.error("Error loading services", e);
+            } catch (error) {
+                console.error("Error loading services:", { code: error.code, message: error.message, details: error });
                 select.innerHTML = '<option value="">Error loading packages</option>';
             }
         }
@@ -177,7 +177,7 @@
                 document.getElementById('booking-form').reset();
                 setTimeout(() => { window.location.href = 'account.html'; }, 2000);
             } catch (error) {
-                console.error("Booking Error:", error);
+                console.error("Booking Error:", { code: error.code, message: error.message, details: error });
                 msg.style.color = '#ef4444';
                 msg.textContent = 'Failed to submit booking. Please try again.';
                 btn.disabled = false;
@@ -460,7 +460,7 @@
                 msgEl.textContent = "Booking request submitted successfully! We will contact you shortly.";
                 document.getElementById('booking-form').reset();
             } catch (error) {
-                console.error("Error submitting booking:", error);
+                console.error("Error submitting booking:", { code: error.code, message: error.message, details: error });
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "An error occurred while submitting your request. Please try again.";
             } finally {
@@ -662,7 +662,7 @@
                 mainContent.style.display = 'block';
 
             } catch (error) {
-                console.error("Error initializing booking:", error);
+                console.error("Error initializing booking:", { code: error.code, message: error.message, details: error });
                 overlayText.textContent = "Error loading booking system.";
                 document.querySelector('.spinner').style.display = 'none';
             }
@@ -692,7 +692,7 @@
                 sessionStorage.setItem(cacheKey, JSON.stringify(packages));
                 renderServices(packages);
             } catch (error) {
-                console.error("Error loading services:", error);
+                console.error("Error loading services:", { code: error.code, message: error.message, details: error });
                 servicesContainer.innerHTML = '<div style="color:var(--accent-red); grid-column: 1/-1;">Error loading packages. Try again later.</div>';
             }
         }
@@ -799,7 +799,7 @@
                 populateDropdown(services);
 
             } catch (error) {
-                console.error("Error loading service menu:", error);
+                console.error("Error loading service menu:", { code: error.code, message: error.message, details: error });
                 packageSelect.innerHTML = '<option value="" disabled selected>Error loading packages.</option>';
             }
         }
@@ -897,8 +897,8 @@
                 document.getElementById('loading-overlay').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
 
-            } catch (e) {
-                console.error("Initialization error:", e);
+            } catch (error) {
+                console.error("Initialization error:", { code: error.code, message: error.message, details: error });
                 document.getElementById('loading-overlay').innerHTML = `<p style="color:#ef4444;">Error loading scheduling system. Please refresh.</p>`;
             }
         }
@@ -1053,7 +1053,7 @@
                 }, 2000);
 
             } catch (error) {
-                console.error("Error saving booking:", error);
+                console.error("Error saving booking:", { code: error.code, message: error.message, details: error });
                 msgEl.style.color = 'var(--accent-red)';
                 msgEl.textContent = 'Failed to submit booking. Please try again.';
                 bookBtn.disabled = false;
@@ -1083,8 +1083,8 @@
                     window.location.replace('account.html');
                 }, 2000);
 
-            } catch (err) {
-                console.error("Booking write error:", err);
+            } catch (error) {
+                console.error("Booking write error:", { code: error.code, message: error.message, details: error });
                 msgEl.className = 'msg error';
                 msgEl.textContent = "Failed to secure booking. Try again.";
                 submitBtn.disabled = false;

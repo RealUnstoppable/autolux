@@ -419,7 +419,7 @@
                 // Fire them off concurrently
                 const [userSnap, appointmentsSnap] = await Promise.all([
                     getDoc(userRef),
-                    getDocs(appointmentsQuery).catch(e => { console.error("Error fetching bookings:", e); return { docs: [] }; })
+                    getDocs(appointmentsQuery).catch(error => { console.error("Error fetching bookings:", { code: error.code, message: error.message, details: error }); return { docs: [] }; })
                 ]);
 
                 let userData = {};
@@ -433,7 +433,7 @@
                         vehicles: [], // Initialize empty arrays for bindings
                         createdAt: new Date().toISOString()
                     };
-                    await setDoc(userRef, userData).catch(e => console.error("Failed to init profile:", e));
+                    await setDoc(userRef, userData).catch(error => console.error("Failed to init profile:", { code: error.code, message: error.message, details: error }));
                 } else {
                     userData = userSnap.data();
 
@@ -485,7 +485,7 @@
                 appContent.style.display = 'block';
 
             } catch (error) {
-                console.error("Critical error loading portal:", error);
+                console.error("Critical error loading portal:", { code: error.code, message: error.message, details: error });
                 loadingOverlay.innerHTML = `<div style="color: #ef4444; font-weight: 600;">Failed to load portal data. Please refresh.</div>`;
             }
         });
@@ -493,7 +493,7 @@
         document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.replace('index.html');
-            }).catch(e => console.error("Logout failed:", e));
+            }).catch(error => console.error("Logout failed:", { code: error.code, message: error.message, details: error }));
         });
 
         // Basic HTML escape helper to prevent XSS in rendering
@@ -550,8 +550,8 @@
                             });
                             msg.style.display = 'block';
                             setTimeout(() => msg.style.display = 'none', 2000);
-                        } catch (e) {
-                            console.error("Error saving profile", e);
+                        } catch (error) {
+                            console.error("Error saving profile:", { code: error.code, message: error.message, details: error });
                         }
                     }, 1000);
 
@@ -618,7 +618,7 @@
                 portal.style.display = 'block';
 
             } catch (error) {
-                console.error("Error loading portal data:", error);
+                console.error("Error loading portal data:", { code: error.code, message: error.message, details: error });
                 spinner.textContent = "Error loading data. Please try again.";
             }
         }
@@ -664,7 +664,7 @@
                 mainContent.style.display = 'block';
 
             } catch (error) {
-                console.error("Initialization error:", error);
+                console.error("Initialization error:", { code: error.code, message: error.message, details: error });
                 loadingOverlay.innerHTML = `<p style="color: #ef4444;">Error loading profile. Please refresh.</p>`;
             }
         }
@@ -680,8 +680,8 @@
                 // Sort client-side if no index exists
                 docs.sort((a,b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
                 return docs;
-            } catch (e) {
-                console.error("Error fetching appointments:", e);
+            } catch (error) {
+                console.error("Error fetching appointments:", { code: error.code, message: error.message, details: error });
                 return [];
             }
         }
@@ -764,8 +764,8 @@
                 });
                 msgEl.style.display = 'block';
                 setTimeout(() => msgEl.style.display = 'none', 2000);
-            } catch (e) {
-                console.error("Failed to save profile:", e);
+            } catch (error) {
+                console.error("Failed to save profile:", { code: error.code, message: error.message, details: error });
             }
         }
 
@@ -781,8 +781,8 @@
                 await updateDoc(userRef, { vehicles: vehicles });
                 msgEl.style.display = 'block';
                 setTimeout(() => msgEl.style.display = 'none', 2000);
-             } catch (e) {
-                 console.error("Failed to save vehicle:", e);
+             } catch (error) {
+                 console.error("Failed to save vehicle:", { code: error.code, message: error.message, details: error });
              }
         }
 
@@ -858,7 +858,7 @@
                 setupEventListeners();
 
             } catch (error) {
-                console.error("Error loading portal:", error);
+                console.error("Error loading portal:", { code: error.code, message: error.message, details: error });
                 document.getElementById('loading-overlay').innerHTML = `<p style="color:var(--error);">Error loading data. Please refresh.</p>`;
             }
         }
@@ -931,8 +931,8 @@
                         await updateDoc(doc(db, "users", currentUser.uid), { name: newName });
                         msg.style.display = 'block';
                         setTimeout(() => msg.style.display = 'none', 2000);
-                    } catch (err) {
-                        console.error("Error updating name:", err);
+                    } catch (error) {
+                        console.error("Error updating name:", { code: error.code, message: error.message, details: error });
                     }
                 });
             });
@@ -952,8 +952,8 @@
                     await updateDoc(userRef, { vehicles: vehicles });
                     renderVehicles(vehicles);
                     input.value = '';
-                } catch (err) {
-                    console.error("Error adding vehicle:", err);
+                } catch (error) {
+                    console.error("Error adding vehicle:", { code: error.code, message: error.message, details: error });
                 }
             });
 
@@ -969,8 +969,8 @@
 
                         await updateDoc(userRef, { vehicles: vehicles });
                         renderVehicles(vehicles);
-                    } catch (err) {
-                        console.error("Error removing vehicle:", err);
+                    } catch (error) {
+                        console.error("Error removing vehicle:", { code: error.code, message: error.message, details: error });
                     }
                 }
             });

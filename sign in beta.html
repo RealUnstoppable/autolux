@@ -220,8 +220,8 @@
                               window.location.replace('account.html');
                           }
                      }
-                } catch(e) {
-                     console.error("Error fetching user profile", e);
+                } catch(error) {
+                     console.error("Error fetching user profile:", { code: error.code, message: error.message, details: error });
                      if (window.location.pathname !== '/account.html') {
                          window.location.replace('account.html');
                      }
@@ -259,7 +259,7 @@
 
                 // onAuthStateChanged will handle the redirect
             } catch (error) {
-                console.error("Login Error:", error);
+                console.error("Login Error:", { code: error.code, message: error.message, details: error });
                 errorMsg.textContent = 'Invalid email or password.';
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
@@ -323,8 +323,8 @@
                         safeRedirect(redirectPath);
                     }
                 }
-            } catch (e) {
-                 console.error("Initial auth check failed", e);
+            } catch (error) {
+                 console.error("Initial auth check failed:", { code: error.code, message: error.message, details: error });
             }
         }
 
@@ -407,7 +407,7 @@
                 await signInWithEmailAndPassword(auth, email, password);
                 // onAuthStateChanged will handle the redirect
             } catch (error) {
-                console.error("Login failed:", error);
+                console.error("Login failed:", { code: error.code, message: error.message, details: error });
                 msgEl.textContent = "Invalid email or password. Please try again.";
                 loginBtn.disabled = false;
                 loginBtn.textContent = "Sign In";
@@ -462,7 +462,7 @@
                 }
 
             } catch (error) {
-                console.error("Auth Error:", error);
+                console.error("Auth Error:", { code: error.code, message: error.message, details: error });
 
                 // Friendly error messages
                 let msg = "An error occurred. Please try again.";
@@ -523,7 +523,7 @@
                 window.location.replace(redirectPath);
 
             } catch (error) {
-                console.error("Auth error:", error);
+                console.error("Auth error:", { code: error.code, message: error.message, details: error });
                 errorMsg.textContent = error.message;
                 errorMsg.style.display = 'block';
             } finally {

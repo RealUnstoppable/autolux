@@ -504,7 +504,7 @@
                             currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                         }
                     } catch (error) {
-                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+                        console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
                     }
 
                     const redirectPath = await getUserRedirectPath(user);
@@ -584,8 +584,8 @@
 
                     container.appendChild(el);
                 });
-            } catch (e) {
-                console.error("Error loading FAQs", e);
+            } catch (error) {
+                console.error("Error loading FAQs:", { code: error.code, message: error.message, details: error });
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
             }
         }
@@ -629,7 +629,7 @@
                     container.appendChild(el);
                 });
             } catch (error) {
-                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                console.error("Error loading reviews:", { code: error.code, message: error.message, details: error });
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
             }
         }
@@ -682,7 +682,7 @@
                 msgEl.textContent = "Review submitted! It will appear once approved by an admin.";
                 document.getElementById('review-comment').value = '';
             } catch (error) {
-                console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
+                console.error("Error submitting review:", { code: error.code, message: error.message, details: error });
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
@@ -724,7 +724,7 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(error) {
-                console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
+                console.error("Error subscribing to newsletter:", { code: error.code, message: error.message, details: error });
                 msg.style.color = "#ef4444";
                 msg.textContent = "Error subscribing. Please try again.";
             } finally {
@@ -765,7 +765,7 @@
                 msgEl.textContent = "Message sent successfully! We'll be in touch.";
                 document.getElementById('inquiry-form').reset();
             } catch (error) {
-                console.error("Error submitting inquiry:", error.message, error.code);
+                console.error("Error submitting inquiry:", { code: error.code, message: error.message, details: error });
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error sending message. Please try again later.";
             } finally {
