@@ -11,7 +11,6 @@ service cloud.firestore {
     function isAdmin() {
       // Admins are identified by an 'isAdmin' field on their user document
       return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
     function isOwner(userId) {
@@ -20,13 +19,16 @@ service cloud.firestore {
 
     // Users Collection
     match /users/{userId} {
-      allow create: if isOwner(userId);
-      allow read, update: if isOwner(userId) || isAdmin();
+      // Users can create their own profile, but cannot set themselves as admin
+      allow create: if isOwner(userId) && (!request.resource.data.keys().hasAny(['isAdmin']) || request.resource.data.isAdmin == false);
+
+      // Users can read their own profile, admins can read all
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      allow update: if isOwner(userId) || isAdmin();
-      allow read, update: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
+
+      // Users can update their own profile EXCEPT for the isAdmin field. Admins can update anything.
+      allow update: if isAdmin() || (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']));
+
+      // Only admins can delete users
       allow delete: if isAdmin();
     }
 
