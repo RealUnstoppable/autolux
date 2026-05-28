@@ -579,19 +579,51 @@
         // Load Reviews
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
+
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            const cachedReviews = sessionStorage.getItem('autolux_reviews');
+            if (cachedReviews) {
+                renderReviews(JSON.parse(cachedReviews), container);
+                return;
+            }
+
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
 
-                const reviews = querySnapshot.docs.map(doc => doc.data());
-                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                const reviews = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    // Convert timestamp to serializable format for caching
+                    if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    } else if (data.createdAt && data.createdAt.seconds) {
+                         data.createdAt = new Date(data.createdAt.seconds * 1000).toISOString();
+                    }
+                    return data;
+                });
 
-                if (reviews.length === 0) {
-                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                    return;
+                reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+                try {
+                    sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
+                } catch (e) {
+                    console.warn("Could not write to sessionStorage", e);
                 }
 
-                container.innerHTML = '';
+                renderReviews(reviews, container);
+            } catch (error) {
+                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
+            }
+        }
+
+        function renderReviews(reviews, container) {
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
 
                 reviews.forEach(r => {
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
@@ -606,10 +638,6 @@
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
-            } catch (error) {
-                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
-            }
         }
 
         // Load reviews on page load
