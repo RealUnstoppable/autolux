@@ -350,7 +350,8 @@
             </div>
             <div style="margin-bottom: 15px;">
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
-                <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <textarea id="review-comment" maxlength="1000" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <div id="review-char-count" aria-hidden="true" style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">0 / 1000</div>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
@@ -408,7 +409,8 @@
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
-                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                    <textarea id="inq-message" maxlength="1000" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                    <div id="inq-char-count" aria-hidden="true" style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">0 / 1000</div>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
                 <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
@@ -709,6 +711,34 @@
                 btn.textContent = "Subscribe";
             }
         });
+
+        // Character Counters Logic
+        function setupCharCounters() {
+            const reviewComment = document.getElementById('review-comment');
+            const reviewCounter = document.getElementById('review-char-count');
+
+            if (reviewComment && reviewCounter) {
+                const updateReviewCount = () => {
+                    const length = reviewComment.value.length;
+                    reviewCounter.textContent = `${length} / 1000`;
+                };
+                reviewComment.addEventListener('input', updateReviewCount);
+                updateReviewCount(); // Initial call
+            }
+
+            const inqMessage = document.getElementById('inq-message');
+            const inqCounter = document.getElementById('inq-char-count');
+
+            if (inqMessage && inqCounter) {
+                const updateInqCount = () => {
+                    const length = inqMessage.value.length;
+                    inqCounter.textContent = `${length} / 1000`;
+                };
+                inqMessage.addEventListener('input', updateInqCount);
+                updateInqCount(); // Initial call
+            }
+        }
+        setupCharCounters();
 
         // Submit Inquiry Logic
         window.submitInquiry = async (e) => {
