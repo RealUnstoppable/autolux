@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2026-05-29 - [Avoid multiple DOM insertions within loops]
+**Learning:** The codebase previously contained a performance anti-pattern where individual elements (like table rows or list items) were appended to the DOM one-by-one inside `.forEach` loops. This causes layout thrashing by triggering multiple reflows and repaints, especially on pages with large amounts of dynamic data (like `admin.html`).
+**Action:** When constructing lists or tables dynamically in vanilla JavaScript, always use `document.createDocumentFragment()`. Append all individual elements to the fragment within the loop, and then append the complete fragment to the target DOM container once the loop finishes. This results in only a single reflow/repaint.
