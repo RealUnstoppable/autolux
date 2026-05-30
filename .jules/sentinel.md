@@ -18,3 +18,8 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+
+## 2024-05-18 - [Privilege Escalation in Firestore Rules]
+**Vulnerability:** A regular user could potentially escalate their privileges by granting themselves `isAdmin` status during document creation or update because the rules did not explicitly prevent them from setting or modifying this field.
+**Learning:** Firestore rules must explicitly check for and reject any attempts to modify sensitive fields like `isAdmin` by regular users, especially during `create` and `update` operations.
+**Prevention:** Always use conditions like `request.resource.data.get('isAdmin', false) == false` for `allow create` and `!request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin'])` for `allow update` to strictly control role-based properties.
