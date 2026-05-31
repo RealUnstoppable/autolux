@@ -499,6 +499,8 @@
                 return;
             }
 
+            // ⚡ Bolt Optimization: Use DocumentFragment to batch DOM insertions and reduce layout thrashing
+            const fragment = document.createDocumentFragment();
             faqs.forEach(data => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
@@ -542,8 +544,9 @@
                     }
                 });
 
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+            container.appendChild(fragment);
         }
 
         // Load FAQs
@@ -592,6 +595,8 @@
                 }
 
                 container.innerHTML = '';
+                // ⚡ Bolt Optimization: Use DocumentFragment to batch DOM insertions and reduce layout thrashing
+                const fragment = document.createDocumentFragment();
 
                 reviews.forEach(r => {
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
@@ -604,8 +609,9 @@
                     const el = document.createElement('div');
                     el.className = 'review-card';
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                    container.appendChild(el);
+                    fragment.appendChild(el);
                 });
+                container.appendChild(fragment);
             } catch (error) {
                 console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
