@@ -545,12 +545,12 @@
             if(bookings.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
             }
+            const fragment = document.createDocumentFragment();
             bookings.forEach(b => {
                 const row = document.createElement('tr');
                 const name = b.customerName || 'N/A';
                 const phone = b.customerPhone || 'N/A';
                 const email = b.customerEmail || 'N/A';
-                const formattedDate = new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
                 const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
                 const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
@@ -568,8 +568,9 @@
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderQuotesTable(quotes) {
@@ -578,6 +579,7 @@
             if(quotes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'; return;
             }
+            const fragment = document.createDocumentFragment();
             quotes.forEach(q => {
                 const row = document.createElement('tr');
                 const badgeClass = q.status === 'responded' ? 'active' : 'pending';
@@ -590,8 +592,9 @@
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderInquiriesTable(inquiries) {
@@ -601,6 +604,7 @@
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
             inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            const fragment = document.createDocumentFragment();
             inquiries.forEach(inq => {
                 const row = document.createElement('tr');
                 const inqDate = inq.createdAt ? new Date(inq.createdAt.toDate ? inq.createdAt.toDate() : inq.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
@@ -619,13 +623,15 @@
                         <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderUserTable(users) {
             const userListBody = document.getElementById('user-list-body');
             userListBody.innerHTML = '';
+            const fragment = document.createDocumentFragment();
             users.filter(user => !user.isAdmin).forEach(user => {
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
@@ -641,8 +647,9 @@
                     <td>${subStatus}</td>
                     <td>${statusBadge}</td>
                     <td>${actionButton}</td>`;
-                userListBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            userListBody.appendChild(fragment);
         }
 
         function renderFaqsTable(faqs) {
@@ -652,6 +659,7 @@
                 listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
             }
             faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            const fragment = document.createDocumentFragment();
             faqs.forEach(faq => {
                 const row = document.createElement('tr');
                 const qText = escapeHTML(faq.question || "N/A");
@@ -663,8 +671,9 @@
                     <td>${qText}</td>
                     <td>${aText}</td>
                     <td>${deleteBtn}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderReviewsTable(reviews) {
@@ -674,6 +683,7 @@
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
             }
             reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            const fragment = document.createDocumentFragment();
             reviews.forEach(review => {
                 const row = document.createElement('tr');
                 const revDate = review.createdAt ? new Date(review.createdAt.toDate ? review.createdAt.toDate() : review.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
@@ -695,8 +705,9 @@
                     <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
                     <td>${statusStr}</td>
                     <td>${approveButton} ${deleteButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderFeatureRequestsTable(requests) {
@@ -706,6 +717,7 @@
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
             }
             requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
+            const fragment = document.createDocumentFragment();
             requests.forEach(req => {
                 const row = document.createElement('tr');
                 const reqDate = req.timestamp ? new Date(req.timestamp.toDate ? req.timestamp.toDate() : req.timestamp).toLocaleDateString() : new Date().toLocaleDateString();
@@ -723,8 +735,9 @@
                     <td>${tierBadge}</td>
                     <td>${statusStr}</td>
                     <td>${actionButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            listBody.appendChild(fragment);
         }
 
         function renderNewsletterTable(subscribers) {
@@ -733,13 +746,15 @@
             if(subscribers.length === 0) {
                 newsletterListBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`; return;
             }
+            const fragment = document.createDocumentFragment();
             subscribers.forEach(subscriber => {
                 const row = document.createElement('tr');
                 const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
                 const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
-                newsletterListBody.appendChild(row);
+                fragment.appendChild(row);
             });
+            newsletterListBody.appendChild(fragment);
         }
 
         function calculatePerformanceMetrics(users, carts, orders = [], bookings = [], quotes = []) {
