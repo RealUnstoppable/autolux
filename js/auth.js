@@ -145,6 +145,13 @@ export function getUserRedirectPath(user, userData, currentPathname) {
     }
 
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    // Phase 3: Seamless authentication routing using sessionStorage
+    const redirectAfterLogin = sessionStorage.getItem('redirectAfterLogin');
+    if (user && redirectAfterLogin) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        return redirectAfterLogin;
+    }
+
     if (!userData && !currentPathname) {
         return getUserRedirectPathAsync(user);
     }
