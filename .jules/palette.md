@@ -4,3 +4,7 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+
+## 2023-10-24 - Add visual required indicators and autocomplete
+**Learning:** Users with cognitive disabilities or screen readers benefit from clear visual required indicators and `autocomplete` attributes. Adding `aria-hidden="true"` to the asterisk ensures screen readers don't read "star" unnecessarily.
+**Action:** Always include a visual required indicator alongside the `required` attribute, and use appropriate `autocomplete` attributes for standard fields like name and email.
