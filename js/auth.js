@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -38,14 +37,7 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 
 } catch (error) {
-    console.error("Firebase connection error. Check App Check, CORS, or config.");
-    if (error.code) console.error("Error code:", error.code);
-    console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
-    console.error("Firebase Initialization Error", error.message);
-    if (error.code) console.error("Error code:", error.code);
+    console.error("Firebase connection error:", { code: error.code, message: error.message, details: error });
 }
 
 export { app, auth, db };
@@ -223,10 +215,8 @@ export async function submitDetailingRequest(requestData) {
         console.log("Detailing request submitted successfully with ID:", docRef.id);
         return docRef.id;
     } catch (error) {
-         console.error("Error submitting detailing request:", error);
-         console.error("Error submitting detailing request:", error.message);
-         if (error.code) console.error("Error code:", error.code);
-        return null;
+         console.error("Error submitting detailing request:", { code: error.code, message: error.message, details: error });
+         return null;
     }
 }
 
