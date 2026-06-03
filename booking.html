@@ -3,20 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Book Appointment | Unstoppable Detailing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-    <title>Book a Detail | Unstoppable Detailing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Book your premium auto detailing service with Unstoppable Detailing Services in Buford, GA.">
     <title>Book Now | Unstoppable Detailing Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <style>
-        /* Shared Styles from index.html */
-    <title>Book a Detail | Unstoppable Detailing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0A0A0A;
@@ -352,7 +341,7 @@
             <a href="index.html#reviews" onclick="closeMenu()">Reviews</a>
             <a href="index.html#contact" onclick="closeMenu()">Contact</a>
             <a href="booking.html" aria-current="page">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn">Sign In</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" onclick="sessionStorage.setItem('redirectAfterLogin', window.location.href);">Sign In</a>
         </div>
     </nav>
 
@@ -365,17 +354,17 @@
         <form id="booking-form">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required aria-required="true" placeholder="John Doe">
+                <input type="text" id="name" name="name" autocomplete="name" required aria-required="true" placeholder="John Doe">
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required aria-required="true" placeholder="john@example.com">
+                <input type="email" id="email" name="email" autocomplete="email" required aria-required="true" placeholder="john@example.com">
             </div>
 
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required aria-required="true" placeholder="(555) 555-5555">
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required aria-required="true" placeholder="(555) 555-5555">
             </div>
 
             <div class="form-group">
@@ -392,6 +381,7 @@
                     <option value="premium-truck">Premium Truck (From $280)</option>
                     <option value="sprinter-van">Sprinter Van (From $400)</option>
                     <option value="annual-club">The Unstoppable Annual Club</option>
+                    <option value="autolux-plan">AutoLux Detailing Plan (Subscription)</option>
                 </select>
             </div>
 
@@ -406,7 +396,7 @@
             </div>
 
             <button type="submit" class="btn-primary" id="submit-booking-btn">Request Appointment</button>
-            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
         </form>
     </section>
 
