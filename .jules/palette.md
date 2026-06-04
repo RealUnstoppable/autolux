@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-11-09 - Form UX: Visual Required Indicators and Autocomplete
+**Learning:** Required form inputs lacked visual indicators (like an asterisk), making it harder for sighted users to identify mandatory fields quickly. Additionally, standard `autocomplete` attributes were missing, slowing down form completion.
+**Action:** When adding or modifying required form inputs, include a clear visual indicator (e.g., `<span aria-hidden="true" style="color: #ef4444;">*</span>`) on the associated label to aid visual parsing without repeating "required" for screen readers (since the `required` attribute handles that). Also, use standard `autocomplete` attributes (e.g., `autocomplete="name"`, `autocomplete="email"`) to improve the user experience by allowing browsers to pre-fill data.
