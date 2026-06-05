@@ -400,11 +400,11 @@
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
-                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="text" id="inq-name" autocomplete="name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
-                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="email" id="inq-email" autocomplete="email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
@@ -417,7 +417,7 @@
 
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <input type="email" id="news-email" autocomplete="email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
             <button type="submit" id="news-submit-btn">Subscribe</button>
         </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
