@@ -572,12 +572,14 @@
                     const vList = document.getElementById('vehicles-list');
                     vList.innerHTML = '';
                     if (data.vehicles && data.vehicles.length > 0) {
-                        data.vehicles.forEach(v => {
+                        const fragment = document.createDocumentFragment();
+                            data.vehicles.forEach(v => {
                             const el = document.createElement('div');
                             el.className = 'list-item';
                             el.textContent = `${v.year} ${v.make} ${v.model}`;
-                            vList.appendChild(el);
+                            fragment.appendChild(el);
                         });
+                        vList.appendChild(fragment);
                     } else {
                         vList.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No vehicles saved yet.</p>';
                     }
@@ -598,6 +600,7 @@
                 const aList = document.getElementById('appointments-list');
                 aList.innerHTML = '';
                 if (!appointmentsSnapshot.empty) {
+                    const fragment = document.createDocumentFragment();
                     appointmentsSnapshot.forEach(doc => {
                         const apt = doc.data();
                         const dateStr = escapeHTML(apt.appointmentDate || 'Date Pending');
@@ -607,8 +610,9 @@
                         const el = document.createElement('div');
                         el.className = 'list-item';
                         el.innerHTML = `<strong>${dateStr}</strong> - ${vehicleStr}<br><span style="font-size: 0.85rem; color: var(--text-muted);">Status: ${status}</span>`;
-                        aList.appendChild(el);
+                        fragment.appendChild(el);
                     });
+                    aList.appendChild(fragment);
                 } else {
                     aList.innerHTML = '<p style="color:var(--text-muted); font-size: 0.9rem;">No upcoming appointments.</p>';
                 }
@@ -718,6 +722,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             appointments.forEach(appt => {
                 const dateObj = new Date(appt.appointmentDate);
                 const dateStr = isNaN(dateObj) ? 'Date Pending' : dateObj.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
@@ -732,8 +737,9 @@
                     </div>
                     <span class="status-badge ${status}">${escapeHTML(status)}</span>
                 `;
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+            container.appendChild(fragment);
         }
 
         // --- DEBOUNCED AUTO-SAVE LOGIC ---
@@ -871,6 +877,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             vehicles.forEach((v, index) => {
                 const el = document.createElement('div');
                 el.className = 'vehicle-item';
@@ -884,8 +891,9 @@
                     <span>${escapeHTML(v)}</span>
                     <button class="btn btn-danger btn-sm remove-vehicle-btn" style="padding: 5px 10px;" data-index="${index}">Remove</button>
                 `;
-                list.appendChild(el);
+                fragment.appendChild(el);
             });
+            list.appendChild(fragment);
         }
 
         function renderAppointments(appointments) {
@@ -896,6 +904,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             appointments.forEach(a => {
                 const el = document.createElement('div');
                 el.className = 'appointment-item';
@@ -915,8 +924,9 @@
                     </div>
                     <div class="${badgeClass}">${escapeHTML(a.status).replace('_', ' ')}</div>
                 `;
-                list.appendChild(el);
+                fragment.appendChild(el);
             });
+            list.appendChild(fragment);
         }
 
         function setupEventListeners() {
