@@ -699,6 +699,7 @@
 
         function renderServices(packages) {
             servicesContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
             packages.forEach(pkg => {
                 const card = document.createElement('div');
                 card.className = 'service-card';
@@ -712,8 +713,9 @@
                     card.classList.add('selected');
                     selectedService = pkg;
                 });
-                servicesContainer.appendChild(card);
+                fragment.appendChild(card);
             });
+            servicesContainer.appendChild(fragment);
         }
 
         loadServices();
@@ -916,12 +918,14 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             vehicles.forEach(v => {
                 const opt = document.createElement('option');
                 opt.value = v;
                 opt.textContent = String(v).replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Simple sanitize
-                select.appendChild(opt);
+                fragment.appendChild(opt);
             });
+            select.appendChild(fragment);
             submitBtn.disabled = false;
         }
 
@@ -946,13 +950,15 @@
 
         function renderPackages() {
             packageSelect.innerHTML = '<option value="" disabled selected>Select a service level...</option>';
+            const fragment = document.createDocumentFragment();
             pricingCache.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p.id;
                 opt.textContent = `${p.name} ($${p.price})`;
                 opt.dataset.price = p.price;
-                packageSelect.appendChild(opt);
+                fragment.appendChild(opt);
             });
+            packageSelect.appendChild(fragment);
         }
 
         form.addEventListener('submit', async (e) => {
