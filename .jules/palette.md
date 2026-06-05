@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-06-05 - Missing Form Autocomplete Attributes
+**Learning:** The application forms were missing standard `autocomplete` attributes (like `name`, `email`, `tel`, `current-password`), increasing friction for users and missing WCAG 1.3.5 Identify Input Purpose.
+**Action:** Always ensure that form `<input>` fields that collect standard personal or account data utilize appropriate `autocomplete` attributes to facilitate easier interaction.
