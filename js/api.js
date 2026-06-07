@@ -10,7 +10,7 @@ export async function submitDetailingRequest(bookingData) {
         console.log("Document written with ID: ", docRef.id);
         return { success: true, id: docRef.id };
     } catch (error) {
-        console.error("Error adding document: ", error.code, error.message);
+        console.error("Message:", { code: error.code, message: error.message, details: error });
         return { success: false, error: error };
     }
 }
