@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2025-02-24 - [Avoid Layout Thrashing with DocumentFragment]
+**Learning:** Appending elements one by one directly to the DOM inside a loop (e.g., `container.appendChild(el)`) causes repeated browser reflows and repaints (layout thrashing).
+**Action:** When dynamically rendering lists or components, construct the entire tree using `DocumentFragment`, and append the fragment to the DOM exactly once after the loop completes to change repaints from O(N) to O(1).
