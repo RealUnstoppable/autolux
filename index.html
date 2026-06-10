@@ -399,19 +399,19 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
-                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="text" id="inq-name" autocomplete="name" required aria-required="true" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
-                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="email" id="inq-email" autocomplete="email" required aria-required="true" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
-                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <textarea id="inq-message" rows="4" required aria-required="true" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
-                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;" aria-live="polite"></p>
             </form>
         </div>
 
