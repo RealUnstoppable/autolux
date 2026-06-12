@@ -224,7 +224,7 @@
         </header>
 
         <div class="container">
-            <h1 style="margin-bottom: 10px;">Welcome, <span id="profile-name">...</span></h1>
+            <h1 style="margin-bottom: 10px;">Welcome, <span id="header-profile-name">...</span></h1>
             <p style="color: var(--text-muted); margin-bottom: 40px;">Manage your appointments and saved vehicles.</p>
 
             <div class="grid-layout">
@@ -445,7 +445,7 @@
                 }
 
                 // Render Profile Data
-                document.getElementById('profile-name').textContent = userData.name || "Valued Client";
+                document.getElementById('header-profile-name').textContent = userData.name || "Valued Client";
                 document.getElementById('profile-email').textContent = user.email;
                 if (userData.phone) document.getElementById('profile-phone').textContent = userData.phone;
 
