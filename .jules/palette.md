@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-05-25 - Form Accessibility
+**Learning:** Added `aria-live="polite"` to dynamic response message elements, and `autocomplete="email"` to email inputs. These small enhancements improve the form accessibility, ensuring users know what needs to be filled and making screen readers more aware of dynamic changes on the page without spamming inputs.
+**Action:** Always include appropriate `aria-live` attributes for response messages, `autocomplete` attributes for inputs, and ensure proper labelling and ARIA roles for custom elements.
