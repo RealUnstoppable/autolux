@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -40,15 +39,8 @@ try {
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
-    console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
     console.error("Firebase Initialization Error", error.message);
-    if (error.code) console.error("Error code:", error.code);
 }
-
-export { app, auth, db };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -94,7 +86,6 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error);
         console.error("Error ensuring user document:", error.message);
         if (error.code) console.error("Error code:", error.code);
         return null;
@@ -144,10 +135,6 @@ export function getUserRedirectPath(user, userData, currentPathname) {
         return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
 
-export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
-    if (!userData && !currentPathname) {
-        return getUserRedirectPathAsync(user);
-    }
     const decodedPath = decodeURIComponent(currentPathname);
 
     if (!user) {
@@ -223,13 +210,9 @@ export async function submitDetailingRequest(requestData) {
         console.log("Detailing request submitted successfully with ID:", docRef.id);
         return docRef.id;
     } catch (error) {
-         console.error("Error submitting detailing request:", error);
-         console.error("Error submitting detailing request:", error.message);
-         if (error.code) console.error("Error code:", error.code);
+         console.error("Error submitting detailing request:", { code: error.code, message: error.message, details: error });
         return null;
     }
 }
 
-export { app };
-export { auth };
-export { db };
+export { app, auth, db };
