@@ -545,6 +545,9 @@
             if(bookings.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
             }
+            // ⚡ Bolt Optimization: Use DocumentFragment to construct the list in-memory
+            // and append to the DOM once, preventing layout thrashing and repetitive reflows.
+            const fragment = document.createDocumentFragment();
             bookings.forEach(b => {
                 const row = document.createElement('tr');
                 const name = b.customerName || 'N/A';
@@ -568,8 +571,9 @@
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function renderQuotesTable(quotes) {
