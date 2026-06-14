@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -10,11 +9,27 @@ try {
 
     // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
     // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
+    let authDomain = window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store";
+    let projectId = window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing";
+    let storageBucket = window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com";
+
+    if (typeof window !== "undefined" && window.location && window.location.hostname) {
+        if (window.location.hostname.includes("autolux")) {
+            authDomain = "autolux.realunstoppable.store";
+            projectId = "autolux-detailing";
+            storageBucket = "autolux-detailing.appspot.com";
+        } else if (window.location.hostname.includes("ezmanage")) {
+            authDomain = "ezmanage.realunstoppable.store";
+            projectId = "ezmanage-app";
+            storageBucket = "ezmanage-app.appspot.com";
+        }
+    }
+
     const firebaseConfig = {
         apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
+        authDomain: authDomain,
+        projectId: projectId,
+        storageBucket: storageBucket,
         messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
         appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
     };
@@ -38,14 +53,9 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 
 } catch (error) {
-    console.error("Firebase connection error. Check App Check, CORS, or config.");
-    if (error.code) console.error("Error code:", error.code);
-    console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
     console.error("Firebase Initialization Error", error.message);
     if (error.code) console.error("Error code:", error.code);
+    console.error("Firebase connection error. Check App Check, CORS, or config.", error);
 }
 
 export { app, auth, db };
@@ -137,13 +147,6 @@ export function waitForAuthState() {
  * @param {string} currentPathname - The current window.location.pathname.
  * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
  */
-export function getUserRedirectPath(user, userData, currentPathname) {
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
-    }
-
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     if (!userData && !currentPathname) {
         return getUserRedirectPathAsync(user);
@@ -230,6 +233,4 @@ export async function submitDetailingRequest(requestData) {
     }
 }
 
-export { app };
-export { auth };
-export { db };
+// export { app, auth, db }; // Already exported earlier
