@@ -364,18 +364,18 @@
 
         <form id="booking-form">
             <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required aria-required="true" placeholder="John Doe">
+                <label for="name">Full Name <span aria-hidden="true" style="color: var(--accent);">*</span></label>
+                <input type="text" id="name" name="name" autocomplete="name" required aria-required="true" placeholder="John Doe">
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required aria-required="true" placeholder="john@example.com">
+                <label for="email">Email Address <span aria-hidden="true" style="color: var(--accent);">*</span></label>
+                <input type="email" id="email" name="email" autocomplete="email" required aria-required="true" placeholder="john@example.com">
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required aria-required="true" placeholder="(555) 555-5555">
+                <label for="phone">Phone Number <span aria-hidden="true" style="color: var(--accent);">*</span></label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required aria-required="true" placeholder="(555) 555-5555">
             </div>
 
             <div class="form-group">
