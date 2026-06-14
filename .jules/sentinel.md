@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-06-14 - Fix missing error.code logging and isolation of environment configuration
+**Vulnerability:** The application was sharing configuration across subdomains causing environment cross-contamination. Also missing secure validation allowing users to assign themselves `isAdmin: true` during document creation.
+**Learning:** Always use `window.location.hostname` to isolate environments if there's no bundler. Firestore rules should prevent privilege escalation explicitly using rules like `(!request.resource.data.keys().hasAny(['isAdmin']) || request.resource.data.isAdmin == false)`.
+**Prevention:** Hardcode checks or strict validations in the rules preventing `isAdmin` modification. Isolate config properties per subdomain if sharing code.
