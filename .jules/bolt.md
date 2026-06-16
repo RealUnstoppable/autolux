@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2025-05-24 - [Avoid DB Queries for Repeated Static Elements]
+**Learning:** Functions that load static or globally shared data on page load (like Reviews) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session, similar to FAQs.
+**Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present. Additionally, ensure the `Storage` API access is wrapped in a `try/catch` to gracefully fall back to the network request in case `sessionStorage` access is blocked or corrupted.
