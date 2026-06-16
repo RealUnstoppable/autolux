@@ -847,13 +847,13 @@
             <div class="form-group">
                 <label for="date-select">Select Date & Time</label>
                 <input type="datetime-local" id="date-select" required>
-                <p id="date-warning" style="color: var(--accent); font-size: 0.85rem; display: none;">Checking availability...</p>
+                <p id="date-warning" aria-live="polite" style="color: var(--accent); font-size: 0.85rem; display: none;">Checking availability...</p>
             </div>
 
             <div class="price-preview" id="price-preview">Total: $0.00</div>
 
             <button type="submit" class="btn" id="submit-btn">Confirm Appointment</button>
-            <div id="form-msg" class="msg"></div>
+            <div id="form-msg" aria-live="polite" class="msg"></div>
         </form>
     </div>
 
