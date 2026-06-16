@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-05-24 - [Information Disclosure via Error Object Leakage]
+**Vulnerability:** The `submitDetailingRequest` function in `js/api.js` returned the raw `error` object upon catching an exception (`return { success: false, error: error };`).
+**Learning:** Returning raw error objects from catch blocks to the calling client or UI code can leak sensitive internal details, stack traces, or environment specifics, violating the "fail securely" principle.
+**Prevention:** Always catch exceptions and return generalized, secure error messages (e.g., `return { success: false, error: 'An error occurred' };`) while logging the detailed error server-side or in restricted client logs for debugging purposes.
