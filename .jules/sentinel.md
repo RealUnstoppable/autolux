@@ -18,3 +18,8 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+
+## 2025-02-28 - Regex Trailing Whitespace Failures
+**Vulnerability:** Execution scripts using Python `re.sub` for precise code block replacements can silently fail if they rely on strict newline terminations (e.g., `\n}\n\n$`) because trailing whitespace is highly variable across different files and IDE formatting behaviors.
+**Learning:** Hardcoded whitespace assertions in regex are fragile and frequently cause `re.sub` to miss its target, leading to failed code modifications and subsequent Plan Reviewer rejections for Groundedness Rule violations.
+**Prevention:** When using regex to patch code blocks, always account for unpredictable trailing whitespace by using flexible string terminations (like `\s*$`) rather than strict newline sequences.

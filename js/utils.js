@@ -21,6 +21,9 @@ export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
+    if (!db) {
+        return { success: false, error: "Database connection not established." };
+    }
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
@@ -32,12 +35,10 @@ export async function submitDetailingRequest(userId, requestData) {
 
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request.");
+        console.error("Failed to submit detailing request:", error.message);
         if (error.code) {
             console.error("Firebase error code:", error.code);
         }
-        console.error("Full error:", error);
-
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: "Failed to submit request. Please try again." };
     }
 }
