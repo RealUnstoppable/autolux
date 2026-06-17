@@ -14,3 +14,7 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+
+## 2025-05-25 - [Secure Cache Implementations]
+**Learning:** Naively implementing `sessionStorage.getItem()` and `sessionStorage.setItem()` without `try/catch` wrappers can synchronously crash functions or block critical logic if the browser throws `SecurityError` (e.g., in strict incognito mode) or `QuotaExceededError`.
+**Action:** When implementing caching optimizations, always wrap storage reads and writes in `try/catch` blocks, ensuring that caching failures degrade gracefully and fall back to normal network operations without interrupting the user experience.
