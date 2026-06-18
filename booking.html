@@ -78,7 +78,7 @@
             </div>
             <button type="submit" class="btn-primary" id="submit-btn" disabled>Book Now</button>
         </form>
-        <div id="msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center;"></div>
+        <div id="msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center;" aria-live="polite"></div>
     </div>
 
     <script type="module">
@@ -365,17 +365,17 @@
         <form id="booking-form">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required aria-required="true" placeholder="John Doe">
+                <input type="text" id="name" name="name" autocomplete="name" required aria-required="true" placeholder="John Doe">
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required aria-required="true" placeholder="john@example.com">
+                <input type="email" id="email" name="email" autocomplete="email" required aria-required="true" placeholder="john@example.com">
             </div>
 
             <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" required aria-required="true" placeholder="(555) 555-5555">
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required aria-required="true" placeholder="(555) 555-5555">
             </div>
 
             <div class="form-group">
@@ -406,7 +406,7 @@
             </div>
 
             <button type="submit" class="btn-primary" id="submit-booking-btn">Request Appointment</button>
-            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
         </form>
     </section>
 
@@ -542,7 +542,7 @@
         </div>
 
         <button id="book-btn" class="btn-primary" disabled>Complete Booking</button>
-        <div id="msg"></div>
+        <div id="msg" aria-live="polite"></div>
     </div>
 
     <script type="module">
@@ -853,7 +853,7 @@
             <div class="price-preview" id="price-preview">Total: $0.00</div>
 
             <button type="submit" class="btn" id="submit-btn">Confirm Appointment</button>
-            <div id="form-msg" class="msg"></div>
+            <div id="form-msg" class="msg" aria-live="polite"></div>
         </form>
     </div>
 
