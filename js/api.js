@@ -11,6 +11,6 @@ export async function submitDetailingRequest(bookingData) {
         return { success: true, id: docRef.id };
     } catch (error) {
         console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error };
+        return { success: false, error: 'An error occurred while submitting the request.' };
     }
 }
