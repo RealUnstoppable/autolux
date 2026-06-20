@@ -38,6 +38,6 @@ export async function submitDetailingRequest(userId, requestData) {
         }
         console.error("Full error:", error);
 
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: 'An error occurred while processing your request.' };
     }
 }
