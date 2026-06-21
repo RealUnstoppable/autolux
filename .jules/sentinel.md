@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-05-25 - [Error Message Information Leakage]
+**Vulnerability:** The application was vulnerable to information leakage because raw error objects from Firebase `addDoc` operations were directly returned in the `catch` block of `submitDetailingRequest` within `js/api.js`. This could expose internal database details or stack traces to the frontend UI if the error was rendered directly.
+**Learning:** Returning `error: error` or exposing raw exceptions from backend API calls or utility wrappers violates the principle of "failing securely".
+**Prevention:** Always return a generalized, safe error string (e.g. "An error occurred while submitting your request.") from utility functions rather than passing up the full, raw exception object.
