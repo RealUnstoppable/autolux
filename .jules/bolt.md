@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2026-06-22 - [SessionStorage Caching for Firestore Timestamp Sorting]
+**Learning:** When using `sessionStorage` to cache Firestore document data (like reviews), any client-side transformations—such as sorting arrays based on Firestore `Timestamp` objects—must be applied *before* stringifying and saving to the cache. `Timestamp` objects lose their `.toDate()` method upon JSON serialization. Sorting after retrieving from the cache without checking for `.toDate()` will break functionality.
+**Action:** When introducing caching mechanisms to existing fetch operations, ensure data is fully transformed/sorted prior to storage. Additionally, update sorting logic to conditionally handle both raw `Timestamp` objects (pre-cache) and serialized dates (post-cache) defensively.
