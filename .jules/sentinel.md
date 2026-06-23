@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-06-23 - Fix Firebase Connectivity and Auth Issues
+**Vulnerability:** Firebase config logic lacked fallback mechanisms, duplicate rule blocks in `firestore.rules` existed leading to conflicts and API submission endpoints blindly checked authentication for public features.
+**Learning:** Returning unhandled raw errors on catch and bad rule management creates unreliable, disconnected interfaces and drops traffic while exposing sensitive details. Public-facing endpoints should not require authentication unless handling sensitive data.
+**Prevention:** Fail securely by returning generalized error messages, centralize environment configuration mapping using hostnames to avoid test/prod environment bleed, and implement well-tested, cleanly scoped Firestore rules without duplicates.
