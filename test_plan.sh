@@ -1,2 +1,1 @@
-#!/bin/bash
-# Just a placeholder script
+echo 'Testing...'
