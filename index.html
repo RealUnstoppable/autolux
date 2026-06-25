@@ -318,10 +318,10 @@
         <!-- ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats -->
         <!-- ⚡ Bolt: Appended &auto=format to Unsplash URLs to optimize image loading performance -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" role="img" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" role="img" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" role="img" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" role="img" loading="lazy"></div>
         </div>
     </section>
 
@@ -550,11 +550,14 @@
         async function loadFaqs() {
             const container = document.getElementById('faq-container');
 
-            // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
-            const cachedFaqs = sessionStorage.getItem('autolux_faqs');
-            if (cachedFaqs) {
-                renderFaqs(JSON.parse(cachedFaqs), container);
-                return;
+            try {
+                const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+                if (cachedFaqs) {
+                    renderFaqs(JSON.parse(cachedFaqs), container);
+                    return;
+                }
+            } catch (e) {
+                console.warn('sessionStorage not available:', e);
             }
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
@@ -564,7 +567,12 @@
                 const snapshot = await getDocs(q);
 
                 const faqs = snapshot.docs.map(doc => doc.data());
-                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+
+                try {
+                    sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+                } catch (e) {
+                    console.warn('sessionStorage not available:', e);
+                }
 
                 renderFaqs(faqs, container);
             } catch (e) {
