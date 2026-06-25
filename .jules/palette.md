@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2025-02-15 - Add ARIA relationships to custom toggles
+**Learning:** When creating custom interactive widgets like FAQs or toggle menus, it is critical to include `aria-controls` pointing to the target container's ID.
+**Action:** Always link toggle buttons to their content with `aria-controls`.
