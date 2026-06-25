@@ -1,26 +1,27 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
 try {
     const appName = "autolux";
 
-    // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
     // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
+    // Use window.location.hostname to dynamically set authDomain and projectId to prevent cross-contamination
+    const hostname = window.location.hostname;
+
     const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
+        apiKey: window.ENV?.FIREBASE_API_KEY,
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || (hostname === "localhost" || hostname === "127.0.0.1" ? "autolux.realunstoppable.store" : hostname),
         projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
         storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
         messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
         appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
     };
 
-    if (!window.ENV) {
-        console.warn("window.ENV is missing. Falling back to default configuration.");
+    if (!firebaseConfig.apiKey) {
+        console.warn("Firebase API Key is missing. Check your window.ENV configuration.");
     }
 
     const apps = getApps();
@@ -38,13 +39,7 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 
 } catch (error) {
-    console.error("Firebase connection error. Check App Check, CORS, or config.");
-    if (error.code) console.error("Error code:", error.code);
-    console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
-    console.error("Firebase Initialization Error", error.message);
+    console.error("Firebase Initialization Error:", error.message);
     if (error.code) console.error("Error code:", error.code);
 }
 
@@ -94,7 +89,6 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error);
         console.error("Error ensuring user document:", error.message);
         if (error.code) console.error("Error code:", error.code);
         return null;
@@ -137,16 +131,10 @@ export function waitForAuthState() {
  * @param {string} currentPathname - The current window.location.pathname.
  * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
  */
-export function getUserRedirectPath(user, userData, currentPathname) {
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
-    }
-
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     if (!userData && !currentPathname) {
-        return getUserRedirectPathAsync(user);
+        if (!user) return 'sign in beta.html';
+        return 'account.html';
     }
     const decodedPath = decodeURIComponent(currentPathname);
 
@@ -223,9 +211,8 @@ export async function submitDetailingRequest(requestData) {
         console.log("Detailing request submitted successfully with ID:", docRef.id);
         return docRef.id;
     } catch (error) {
-         console.error("Error submitting detailing request:", error);
-         console.error("Error submitting detailing request:", error.message);
-         if (error.code) console.error("Error code:", error.code);
+        console.error("Error submitting detailing request:", error.message);
+        if (error.code) console.error("Error code:", error.code);
         return null;
     }
 }
