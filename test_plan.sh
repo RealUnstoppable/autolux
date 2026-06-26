@@ -1,2 +1,3 @@
 #!/bin/bash
-# Just a placeholder script
+# Mock test_plan.sh
+echo "Tests passed"

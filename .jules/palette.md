@@ -4,3 +4,7 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+
+## 2024-06-26 - Add aria-live to dynamic message containers
+**Learning:** When implementing dynamic status updates or form submission feedback (like error or success messages) without page reloads, screen readers may fail to announce these changes unless explicitly configured.
+**Action:** Always add the `aria-live="polite"` attribute to message container elements (e.g. `<div id="msg"></div>`) to ensure screen readers dynamically announce updates without interrupting the user's current task.
