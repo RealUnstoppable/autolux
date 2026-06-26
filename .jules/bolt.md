@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2026-05-25 - [Caching Server Data and Sorting]
+**Learning:** When retrieving and sorting data (like reviews) from a server query to be cached locally with `sessionStorage`, it's critical to perform the sort *before* saving it to the cache. Caching the unsorted server response and then sorting it later means the cache holds unsorted data, which can result in incorrect rendering upon subsequent loads.
+**Action:** Always sort the array of fetched documents prior to passing it to `JSON.stringify()` for `sessionStorage.setItem()`.
