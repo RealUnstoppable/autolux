@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -10,13 +9,29 @@ try {
 
     // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
     // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
+    const hostname = window.location.hostname;
+
+    let authDomain = window.ENV?.FIREBASE_AUTH_DOMAIN;
+    let projectId = window.ENV?.FIREBASE_PROJECT_ID;
+    let storageBucket = window.ENV?.FIREBASE_STORAGE_BUCKET;
+
+    if (hostname.includes('autolux')) {
+        authDomain = authDomain || "autolux.realunstoppable.store";
+        projectId = projectId || "autolux-detailing";
+        storageBucket = storageBucket || "autolux-detailing.appspot.com";
+    } else if (hostname.includes('ezmanage')) {
+        authDomain = authDomain || "ezmanage.realunstoppable.store";
+        projectId = projectId || "ezmanage-app";
+        storageBucket = storageBucket || "ezmanage-app.appspot.com";
+    }
+
     const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
-        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
+        apiKey: window.ENV?.FIREBASE_API_KEY,
+        authDomain: authDomain,
+        projectId: projectId,
+        storageBucket: storageBucket,
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+        appId: window.ENV?.FIREBASE_APP_ID
     };
 
     if (!window.ENV) {
@@ -40,12 +55,7 @@ try {
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
-    console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
-    console.error("Firebase Initialization Error", error.message);
-    if (error.code) console.error("Error code:", error.code);
+    if (error.message) console.error("Error message:", error.message);
 }
 
 export { app, auth, db };
@@ -137,16 +147,10 @@ export function waitForAuthState() {
  * @param {string} currentPathname - The current window.location.pathname.
  * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
  */
-export function getUserRedirectPath(user, userData, currentPathname) {
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
-    }
-
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     if (!userData && !currentPathname) {
-        return getUserRedirectPathAsync(user);
+        if (!user) return 'sign in beta.html';
+        return 'account.html';
     }
     const decodedPath = decodeURIComponent(currentPathname);
 
@@ -202,34 +206,24 @@ export function safeRedirect(targetUrl) {
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
 export async function submitDetailingRequest(requestData) {
-    if (!db || !auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return null;
+    if (!db) {
+        return { success: false, error: "Firebase is not fully initialized." };
     }
 
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return null;
-    }
+    const currentUser = auth?.currentUser;
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
             ...requestData,
-            userId: currentUser.uid, // Required by security rules
+            userId: currentUser ? currentUser.uid : "guest",
             status: "pending",
             createdAt: serverTimestamp()
         });
         console.log("Detailing request submitted successfully with ID:", docRef.id);
-        return docRef.id;
+        return { success: true, id: docRef.id };
     } catch (error) {
-         console.error("Error submitting detailing request:", error);
-         console.error("Error submitting detailing request:", error.message);
          if (error.code) console.error("Error code:", error.code);
-        return null;
+         if (error.message) console.error("Error message:", error.message);
+         return { success: false, error: "Failed to submit request." };
     }
 }
-
-export { app };
-export { auth };
-export { db };
