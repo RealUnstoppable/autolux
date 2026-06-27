@@ -18,13 +18,11 @@ export function escapeHTML(str) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitDetailingRequest(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
+    const uid = userId || "guest";
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
+            userId: uid,
             ...requestData,
             createdAt: serverTimestamp(),
             status: 'pending'
@@ -36,7 +34,7 @@ export async function submitDetailingRequest(userId, requestData) {
         if (error.code) {
             console.error("Firebase error code:", error.code);
         }
-        console.error("Full error:", error);
+        console.error("Full error:", error.message);
 
         return { success: false, error: error.message, code: error.code };
     }
