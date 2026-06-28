@@ -236,7 +236,7 @@
 
     <nav>
         <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
-        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
             <a href="#pricing" aria-label="Go to Pricing section" onclick="closeMenu()">Pricing</a>
@@ -353,7 +353,7 @@
                 <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
-            <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
+            <p id="review-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
         </form>
 
         <div class="reviews-container" id="reviews-container-el">
@@ -411,7 +411,7 @@
                     <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
-                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+                <p id="inquiry-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
             </form>
         </div>
 
@@ -499,19 +499,20 @@
                 return;
             }
 
-            faqs.forEach(data => {
+            faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
 
                 const el = document.createElement('div');
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
+                const answerId = `faq-answer-${index}`;
                 el.innerHTML = `
-                    <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                    <button class="faq-question" aria-expanded="false" aria-controls="${answerId}" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
                         ${question}
                         <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
                     </button>
-                    <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                    <div id="${answerId}" class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
                         <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
                     </div>
                 `;

@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-05-24 - Dynamic Messages and Toggle Elements Accessibility
+**Learning:** Dynamic status messages (like form submission success/error messages) and custom toggle menus (like the mobile menu or FAQ accordions) often lack the necessary ARIA attributes to be announced correctly by screen readers.
+**Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates. For interactive toggle elements, ensure they use `aria-controls="[id of target container]"` to establish the relationship between the trigger and the content.
