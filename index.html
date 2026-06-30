@@ -236,7 +236,7 @@
 
     <nav>
         <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
-        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <button class="menu-toggle" id="mobile-menu-btn" aria-controls="nav-links" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
             <a href="#pricing" aria-label="Go to Pricing section" onclick="closeMenu()">Pricing</a>
@@ -499,7 +499,7 @@
                 return;
             }
 
-            faqs.forEach(data => {
+            faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
 
@@ -507,11 +507,11 @@
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
                 el.innerHTML = `
-                    <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                    <button class="faq-question" aria-controls="faq-answer-${index}" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
                         ${question}
                         <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
                     </button>
-                    <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                    <div id="faq-answer-${index}" class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
                         <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
                     </div>
                 `;
