@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-05-31 - Fix Firebase Connection and Security Rules
+**Vulnerability:** Corrupted `firestore.rules` file with duplications, and a broken initialization code that leaked raw error objects while preventing application data flow.
+**Learning:** In vanilla JS Firebase apps, ensuring the preservation of trailing exports (`export { app, auth, db };`) is critical during automated string replacements. Additionally, missing or incorrectly nested try/catch blocks during initialization can cause silent failures that prevent backend connections.
+**Prevention:** Use targeted Node.js or Python string replacement scripts to patch exact file ranges rather than whole-file regex, always verify module exports are preserved, and enforce structured error handling (`{ success: false, error: { message, code } }`) instead of raw object leakage.
