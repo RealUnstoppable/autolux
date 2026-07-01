@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-07-01 - Missing aria-controls on Toggles
+**Learning:** The application's toggle components (mobile menus and FAQs) use `aria-expanded` but lack `aria-controls` to programmatically link the toggle button to the expandable content container.
+**Action:** When implementing custom toggle widgets (accordions, menus), always pair `aria-expanded` with `aria-controls="[id]"` on the trigger button, ensuring the target container has a matching `id`.
