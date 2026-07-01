@@ -394,6 +394,7 @@
     </div>
 
     <script type="module">
+    import { escapeHTML } from '/js/utils.js';
         import { auth, db } from '/js/auth.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
@@ -559,16 +560,6 @@
 
                     // Render Vehicles (Assuming stored in user doc as array for this example)
                     // Escape helper to prevent XSS
-                    const escapeHTML = (str) => {
-                        if (str == null) return '';
-                        return String(str)
-                            .replace(/&/g, "&amp;")
-                            .replace(/</g, "&lt;")
-                            .replace(/>/g, "&gt;")
-                            .replace(/"/g, "&quot;")
-                            .replace(/'/g, "&#039;");
-                    };
-
                     const vList = document.getElementById('vehicles-list');
                     vList.innerHTML = '';
                     if (data.vehicles && data.vehicles.length > 0) {
@@ -584,16 +575,6 @@
                 }
 
                 // Escape helper scoped to the outer block or redefine if needed
-                const escapeHTML = (str) => {
-                    if (str == null) return '';
-                    return String(str)
-                        .replace(/&/g, "&amp;")
-                        .replace(/</g, "&lt;")
-                        .replace(/>/g, "&gt;")
-                        .replace(/"/g, "&quot;")
-                        .replace(/'/g, "&#039;");
-                };
-
                 // Render Appointments
                 const aList = document.getElementById('appointments-list');
                 aList.innerHTML = '';
@@ -685,17 +666,6 @@
                 return [];
             }
         }
-
-        function escapeHTML(str) {
-            if (str == null) return '';
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
         function renderProfile(userData) {
             document.getElementById('welcome-msg').textContent = `Welcome, ${escapeHTML(userData.name || 'User')}`;
             document.getElementById('user-email').textContent = escapeHTML(userData.email);
@@ -874,12 +844,6 @@
             vehicles.forEach((v, index) => {
                 const el = document.createElement('div');
                 el.className = 'vehicle-item';
-
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-                }
-
                 el.innerHTML = `
                     <span>${escapeHTML(v)}</span>
                     <button class="btn btn-danger btn-sm remove-vehicle-btn" style="padding: 5px 10px;" data-index="${index}">Remove</button>
@@ -902,12 +866,6 @@
                 const date = new Date(a.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
                 let badgeClass = 'status-badge';
                 if(a.status === 'cancelled') badgeClass += ' cancelled';
-
-                function escapeHTML(str) {
-                    if (str == null) return '';
-                    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-                }
-
                 el.innerHTML = `
                     <div>
                         <div style="font-weight: 600; margin-bottom: 5px;">${escapeHTML(a.package)}</div>
