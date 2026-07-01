@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-07-01 - Prevent Raw Error Object Leakage
+**Vulnerability:** Catch blocks returning raw error objects to the client (e.g., `return { error: error }`).
+**Learning:** Returning raw error objects can expose sensitive internal details, stack traces, and configurations to the client, leading to potential information disclosure.
+**Prevention:** Always extract and return safe properties like `error.message` and `error.code` instead of the raw error object, following the 'fail securely' principle.
