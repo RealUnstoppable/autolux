@@ -524,7 +524,7 @@
 
             } catch (error) {
                 console.error("Auth error:", error);
-                errorMsg.textContent = error.message;
+                errorMsg.textContent = "An error occurred during authentication. Please try again.";
                 errorMsg.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
