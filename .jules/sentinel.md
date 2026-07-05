@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-07-05 - [Remove Hardcoded Firebase Dummy API Key]
+**Vulnerability:** Found hardcoded dummy API keys and fallback credentials embedded directly in the `js/auth.js` Firebase configuration.
+**Learning:** Hardcoding fallback config values instead of strictly enforcing the presence of environment variables can lead to confusing initialization failures or mask real configuration deployment issues, making the app brittle.
+**Prevention:** Always rely strictly on external configuration (e.g., `window.ENV` or proper build-time env vars) for cloud service initialization, and let initialization naturally fail or throw explicit errors if the environment is missing.
