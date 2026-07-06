@@ -7,3 +7,6 @@
 ## 2025-02-12 - Semantic HTML vs ARIA Roles for Links
 **Learning:** Adding `role="button"` and custom `onkeydown` handlers (like Enter/Space detection) to native `<a>` tags with `href` attributes is an anti-pattern. Screen readers and keyboards already natively understand and support `<a>` elements for navigation.
 **Action:** Use native HTML semantics whenever possible. Reserve `role="button"` and custom keyboard handlers for non-interactive elements (like `div` or `span`) that act as custom controls when semantic `<button>` or `<a>` elements truly cannot be used.
+## 2024-11-20 - Adding aria-live to status messages
+**Learning:** Status messages that update dynamically without page reloads (like form validation errors or login success/failure messages) are visually apparent but often missed by assistive technologies.
+**Action:** When creating or modifying dynamic message containers (e.g. `id="error-msg"`), always include `aria-live="polite"` (or `"assertive"` if critical) so screen readers proactively announce the content updates to users.
