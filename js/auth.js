@@ -11,13 +11,17 @@ try {
     // Because the codebase lacks a bundler, standard environment variables (like process.env or import.meta.env) aren't natively supported.
     // Rely on a globally injected window.ENV object for environment configuration, typically loaded via a separate ignored script like env.js.
     const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
+        apiKey: window.ENV?.FIREBASE_API_KEY,
         authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
         projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
         storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
-        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+        appId: window.ENV?.FIREBASE_APP_ID
     };
+
+    if (!firebaseConfig.apiKey) {
+        console.error("Firebase API Key is missing. Check your environment configuration.");
+    }
 
     if (!window.ENV) {
         console.warn("window.ENV is missing. Falling back to default configuration.");
