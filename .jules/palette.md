@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## $(date +%Y-%m-%d) - Forms without proper labels or error associations
+**Learning:** Found multiple instances of `<label>` elements missing `for` attributes in `account.html`. This is a common accessibility issue where screen readers cannot associate labels with inputs, and users cannot click the label to focus the input.
+**Action:** Always ensure `<label>` elements have a `for` attribute matching the `id` of their respective input fields for proper accessibility and usability.
