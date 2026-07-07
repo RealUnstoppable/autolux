@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-05-25 - [Hardcoded Fallback Credentials]
+**Vulnerability:** The `firebaseConfig` object in `js/auth.js` contained hardcoded dummy API keys and project identifiers (e.g. `"dummy-api-key"`) as fallback values if `window.ENV` was missing.
+**Learning:** Hardcoding credentials, even as fallbacks or dummies, can lead to security risks if deployed in production, or if attackers can exploit the fallback behavior to interact with unverified resources.
+**Prevention:** Always rely strictly on environment variables or globally injected configuration objects like `window.ENV` for sensitive keys and identifiers, and fail securely if they are missing.
