@@ -742,7 +742,7 @@
                 msgEl.textContent = "Message sent successfully! We'll be in touch.";
                 document.getElementById('inquiry-form').reset();
             } catch (error) {
-                console.error("Error submitting inquiry:", error.message, error.code);
+                console.error("Error submitting inquiry:", error.code);
                 msgEl.style.color = "#ef4444";
                 msgEl.textContent = "Error sending message. Please try again later.";
             } finally {
