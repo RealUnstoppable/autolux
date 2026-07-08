@@ -14,3 +14,10 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
+**Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
+**Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+
+## 2025-05-24 - [Firebase Timestamp Serialization in Cache]
+**Learning:** When caching Firestore documents in `sessionStorage` or `localStorage`, Firebase `Timestamp` objects lose prototype methods like `.toDate()` during JSON serialization.
+**Action:** Ensure timestamps are converted to primitive values (e.g., ISO strings) before caching, or implement fallback logic for parsed objects.
