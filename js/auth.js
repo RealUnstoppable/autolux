@@ -44,7 +44,7 @@ try {
     console.log("Firebase initialized successfully for autolux.realunstoppable.store");
 
 } catch (error) {
-    console.error("Firebase Initialization Error", error.message);
+    console.error("Firebase Initialization Error");
     if (error.code) console.error("Error code:", error.code);
 }
 
@@ -95,7 +95,7 @@ export async function ensureUserDocument(user) {
         }
     } catch (error) {
         console.error("Error ensuring user document:", error);
-        console.error("Error ensuring user document:", error.message);
+        console.error("Error ensuring user document");
         if (error.code) console.error("Error code:", error.code);
         return null;
     }
@@ -224,7 +224,7 @@ export async function submitDetailingRequest(requestData) {
         return docRef.id;
     } catch (error) {
          console.error("Error submitting detailing request:", error);
-         console.error("Error submitting detailing request:", error.message);
+         console.error("Error submitting detailing request");
          if (error.code) console.error("Error code:", error.code);
         return null;
     }
