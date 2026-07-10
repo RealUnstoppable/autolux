@@ -36,8 +36,6 @@ export async function submitDetailingRequest(userId, requestData) {
         if (error.code) {
             console.error("Firebase error code:", error.code);
         }
-        console.error("Full error:", error);
-
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: "An error occurred while processing the request", code: error.code };
     }
 }
