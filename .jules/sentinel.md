@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-07-11 - Prevent Information Leakage and Hardcoded Configs
+**Vulnerability:** Raw error objects (Firebase errors) were being returned directly to frontend clients. Dummy API keys were also hardcoded as config fallbacks.
+**Learning:** In a vanilla JS app lacking a backend proxy, exposing raw errors can leak sensitive internal constraints. Hardcoded dummy keys mask missing environment variables and can bypass configuration validation checks.
+**Prevention:** Always return generic, secure error messages to clients while retaining error codes (`error.code`) for safe programmatic routing. Enforce strict reliance on injected environment objects (`window.ENV`) without fallback dummy values.
