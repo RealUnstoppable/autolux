@@ -35,6 +35,7 @@ export async function submitDetailingRequest(userId, requestData) {
         console.error("Failed to submit detailing request.");
         if (error.code) {
             console.error("Firebase error code:", error.code);
+        console.error("Error message:", error.message);
         }
         console.error("Full error:", error);
 
