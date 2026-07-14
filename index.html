@@ -579,21 +579,44 @@
         // Load Reviews
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
+
+            // ⚡ Bolt Optimization: Cache static reviews data in sessionStorage to prevent unnecessary DB reads
+            const cachedReviews = sessionStorage.getItem('autolux_reviews');
+            if (cachedReviews) {
+                renderReviews(JSON.parse(cachedReviews), container);
+                return;
+            }
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
 
-                const reviews = querySnapshot.docs.map(doc => doc.data());
-                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                const reviews = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    // Convert timestamp to prevent serialization loss
+                    if (data.createdAt?.toDate) {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    }
+                    return data;
+                });
+                reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
-                if (reviews.length === 0) {
-                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                    return;
-                }
+                sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
 
-                container.innerHTML = '';
+                renderReviews(reviews, container);
+            } catch (error) {
+                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
+            }
+        }
 
-                reviews.forEach(r => {
+        function renderReviews(reviews, container) {
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            reviews.forEach(r => {
                     // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                     const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
@@ -606,10 +629,6 @@
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
-            } catch (error) {
-                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
-            }
         }
 
         // Load reviews on page load
