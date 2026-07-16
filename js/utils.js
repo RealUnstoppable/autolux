@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { submitDetailingRequestCore } from './auth.js';
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -17,20 +17,16 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+
+
 export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-
-        return { success: true, docId: docRef.id };
+        const id = await submitDetailingRequestCore({userId: userId, ...requestData});
+        return { success: true, docId: id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
         if (error.code) {
@@ -38,6 +34,6 @@ export async function submitDetailingRequest(userId, requestData) {
         }
         console.error("Full error:", error);
 
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: error.message, code: error.code, message: "An error occurred while submitting your request. Please try again later." };
     }
 }

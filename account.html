@@ -418,8 +418,8 @@
 
                 // Fire them off concurrently
                 const [userSnap, appointmentsSnap] = await Promise.all([
-                    getDoc(userRef),
-                    getDocs(appointmentsQuery).catch(e => { console.error("Error fetching bookings:", e); return { docs: [] }; })
+                    getDoc(userRef).catch(e => { console.error("Error fetching user:", e); return { exists: () => false, data: () => ({}) }; }),
+                    getDocs(appointmentsQuery).catch(e => { console.error("Error fetching bookings:", e); return { docs: [], empty: true, forEach: () => {} }; })
                 ]);
 
                 let userData = {};
@@ -529,8 +529,8 @@
                 const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", uid), orderBy("createdAt", "desc"));
 
                 const [userDoc, appointmentsSnapshot] = await Promise.all([
-                    getDoc(userRef),
-                    getDocs(appointmentsQuery)
+                    getDoc(userRef).catch(e => { console.error("Error fetching user:", e); return { exists: () => false, data: () => ({}) }; }),
+                    getDocs(appointmentsQuery).catch(e => { console.error("Error fetching bookings:", e); return { docs: [], empty: true, forEach: () => {} }; })
                 ]);
 
                 // Render Profile & Vehicles
@@ -644,8 +644,8 @@
 
                 // Fetch independent data streams concurrently (Fixes N+1 issue)
                 const [userData, appointments] = await Promise.all([
-                    ensureUserDocument(user),
-                    fetchAppointments(user.uid)
+                    ensureUserDocument(user).catch(e => { console.error("Error fetching user document:", e); return null; }),
+                    fetchAppointments(user.uid).catch(e => { console.error("Error fetching appointments:", e); return []; })
                 ]);
 
                 // Verify routing rules
@@ -826,7 +826,10 @@
                 const userDocPromise = getDoc(doc(db, "users", currentUser.uid));
                 const appointmentsPromise = getDocs(query(collection(db, "bookings"), where("userId", "==", currentUser.uid)));
 
-                const [userDoc, appointmentsSnap] = await Promise.all([userDocPromise, appointmentsPromise]);
+                const [userDoc, appointmentsSnap] = await Promise.all([
+                    userDocPromise.catch(e => { console.error("Error fetching user:", e); return { exists: () => false, data: () => ({}) }; }),
+                    appointmentsPromise.catch(e => { console.error("Error fetching bookings:", e); return { docs: [], empty: true, forEach: () => {} }; })
+                ]);
 
                 if (!userDoc.exists()) {
                     console.error("User profile document missing. Fallback failed.");

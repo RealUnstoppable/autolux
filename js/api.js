@@ -1,16 +1,21 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+import { submitDetailingRequestCore } from './auth.js';
+
+import { auth } from './auth.js';
 
 export async function submitDetailingRequest(bookingData) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        console.error("Cannot submit detailing request: User is not authenticated.");
+        return { success: false, error: { message: "User must be authenticated" }, message: "An error occurred while submitting your request. Please try again later." };
+    }
+
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            ...bookingData,
-            createdAt: serverTimestamp()
-        });
-        console.log("Document written with ID: ", docRef.id);
-        return { success: true, id: docRef.id };
+        const id = await submitDetailingRequestCore({ ...bookingData, userId: currentUser.uid });
+        return { success: true, id: id };
     } catch (error) {
         console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error };
+        return { success: false, error: error, message: "An error occurred while submitting your request. Please try again later." };
     }
 }
