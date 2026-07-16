@@ -202,22 +202,27 @@ export function safeRedirect(targetUrl) {
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
 export async function submitDetailingRequest(requestData) {
-    if (!db || !auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
+    if (!auth || !auth.currentUser) {
+        console.error("User not authenticated.");
         return null;
     }
-
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
+    try {
+        return await submitDetailingRequestCore({...requestData, userId: auth.currentUser.uid});
+    } catch(e) {
         return null;
+    }
+}
+
+export async function submitDetailingRequestCore(requestData) {
+    if (!db) {
+        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
+        throw new Error("Firebase database is not fully initialized.");
     }
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
             ...requestData,
-            userId: currentUser.uid, // Required by security rules
-            status: "pending",
+            status: requestData.status || "pending",
             createdAt: serverTimestamp()
         });
         console.log("Detailing request submitted successfully with ID:", docRef.id);
@@ -226,7 +231,7 @@ export async function submitDetailingRequest(requestData) {
          console.error("Error submitting detailing request:", error);
          console.error("Error submitting detailing request:", error.message);
          if (error.code) console.error("Error code:", error.code);
-        return null;
+         throw error;
     }
 }
 
