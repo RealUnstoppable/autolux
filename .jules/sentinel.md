@@ -18,3 +18,8 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+
+## 2024-07-18 - Privilege Escalation in Firestore Wildcard Rule
+**Vulnerability:** A wildcard catch-all rule (`match /{document=**}`) contained `allow create` and `allow update, delete` statements which inadvertently granted global write access to authenticated users and admins across the entire database, overriding more specific restrictive rules.
+**Learning:** Firestore rules evaluate `allow` statements using a logical OR. If a global wildcard rule allows access, it bypasses any specific collection restrictions, leading to privilege escalation.
+**Prevention:** Always explicitly deny access in global wildcard rules (`allow read, write: if false;`) and strictly define permissions only within specific collection `match` blocks.
