@@ -1,4 +1,4 @@
-import { db } from './auth.js';
+import { db, submitDetailingRequestCore } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 export function escapeHTML(str) {
@@ -23,14 +23,8 @@ export async function submitDetailingRequest(userId, requestData) {
     }
 
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-
-        return { success: true, docId: docRef.id };
+        const docId = await submitDetailingRequestCore(requestData, userId);
+        return { success: true, docId: docId };
     } catch (error) {
         console.error("Failed to submit detailing request.");
         if (error.code) {
