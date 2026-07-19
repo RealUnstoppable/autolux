@@ -580,11 +580,25 @@
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
             try {
-                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
-                const querySnapshot = await getDocs(q);
+                // ⚡ Bolt Optimization: Cache reviews in sessionStorage to prevent redundant DB reads
+                let reviews = [];
+                const cachedReviews = sessionStorage.getItem('autolux_reviews');
+                if (cachedReviews) {
+                    reviews = JSON.parse(cachedReviews);
+                } else {
+                    const q = query(collection(db, "reviews"), where("status", "==", "approved"));
+                    const querySnapshot = await getDocs(q);
 
-                const reviews = querySnapshot.docs.map(doc => doc.data());
-                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                    reviews = querySnapshot.docs.map(doc => {
+                        const data = doc.data();
+                        if (data.createdAt && data.createdAt.toDate) {
+                            data.createdAt = data.createdAt.toDate().toISOString();
+                        }
+                        return data;
+                    });
+                    reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+                    sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
+                }
 
                 if (reviews.length === 0) {
                     container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
