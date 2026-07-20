@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -40,12 +39,8 @@ try {
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
+    else console.error("Firebase Initialization Error", error.message);
     console.error(error);
-    console.log("Firebase initialized successfully for autolux.realunstoppable.store");
-
-} catch (error) {
-    console.error("Firebase Initialization Error", error.message);
-    if (error.code) console.error("Error code:", error.code);
 }
 
 export { app, auth, db };
@@ -201,29 +196,26 @@ export function safeRedirect(targetUrl) {
  * @param {string} requestData.appointmentDate
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
+import { submitDetailingRequestCore } from './utils.js';
 export async function submitDetailingRequest(requestData) {
     if (!db || !auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
         return null;
     }
-
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return null;
     }
-
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            ...requestData,
-            userId: currentUser.uid, // Required by security rules
-            status: "pending",
-            createdAt: serverTimestamp()
-        });
-        console.log("Detailing request submitted successfully with ID:", docRef.id);
-        return docRef.id;
+        const res = await submitDetailingRequestCore(currentUser.uid, requestData);
+        if (res.success) {
+            console.log("Detailing request submitted successfully with ID:", res.docId);
+            return res.docId;
+        } else {
+            throw new Error(res.error);
+        }
     } catch (error) {
-         console.error("Error submitting detailing request:", error);
          console.error("Error submitting detailing request:", error.message);
          if (error.code) console.error("Error code:", error.code);
         return null;
