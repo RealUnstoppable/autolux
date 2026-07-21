@@ -406,7 +406,7 @@
             </div>
 
             <button type="submit" class="btn-primary" id="submit-booking-btn">Request Appointment</button>
-            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+            <p id="booking-msg" aria-live="polite" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
         </form>
     </section>
 
@@ -847,7 +847,7 @@
             <div class="form-group">
                 <label for="date-select">Select Date & Time</label>
                 <input type="datetime-local" id="date-select" required>
-                <p id="date-warning" style="color: var(--accent); font-size: 0.85rem; display: none;">Checking availability...</p>
+                <p id="date-warning" aria-live="polite" style="color: var(--accent); font-size: 0.85rem; display: none;">Checking availability...</p>
             </div>
 
             <div class="price-preview" id="price-preview">Total: $0.00</div>
