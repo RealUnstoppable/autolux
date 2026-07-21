@@ -17,19 +17,26 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+/**
+ * Core utility to submit a detailing request.
+ */
+async function submitDetailingRequestCore(userId, requestData) {
+    const docRef = await addDoc(collection(db, "bookings"), {
+        userId: userId,
+        ...requestData,
+        createdAt: serverTimestamp(),
+        status: 'pending'
+    });
+    return docRef;
+}
+
 export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-
+        const docRef = await submitDetailingRequestCore(userId, requestData);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
@@ -38,6 +45,6 @@ export async function submitDetailingRequest(userId, requestData) {
         }
         console.error("Full error:", error);
 
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }
