@@ -17,19 +17,29 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+export async function submitDetailingRequestCore(userId, requestData) {
+    const docRef = await addDoc(collection(db, "bookings"), {
+        userId: userId,
+        ...requestData,
+        createdAt: serverTimestamp(),
+        status: 'pending'
+    });
+    return docRef;
+}
+
+/**
+ * Submits a detailing request to the bookings collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
 export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-
+        const docRef = await submitDetailingRequestCore(userId, requestData);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");

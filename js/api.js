@@ -1,12 +1,10 @@
 import { db } from './auth.js';
+import { submitDetailingRequestCore } from './utils.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 export async function submitDetailingRequest(bookingData) {
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            ...bookingData,
-            createdAt: serverTimestamp()
-        });
+        const docRef = await submitDetailingRequestCore(bookingData.userId, bookingData);
         console.log("Document written with ID: ", docRef.id);
         return { success: true, id: docRef.id };
     } catch (error) {
