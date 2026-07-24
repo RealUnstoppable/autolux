@@ -579,13 +579,45 @@
         // Load Reviews
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
+
+            try {
+                const cachedReviews = sessionStorage.getItem('autolux_reviews');
+                if (cachedReviews) {
+                    const reviews = JSON.parse(cachedReviews);
+                    renderReviewsUI(reviews, container);
+                    return;
+                }
+            } catch (e) {
+                console.error("sessionStorage error:", e);
+            }
+
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
 
-                const reviews = querySnapshot.docs.map(doc => doc.data());
-                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                const reviews = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    if(data.createdAt && data.createdAt.toDate) {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    }
+                    return data;
+                });
+                reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
+                try {
+                    sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
+                } catch (e) {
+                    console.error("sessionStorage error:", e);
+                }
+
+                renderReviewsUI(reviews, container);
+            } catch (error) {
+                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
+            }
+        }
+
+        function renderReviewsUI(reviews, container) {
                 if (reviews.length === 0) {
                     container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
                     return;
