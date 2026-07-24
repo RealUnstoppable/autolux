@@ -21,23 +21,13 @@ export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-
+    const { submitDetailingRequestCore } = await import('./api.js');
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-
-        return { success: true, docId: docRef.id };
+        const result = await submitDetailingRequestCore({ userId, ...requestData, status: 'pending' });
+        return { success: result.success, docId: result.id, error: result.error };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
-        console.error("Full error:", error);
-
+        if (error.code) console.error("Firebase error code:", error.code);
         return { success: false, error: error.message, code: error.code };
     }
 }

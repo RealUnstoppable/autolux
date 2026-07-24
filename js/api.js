@@ -1,7 +1,7 @@
 import { db } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-export async function submitDetailingRequest(bookingData) {
+export async function submitDetailingRequestCore(bookingData) {
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
             ...bookingData,
@@ -13,4 +13,8 @@ export async function submitDetailingRequest(bookingData) {
         console.error("Error adding document: ", error.code, error.message);
         return { success: false, error: error };
     }
+}
+
+export async function submitDetailingRequest(bookingData) {
+    return await submitDetailingRequestCore(bookingData);
 }
