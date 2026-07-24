@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-07-24 - Privilege Escalation via Catch-All Firestore Rule
+**Vulnerability:** A catch-all wildcard rule (`match /{document=**}`) contained an `allow create` statement granting creation rights. Due to Firestore's logical OR evaluation of rules, this inadvertently granted all authenticated users global document creation privileges across the entire database.
+**Learning:** Firestore rules evaluate using OR logic where the most permissive rule wins. Placing allow rules inside a global catch-all match bypasses any restrictive collection-specific rules.
+**Prevention:** Catch-all rules (`match /{document=**}`) must strictly enforce default-deny behavior (`allow read, write: if false;`). Never place global allow statements inside them.
