@@ -168,12 +168,8 @@ service cloud.firestore {
 
     // Default deny for any other collections
     match /{document=**} {
-      allow read: if false;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
+      // 🛡️ Sentinel: Removed privilege escalation wildcard allows. Catch-all must strictly deny.
+      allow read, write: if false;
     }
 
     match /quotes/{quoteId} {
