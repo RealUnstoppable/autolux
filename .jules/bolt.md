@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2025-05-24 - [Avoid Unnecessary Chart.js Re-renders]
+**Learning:** Destroying and recreating Chart.js canvas instances continuously on state updates causes unnecessary layout trashing and layout shifts, blocking the main thread.
+**Action:** When updating a chart with new data but the same chart type, use the existing instance and update its `.data` and `.options` directly, then call `.update()` instead of tearing down the canvas context entirely.
