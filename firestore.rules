@@ -167,13 +167,11 @@ service cloud.firestore {
     }
 
     // Default deny for any other collections
+    // Security Fix: Prevent privilege escalation. A catch-all wildcard rule with allow
+    // statements evaluates using logical OR, granting global privileges and bypassing
+    // specific collection restrictions. Always explicitly deny access globally.
     match /{document=**} {
-      allow read: if false;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAdmin();
+      allow read, write: if false;
     }
 
     match /quotes/{quoteId} {
