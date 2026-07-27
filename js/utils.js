@@ -17,7 +17,7 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-export async function submitDetailingRequest(userId, requestData) {
+export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
@@ -32,11 +32,10 @@ export async function submitDetailingRequest(userId, requestData) {
 
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request.");
+        console.error("Failed to submit detailing request.", error);
         if (error.code) {
             console.error("Firebase error code:", error.code);
         }
-        console.error("Full error:", error);
 
         return { success: false, error: error.message, code: error.code };
     }

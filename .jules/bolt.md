@@ -14,3 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
+## 2026-05-26 - Optimized Chart.js performance and extracted DRY utility methods
+**Learning:** Consolidating duplicated Firebase try/catch logic into a central utility method (`submitDetailingRequestCore`) reduces bundle size and minimizes parsing time. Also, mutating a Chart.js canvas config (`performanceChart.options = chartConfig.options`) and calling `performanceChart.update()` prevents expensive canvas recreation loops in dashboard views.
+**Action:** Created `submitDetailingRequestCore` in `js/utils.js` to handle detailing bookings and replaced duplicate `addDoc` logic in `js/api.js` and `js/auth.js`. Updated `renderChart` in `admin.html` to update the existing Chart.js instance.
