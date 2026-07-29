@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-06-01 - [Stored XSS via innerHTML rendering of document IDs]
+**Vulnerability:** Found a Stored XSS vulnerability in `admin.html`. The application was rendering document IDs (e.g., `userId`, `id` for reviews, inquiries, quotes) directly into the DOM using `innerHTML` without sanitization within action buttons.
+**Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even metadata like document IDs.
+**Prevention:** Always use the `escapeHTML` utility function to sanitize variables before interpolating them into `innerHTML` strings.
