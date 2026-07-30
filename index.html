@@ -429,6 +429,7 @@
     </footer>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
@@ -564,7 +565,7 @@
                 const snapshot = await getDocs(q);
 
                 const faqs = snapshot.docs.map(doc => doc.data());
-                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+                safeSetSessionStorage('autolux_faqs', JSON.stringify(faqs));
 
                 renderFaqs(faqs, container);
             } catch (e) {

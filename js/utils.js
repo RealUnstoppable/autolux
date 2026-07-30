@@ -17,18 +17,30 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+export async function submitDetailingRequestCore(userId, requestData) {
+    return await addDoc(collection(db, "bookings"), {
+        ...requestData,
+        ...(userId && { userId }),
+        createdAt: serverTimestamp(),
+        status: 'pending'
+    });
+}
+
+export function safeSetSessionStorage(key, value) {
+    try {
+        sessionStorage.setItem(key, value);
+    } catch (e) {
+        console.error('Storage quota exceeded');
+    }
+}
+
 export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
-            ...requestData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
+        const docRef = await submitDetailingRequestCore(userId, requestData);
 
         return { success: true, docId: docRef.id };
     } catch (error) {

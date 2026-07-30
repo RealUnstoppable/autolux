@@ -82,6 +82,7 @@
     </div>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -125,10 +126,10 @@
                         const q = await getDocs(collection(db, "services"));
                         if (!q.empty) {
                             const data = q.docs.map(d => ({ id: d.id, ...d.data() }));
-                            sessionStorage.setItem('servicesCache', JSON.stringify(data));
+                            safeSetSessionStorage('servicesCache', JSON.stringify(data));
                             renderServices(data, select);
                         } else {
-                            sessionStorage.setItem('servicesCache', JSON.stringify(defaultPackages));
+                            safeSetSessionStorage('servicesCache', JSON.stringify(defaultPackages));
                             renderServices(defaultPackages, select);
                         }
                     } catch(e) {
@@ -429,6 +430,7 @@
         };
     </script>
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { db } from '/js/auth.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -546,6 +548,7 @@
     </div>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db } from '/js/auth.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { collection, addDoc, getDocs, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
@@ -563,7 +566,7 @@
             if (!user) {
                 // User must be logged in to book
                 const currentPath = window.location.pathname;
-                sessionStorage.setItem('redirectAfterLogin', currentPath);
+                safeSetSessionStorage('redirectAfterLogin', currentPath);
                 window.location.replace('sign in beta.html');
             } else {
                 currentUser = user;
@@ -616,6 +619,7 @@
     </div>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
         import { addDoc, collection, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
@@ -689,7 +693,7 @@
                 // const snapshot = await getDocs(collection(db, "services"));
                 // const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                sessionStorage.setItem(cacheKey, JSON.stringify(packages));
+                safeSetSessionStorage(cacheKey, JSON.stringify(packages));
                 renderServices(packages);
             } catch (error) {
                 console.error("Error loading services:", error);
@@ -730,7 +734,7 @@
                     date: document.getElementById('appointmentDate').value,
                     service: selectedService ? selectedService.id : null
                 };
-                sessionStorage.setItem('booking_draft', JSON.stringify(draft));
+                safeSetSessionStorage('booking_draft', JSON.stringify(draft));
                 console.log("Draft saved locally");
             }, 800); // 800ms debounce
         }
@@ -795,7 +799,7 @@
                     ];
                 }
 
-                sessionStorage.setItem('autolux_service_menu', JSON.stringify(services));
+                safeSetSessionStorage('autolux_service_menu', JSON.stringify(services));
                 populateDropdown(services);
 
             } catch (error) {
@@ -858,6 +862,7 @@
     </div>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db, waitForAuthState } from '/js/auth.js';
         import { doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
@@ -939,7 +944,7 @@
                     { id: 'truck_heavy', name: 'Premium Truck - Heavy Duty', price: 280 },
                     { id: 'van_executive', name: 'Sprinter Van - Executive Detail', price: 400 }
                 ];
-                sessionStorage.setItem('autolux_packages', JSON.stringify(pricingCache));
+                safeSetSessionStorage('autolux_packages', JSON.stringify(pricingCache));
                 renderPackages();
             }
         }
