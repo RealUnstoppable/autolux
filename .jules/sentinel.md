@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-05-25 - Mass Assignment Vulnerability via Object Spread
+**Vulnerability:** Trusted server-determined fields like `userId` were placed before the untrusted `...requestData` spread operator in Firestore writes.
+**Learning:** Spreading untrusted user input after trusted fields allows the untrusted input to silently overwrite and tamper with those trusted properties, bypassing server-side constraints.
+**Prevention:** Always spread untrusted payloads at the beginning of the object literal, followed by the trusted, server-determined properties.

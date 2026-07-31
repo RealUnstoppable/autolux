@@ -24,8 +24,8 @@ export async function submitDetailingRequest(userId, requestData) {
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
             ...requestData,
+            userId: userId, // Prevent mass assignment
             createdAt: serverTimestamp(),
             status: 'pending'
         });
