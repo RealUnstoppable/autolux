@@ -32,12 +32,8 @@ export async function submitDetailingRequest(userId, requestData) {
 
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
-        console.error("Full error:", error);
-
+        console.error("Failed to submit detailing request:", error.message);
+        if (error.code) console.error("Firebase error code:", error.code);
         return { success: false, error: error.message, code: error.code };
     }
 }
