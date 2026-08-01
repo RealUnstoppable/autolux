@@ -4,3 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
+## 2024-05-24 - Dynamic Messages Missing Accessibility
+**Learning:** The application uses dynamic text elements (e.g. `<p id="msg"></p>`) to show form success/error feedback, but without `aria-live`, screen readers don't announce when this text updates, leaving visually impaired users unaware of the form submission result.
+**Action:** Always add `aria-live="polite"` (or `"assertive"` for critical errors) to empty container elements that will receive text content dynamically (like form validation or submission messages).
