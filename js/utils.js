@@ -24,8 +24,9 @@ export async function submitDetailingRequest(userId, requestData) {
 
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
-            userId: userId,
+            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
+            userId: userId,
             createdAt: serverTimestamp(),
             status: 'pending'
         });

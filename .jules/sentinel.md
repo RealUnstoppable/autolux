@@ -18,3 +18,7 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-05-25 - [Mass Assignment / Parameter Tampering]
+**Vulnerability:** In `js/utils.js`, user-provided payload `...requestData` was spread after the trusted server-determined `userId` property during an `addDoc` database write, allowing users to potentially overwrite the `userId`.
+**Learning:** Object spread syntax (`...`) evaluates in order. If untrusted payloads are spread after trusted properties, the untrusted data will overwrite the trusted data (Mass Assignment vulnerability).
+**Prevention:** Always spread user-provided payloads *before* defining trusted properties (like `userId`, `status`, `createdAt`) in database operations.
