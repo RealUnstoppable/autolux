@@ -78,7 +78,7 @@
             </div>
             <button type="submit" class="btn-primary" id="submit-btn" disabled>Book Now</button>
         </form>
-        <div id="msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center;"></div>
+        <div id="msg" aria-live="polite" style="margin-top: 15px; font-size: 0.9rem; text-align: center;"></div>
     </div>
 
     <script type="module">
@@ -406,7 +406,7 @@
             </div>
 
             <button type="submit" class="btn-primary" id="submit-booking-btn">Request Appointment</button>
-            <p id="booking-msg" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
+            <p id="booking-msg" aria-live="polite" style="text-align: center; margin-top: 15px; font-weight: 600;"></p>
         </form>
     </section>
 
@@ -542,7 +542,7 @@
         </div>
 
         <button id="book-btn" class="btn-primary" disabled>Complete Booking</button>
-        <div id="msg"></div>
+        <div id="msg" aria-live="polite"></div>
     </div>
 
     <script type="module">
@@ -853,7 +853,7 @@
             <div class="price-preview" id="price-preview">Total: $0.00</div>
 
             <button type="submit" class="btn" id="submit-btn">Confirm Appointment</button>
-            <div id="form-msg" class="msg"></div>
+            <div id="form-msg" aria-live="polite" class="msg"></div>
         </form>
     </div>
 
