@@ -41,3 +41,19 @@ export async function submitDetailingRequest(userId, requestData) {
         return { success: false, error: error.message, code: error.code };
     }
 }
+/**
+ * Safely sets an item in sessionStorage, catching QuotaExceededError.
+ * @param {string} key
+ * @param {string} value
+ */
+export function safeSetSessionStorage(key, value) {
+    try {
+        sessionStorage.setItem(key, value);
+    } catch (e) {
+        if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+            console.warn('Session storage quota exceeded. Unable to cache data for key:', key);
+        } else {
+            console.error('Error setting session storage for key:', key, e);
+        }
+    }
+}
