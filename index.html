@@ -37,7 +37,7 @@
             padding: 15px 20px; box-sizing: border-box; display: flex; 
             justify-content: space-between; align-items: center; flex-wrap: wrap;
         }
-        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; letter-spacing: 1px; }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
         
         .menu-toggle {
             color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: block; user-select: none;
@@ -239,7 +239,7 @@
 <body>
 
     <nav>
-        <a href="#" class="logo" aria-label="Unstoppable Detailing Home">UNSTOPPABLE</a>
+        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
