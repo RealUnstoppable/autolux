@@ -347,12 +347,10 @@
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
         import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { auth, db } from '/js/auth.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from './js/utils.js';
 
         let performanceChart;
 
@@ -367,8 +365,8 @@
 
                 const userData = await ensureUserDocument(user);
 
-                const redirectPath = getUserRedirectPath(user, userData, window.location.pathname);
-                if (redirectPath) {
+                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath && !redirectPath.endsWith('admin.html')) {
                     safeRedirect(redirectPath);
                     return;
                 }
@@ -377,21 +375,11 @@
                     document.body.style.display = 'flex';
                     initializeAdminPage(user);
                 } else {
-                    if (window.location.pathname !== '/account.html') {
                     safeRedirect('account.html');
                 }
             } catch (error) {
                 console.error("Admin init error:", error);
                 safeRedirect('sign in beta.html');
-                    if (!window.location.pathname.includes('account.html')) {
-                        window.location.replace('account.html');
-                    }
-                }
-            } else {
-                if (window.location.pathname !== '/sign in beta.html') {
-                if (!window.location.pathname.includes('sign in beta.html')) {
-                    window.location.replace('sign in beta.html');
-                }
             }
         }
 
@@ -407,10 +395,8 @@
             try {
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
-            } catch (e) {
-                console.error(`Error fetching ${collectionName}:`, e.code, e);
             } catch (error) {
-                console.error(`Error fetching ${collectionName}:`, error, error.code ? `(Code: ${error.code})` : '');
+                console.error(`Error fetching ${collectionName}:`, error.message);
                 return [];
             }
         }
@@ -490,10 +476,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
-                    console.error("Could not load reviews. Missing Firestore rules?", revError);
-                    console.error("Could not load reviews. Missing Firestore rules?", revError.code, revError);
-                } catch (error) {
-                    console.log("Could not load reviews. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
+                    console.error("Could not load reviews.", revError);
                     document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
@@ -512,10 +495,7 @@
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
-                    console.error("Could not load feature requests. Missing Firestore rules?", frError);
-                    console.error("Could not load feature requests. Missing Firestore rules?", frError.code, frError);
-                } catch (error) {
-                    console.log("Could not load feature requests. Missing Firestore rules?", error, error.code ? `(Code: ${error.code})` : '');
+                    console.error("Could not load feature requests.", frError);
                     document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
                 }
                 
@@ -527,15 +507,11 @@
                     }
                 } catch (e) {
                     console.error("Error loading download stats:", e);
-                    console.error("Could not fetch site stats:", e.code, e);
-                } catch (error) {
-                    console.error("Error loading stats:", error, error.code ? `(Code: ${error.code})` : '');
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
-                console.error("Error loading admin data:", error.code, error);
-                console.error("Error loading admin data:", error, error.code ? `(Code: ${error.code})` : '');
+                console.error("Error loading admin data:", error);
             }
         }
 

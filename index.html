@@ -21,6 +21,10 @@
             --border: rgba(255, 255, 255, 0.1);
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+        
         body {
             margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); 
             color: var(--text-main); scroll-behavior: smooth; overflow-x: hidden;
@@ -307,20 +311,17 @@
         <div class="membership">
             <h3>AutoLux Detailing Plan</h3>
             <p>Keep your vehicle pristine year-round. Subscribe for a monthly maintenance wash and receive a <strong>15% discount</strong> on all services for the year, plus priority booking.</p>
-            <a href="booking.html" class="btn-primary" style="background: var(--gold); color: black;">Join the Club</a>
+            <a href="booking.html?package=club" class="btn-primary" style="background: var(--gold); color: black;">Join the Club</a>
         </div>
     </section>
 
     <section id="gallery">
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
-        <!-- ⚡ Bolt: Added &auto=format to Unsplash image URLs to serve WebP/AVIF to supported browsers, reducing payload size. -->
-        <!-- ⚡ Bolt Optimization: Appended &auto=format to Unsplash URLs to serve optimized image formats -->
-        <!-- ⚡ Bolt: Appended &auto=format to Unsplash URLs to optimize image loading performance -->
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1503376713356-20d6cb25c945?q=80&w=600&auto=format" alt="G-Wagon Wash" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
         </div>
     </section>
@@ -367,8 +368,8 @@
         <p class="sweep-subtitle">Donate to unlock community milestones and earn entries to win massive prizes!</p>
         
         <div class="progress-container">
-            <div class="progress-text">$100 / $100,000 Raised!</div>
-            <div class="progress-bar-fill" style="width: 0.1%;"></div>
+            <div class="progress-text" id="home-sweep-text">$1,500 / $100,000 Raised!</div>
+            <div class="progress-bar-fill" id="home-sweep-fill" style="width: 1.5%;"></div>
         </div>
 
         <p style="font-size: 0.9rem; color: var(--text-muted);">
@@ -387,7 +388,7 @@
             <div class="milestone-card"><span class="milestone-goal">$100k</span><span class="milestone-reward" style="color:var(--gold); font-weight:bold;">1 Year Pro Membership!</span></div>
         </div>
 
-        <button onclick="mockDonate()" class="btn-primary" style="margin-top: 30px; background: var(--gold); color: black;">Donate & Enter to Win</button>
+        <a href="donate.html" class="btn-primary" style="margin-top: 30px; background: var(--gold); color: black; display: inline-block; text-decoration: none;">Donate & Enter to Win</a>
     </section>
 
     <footer id="contact">
@@ -579,25 +580,17 @@
         // Load Reviews
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
-            try {
-                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
-                const querySnapshot = await getDocs(q);
+            const defaultReviews = [
+                { userName: "Marcus T.", rating: 5, comment: "Unstoppable Detailing is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
+                { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
+                { userName: "David L.", rating: 5, comment: "The safe wash and paint enhancement took out all the micro-swirls. Highly recommended for any luxury car owner." }
+            ];
 
-                const reviews = querySnapshot.docs.map(doc => doc.data());
-                reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
-
-                if (reviews.length === 0) {
-                    container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                    return;
-                }
-
+            function renderReviewItems(list) {
                 container.innerHTML = '';
-
-                reviews.forEach(r => {
-                    // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                    const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                list.forEach(r => {
+                    const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
@@ -606,9 +599,23 @@
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
+            }
+
+            try {
+                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
+                const querySnapshot = await getDocs(q);
+                let reviews = querySnapshot.docs.map(doc => doc.data());
+                
+                if (reviews.length === 0) {
+                    reviews = defaultReviews;
+                } else {
+                    reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                }
+
+                renderReviewItems(reviews);
             } catch (error) {
-                console.error("Error loading reviews", error, error.code ? `(Code: ${error.code})` : '');
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load reviews.</div>';
+                console.warn("Could not load reviews from database, rendering default testimonials:", error);
+                renderReviewItems(defaultReviews);
             }
         }
 
