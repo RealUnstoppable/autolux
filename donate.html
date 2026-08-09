@@ -188,22 +188,69 @@
             padding: 30px;
         }
 
-        .btn-donate {
-            background: linear-gradient(135deg, var(--gold), #b38f24);
-            color: black;
-            font-weight: 800;
-            font-size: 1.2rem;
-            padding: 16px 40px;
-            border: none;
-            border-radius: 8px;
+        /* Unified Button Styles */
+        .auth-btn, .btn-primary, button[type="submit"] {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+            font-size: 1rem;
         }
 
-        .btn-donate:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        .auth-btn::before, .btn-primary::before, button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
+            z-index: -1;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-btn:hover, .btn-primary:hover, button[type="submit"]:hover {
+            color: #000000 !important;
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+        }
+
+        .auth-btn:hover::before, .btn-primary:hover::before, button[type="submit"]:hover::before {
+            transform: scaleY(1);
+        }
+
+        .auth-btn:active, .btn-primary:active, button[type="submit"]:active {
+            box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
+            transform: scale(0.96);
+        }
+
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.85), 0 0 50px 15px rgba(255, 255, 255, 0.45);
+            transform: scale(0.96);
         }
 
         /* Modal Overlay for Stripe Payment */
@@ -281,24 +328,6 @@
             font-size: 0.95rem;
         }
 
-        .btn-pay {
-            width: 100%;
-            padding: 15px;
-            background: #635bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
-        }
-
-        .btn-pay:hover {
-            background: #5444e4;
-        }
-
         @media (max-width: 600px) {
             nav { padding: 15px 20px; }
             .hero-banner h1 { font-size: 1.8rem; }
@@ -359,7 +388,7 @@
             <p id="selected-summary" style="font-size: 1.1rem; margin-bottom: 20px; font-weight: 600;">
                 Selected: <span style="color: var(--gold);">$25 Donation</span> &bull; <span style="color: var(--accent);">30 Entries</span>
             </p>
-            <button class="btn-donate" id="open-stripe-btn">Proceed to Payment</button>
+            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 16px 40px; font-size: 1.2rem;">Proceed to Payment</button>
         </div>
     </div>
 
@@ -397,7 +426,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-pay" id="pay-btn">Pay $25 & Enter Sweepstakes</button>
+                <button type="submit" class="btn-primary" id="pay-btn" style="width: 100% !important; margin-top: 10px; padding: 15px; font-size: 1.05rem;">Pay $25 & Enter Sweepstakes</button>
             </form>
 
             <div id="stripe-msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight: 600;"></div>

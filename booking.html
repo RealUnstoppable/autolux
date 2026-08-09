@@ -121,22 +121,52 @@
             border-color: var(--accent);
         }
 
-        .btn-primary {
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
+        /* Unified Button Styles */
+        .auth-btn, .btn-primary, button[type="submit"] {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px;
             border-radius: 6px;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
             cursor: pointer;
-            transition: 0.3s;
+            font-size: 1rem;
+            width: 100%;
             margin-top: 10px;
         }
 
-        .btn-primary:hover {
-            background: #1d4ed8;
+        .auth-btn::before, .btn-primary::before, button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
+            z-index: -1;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-btn:hover, .btn-primary:hover, button[type="submit"]:hover {
+            color: #000000 !important;
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+        }
+
+        .auth-btn:hover::before, .btn-primary:hover::before, button[type="submit"]:hover::before {
+            transform: scaleY(1);
+        }
+
+        .auth-btn:active, .btn-primary:active, button[type="submit"]:active {
+            box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
+            transform: scale(0.96);
         }
 
         .btn-primary:disabled {

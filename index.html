@@ -57,10 +57,11 @@
         }
         .nav-links a:last-child { border-bottom: none; }
         .nav-links a:hover { color: var(--accent); }
-        .auth-btn {
+        /* Unified Button Styles */
+        .auth-btn, .btn-primary, button[type="submit"] {
             background: #FFFFFF !important;
             color: #000000 !important;
-            padding: 10px 22px !important;
+            padding: 10px 22px;
             border-radius: 6px;
             font-weight: 700 !important;
             border: none !important;
@@ -72,9 +73,12 @@
             justify-content: center;
             text-decoration: none;
             transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 1rem;
         }
 
-        .auth-btn::before {
+        .auth-btn::before, .btn-primary::before, button[type="submit"]::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -85,17 +89,36 @@
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .auth-btn:hover {
+        .auth-btn:hover, .btn-primary:hover, button[type="submit"]:hover {
             color: #000000 !important;
             box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
         }
 
-        .auth-btn:hover::before {
+        .auth-btn:hover::before, .btn-primary:hover::before, button[type="submit"]:hover::before {
             transform: scaleY(1);
         }
 
-        .auth-btn:active {
+        .auth-btn:active, .btn-primary:active, button[type="submit"]:active {
             box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
+            transform: scale(0.96);
+        }
+
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.85), 0 0 50px 15px rgba(255, 255, 255, 0.45);
             transform: scale(0.96);
         }
 
@@ -111,13 +134,6 @@
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
         .hero p { font-size: 1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;}
         
-        .btn-primary {
-            display: block; width: 100%; max-width: 300px; margin: 0 auto; background: var(--text-main); 
-            color: var(--bg-dark); padding: 15px; text-decoration: none; font-weight: 700; 
-            font-size: 1.1rem; border-radius: 6px; transition: 0.3s; box-sizing: border-box;
-        }
-        .btn-primary:hover { background: var(--accent); color: white; }
-
         /* General Sections */
         section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
         h2 { font-size: 2rem; text-align: center; margin-bottom: 40px; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 10px; }
@@ -161,7 +177,6 @@
         /* Footer & Newsletter */
         footer { background: var(--bg-card); padding: 40px 20px; text-align: center; border-top: 1px solid var(--border); }
         .newsletter input { width: 100%; padding: 14px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; font-size: 1rem;}
-        .newsletter button { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem;}
         .socials { margin-top: 30px; }
         .socials a { color: var(--text-muted); margin: 0 10px; text-decoration: none; font-size: 0.9rem;}
 
@@ -246,13 +261,13 @@
             .menu-toggle { display: none; }
             .nav-links { display: flex; flex-direction: row; width: auto; margin-top: 0; align-items: center; gap: 30px; }
             .nav-links a { padding: 0; border: none; font-size: 0.9rem; }
-            .auth-btn { padding: 10px 22px !important; }
+            .auth-btn { padding: 10px 22px; }
 
             /* Hero Desktop */
             .hero { padding: 0 50px; }
             .hero h1 { font-size: 4rem; }
             .hero p { font-size: 1.2rem; }
-            .btn-primary { display: inline-block; width: auto; }
+            .btn-primary { display: inline-flex; width: auto; }
 
             /* Grid Layouts Desktop */
             section { padding: 100px 50px; }
@@ -351,7 +366,7 @@
         <div class="membership">
             <h3>AutoLux Detailing Plan</h3>
             <p>Keep your vehicle pristine year-round. Subscribe for a monthly maintenance wash and receive a <strong>15% discount</strong> on all services for the year, plus priority booking.</p>
-            <a href="booking.html?package=club" class="btn-primary" style="background: var(--gold); color: black;">Join the Club</a>
+            <a href="booking.html?package=club" class="btn-primary btn-gold" style="display: inline-flex;">Join the Club</a>
         </div>
     </section>
 
@@ -428,7 +443,7 @@
             <div class="milestone-card"><span class="milestone-goal">$100k</span><span class="milestone-reward" style="color:var(--gold); font-weight:bold;">1 Year Pro Membership!</span></div>
         </div>
 
-        <a href="donate.html" class="btn-primary" style="margin-top: 30px; background: var(--gold); color: black; display: inline-block; text-decoration: none;">Donate & Enter to Win</a>
+        <a href="donate.html" class="btn-primary btn-gold" style="margin-top: 30px; display: inline-flex; text-decoration: none;">Donate & Enter to Win</a>
     </section>
 
     <footer id="contact">
@@ -451,7 +466,7 @@
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
                     <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
-                <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
+                <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100% !important; display: flex !important; border: none;">Send Message</button>
                 <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
             </form>
         </div>
@@ -600,17 +615,28 @@
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
 
+            const defaultFaqs = [
+                { question: "Do you travel to my location for detailing?", answer: "Yes! We are a fully mobile service covering the greater area. We come to your home or office." },
+                { question: "What's the difference between wax and ceramic coating?", answer: "Wax lasts a few months and provides a basic shine. Our ceramic coating chemically bonds to your paint, lasting years and offering superior protection against scratches, UV rays, and dirt." },
+                { question: "How long does a typical detail take?", answer: "Depending on the package and condition of the vehicle, a detail usually takes between 2 to 5 hours." },
+                { question: "Do I need to provide water and electricity?", answer: "No, our mobile vans are fully equipped with our own water tanks and generators. We bring everything needed." }
+            ];
+
             try {
                 const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
 
-                const faqs = snapshot.docs.map(doc => doc.data());
-                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+                let faqs = snapshot.docs.map(doc => doc.data());
+                
+                if (faqs.length === 0) {
+                    faqs = defaultFaqs;
+                }
 
+                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
                 renderFaqs(faqs, container);
             } catch (e) {
-                console.error("Error loading FAQs", e);
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
+                console.warn("Error loading FAQs, falling back to defaults", e);
+                renderFaqs(defaultFaqs, container);
             }
         }
 
@@ -639,6 +665,44 @@
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                     container.appendChild(el);
                 });
+
+                // Add "Show More Reviews" card
+                const moreCard = document.createElement('div');
+                moreCard.className = 'review-card';
+                moreCard.style.display = 'flex';
+                moreCard.style.alignItems = 'center';
+                moreCard.style.justifyContent = 'center';
+                moreCard.style.cursor = 'pointer';
+                moreCard.style.background = 'var(--bg-dark)';
+                moreCard.innerHTML = `<h3 style="margin:0; color: var(--gold);">Show More Reviews ➔</h3>`;
+                
+                // Add hidden generational reviews
+                const genReviews = [
+                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service." },
+                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now." },
+                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10." },
+                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again." }
+                ];
+                
+                const hiddenContainer = document.createElement('div');
+                hiddenContainer.style.display = 'none';
+                hiddenContainer.style.gap = '15px';
+                
+                genReviews.forEach(r => {
+                    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    const el = document.createElement('div');
+                    el.className = 'review-card hidden-review';
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${r.comment}"<br><br>- ${r.userName}</p>`;
+                    hiddenContainer.appendChild(el);
+                });
+
+                moreCard.addEventListener('click', () => {
+                    moreCard.style.display = 'none';
+                    hiddenContainer.style.display = 'contents';
+                });
+
+                container.appendChild(moreCard);
+                container.appendChild(hiddenContainer);
             }
 
             try {
