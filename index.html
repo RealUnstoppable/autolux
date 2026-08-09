@@ -57,7 +57,46 @@
         }
         .nav-links a:last-child { border-bottom: none; }
         .nav-links a:hover { color: var(--accent); }
-        .auth-btn { background: var(--accent); padding: 10px; border-radius: 6px; font-weight: bold !important; border: none !important;}
+        .auth-btn {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px !important;
+            border-radius: 6px;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--gold, #D4AF37);
+            z-index: -1;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-btn:hover {
+            color: #000000 !important;
+        }
+
+        .auth-btn:hover::before {
+            transform: scaleY(1);
+        }
+
+        .auth-btn:active {
+            box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
+            transform: scale(0.96);
+        }
 
         /* Hero Section */
         /* ⚡ Bolt: Added &auto=format to Unsplash image URL to serve WebP/AVIF instead of JPEG, reducing FCP by optimizing LCP image size. */
@@ -206,7 +245,7 @@
             .menu-toggle { display: none; }
             .nav-links { display: flex; flex-direction: row; width: auto; margin-top: 0; align-items: center; gap: 30px; }
             .nav-links a { padding: 0; border: none; font-size: 0.9rem; }
-            .auth-btn { padding: 8px 16px; }
+            .auth-btn { padding: 10px 22px !important; }
 
             /* Hero Desktop */
             .hero { padding: 0 50px; }
