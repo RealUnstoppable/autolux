@@ -3,14 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
-    <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
-    <title>Unstoppable Detailing Services | Premium Auto Care</title>
+    <title>All Reviews | AutoLux Detailing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* =========================================
-           MOBILE-FIRST BASE STYLES
-           ========================================= */
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -21,16 +16,13 @@
             --border: rgba(255, 255, 255, 0.1);
         }
         
-        html {
-            scroll-behavior: smooth;
-        }
-        
         body {
             margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); 
             color: var(--text-main); scroll-behavior: smooth; overflow-x: hidden;
+            display: flex; flex-direction: column; min-height: 100vh;
         }
 
-        /* Navbar (Mobile Menu) */
+        /* Navbar */
         nav {
             position: fixed; top: 0; width: 100%; background: rgba(10, 10, 10, 0.95); 
             backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border);
@@ -47,7 +39,6 @@
         .nav-links {
             display: none; width: 100%; flex-direction: column; gap: 15px; 
             margin-top: 15px; text-align: center;
-            max-height: calc(100vh - 70px); overflow-y: auto;
         }
         .nav-links.active { display: flex; }
         
@@ -57,6 +48,7 @@
         }
         .nav-links a:last-child { border-bottom: none; }
         .nav-links a:hover { color: var(--accent); }
+
         /* Unified Button Styles */
         .auth-btn, .btn-primary, button[type="submit"] {
             background: #FFFFFF !important;

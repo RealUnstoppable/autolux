@@ -10,8 +10,8 @@ try {
     const firebaseConfig = {
         apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
         authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "autolux-detailing",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "autolux-detailing.appspot.com",
+        projectId: window.ENV?.FIREBASE_PROJECT_ID || "dts-hub-website",
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "dts-hub-website.appspot.com",
         messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
         appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
     };
