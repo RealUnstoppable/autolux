@@ -78,7 +78,7 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--gold, #D4AF37);
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
             z-index: -1;
             transform: scaleY(0);
             transform-origin: bottom;
@@ -87,6 +87,7 @@
 
         .auth-btn:hover {
             color: #000000 !important;
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
         }
 
         .auth-btn:hover::before {
