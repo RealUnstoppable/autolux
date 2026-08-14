@@ -344,12 +344,8 @@
     </div>
 
    <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
-        import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, collection, getDocs, Timestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect } from '/js/auth.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
         import { escapeHTML } from '/js/utils.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         let performanceChart;

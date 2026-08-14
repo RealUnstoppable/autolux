@@ -100,9 +100,8 @@
             outline: none;
             border-color: var(--accent);
         }
-
         /* Unified Button Styles */
-        .auth-btn, .btn-primary, .btn-submit, button[type="submit"] {
+        .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
             background: #FFFFFF !important;
             color: #000000 !important;
             padding: 10px 22px;
@@ -120,32 +119,239 @@
             box-sizing: border-box;
             cursor: pointer;
             font-size: 1rem;
-            width: 100%;
-            margin-top: 10px;
         }
 
-        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before {
+        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 50%; left: 50%;
+            width: 300%; height: 300%;
             background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
             z-index: -1;
-            transform: scaleY(0);
-            transform-origin: bottom;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover {
+        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
             color: #000000 !important;
-            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+            box-shadow: 0 0 22px rgba(212, 175, 55, 0.65);
         }
 
-        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before {
-            transform: scaleY(1);
+        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
+            transform: translate(-50%, -50%) scale(1);
         }
 
-        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active {
+        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
             box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
             transform: scale(0.96);
         }
 
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 25px 8px rgba(255, 255, 255, 0.85), 0 0 50px 15px rgba(255, 255, 255, 0.45);
+            transform: scale(0.96);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-container {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0 4px;
+            text-decoration: underline;
+        }
+
+        #auth-msg {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            min-height: 20px;
+            font-weight: 600;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .back-home:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="brand-header">
+            <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        </div>
+        <h1 id="auth-title">Welcome Back</h1>
+        <p class="subtitle" id="auth-subtitle">Sign in to access your client portal</p>
+
+        <form id="auth-form">
+            <div class="form-group" id="name-group" style="display: none;">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submit-btn">Sign In</button>
+        </form>
+
+        <div id="auth-msg" aria-live="polite"></div>
+
+        <div class="toggle-container">
+            <span id="toggle-desc">Don't have an account?</span>
+            <button type="button" class="toggle-btn" id="toggle-mode-btn">Sign Up</button>
+        </div>
+
+        <a href="index.html" class="back-home">← Return to Home</a>
+    </div>
+
+    <script type="module">
+        import { auth, db, getUserRedirectPath, safeRedirect, ensureUserDocument, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from '/js/auth.js';
+
+        let isSignUpMode = false;
+
+        const form = document.getElementById('auth-form');
+        const title = document.getElementById('auth-title');
+        const subtitle = document.getElementById('auth-subtitle');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleBtn = document.getElementById('toggle-mode-btn');
+        const toggleDesc = document.getElementById('toggle-desc');
+        const nameGroup = document.getElementById('name-group');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const authMsg = document.getElementById('auth-msg');
+
+        // Check if user is already signed in
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userData = await ensureUserDocument(user);
+                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath && redirectPath !== 'sign in beta.html') {
+                    safeRedirect(redirectPath);
+                }
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            authMsg.textContent = '';
+            
+            if (isSignUpMode) {
+                title.textContent = 'Create Account';
+                subtitle.textContent = 'Sign up to manage your detailing bookings';
+                submitBtn.textContent = 'Sign Up';
+                toggleDesc.textContent = 'Already have an account?';
+                toggleBtn.textContent = 'Sign In';
+                nameGroup.style.display = 'block';
+                nameInput.required = true;
+            } else {
+                title.textContent = 'Welcome Back';
+                subtitle.textContent = 'Sign in to access your client portal';
+                submitBtn.textContent = 'Sign In';
+                toggleDesc.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Sign Up';
+                nameGroup.style.display = 'none';
+                nameInput.required = false;
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const name = nameInput.value.trim();
+
+            if (!email || !password) {
+                authMsg.style.color = "var(--error)";
+                authMsg.textContent = "Please provide both email and password.";
+                return;
+            }
+
+            authMsg.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                let userCredential;
+                if (isSignUpMode) {
+                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    if (name && userCredential.user) {
+                        await updateProfile(userCredential.user, { displayName: name });
+                    }
+                } else {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+                }
+
+                const user = userCredential.user;
+                const userData = await ensureUserDocument(user);
+
+                authMsg.style.color = "var(--success)";
+                authMsg.textContent = "Success! Redirecting...";
+
+                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname) || 'account.html';
+                setTimeout(() => {
+                    safeRedirect(redirectPath);
+                }, 500);
+
+            } catch (error) {
+                console.error("Auth Error:", error);
+                authMsg.style.color = "var(--error)";
+                let msg = "Authentication failed. Please check your details.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    msg = "Invalid email or password.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    msg = "An account with this email address already exists.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "Password should be at least 6 characters.";
+                }
+                authMsg.textContent = msg;
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>

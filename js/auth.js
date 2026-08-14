@@ -1,6 +1,6 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 let app, auth, db;
 
@@ -8,12 +8,13 @@ try {
     const appName = "autolux";
 
     const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "autolux.realunstoppable.store",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "dts-hub-website",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "dts-hub-website.appspot.com",
-        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdef123456"
+        apiKey: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
+        authDomain: "realunstoppable.store",
+        projectId: "dts-hub-website",
+        storageBucket: "dts-hub-website.firebasestorage.app",
+        messagingSenderId: "48345990988",
+        appId: "1:48345990988:web:e3662c9b508168546471e9",
+        measurementId: "G-ZN3YJPHVGX"
     };
 
     const apps = getApps();
@@ -34,7 +35,7 @@ try {
     if (error.code) console.error("Error code:", error.code);
 }
 
-export { app, auth, db };
+export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -69,7 +70,10 @@ export async function ensureUserDocument(user) {
                 uid: user.uid,
                 email: user.email,
                 name: user.displayName || "Anonymous User",
+                username: user.displayName || "Anonymous User",
                 isAdmin: false,
+                isBanned: false,
+                membershipLevel: 'free',
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
