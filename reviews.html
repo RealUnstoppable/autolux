@@ -3,51 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Reviews | AutoLux Detailing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Customer Reviews | AutoLux Detailing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #0A0A0A;
-            --bg-card: #141414;
-            --text-main: #F5F5F7;
-            --text-muted: #A3A3A3;
-            --accent: #2563EB;
-            --gold: #D4AF37;
-            --border: rgba(255, 255, 255, 0.1);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         
-        body {
-            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); 
-            color: var(--text-main); scroll-behavior: smooth; overflow-x: hidden;
-            display: flex; flex-direction: column; min-height: 100vh;
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-dark: #111111;
+            --bg-card: #1a1a1a;
+            --accent: #d4af37;
+            --gold: #d4af37;
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --border: #333333;
         }
 
-        /* Navbar */
-        nav {
-            position: fixed; top: 0; width: 100%; background: rgba(10, 10, 10, 0.95); 
-            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border);
-            padding: 15px 20px; box-sizing: border-box; display: flex; 
-            justify-content: space-between; align-items: center; flex-wrap: wrap;
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; }
-        
-        .menu-toggle {
-            color: var(--text-main); font-size: 1.5rem; cursor: pointer; display: block; user-select: none;
-            background: none; border: none; padding: 0;
+
+        /* Nav */
+        header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px;
         }
-        
-        .nav-links {
-            display: none; width: 100%; flex-direction: column; gap: 15px; 
-            margin-top: 15px; text-align: center;
-        }
-        .nav-links.active { display: flex; }
-        
-        .nav-links a {
-            color: var(--text-main); text-decoration: none; font-weight: 500; 
-            font-size: 1rem; transition: color 0.3s; padding: 10px 0; border-bottom: 1px solid #222;
-        }
-        .nav-links a:last-child { border-bottom: none; }
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-main); text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
         .nav-links a:hover { color: var(--accent); }
+
         /* Unified Button Styles */
         .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
             background: #FFFFFF !important;
@@ -95,3 +91,182 @@
             transform: scale(0.96);
         }
 
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--gold); }
+        
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--gold);
+            color: black;
+            border-color: var(--gold);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .review-card .stars { color: var(--gold); margin-bottom: 15px; font-size: 1.2rem; }
+        .review-card p { color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
+        .review-card .author { font-weight: bold; color: var(--text-main); }
+        .review-card .date { font-size: 0.8rem; color: #666; margin-top: 5px; }
+
+        footer {
+            background: var(--bg-dark);
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">AUTO<span>LUX</span></a>
+        <nav class="nav-links">
+            <a href="index.html#services">Services</a>
+            <a href="index.html#portfolio">Work</a>
+            <a href="booking.html" class="auth-btn">Book Now</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>All Customer Reviews</h1>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-sort="newest">Newest First</button>
+            <button class="filter-btn" data-sort="highest">Highest Rated</button>
+        </div>
+
+        <div class="reviews-grid" id="reviews-grid">
+            <div style="text-align:center; width:100%; grid-column: 1/-1; color: var(--text-muted);">Loading reviews...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 AutoLux Detailing. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { db } from './js/auth.js';
+        import { collection, query, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const grid = document.getElementById('reviews-grid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        let allReviews = [];
+
+        async function loadReviews() {
+            try {
+                const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                
+                const dbReviews = snapshot.docs.map(doc => doc.data());
+                
+                // Add the generational reviews that were hidden on the main page
+                const genReviews = [
+                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: {toDate: () => new Date()} },
+                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: {toDate: () => new Date()} },
+                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: {toDate: () => new Date()} },
+                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: {toDate: () => new Date()} }
+                ];
+                
+                allReviews = [...dbReviews, ...genReviews];
+                
+                renderReviews(allReviews);
+            } catch (error) {
+                console.error("Error loading reviews:", error);
+                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error);">Failed to load reviews.</div>';
+            }
+        }
+
+        function renderReviews(reviewsToRender) {
+            grid.innerHTML = '';
+            if (reviewsToRender.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; width:100%;">No reviews yet.</div>';
+                return;
+            }
+
+            reviewsToRender.forEach(r => {
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                const date = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString() : 'Recent';
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `
+                    <div class="stars">${stars}</div>
+                    <p>"${escapeHTML(r.comment)}"</p>
+                    <div class="author">- ${escapeHTML(r.userName || 'Anonymous')}</div>
+                    <div class="date">${date}</div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                const sortType = e.target.dataset.sort;
+                let sorted = [...allReviews];
+                
+                if (sortType === 'highest') {
+                    sorted.sort((a, b) => b.rating - a.rating);
+                } else {
+                    sorted.sort((a, b) => {
+                        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date();
+                        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date();
+                        return dateB - dateA;
+                    });
+                }
+                
+                renderReviews(sorted);
+            });
+        });
+
+        loadReviews();
+    </script>
+</body>
+</html>
