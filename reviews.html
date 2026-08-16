@@ -44,7 +44,7 @@
         .nav-links a { color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
         .nav-links a:hover { color: var(--accent); }
 
-        /* Unified Button Styles */
+                /* Unified Button Styles */
         .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
             background: #FFFFFF !important;
             color: #000000 !important;
@@ -68,34 +68,44 @@
         .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
             content: '';
             position: absolute;
-            top: 50%; left: 50%;
-            width: 300%; height: 300%;
+            top: 100%; left: 0;
+            width: 100%; height: 100%;
             background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
             z-index: -1;
-            transform: translate(-50%, -50%) scale(0);
-            border-radius: 50%;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: inherit;
         }
 
         .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
             color: #000000 !important;
-            box-shadow: 0 0 22px rgba(212, 175, 55, 0.65);
         }
 
         .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
-            transform: translate(-50%, -50%) scale(1);
+            top: 0;
         }
 
         .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
-            box-shadow: 0 0 25px 8px rgba(212, 175, 55, 0.85), 0 0 50px 15px rgba(212, 175, 55, 0.45);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.5), 0 0 20px 5px rgba(212, 175, 55, 0.8) !important;
             transform: scale(0.96);
         }
 
-        /* Container */
-        .container {
-            max-width: 1000px;
-            margin: 120px auto 60px;
-            padding: 0 20px;
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: none;
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 20px 5px rgba(255, 255, 255, 0.8) !important;
+            transform: scale(0.96);
         }
 
         h1 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--gold); }
