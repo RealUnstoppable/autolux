@@ -727,7 +727,6 @@
             const avgOrders = totalUsers > 0 ? (totalOrders / totalUsers).toFixed(2) : 0;
 
             const now = new Date();
-            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) >= now);
             const upcoming = bookings.filter(b => {
                 if (b.status === 'cancelled') return false;
                 const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
