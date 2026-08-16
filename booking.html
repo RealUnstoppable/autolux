@@ -51,7 +51,7 @@
             gap: 6px;
         }
 
-        .nav-links a {
+        .nav-links a:not(.auth-btn) {
             color: var(--text-main);
             text-decoration: none;
             margin-left: 20px;
@@ -59,7 +59,7 @@
             transition: color 0.2s;
         }
 
-        .nav-links a:hover {
+        .nav-links a:not(.auth-btn):hover {
             color: var(--accent);
         }
 
@@ -161,7 +161,7 @@
         }
 
         .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.5), 0 0 20px 5px rgba(212, 175, 55, 0.8) !important;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 1), 0 0 10px 4px rgba(212, 175, 55, 0.6), 0 0 25px 8px rgba(212, 175, 55, 0.2) !important;
             transform: scale(0.96);
         }
 
@@ -180,7 +180,7 @@
         }
 
         .btn-gold:active {
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.5), 0 0 20px 5px rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
             transform: scale(0.96);
         }
 

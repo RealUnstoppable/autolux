@@ -526,7 +526,6 @@
                 const name = b.customerName || 'N/A';
                 const phone = b.customerPhone || 'N/A';
                 const email = b.customerEmail || 'N/A';
-                const formattedDate = new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate).toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
                 const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
                 const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
