@@ -7,14 +7,20 @@ let app, auth, db;
 try {
     const appName = "autolux";
 
+    // SECURITY FIX: Insecure Firebase Configuration Fallback
+    // Prevent accidental connection to an unintended backend environment by strictly enforcing window.ENV presence.
+    if (!window.ENV) {
+        throw new Error("Missing window.ENV for Firebase configuration. Hardcoded fallback values are a security risk.");
+    }
+
     const firebaseConfig = {
-        apiKey: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-        authDomain: "realunstoppable.store",
-        projectId: "dts-hub-website",
-        storageBucket: "dts-hub-website.firebasestorage.app",
-        messagingSenderId: "48345990988",
-        appId: "1:48345990988:web:e3662c9b508168546471e9",
-        measurementId: "G-ZN3YJPHVGX"
+        apiKey: window.ENV.FIREBASE_API_KEY || "dummy-api-key",
+        authDomain: window.ENV.FIREBASE_AUTH_DOMAIN || "dummy.domain",
+        projectId: window.ENV.FIREBASE_PROJECT_ID || "dummy-project",
+        storageBucket: window.ENV.FIREBASE_STORAGE_BUCKET || "dummy-bucket",
+        messagingSenderId: window.ENV.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+        appId: window.ENV.FIREBASE_APP_ID || "1:123456789:web:abcdef123456",
+        measurementId: window.ENV.FIREBASE_MEASUREMENT_ID || "dummy-measurement"
     };
 
     const apps = getApps();
