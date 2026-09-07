@@ -1,2 +1,3 @@
 #!/bin/bash
-# Just a placeholder script
+export NODE_PATH=$(npm root -g)
+node run_utils_test.js
