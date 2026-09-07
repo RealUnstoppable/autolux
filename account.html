@@ -304,8 +304,8 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut, ensureUserDocument } from '/js/auth.js';
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { escapeHTML } from '/js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
@@ -315,23 +315,57 @@
         const logoutBtn = document.getElementById('logout-btn');
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userData = await ensureUserDocument(user);
+            if (!user) {
+                // Not authenticated, redirect to login
+                window.location.replace('sign in beta.html');
+                return;
+            }
+
+            try {
+                // 2. Fallback Instantiation for Blank Profile Fix
+                const userRef = doc(db, "users", user.uid);
+
+                // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+
+                // Fire them off concurrently
+                const [userSnap, appointmentsSnap] = await Promise.all([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery)
+                ]);
+
+                let userData = userSnap.data();
+
+                if (!userSnap.exists()) {
+                    userData = {
+                        uid: user.uid,
+                        email: user.email,
+                        name: user.displayName || "Anonymous User",
+                        username: user.displayName || "Anonymous User",
+                        isAdmin: false,
+                        isBanned: false,
+                        membershipLevel: 'free',
+                        signupDate: serverTimestamp(),
+                        vehicles: [],
+                        appointments: [],
+                        contactInfo: {}
+                    };
+                    await setDoc(userRef, userData, { merge: true });
+                }
+
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
 
-                loadUserBookings(user.uid);
+                renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
-            } else {
-                safeRedirect('sign in beta.html');
+            } catch (error) {
+                console.error("Error loading user profile or bookings:", error);
+                overlay.style.display = 'none';
             }
         });
 
-        async function loadUserBookings(userId) {
+        function renderBookings(snapshot) {
             try {
-                const q = query(collection(db, "bookings"), where("userId", "==", userId));
-                const snapshot = await getDocs(q);
-
                 if (snapshot.empty) {
                     appointmentsListEl.innerHTML = '<p style="color: var(--text-muted);">No bookings found. Click "+ Book New" to schedule your first detail!</p>';
                     return;
@@ -359,7 +393,7 @@
                     appointmentsListEl.appendChild(item);
                 });
             } catch (error) {
-                console.error("Error fetching user bookings:", error);
+                console.error("Error rendering user bookings:", error);
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
         }
