@@ -7,14 +7,21 @@ let app, auth, db;
 try {
     const appName = "autolux";
 
+    // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
+    // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
+    // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
+    if (!window.ENV) {
+        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
+    }
+
     const firebaseConfig = {
-        apiKey: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-        authDomain: "realunstoppable.store",
-        projectId: "dts-hub-website",
-        storageBucket: "dts-hub-website.firebasestorage.app",
-        messagingSenderId: "48345990988",
-        appId: "1:48345990988:web:e3662c9b508168546471e9",
-        measurementId: "G-ZN3YJPHVGX"
+        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
+        projectId: window.ENV?.FIREBASE_PROJECT_ID || "dummy-project-id",
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "dummy-storage-bucket",
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "dummy-sender-id",
+        appId: window.ENV?.FIREBASE_APP_ID || "dummy-app-id",
+        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "dummy-measurement-id"
     };
 
     const apps = getApps();
