@@ -1,6 +1,15 @@
 import { db } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+
+
+export function safeSetSessionStorage(key, value) {
+    try {
+        sessionStorage.setItem(key, value);
+    } catch (e) {
+        console.warn("Session storage quota exceeded or unavailable.", e);
+    }
+}
 export function escapeHTML(str) {
     if (str == null) return '';
     return String(str)
