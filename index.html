@@ -490,7 +490,7 @@
     <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from '/js/utils.js';
+        import { escapeHTML, safeSetSessionStorage } from '/js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -647,6 +647,30 @@
 
         // Load FAQs on page load
         loadFaqs();
+
+        // Render Reviews helper function
+        function renderReviewsList(reviews, container) {
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            reviews.forEach(r => {
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                container.appendChild(el);
+            });
+        }
 
         // Load Reviews
         async function loadReviews() {
