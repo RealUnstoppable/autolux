@@ -488,10 +488,10 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
