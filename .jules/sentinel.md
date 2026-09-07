@@ -18,7 +18,13 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
-## 2024-05-25 - [Mass Assignment / Parameter Tampering]
-**Vulnerability:** In `js/utils.js`, user-provided payload `...requestData` was spread after the trusted server-determined `userId` property during an `addDoc` database write, allowing users to potentially overwrite the `userId`.
-**Learning:** Object spread syntax (`...`) evaluates in order. If untrusted payloads are spread after trusted properties, the untrusted data will overwrite the trusted data (Mass Assignment vulnerability).
-**Prevention:** Always spread user-provided payloads *before* defining trusted properties (like `userId`, `status`, `createdAt`) in database operations.
+## 2026-08-15 - Hardcoded Firebase Configuration
+
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
