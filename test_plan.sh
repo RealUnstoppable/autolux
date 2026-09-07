@@ -1,3 +1,6 @@
 #!/bin/bash
-export NODE_PATH=$(npm root -g)
-node run_utils_test.js
+# Install dependencies
+npm install --silent
+
+# Run the tests
+npm run test
