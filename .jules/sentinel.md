@@ -18,8 +18,13 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-08-15 - Hardcoded Firebase Configuration
 
-## 2024-05-18 - Fix Insecure Firebase Configuration Fallback
-**Vulnerability:** Hardcoded production environment values inside the fallback logic could lead to unintentional access/modifications to production environments when running the application locally or in testing environments.
-**Learning:** Hardcoding sensitive or production-specific config fallback values should be avoided. A failure to load environment configuration should strictly throw an error or fall back to purely non-functional dummy values.
-**Prevention:** Rely entirely on globally injected configuration objects like `window.ENV` and validate their presence rather than defaulting to real backend URLs and keys.
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.

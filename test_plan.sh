@@ -1,2 +1,6 @@
 #!/bin/bash
-# Just a placeholder script
+# Install dependencies
+npm install --silent
+
+# Run the tests
+npm run test

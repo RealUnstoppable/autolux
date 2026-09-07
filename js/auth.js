@@ -7,20 +7,21 @@ let app, auth, db;
 try {
     const appName = "autolux";
 
-    // SECURITY FIX: Insecure Firebase Configuration Fallback
-    // Prevent accidental connection to an unintended backend environment by strictly enforcing window.ENV presence.
+    // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
+    // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
+    // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
     if (!window.ENV) {
-        throw new Error("Missing window.ENV for Firebase configuration. Hardcoded fallback values are a security risk.");
+        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
     }
 
     const firebaseConfig = {
-        apiKey: window.ENV.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV.FIREBASE_AUTH_DOMAIN || "dummy.domain",
-        projectId: window.ENV.FIREBASE_PROJECT_ID || "dummy-project",
-        storageBucket: window.ENV.FIREBASE_STORAGE_BUCKET || "dummy-bucket",
-        messagingSenderId: window.ENV.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: window.ENV.FIREBASE_APP_ID || "1:123456789:web:abcdef123456",
-        measurementId: window.ENV.FIREBASE_MEASUREMENT_ID || "dummy-measurement"
+        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
+        projectId: window.ENV?.FIREBASE_PROJECT_ID || "dummy-project-id",
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "dummy-storage-bucket",
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "dummy-sender-id",
+        appId: window.ENV?.FIREBASE_APP_ID || "dummy-app-id",
+        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "dummy-measurement-id"
     };
 
     const apps = getApps();
