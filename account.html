@@ -304,7 +304,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut, ensureUserDocument } from '/js/auth.js';
+        import { auth, db, safeRedirect, getAuthStatePromise, signOut, ensureUserDocument } from '/js/auth.js';
         import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { escapeHTML } from '/js/utils.js';
 
@@ -314,18 +314,25 @@
         const appointmentsListEl = document.getElementById('appointments-list');
         const logoutBtn = document.getElementById('logout-btn');
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userData = await ensureUserDocument(user);
-                userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
-                userEmailEl.textContent = user.email;
+                async function initAccountPage() {
+            try {
+                const user = await getAuthStatePromise();
+                if (user) {
+                    const userData = await ensureUserDocument(user);
+                    userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
+                    userEmailEl.textContent = user.email;
 
-                loadUserBookings(user.uid);
-                overlay.style.display = 'none';
-            } else {
+                    await loadUserBookings(user.uid);
+                    overlay.style.display = 'none';
+                } else {
+                    safeRedirect('sign in beta.html');
+                }
+            } catch(e) {
+                console.error('Error initializing account page', e);
                 safeRedirect('sign in beta.html');
             }
-        });
+        }
+        initAccountPage();
 
         async function loadUserBookings(userId) {
             try {
