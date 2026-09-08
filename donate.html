@@ -530,7 +530,7 @@
                 }, 2500);
 
             } catch (error) {
-                console.error("Donation Error:", error);
+                console.error("Donation Error:", error.message, error.code ? `Code: ${error.code}` : "");
                 stripeMsg.style.color = "var(--error)";
                 stripeMsg.textContent = "Payment processing error. Please try again.";
                 payBtn.disabled = false;

@@ -466,7 +466,7 @@
                     const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderInquiriesTable(inquiries);
                 } catch (inqError) {
-                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    console.log("Could not load inquiries. Missing Firestore rules?", inqError.message, inqError.code ? `Code: ${inqError.code}` : "");
                     document.getElementById('inquiries-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
@@ -476,7 +476,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
-                    console.error("Could not load reviews.", revError);
+                    console.error("Could not load reviews.", revError.message, revError.code ? `Code: ${revError.code}` : "");
                     document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
@@ -485,7 +485,7 @@
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
                 } catch (faqError) {
-                    console.log("Could not load FAQs", faqError);
+                    console.log("Could not load FAQs", faqError.message, faqError.code ? `Code: ${faqError.code}` : "");
                     document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
                 }
 
@@ -748,8 +748,6 @@
             const graphTitleEl = document.getElementById('graph-title');
             
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
-            if (performanceChart) performanceChart.destroy();
-
             let chartConfig;
             switch(view) {
                 case 'signups':
@@ -762,7 +760,18 @@
                     chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
                     break;
             }
-            performanceChart = new Chart(ctx, chartConfig);
+            if (performanceChart) {
+                if (performanceChart.config.type === chartConfig.type) {
+                    performanceChart.data = chartConfig.data;
+                    performanceChart.options = chartConfig.options;
+                    performanceChart.update();
+                } else {
+                    performanceChart.destroy();
+                    performanceChart = new Chart(ctx, chartConfig);
+                }
+            } else {
+                performanceChart = new Chart(ctx, chartConfig);
+            }
         }
 
         function getChartOptions(isPieChart = false) {
