@@ -2,14 +2,6 @@ import { db } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 
-
-export function safeSetSessionStorage(key, value) {
-    try {
-        sessionStorage.setItem(key, value);
-    } catch (e) {
-        console.warn("Session storage quota exceeded or unavailable.", e);
-    }
-}
 export function escapeHTML(str) {
     if (str == null) return '';
     return String(str)
@@ -43,14 +35,13 @@ export async function submitDetailingRequest(userId, requestData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
+        if (error.code) console.error(error.code);
         console.error("Full error:", error);
 
         return { success: false, error: error.message, code: error.code };
     }
 }
+
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key
