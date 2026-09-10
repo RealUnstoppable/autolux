@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUTOLUX Unit Tests</title>
+</head>
+<body>
+    <h1>AUTOLUX Unit Tests</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { escapeHTML } from './js/utils.js';
+
+        let failed = false;
+        let total = 0;
+        let passed = 0;
+
+        function assert(condition, message) {
+            total++;
+            const p = document.createElement('p');
+            if (!condition) {
+                console.log('TEST_FAIL: ' + message);
+                p.textContent = '❌ FAIL: ' + message;
+                p.style.color = 'red';
+                failed = true;
+            } else {
+                console.log('TEST_PASS: ' + message);
+                p.textContent = '✅ PASS: ' + message;
+                p.style.color = 'green';
+                passed++;
+            }
+            document.getElementById('results').appendChild(p);
+        }
+
+        try {
+            console.log('TEST_LOG: Running escapeHTML tests...');
+            assert(escapeHTML(null) === '', 'escapeHTML(null) should return empty string');
+            assert(escapeHTML(undefined) === '', 'escapeHTML(undefined) should return empty string');
+            assert(escapeHTML('') === '', 'escapeHTML("") should return empty string');
+            assert(escapeHTML('test') === 'test', 'escapeHTML("test") should return "test"');
+            assert(escapeHTML('<html>') === '&lt;html&gt;', 'escapeHTML("<html>") should return "&lt;html&gt;"');
+            assert(escapeHTML('a & b') === 'a &amp; b', 'escapeHTML("a & b") should return "a &amp; b"');
+            assert(escapeHTML('"quoted"') === '&quot;quoted&quot;', 'escapeHTML("\"quoted\"") should return "&quot;quoted&quot;"');
+            assert(escapeHTML("'quoted'") === '&#039;quoted&#039;', 'escapeHTML("\'quoted\'") should return "&#039;quoted&#039;"');
+        } catch (e) {
+            console.log('TEST_FAIL: Exception thrown during tests: ' + e.message);
+            const p = document.createElement('p');
+            p.textContent = '❌ ERROR: ' + e.message;
+            p.style.color = 'red';
+            document.getElementById('results').appendChild(p);
+            failed = true;
+        }
+
+        const summary = document.createElement('h2');
+        summary.textContent = `Test Summary: ${passed}/${total} passed.`;
+        document.body.appendChild(summary);
+
+        window.testResults = { failed, total, passed };
+    </script>
+</body>
+</html>
