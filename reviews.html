@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews | AutoLux Detailing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-dark: #111111;
+            --bg-card: #1a1a1a;
+            --accent: #d4af37;
+            --gold: #d4af37;
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --border: #333333;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Nav */
+        header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 30px;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-main); text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+                /* Unified Button Styles */
+        .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
+            content: '';
+            position: absolute;
+            top: 100%; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
+            z-index: -1;
+            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: inherit;
+        }
+
+        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
+            color: #000000 !important;
+        }
+
+        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
+            top: 0;
+        }
+
+        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 1), 0 0 10px 4px rgba(212, 175, 55, 0.6), 0 0 25px 8px rgba(212, 175, 55, 0.2) !important;
+            transform: scale(0.96);
+        }
+
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: none;
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
+            transform: scale(0.96);
+        }
+
+        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--gold); }
+        
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--gold);
+            color: black;
+            border-color: var(--gold);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .review-card .stars { color: var(--gold); margin-bottom: 15px; font-size: 1.2rem; }
+        .review-card p { color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
+        .review-card .author { font-weight: bold; color: var(--text-main); }
+        .review-card .date { font-size: 0.8rem; color: #666; margin-top: 5px; }
+
+        footer {
+            background: var(--bg-dark);
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">AUTO<span>LUX</span></a>
+        <nav class="nav-links">
+            <a href="index.html#services">Services</a>
+            <a href="index.html#portfolio">Work</a>
+            <a href="booking.html" class="auth-btn">Book Now</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>All Customer Reviews</h1>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-sort="newest">Newest First</button>
+            <button class="filter-btn" data-sort="highest">Highest Rated</button>
+        </div>
+
+        <div class="reviews-grid" id="reviews-grid">
+            <div style="text-align:center; width:100%; grid-column: 1/-1; color: var(--text-muted);">Loading reviews...</div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 AutoLux Detailing. All rights reserved.</p>
+    </footer>
+
+    <script type="module">
+        import { db } from './js/auth.js';
+        import { collection, query, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const grid = document.getElementById('reviews-grid');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        let allReviews = [];
+
+        async function loadReviews() {
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            try {
+                const cachedAllReviews = sessionStorage.getItem('autolux_all_reviews');
+                if (cachedAllReviews) {
+                    allReviews = JSON.parse(cachedAllReviews);
+                    renderReviews(allReviews);
+                    return;
+                }
+            } catch(e) {
+                console.warn('Session storage cache read failed:', e);
+            }
+
+            try {
+                const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                
+                let dbReviews = snapshot.docs.map(doc => doc.data());
+                // Stringify timestamps for caching
+                dbReviews = dbReviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
+                
+                // Add the generational reviews that were hidden on the main page
+                const genReviews = [
+                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date().toISOString() },
+                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date().toISOString() },
+                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: new Date().toISOString() },
+                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: new Date().toISOString() }
+                ];
+                
+                allReviews = [...dbReviews, ...genReviews];
+                
+                try {
+                    sessionStorage.setItem('autolux_all_reviews', JSON.stringify(allReviews));
+                } catch(e) {
+                    console.warn('Session storage cache write failed:', e);
+                }
+
+                renderReviews(allReviews);
+            } catch (error) {
+                console.error("Error loading reviews:", error);
+                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error);">Failed to load reviews.</div>';
+            }
+        }
+
+        function renderReviews(reviewsToRender) {
+            grid.innerHTML = '';
+            if (reviewsToRender.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; width:100%;">No reviews yet.</div>';
+                return;
+            }
+
+            reviewsToRender.forEach(r => {
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                let date = 'Recent';
+                if (r.createdAt) {
+                    if (r.createdAt.toDate) {
+                        date = r.createdAt.toDate().toLocaleDateString();
+                    } else if (typeof r.createdAt === 'string') {
+                        date = new Date(r.createdAt).toLocaleDateString();
+                    }
+                }
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `
+                    <div class="stars">${stars}</div>
+                    <p>"${escapeHTML(r.comment)}"</p>
+                    <div class="author">- ${escapeHTML(r.userName || 'Anonymous')}</div>
+                    <div class="date">${date}</div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                const sortType = e.target.dataset.sort;
+                let sorted = [...allReviews];
+                
+                if (sortType === 'highest') {
+                    sorted.sort((a, b) => b.rating - a.rating);
+                } else {
+                    sorted.sort((a, b) => {
+                        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date();
+                        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date();
+                        return dateB - dateA;
+                    });
+                }
+                
+                renderReviews(sorted);
+            });
+        });
+
+        loadReviews();
+    </script>
+</body>
+</html>
