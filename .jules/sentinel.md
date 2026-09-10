@@ -28,3 +28,7 @@ Hardcoded configuration values can unintentionally establish connections to real
 
 **Prevention:**
 Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-10-15 - [Mass Assignment in API module]
+**Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
+**Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
+**Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
