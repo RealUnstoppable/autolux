@@ -14,6 +14,6 @@
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
-## 2025-05-24 - [Avoid DB Queries for Static Global Elements Part 2]
-**Learning:** In addition to FAQs, elements like reviews that are static for the duration of a session can be cached in `sessionStorage`. When caching Firestore documents, it is important to remember that Firebase `Timestamp` objects lose prototype methods like `.toDate()` during JSON serialization. They must be converted to primitive values (like ISO strings) before caching.
-**Action:** Implement `sessionStorage` caching for the `loadReviews` function.
+## 2025-05-24 - [Safely Accessing sessionStorage]
+**Learning:** Browsers in strict privacy modes or incognito settings can block access to `sessionStorage`, causing `getItem` or `setItem` to throw exceptions (like `SecurityError` or `QuotaExceededError`). If these calls are not handled, they will crash the executing script and break page functionality.
+**Action:** When interacting with `sessionStorage` (or `localStorage`), always wrap the read and write operations in a `try...catch` block to gracefully fail without breaking the rest of the application execution.
