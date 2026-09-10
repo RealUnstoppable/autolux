@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donate to enter the Unstoppable Detailing Community Sweepstakes and win massive prizes.">
+    <title>Donate to Enter Sweepstakes | Unstoppable Detailing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --text-main: #F5F5F7;
+            --text-muted: #A3A3A3;
+            --accent: #2563EB;
+            --gold: #D4AF37;
+            --border: rgba(255, 255, 255, 0.1);
+            --error: #ef4444;
+            --success: #16a34a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex-grow: 1;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
+            margin-bottom: 40px;
+        }
+
+        .hero-banner h1 {
+            color: var(--gold);
+            font-size: 2.3rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .hero-banner p {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            max-width: 650px;
+            margin: 0 auto 30px auto;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 44px;
+            background-color: #222;
+            border-radius: 22px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563EB, #D4AF37);
+            width: 1%;
+            border-radius: 22px;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            font-weight: 800;
+            color: white;
+            line-height: 44px;
+            font-size: 1.05rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tier-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tier-card:hover, .tier-card.selected {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .tier-amount {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin: 10px 0;
+        }
+
+        .tier-entries {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .tier-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .badge-popular {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: black;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .donate-action-bar {
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+        }
+        /* Unified Button Styles */
+        .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
+            content: '';
+            position: absolute;
+            top: 100%; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
+            z-index: -1;
+            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: inherit;
+        }
+
+        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
+            color: #000000 !important;
+        }
+
+        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
+            top: 0;
+        }
+
+        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 1), 0 0 10px 4px rgba(212, 175, 55, 0.6), 0 0 25px 8px rgba(212, 175, 55, 0.2) !important;
+            transform: scale(0.96);
+        }
+
+        /* Gold Buttons (Reverse Animation) */
+        .btn-gold {
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
+            color: #000000 !important;
+        }
+
+        .btn-gold::before {
+            background: #FFFFFF !important;
+        }
+
+        .btn-gold:hover {
+            box-shadow: none;
+        }
+
+        .btn-gold:active {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
+            transform: scale(0.96);
+        }
+
+        /* Modal Overlay for Stripe Payment */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .stripe-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 91, 255, 0.15);
+            color: #635bff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .modal-card h2 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 15px 20px; }
+            .hero-banner h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking.html">Book Now</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-banner">
+            <h1>Community Sweepstakes & Rewards</h1>
+            <p>Donate to unlock community milestones and earn entries to win detailing overhauls, ceramic coatings, and 1-Year Pro Memberships!</p>
+
+            <div class="progress-container">
+                <div class="progress-text" id="progress-text-el">$0 / $100,000 Raised</div>
+                <div class="progress-bar-fill" id="progress-fill-el"></div>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; margin-bottom: 25px; color: var(--gold);">Select Your Donation Tier</h2>
+
+        <div class="tier-grid">
+            <div class="tier-card" data-amount="10" data-entries="10">
+                <div class="tier-amount">$10</div>
+                <div class="tier-entries">10 Entries</div>
+                <div class="tier-desc">Basic Supporter Entry</div>
+            </div>
+
+            <div class="tier-card selected" data-amount="25" data-entries="30">
+                <span class="badge-popular">Most Popular</span>
+                <div class="tier-amount">$25</div>
+                <div class="tier-entries">30 Entries (20% Bonus)</div>
+                <div class="tier-desc">Bronze Sweepstakes Pack</div>
+            </div>
+
+            <div class="tier-card" data-amount="50" data-entries="70">
+                <div class="tier-amount">$50</div>
+                <div class="tier-entries">70 Entries (40% Bonus)</div>
+                <div class="tier-desc">Silver Sweepstakes Pack</div>
+            </div>
+
+            <div class="tier-card" data-amount="100" data-entries="150">
+                <div class="tier-amount">$100</div>
+                <div class="tier-entries">150 Entries (50% Bonus)</div>
+                <div class="tier-desc">Gold Sweepstakes Pack</div>
+            </div>
+        </div>
+
+        <div class="donate-action-bar">
+            <p id="selected-summary" style="font-size: 1.1rem; margin-bottom: 20px; font-weight: 600;">
+                Selected: <span style="color: var(--gold);">$25 Donation</span> &bull; <span style="color: var(--accent);">30 Entries</span>
+            </p>
+            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 16px 40px; font-size: 1.2rem;">Proceed to Payment</button>
+        </div>
+    </div>
+
+    <!-- Stripe Checkout Modal -->
+    <div class="modal-overlay" id="stripe-modal">
+        <div class="modal-card">
+            <button class="modal-close" id="modal-close-btn">&times;</button>
+            <div class="stripe-badge">🔒 Powered by Stripe</div>
+            <h2>Complete Your Donation</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" id="modal-amount-label">
+                Donating $25 for 30 Sweepstakes Entries
+            </p>
+
+            <form id="stripe-form">
+                <div class="form-group">
+                    <label for="donor-name">Full Name</label>
+                    <input type="text" id="donor-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="donor-email">Email Address</label>
+                    <input type="email" id="donor-email" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="card-number">Card Details (Demo Mode)</label>
+                    <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required>
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="card-expiry">MM/YY</label>
+                        <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="card-cvc">CVC</label>
+                        <input type="text" id="card-cvc" placeholder="123" value="123" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="pay-btn" style="width: 100% !important; margin-top: 10px; padding: 15px; font-size: 1.05rem;">Pay $25 & Enter Sweepstakes</button>
+            </form>
+
+            <div id="stripe-msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight: 600;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/auth.js';
+        import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        let selectedAmount = 25;
+        let selectedEntries = 30;
+
+        const tierCards = document.querySelectorAll('.tier-card');
+        const selectedSummary = document.getElementById('selected-summary');
+        const openStripeBtn = document.getElementById('open-stripe-btn');
+        const stripeModal = document.getElementById('stripe-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalAmountLabel = document.getElementById('modal-amount-label');
+        const payBtn = document.getElementById('pay-btn');
+        const stripeForm = document.getElementById('stripe-form');
+        const stripeMsg = document.getElementById('stripe-msg');
+        const progressTextEl = document.getElementById('progress-text-el');
+        const progressFillEl = document.getElementById('progress-fill-el');
+
+        // Handle Tier Selection
+        tierCards.forEach(card => {
+            card.addEventListener('click', () => {
+                tierCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+
+                selectedAmount = parseInt(card.getAttribute('data-amount'), 10);
+                selectedEntries = parseInt(card.getAttribute('data-entries'), 10);
+
+                selectedSummary.innerHTML = `Selected: <span style="color: var(--gold);">$${selectedAmount} Donation</span> &bull; <span style="color: var(--accent);">${selectedEntries} Entries</span>`;
+                modalAmountLabel.textContent = `Donating $${selectedAmount} for ${selectedEntries} Sweepstakes Entries`;
+                payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+            });
+        });
+
+        openStripeBtn.addEventListener('click', () => {
+            stripeModal.style.display = 'flex';
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            stripeModal.style.display = 'none';
+        });
+
+        // Load current sweepstakes progress from Firestore
+        async function loadProgress() {
+            try {
+                let totalRaised = 1500; // Base baseline seed
+                try {
+                    const snapshot = await getDocs(collection(db, "donations"));
+                    snapshot.docs.forEach(doc => {
+                        totalRaised += (doc.data().amount || 0);
+                    });
+                } catch(dbErr) {
+                    console.warn("Could not load donations from db:", dbErr.code);
+                    totalRaised += 350; // Mock additional donations
+                }
+
+                const goal = 100000;
+                const percentage = Math.min(100, Math.max(1, (totalRaised / goal) * 100));
+
+                progressTextEl.textContent = `$${totalRaised.toLocaleString()} / $100,000 Raised!`;
+                progressFillEl.style.width = `${percentage}%`;
+            } catch (e) {
+                console.error("Error loading donation progress:", e);
+                progressTextEl.textContent = `$1,500 / $100,000 Raised!`;
+                progressFillEl.style.width = `1.5%`;
+            }
+        }
+
+        loadProgress();
+
+        // Process Mock Stripe Payment
+        stripeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('donor-name').value.trim();
+            const email = document.getElementById('donor-email').value.trim();
+
+            if (!name || !email) return;
+
+            payBtn.disabled = true;
+            payBtn.textContent = "Processing via Stripe...";
+            stripeMsg.textContent = "";
+
+            try {
+                // Record donation in Firestore
+                await addDoc(collection(db, "donations"), {
+                    name: name,
+                    email: email,
+                    amount: selectedAmount,
+                    entries: selectedEntries,
+                    createdAt: serverTimestamp()
+                });
+
+                stripeMsg.style.color = "var(--success)";
+                stripeMsg.textContent = `Thank you, ${name}! Your $${selectedAmount} donation was successful. ${selectedEntries} entries added to your name!`;
+
+                setTimeout(() => {
+                    stripeModal.style.display = 'none';
+                    payBtn.disabled = false;
+                    payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+                    stripeForm.reset();
+                    loadProgress();
+                }, 2500);
+
+            } catch (error) {
+                console.error("Donation Error:", error);
+                stripeMsg.style.color = "var(--error)";
+                stripeMsg.textContent = "Payment processing error. Please try again.";
+                payBtn.disabled = false;
+                payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+            }
+        });
+    </script>
+</body>
+</html>
