@@ -15,13 +15,13 @@ try {
     }
 
     const firebaseConfig = {
-        apiKey: window.ENV?.FIREBASE_API_KEY || "dummy-api-key",
-        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
-        projectId: window.ENV?.FIREBASE_PROJECT_ID || "dummy-project-id",
-        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "dummy-storage-bucket",
-        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "dummy-sender-id",
-        appId: window.ENV?.FIREBASE_APP_ID || "dummy-app-id",
-        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "dummy-measurement-id"
+        apiKey: window.ENV?.FIREBASE_API_KEY,
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN,
+        projectId: window.ENV?.FIREBASE_PROJECT_ID,
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+        appId: window.ENV?.FIREBASE_APP_ID,
+        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID
     };
 
     const apps = getApps();

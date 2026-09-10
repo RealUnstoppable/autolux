@@ -35,14 +35,13 @@ export async function submitDetailingRequest(userId, requestData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
+        if (error.code) console.error(error.code);
         console.error("Full error:", error);
 
         return { success: false, error: error.message, code: error.code };
     }
 }
+
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key
