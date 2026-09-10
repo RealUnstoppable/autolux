@@ -48,8 +48,7 @@ export async function submitDetailingRequest(userId, requestData) {
             createdAt: serverTimestamp(),
             status: 'pending'
         });
-
-        return { success: true, docId: docRef.id };
+        return { success: true, docId: docId };
     } catch (error) {
         console.error("Failed to submit detailing request.");
         if (error.code) console.error(error.code);
