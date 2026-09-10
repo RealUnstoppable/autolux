@@ -7,6 +7,7 @@
     <title>Client Portal | Unstoppable Detailing Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -362,7 +363,8 @@
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
-        });
+        }
+        initAccountPage();
 
         function renderBookings(snapshot) {
             try {

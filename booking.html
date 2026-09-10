@@ -7,6 +7,7 @@
     <title>Book a Detail | Unstoppable Detailing Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -270,9 +271,7 @@
     </footer>
 
     <script type="module">
-        import { auth, db } from '/js/auth.js';
-        import { submitDetailingRequest } from '/js/api.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { auth, db, getAuthStatePromise } from '/js/auth.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         let currentUser = null;
@@ -305,20 +304,26 @@
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         dateInput.min = now.toISOString().slice(0, 16);
 
-        onAuthStateChanged(auth, (user) => {
-            overlay.style.display = 'none';
-            if (user) {
-                currentUser = user;
-                bookingForm.style.display = 'block';
-            } else {
-                sessionStorage.setItem('redirectAfterLogin', 'booking.html');
-                msgEl.style.color = "var(--gold)";
-                msgEl.innerHTML = 'You must be signed in to book an appointment. <a href="sign in beta.html" style="color: var(--accent);">Sign In Here</a>';
-                setTimeout(() => {
-                    window.location.replace('sign in beta.html');
-                }, 1500);
+        async function initBookingPage() {
+            try {
+                const user = await getAuthStatePromise();
+                overlay.style.display = 'none';
+                if (user) {
+                    currentUser = user;
+                    bookingForm.style.display = 'block';
+                } else {
+                    sessionStorage.setItem('redirectAfterLogin', 'booking.html');
+                    msgEl.style.color = "var(--gold)";
+                    msgEl.innerHTML = 'You must be signed in to book an appointment. <a href="sign in beta.html" style="color: var(--accent);">Sign In Here</a>';
+                    setTimeout(() => {
+                        window.location.replace('sign in beta.html');
+                    }, 1500);
+                }
+            } catch(e) {
+                console.error('Error initializing booking page', e);
             }
-        });
+        }
+        initBookingPage();
 
         bookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();

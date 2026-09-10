@@ -7,6 +7,7 @@
     <title>Sign In | Unstoppable Detailing Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -246,7 +247,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, getUserRedirectPath, safeRedirect, ensureUserDocument, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from '/js/auth.js';
+        import { auth, db, getUserRedirectPath, safeRedirect, ensureUserDocument, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, getAuthStatePromise } from '/js/auth.js';
 
         let isSignUpMode = false;
 
@@ -263,15 +264,21 @@
         const authMsg = document.getElementById('auth-msg');
 
         // Check if user is already signed in
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const userData = await ensureUserDocument(user);
-                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
-                if (redirectPath && redirectPath !== 'sign in beta.html') {
-                    safeRedirect(redirectPath);
+        async function initSignInPage() {
+            try {
+                const user = await getAuthStatePromise();
+                if (user) {
+                    const userData = await ensureUserDocument(user);
+                    const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
+                    if (redirectPath && redirectPath !== 'sign in beta.html') {
+                        safeRedirect(redirectPath);
+                    }
                 }
+            } catch(e) {
+                console.error('Error checking auth state on sign in page', e);
             }
-        });
+        }
+        initSignInPage();
 
         toggleBtn.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
