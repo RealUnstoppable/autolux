@@ -301,6 +301,10 @@
                     <div id="vehicles-list">
                         <p style="color: var(--text-muted);">No vehicles registered yet.</p>
                     </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -316,6 +320,8 @@
         const userEmailEl = document.getElementById('user-email');
         const appointmentsListEl = document.getElementById('appointments-list');
         const logoutBtn = document.getElementById('logout-btn');
+
+        let currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -401,6 +407,106 @@
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
         }
+
+        function renderVehicles(vehicles) {
+            const list = document.getElementById('vehicles-list');
+            list.innerHTML = '';
+            if (!vehicles || vehicles.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+                return;
+            }
+
+            vehicles.forEach((v, index) => {
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'vehicle-item';
+
+                el.innerHTML = `
+                    <span>${escapeHTML(v)}</span>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
+            if (!currentUser) return;
+            const input = document.getElementById('new-vehicle');
+            const val = input.value.trim();
+            if (!val) return;
+
+            const btn = document.getElementById('add-vehicle-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+
+                // PERFORMANCE OPTIMIZATION: Avoid N+1 query by using arrayUnion
+                // This eliminates the need to fetch the document first just to update the array
+                await updateDoc(userRef, { vehicles: arrayUnion(val) });
+
+                // Optimistically update the UI without another read
+                const list = document.getElementById('vehicles-list');
+                const emptyMsg = list.querySelector('p');
+                if (emptyMsg && emptyMsg.textContent.includes('No vehicles')) {
+                    list.innerHTML = '';
+                }
+
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'vehicle-item';
+                el.innerHTML = `
+                    <span>${escapeHTML(val)}</span>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(val)}">Remove</button>
+                `;
+                list.appendChild(el);
+
+                input.value = '';
+            } catch (err) {
+                console.error("Error adding vehicle:", err);
+                alert("Failed to add vehicle.");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('vehicles-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-vehicle-btn')) {
+                if (!currentUser) return;
+                const vehicleToRemove = e.target.dataset.vehicle;
+                if (!vehicleToRemove) return;
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+
+                    // PERFORMANCE OPTIMIZATION: Avoid read-modify-write pattern by using arrayRemove
+                    await updateDoc(userRef, { vehicles: arrayRemove(vehicleToRemove) });
+
+                    // Optimistically update UI
+                    const vehicleItem = e.target.closest('.vehicle-item');
+                    if (vehicleItem) {
+                        vehicleItem.remove();
+                    }
+
+                    const list = document.getElementById('vehicles-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+                    }
+                } catch (err) {
+                    console.error("Error removing vehicle:", err);
+                    alert("Failed to remove vehicle.");
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
 
         logoutBtn.addEventListener('click', async () => {
             try {
