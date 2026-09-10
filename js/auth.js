@@ -38,8 +38,10 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
+    console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
+    console.error(error);
+    console.error("Firebase Initialization Error:", error.message);
 }
 
 export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
