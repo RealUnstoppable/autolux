@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Utils</title>
+</head>
+<body>
+    <script type="module">
+        import { escapeHTML } from './js/utils.js';
+
+        let failures = 0;
+        let passes = 0;
+        function assert(condition, message) {
+            if (!condition) {
+                console.error('FAIL: ' + message);
+                failures++;
+            } else {
+                console.log('PASS: ' + message);
+                passes++;
+            }
+        }
+
+        try {
+            assert(escapeHTML(null) === '', 'null returns empty string');
+            assert(escapeHTML(undefined) === '', 'undefined returns empty string');
+            assert(escapeHTML('') === '', 'empty string returns empty string');
+            assert(escapeHTML('hello') === 'hello', 'normal string is unchanged');
+            assert(escapeHTML('<div>') === '&lt;div&gt;', 'angles are escaped');
+            assert(escapeHTML('a & b') === 'a &amp; b', 'ampersand is escaped');
+            assert(escapeHTML('"quote"') === '&quot;quote&quot;', 'double quotes are escaped');
+            assert(escapeHTML("'quote'") === '&#039;quote&#039;', 'single quotes are escaped');
+            assert(escapeHTML('<script>alert("xss")</'+'script>') === '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;', 'complex string is escaped');
+            assert(escapeHTML(123) === '123', 'number is converted to string');
+            assert(escapeHTML(true) === 'true', 'boolean is converted to string');
+
+            console.log(`\nTests finished. ${passes} passed, ${failures} failed.`);
+
+            // Log results to console in a structured way for the test runner to parse
+            console.log(`__TEST_RESULT__={"passes":${passes},"failures":${failures}}`);
+
+        } catch (e) {
+            console.error('ERROR: ' + e.message);
+            console.log(`__TEST_ERROR__=${e.message}`);
+        }
+    </script>
+</body>
+</html>
