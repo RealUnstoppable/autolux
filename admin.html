@@ -749,8 +749,6 @@
             const graphTitleEl = document.getElementById('graph-title');
             
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
-            if (performanceChart) performanceChart.destroy();
-
             let chartConfig;
             switch(view) {
                 case 'signups':
@@ -763,7 +761,18 @@
                     chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
                     break;
             }
-            performanceChart = new Chart(ctx, chartConfig);
+            if (performanceChart) {
+                if (performanceChart.config.type === chartConfig.type) {
+                    performanceChart.data = chartConfig.data;
+                    performanceChart.options = chartConfig.options;
+                    performanceChart.update();
+                } else {
+                    performanceChart.destroy();
+                    performanceChart = new Chart(ctx, chartConfig);
+                }
+            } else {
+                performanceChart = new Chart(ctx, chartConfig);
+            }
         }
 
         function getChartOptions(isPieChart = false) {

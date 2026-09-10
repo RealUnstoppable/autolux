@@ -356,7 +356,8 @@
                     createdAt: serverTimestamp()
                 };
 
-                await addDoc(collection(db, "bookings"), bookingDoc);
+                const result = await submitDetailingRequest(bookingDoc, currentUser.uid);
+                if (!result.success) throw result.error;
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
@@ -367,7 +368,7 @@
                 }, 2000);
 
             } catch (error) {
-                console.error("Booking Submission Error:", error);
+                console.error("Booking Submission Error:", error.message || error, error.code ? `Code: ${error.code}` : "");
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = 'Failed to submit booking request. Please try again.';
                 submitBtn.disabled = false;

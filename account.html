@@ -360,7 +360,7 @@
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
-                console.error("Error loading user profile or bookings:", error);
+                console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
         }
@@ -395,7 +395,7 @@
                     appointmentsListEl.appendChild(item);
                 });
             } catch (error) {
-                console.error("Error rendering user bookings:", error);
+                console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
         }
@@ -405,7 +405,7 @@
                 await signOut(auth);
                 safeRedirect('index.html');
             } catch (e) {
-                console.error("Logout error", e);
+                console.error("Logout error", e.message, e.code ? `Code: ${e.code}` : "");
             }
         });
     </script>
