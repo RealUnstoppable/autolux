@@ -2,7 +2,7 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-let app, auth, db;
+export let app, auth, db;
 
 try {
     const appName = "autolux";
@@ -194,7 +194,7 @@ export function safeRedirect(targetUrl) {
  */
 import { submitDetailingRequestCore } from './utils.js';
 export async function submitDetailingRequest(requestData) {
-    if (!db || !auth) {
+    if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
         return null;
     }
