@@ -18,6 +18,17 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+// Core function to handle submitting to Firestore
+export async function submitDetailingRequestCore(userId, requestData) {
+    if (!userId) throw new Error("User must be authenticated to submit a request.");
+    const docRef = await addDoc(collection(db, "bookings"), {
+        userId: userId,
+        ...requestData,
+        createdAt: serverTimestamp(),
+        status: 'pending'
+    });
+    return docRef;
+}
 export async function submitDetailingRequestCore(userId, requestData) {
     return await addDoc(collection(db, "bookings"), {
         ...requestData,
@@ -40,6 +51,13 @@ export async function submitDetailingRequest(userId, requestData) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
+/**
+ * Submits a detailing request to the bookings collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitDetailingRequest(userId, requestData) {
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
