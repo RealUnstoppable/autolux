@@ -54,7 +54,7 @@ export async function submitDetailingRequest(userId, requestData) {
         if (error.code) console.error(error.code);
         console.error("Full error:", error);
 
-        return { success: false, error: error.message, code: error.code };
+        return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }
 
