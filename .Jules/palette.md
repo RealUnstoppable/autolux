@@ -4,9 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
-## 2025-02-12 - Semantic HTML vs ARIA Roles for Links
-**Learning:** Adding `role="button"` and custom `onkeydown` handlers (like Enter/Space detection) to native `<a>` tags with `href` attributes is an anti-pattern. Screen readers and keyboards already natively understand and support `<a>` elements for navigation.
-**Action:** Use native HTML semantics whenever possible. Reserve `role="button"` and custom keyboard handlers for non-interactive elements (like `div` or `span`) that act as custom controls when semantic `<button>` or `<a>` elements truly cannot be used.
-## 2024-07-29 - Dynamic Form Feedback Accessibility
-**Learning:** Dynamic message containers (like error messages, success toasts, or form validation feedback) that update asynchronously are not automatically announced by screen readers, causing visually impaired users to miss critical context about their actions.
-**Action:** Always add `aria-live="polite"` to dynamic form feedback containers. This ensures screen readers announce the text updates naturally without interrupting the user's current flow.
+## 2024-05-24 - Missing Focus Outlines
+**Learning:** The application lacked `:focus-visible` CSS rules on interactive elements (links, buttons, inputs) in most HTML files (`booking.html`, `account.html`, `donate.html`, `sign in beta.html`), making keyboard navigation invisible and failing WCAG accessibility guidelines.
+**Action:** Always ensure that every HTML file with interactive elements includes CSS rules for `*:focus-visible` (or specific elements like `a:focus-visible, button:focus-visible`) to provide a clear, high-contrast visual outline for keyboard users.
