@@ -1,5 +1,6 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -40,16 +41,37 @@ export async function submitDetailingRequest(userId, requestData) {
     }
 
     try {
-        const docRef = await submitDetailingRequestCore(userId, requestData);
+        const docRef = await addDoc(collection(db, "bookings"), {
+            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
+            ...requestData,
+            userId: userId,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+        });
 
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
+        if (error.code) console.error(error.code);
         console.error("Full error:", error);
 
         return { success: false, error: error.message, code: error.code };
+    }
+}
+
+/**
+ * Safely sets an item in sessionStorage, catching QuotaExceededError.
+ * @param {string} key
+ * @param {string} value
+ */
+export function safeSetSessionStorage(key, value) {
+    try {
+        sessionStorage.setItem(key, value);
+    } catch (e) {
+        if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+            console.warn('Session storage quota exceeded. Unable to cache data for key:', key);
+        } else {
+            console.error('Error setting session storage for key:', key, e);
+        }
     }
 }
