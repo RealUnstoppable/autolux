@@ -18,7 +18,17 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
-## 2026-05-25 - [Mass Assignment Vulnerability in Firestore Writes]
-**Vulnerability:** Trusted fields like `userId` were vulnerable to being overwritten by untrusted user input because `...requestData` was spread after the trusted fields in the `addDoc` payload.
-**Learning:** In JavaScript object literals, properties defined later overwrite properties defined earlier. If untrusted data is spread after trusted fields, attackers can use Mass Assignment (Parameter Tampering) to elevate privileges or assign records to other users.
-**Prevention:** Always spread untrusted user payloads (e.g., `...requestData`) first, before defining any trusted server-determined properties like `userId`, `status`, or `createdAt`.
+## 2026-08-15 - Hardcoded Firebase Configuration
+
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-10-15 - [Mass Assignment in API module]
+**Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
+**Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
+**Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
