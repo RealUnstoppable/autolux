@@ -1,14 +1,21 @@
-import { db } from './auth.js';
-import { submitDetailingRequestCore } from './utils.js';
+import { db, auth } from './auth.js';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-export async function submitDetailingRequest(bookingData) {
+export async function submitDetailingRequest(requestData, userId = null) {
+    if (userId && requestData.userId === undefined) {
+        requestData.userId = userId;
+    }
     try {
-        const docId = await submitDetailingRequestCore(bookingData);
-        console.log("Document written with ID: ", docId);
-        return { success: true, id: docId };
+        const docRef = await addDoc(collection(db, "bookings"), {
+            ...requestData,
+            status: requestData.status || "pending",
+            createdAt: serverTimestamp()
+        });
+        console.log("Document written with ID: ", docRef.id);
+        return { success: true, id: docRef.id, docId: docRef.id };
     } catch (error) {
         console.error("Error adding document: ", error.message);
-        if (error.code) console.error("Error code:", error.code);
-        return { success: false, error: error };
+        if(error.code) console.error("Error code:", error.code);
+        return { success: false, error: error.message, code: error.code };
     }
 }
