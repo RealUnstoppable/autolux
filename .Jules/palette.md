@@ -4,9 +4,6 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
-## 2025-02-12 - Semantic HTML vs ARIA Roles for Links
-**Learning:** Adding `role="button"` and custom `onkeydown` handlers (like Enter/Space detection) to native `<a>` tags with `href` attributes is an anti-pattern. Screen readers and keyboards already natively understand and support `<a>` elements for navigation.
-**Action:** Use native HTML semantics whenever possible. Reserve `role="button"` and custom keyboard handlers for non-interactive elements (like `div` or `span`) that act as custom controls when semantic `<button>` or `<a>` elements truly cannot be used.
-## 2025-02-12 - Adding aria-live to feedback messages
-**Learning:** Error, success, and validation messages that appear dynamically in response to user actions (like form submissions or saving profile data) should be announced by screen readers without requiring the user to move focus to them.
-**Action:** Add `aria-live="polite"` to dynamically updated feedback message containers (like `#msg`, `#error-msg`, `#profile-msg`, etc.) across the application to ensure screen reader users are notified of state changes without interrupting their current flow.
+## 2024-05-24 - Missing Focus Outlines
+**Learning:** The application lacked `:focus-visible` CSS rules on interactive elements (links, buttons, inputs) in most HTML files (`booking.html`, `account.html`, `donate.html`, `sign in beta.html`), making keyboard navigation invisible and failing WCAG accessibility guidelines.
+**Action:** Always ensure that every HTML file with interactive elements includes CSS rules for `*:focus-visible` (or specific elements like `a:focus-visible, button:focus-visible`) to provide a clear, high-contrast visual outline for keyboard users.
