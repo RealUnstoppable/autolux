@@ -490,6 +490,7 @@
     </footer>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { escapeHTML, safeSetSessionStorage } from '/js/utils.js';
