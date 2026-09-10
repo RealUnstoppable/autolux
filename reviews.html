@@ -196,22 +196,42 @@
         let allReviews = [];
 
         async function loadReviews() {
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            try {
+                const cachedAllReviews = sessionStorage.getItem('autolux_all_reviews');
+                if (cachedAllReviews) {
+                    allReviews = JSON.parse(cachedAllReviews);
+                    renderReviews(allReviews);
+                    return;
+                }
+            } catch(e) {
+                console.warn('Session storage cache read failed:', e);
+            }
+
             try {
                 const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 
-                const dbReviews = snapshot.docs.map(doc => doc.data());
+                let dbReviews = snapshot.docs.map(doc => doc.data());
+                // Stringify timestamps for caching
+                dbReviews = dbReviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
                 
                 // Add the generational reviews that were hidden on the main page
                 const genReviews = [
-                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: {toDate: () => new Date()} },
-                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: {toDate: () => new Date()} },
-                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: {toDate: () => new Date()} },
-                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: {toDate: () => new Date()} }
+                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date().toISOString() },
+                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date().toISOString() },
+                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: new Date().toISOString() },
+                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: new Date().toISOString() }
                 ];
                 
                 allReviews = [...dbReviews, ...genReviews];
                 
+                try {
+                    sessionStorage.setItem('autolux_all_reviews', JSON.stringify(allReviews));
+                } catch(e) {
+                    console.warn('Session storage cache write failed:', e);
+                }
+
                 renderReviews(allReviews);
             } catch (error) {
                 console.error("Error loading reviews:", error);
@@ -228,7 +248,14 @@
 
             reviewsToRender.forEach(r => {
                 const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                const date = r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString() : 'Recent';
+                let date = 'Recent';
+                if (r.createdAt) {
+                    if (r.createdAt.toDate) {
+                        date = r.createdAt.toDate().toLocaleDateString();
+                    } else if (typeof r.createdAt === 'string') {
+                        date = new Date(r.createdAt).toLocaleDateString();
+                    }
+                }
                 const el = document.createElement('div');
                 el.className = 'review-card';
                 el.innerHTML = `
