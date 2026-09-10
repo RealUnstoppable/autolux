@@ -40,6 +40,7 @@ try {
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
+    else console.error("Firebase Initialization Error", error.message);
     console.error(error);
     console.error("Firebase Initialization Error:", error.message);
 }
@@ -191,18 +192,17 @@ export function safeRedirect(targetUrl) {
  * @param {Object} requestData - The data for the detailing request.
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
+import { submitDetailingRequestCore } from './utils.js';
 export async function submitDetailingRequest(requestData) {
     if (!db || !auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
         return null;
     }
-
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return null;
     }
-
     try {
         const docId = await submitDetailingRequestCore({
             ...requestData,
