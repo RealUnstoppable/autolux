@@ -132,6 +132,12 @@ export function waitForAuthState() {
  * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    // Overloading support for simpler form: getUserRedirectPath(user)
+    if (!userData && !currentPathname) {
+        if (!user) return 'sign in beta.html';
+        return 'account.html'; // Basic fallback if userData is not provided synchronously
+    }
+    const decodedPath = decodeURIComponent(currentPathname);
     const pathname = currentPathname || window.location.pathname;
     const decodedPath = decodeURIComponent(pathname);
 
