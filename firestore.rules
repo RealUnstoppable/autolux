@@ -102,6 +102,8 @@ service cloud.firestore {
     }
 
     // Default deny for any other collections
+    // Security Fix: Explicitly deny all on catch-all to prevent privilege escalation.
+    // In Firestore, if a catch-all grants access, it overrides specific deny rules.
     match /{document=**} {
       allow read, write: if false;
     }
