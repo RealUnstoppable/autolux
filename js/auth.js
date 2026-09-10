@@ -1,23 +1,27 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export let app, auth, db;
 
 try {
     const appName = "autolux";
 
+    // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
+    // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
+    // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
     if (!window.ENV) {
-        throw new Error("window.ENV is missing. Cannot initialize Firebase without configuration.");
+        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
     }
 
     const firebaseConfig = {
-        apiKey: window.ENV.FIREBASE_API_KEY,
-        authDomain: window.ENV.FIREBASE_AUTH_DOMAIN,
-        projectId: window.ENV.FIREBASE_PROJECT_ID,
-        storageBucket: window.ENV.FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: window.ENV.FIREBASE_MESSAGING_SENDER_ID,
-        appId: window.ENV.FIREBASE_APP_ID
+        apiKey: window.ENV?.FIREBASE_API_KEY,
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN,
+        projectId: window.ENV?.FIREBASE_PROJECT_ID,
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+        appId: window.ENV?.FIREBASE_APP_ID,
+        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID
     };
 
     const apps = getApps();
@@ -33,12 +37,15 @@ try {
     db = getFirestore(app);
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
-
 } catch (error) {
-    console.error("Firebase Initialization Error", error.message);
+    console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
+    else console.error("Firebase Initialization Error", error.message);
+    console.error(error);
+    console.error("Firebase Initialization Error:", error.message);
 }
 
+export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -69,12 +76,14 @@ export async function ensureUserDocument(user) {
         if (userDoc.exists()) {
             return userDoc.data();
         } else {
-            // Document doesn't exist, create it gracefully
             const newUserData = {
                 uid: user.uid,
                 email: user.email,
                 name: user.displayName || "Anonymous User",
+                username: user.displayName || "Anonymous User",
                 isAdmin: false,
+                isBanned: false,
+                membershipLevel: 'free',
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
@@ -84,7 +93,6 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error);
         console.error("Error ensuring user document:", error.message);
         if (error.code) console.error("Error code:", error.code);
         return null;
@@ -93,15 +101,13 @@ export async function ensureUserDocument(user) {
 
 /**
  * Returns a definitive Promise that resolves when the auth state is known.
- * This prevents race conditions where the UI attempts to read DB data before auth is ready.
  * @returns {Promise<Object|null>} - Returns the user object if authenticated, or null.
  */
 export function getAuthStatePromise() {
     return new Promise((resolve) => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            unsubscribe(); // Clean up listener once we have the initial state
+            unsubscribe();
             if (user) {
-                // Ensure their user document exists before returning
                 await ensureUserDocument(user);
             }
             resolve(user);
@@ -121,41 +127,48 @@ export function waitForAuthState() {
 
 /**
  * Determines the correct redirect path for a user based on their role and current location.
- * Prevents infinite redirect loops by ensuring we don't redirect to the page we are already on.
  * @param {Object} user - The Firebase auth user object.
- * @param {Object} userData - The user's Firestore document data.
- * @param {string} currentPathname - The current window.location.pathname.
- * @returns {string|null} - The path to redirect to, or null if no redirect is needed.
+ * @param {Object} [userData] - The user's Firestore document data.
+ * @param {string} [currentPathname] - The current window.location.pathname.
+ * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    // Overloading support for simpler form: getUserRedirectPath(user)
     if (!userData && !currentPathname) {
-        return getUserRedirectPathAsync(user);
+        if (!user) return 'sign in beta.html';
+        return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
     const decodedPath = decodeURIComponent(currentPathname);
+    const pathname = currentPathname || window.location.pathname;
+    const decodedPath = decodeURIComponent(pathname);
 
     if (!user) {
-        const publicPaths = ['/index.html', '/', '/sign in beta.html'];
+        const publicPaths = ['/index.html', '/', '/sign in beta.html', '/donate.html'];
         const isPublicPath = publicPaths.some(p => decodedPath.endsWith(p));
 
         if (!isPublicPath) {
             return 'sign in beta.html';
         }
-        return null; // Stay on public page
+        return null;
     }
 
-    if (userData && userData.isAdmin) {
+    let data = userData;
+    if (!data && user) {
+        data = await ensureUserDocument(user);
+    }
+
+    if (data && data.isAdmin) {
         if (!decodedPath.endsWith('admin.html')) {
             return 'admin.html';
         }
-        return null; // Stay on admin
+        return null;
     } else {
-        // Standard User
         if (decodedPath.endsWith('admin.html')) {
             return 'account.html';
         } else if (decodedPath.endsWith('sign in beta.html')) {
             return 'account.html';
         }
-        return null; // Stay on current page (e.g., account.html, index.html, booking.html)
+        return null;
     }
 }
 
@@ -166,7 +179,6 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
 export function safeRedirect(targetUrl) {
     if (!targetUrl) return;
 
-    // Normalize paths for comparison
     const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
     const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
 
@@ -178,47 +190,29 @@ export function safeRedirect(targetUrl) {
 /**
  * Submits a new detailing request to Firestore.
  * @param {Object} requestData - The data for the detailing request.
- * @param {string} requestData.customerName
- * @param {string} requestData.customerEmail
- * @param {string} requestData.vehicle
- * @param {string} requestData.appointmentDate
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
-export async function submitDetailingRequestCore(requestData, userId = null) {
-    if (!db) {
-        throw new Error("Firebase is not fully initialized.");
-    }
-    const dataToSave = {
-        ...requestData,
-        status: "pending",
-        createdAt: serverTimestamp()
-    };
-    if (userId) {
-        dataToSave.userId = userId;
-    }
-    const docRef = await addDoc(collection(db, "bookings"), dataToSave);
-    return docRef.id;
-}
-
+import { submitDetailingRequestCore } from './utils.js';
 export async function submitDetailingRequest(requestData) {
     if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
         return null;
     }
-
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return null;
     }
-
     try {
-        const docId = await submitDetailingRequestCore(requestData, currentUser.uid);
+        const docId = await submitDetailingRequestCore({
+            ...requestData,
+            userId: currentUser.uid // Required by security rules
+        });
         console.log("Detailing request submitted successfully with ID:", docId);
         return docId;
     } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
+         console.error("Error submitting detailing request:", error.message);
+         if (error.code) console.error("Error code:", error.code);
         return null;
     }
 }
