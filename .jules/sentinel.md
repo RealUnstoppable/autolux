@@ -18,8 +18,17 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2026-08-15 - Hardcoded Firebase Configuration
 
-## 2024-07-18 - Privilege Escalation in Firestore Wildcard Rule
-**Vulnerability:** A wildcard catch-all rule (`match /{document=**}`) contained `allow create` and `allow update, delete` statements which inadvertently granted global write access to authenticated users and admins across the entire database, overriding more specific restrictive rules.
-**Learning:** Firestore rules evaluate `allow` statements using a logical OR. If a global wildcard rule allows access, it bypasses any specific collection restrictions, leading to privilege escalation.
-**Prevention:** Always explicitly deny access in global wildcard rules (`allow read, write: if false;`) and strictly define permissions only within specific collection `match` blocks.
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-10-15 - [Mass Assignment in API module]
+**Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
+**Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
+**Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
