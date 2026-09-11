@@ -1,3 +1,4 @@
+import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -45,7 +46,7 @@ try {
     console.error("Firebase Initialization Error:", error.message);
 }
 
-export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
+export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -138,7 +139,6 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
         if (!user) return 'sign in beta.html';
         return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
-    const decodedPath = decodeURIComponent(currentPathname);
     const pathname = currentPathname || window.location.pathname;
     const decodedPath = decodeURIComponent(pathname);
 
@@ -192,7 +192,7 @@ export function safeRedirect(targetUrl) {
  * @param {Object} requestData - The data for the detailing request.
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
-import { submitDetailingRequestCore } from './utils.js';
+
 export async function submitDetailingRequest(requestData) {
     if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
