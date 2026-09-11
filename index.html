@@ -6,6 +6,8 @@
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         /* =========================================
@@ -408,11 +410,11 @@
                 </select>
             </div>
             <div style="margin-bottom: 15px;">
-                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
-                <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                <textarea id="review-comment" required rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
-            <p id="review-msg" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
+            <p id="review-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
         </form>
 
         <div class="reviews-container" id="reviews-container-el">
@@ -458,19 +460,19 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
-                <p id="inquiry-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
+                <p id="inquiry-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
             </form>
         </div>
 
@@ -488,10 +490,10 @@
     </footer>
 
     <script type="module">
+        import { safeSetSessionStorage } from './js/utils.js';
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from '/js/utils.js';
+        import { escapeHTML, safeSetSessionStorage } from '/js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -515,8 +517,9 @@
         let currentUser = null;
         let currentUserName = "Anonymous User";
 
-        function initIndexAuth() {
-            onAuthStateChanged(auth, async (user) => {
+        async function initIndexAuth() {
+            try {
+                const user = await getAuthStatePromise();
                 const authBtn = document.getElementById('nav-auth-btn');
                 const reviewContainer = document.getElementById('review-submission-container');
                 if (user) {
@@ -544,7 +547,9 @@
                     authBtn.href = "sign in beta.html";
                     reviewContainer.style.display = 'none';
                 }
-            });
+            } catch(e) {
+                console.error("Error initializing index auth", e);
+            }
         }
 
         initIndexAuth();
@@ -646,7 +651,49 @@
         // Load FAQs on page load
         loadFaqs();
 
+        // Render Reviews helper function
+        function renderReviewsList(reviews, container) {
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            reviews.forEach(r => {
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                container.appendChild(el);
+            });
+        }
+
         // Load Reviews
+        function renderReviewsList(reviews, container) {
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+            container.innerHTML = '';
+            reviews.forEach(r => {
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                container.appendChild(el);
+            });
+        }
+
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
             const defaultReviews = [
@@ -660,14 +707,33 @@
                 list.forEach(r => {
                     const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+                    let date = 'Recent';
+                    if (r.createdAt) {
+                        if (r.createdAt.toDate) {
+                            date = r.createdAt.toDate().toLocaleDateString();
+                        } else if (typeof r.createdAt === 'string') {
+                            date = new Date(r.createdAt).toLocaleDateString();
+                        }
+                    }
                     const name = escapeHTML(r.userName || "Anonymous");
                     const comment = escapeHTML(r.comment || "");
 
                     const el = document.createElement('div');
                     el.className = 'review-card';
-                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name} <span style="font-size: 0.8rem; color: var(--text-muted);">(${date})</span></p>`;
                     container.appendChild(el);
                 });
+            }
+
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            try {
+                const cachedReviews = sessionStorage.getItem('autolux_reviews');
+                if (cachedReviews) {
+                    renderReviewItems(JSON.parse(cachedReviews));
+                    return;
+                }
+            } catch(e) {
+                console.warn('Session storage cache read failed:', e);
             }
 
             try {
@@ -679,6 +745,14 @@
                     reviews = defaultReviews;
                 } else {
                     reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                    // Stringify timestamps for caching
+                    reviews = reviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
+                }
+
+                try {
+                    sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
+                } catch(e) {
+                    console.warn('Session storage cache write failed:', e);
                 }
 
                 renderReviewItems(reviews);
@@ -686,6 +760,31 @@
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
                 renderReviewItems(defaultReviews);
             }
+        }
+
+        function renderReviewsList(reviews, container) {
+            reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            reviews.forEach(r => {
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                container.appendChild(el);
+            });
         }
 
         // Load reviews on page load

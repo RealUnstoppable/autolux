@@ -2,19 +2,26 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-let app, auth, db;
+export let app, auth, db;
 
 try {
     const appName = "autolux";
 
+    // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
+    // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
+    // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
+    if (!window.ENV) {
+        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
+    }
+
     const firebaseConfig = {
-        apiKey: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-        authDomain: "realunstoppable.store",
-        projectId: "dts-hub-website",
-        storageBucket: "dts-hub-website.firebasestorage.app",
-        messagingSenderId: "48345990988",
-        appId: "1:48345990988:web:e3662c9b508168546471e9",
-        measurementId: "G-ZN3YJPHVGX"
+        apiKey: window.ENV?.FIREBASE_API_KEY,
+        authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN,
+        projectId: window.ENV?.FIREBASE_PROJECT_ID,
+        storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+        appId: window.ENV?.FIREBASE_APP_ID,
+        measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID
     };
 
     const apps = getApps();
@@ -31,8 +38,11 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
+    console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
+    else console.error("Firebase Initialization Error", error.message);
+    console.error(error);
+    console.error("Firebase Initialization Error:", error.message);
 }
 
 export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
@@ -123,6 +133,12 @@ export function waitForAuthState() {
  * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    // Overloading support for simpler form: getUserRedirectPath(user)
+    if (!userData && !currentPathname) {
+        if (!user) return 'sign in beta.html';
+        return 'account.html'; // Basic fallback if userData is not provided synchronously
+    }
+    const decodedPath = decodeURIComponent(currentPathname);
     const pathname = currentPathname || window.location.pathname;
     const decodedPath = decodeURIComponent(pathname);
 
@@ -176,30 +192,28 @@ export function safeRedirect(targetUrl) {
  * @param {Object} requestData - The data for the detailing request.
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
+import { submitDetailingRequestCore } from './utils.js';
 export async function submitDetailingRequest(requestData) {
-    if (!db || !auth) {
+    if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
         return null;
     }
-
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return null;
     }
-
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
+        const docId = await submitDetailingRequestCore({
             ...requestData,
-            userId: currentUser.uid,
-            status: "pending",
-            createdAt: serverTimestamp()
+            userId: currentUser.uid // Required by security rules
         });
-        console.log("Detailing request submitted successfully with ID:", docRef.id);
-        return docRef.id;
+        console.log("Detailing request submitted successfully with ID:", docId);
+        return docId;
     } catch (error) {
-        console.error("Error submitting detailing request:", error.message);
-        if (error.code) console.error("Error code:", error.code);
+         console.error("Error submitting detailing request:", error.message);
+         if (error.code) console.error("Error code:", error.code);
         return null;
     }
 }
+
