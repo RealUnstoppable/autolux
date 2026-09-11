@@ -12,8 +12,8 @@
 **Learning:** When using `replace_with_git_merge_diff` to replace duplicated syntax, large blocks with overlapping tokens can confuse the patching logic, leading to severely mangled syntax or the removal of unintended blocks (like important imports).
 **Action:** When deduplicating code blocks inside large files, prefer smaller, more targeted `replace_with_git_merge_diff` chunks or use bash `sed`/`awk` directly for precise in-place removal to avoid massive side-effects.
 ## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
-**Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
-**Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present.
-## 2025-05-24 - [Avoid DB Queries for Static Global Elements]
 **Learning:** Functions that load static or globally shared data on page load (like FAQs or Menus or Reviews) via database queries introduce unnecessary latency and database reads if they are repeatedly hit during a single session.
 **Action:** When rendering data that doesn't change frequently during a session, use `sessionStorage` to cache the initial database response. Update the loading function to check `sessionStorage` before making the network call, skipping the fetch entirely if the cache is present. Also, ensure timestamps are properly stringified to avoid loss of prototype methods like `.toDate()`.
+## 2025-05-24 - [Safely Accessing sessionStorage]
+**Learning:** Browsers in strict privacy modes or incognito settings can block access to `sessionStorage`, causing `getItem` or `setItem` to throw exceptions (like `SecurityError` or `QuotaExceededError`). If these calls are not handled, they will crash the executing script and break page functionality.
+**Action:** When interacting with `sessionStorage` (or `localStorage`), always wrap the read and write operations in a `try...catch` block to gracefully fail without breaking the rest of the application execution.

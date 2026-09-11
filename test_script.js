@@ -1,356 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | DTS HUB & Unstoppable</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="icon" type="image/png" href="/images/dreams-favicon.png">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #0A0A0A;
-            --primary-card-color: #141414;
-            --secondary-card-color: #1f1f1f;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --text-primary: #F5F5F7;
-            --text-secondary: #A3A3A3;
-            --accent-blue: #2563EB;
-            --accent-red: #DC2626;
-            --accent-green: #16A34A;
-            --accent-yellow: #D4AF37;
-            --font-main: 'Inter', sans-serif;
-        }
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-        
-        /* Mobile Hamburger Styles */
-        .mobile-header { display: none; width: 100%; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .hamburger-btn { background: none; border: none; color: var(--text-primary); font-size: 2rem; cursor: pointer; }
-        
-        .admin-layout {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
-            gap: 30px;
-        }
-        .sidebar { width: 250px; flex-shrink: 0; transition: transform 0.3s ease; }
-        .sidebar-header { padding: 20px; background-color: var(--primary-card-color); border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); }
-        .sidebar-header h2 { font-size: 1.2rem; margin: 0 0 5px; color: var(--accent-yellow); }
-        .sidebar-header p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; word-wrap: break-word; }
-        .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
-        .sidebar-nav a { display: block; padding: 15px 20px; color: var(--text-secondary); text-decoration: none; border-radius: 8px; margin-bottom: 5px; font-weight: 500; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-nav a:hover { background-color: var(--primary-card-color); color: var(--text-primary); }
-        .sidebar-nav a.active { background-color: var(--accent-blue); color: #fff; }
-        .sign-out-btn { width: 100%; margin-top: 20px; padding: 15px 20px; background-color: var(--primary-card-color); border: 1px solid var(--border-color); color: var(--text-secondary); font-weight: 500; border-radius: 8px; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
-        .sign-out-btn:hover { background-color: var(--accent-red); color: #fff; border-color: var(--accent-red); }
-        
-        .main-content { flex-grow: 1; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        .content-section > h3 { font-size: 1.8rem; margin-top: 0; margin-bottom: 30px; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background-color: var(--primary-card-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .metric-card .value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
-        .metric-card .label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
-        .graph-container { background-color: var(--primary-card-color); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px; height: 400px; display: flex; flex-direction: column; }
-        .graph-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .graph-dropdown { background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; }
-        
-        .user-table-container { background-color: var(--primary-card-color); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; margin-bottom: 30px;}
-        .user-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .user-table th, .user-table td { padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-        .user-table th { font-weight: 600; color: var(--text-secondary); }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .status-badge.active { background-color: rgba(22, 163, 74, 0.2); color: var(--accent-green); }
-        .status-badge.banned, .status-badge.cancelled { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
-        .status-badge.pro { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
-        .status-badge.pending { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
-        .subscription-text { font-weight: bold; color: var(--accent-blue); }
-        
-        .btn-sm { padding: 6px 12px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; color: white; margin-right: 5px; margin-bottom: 5px;}
-        .btn-ban { background-color: var(--accent-red); }
-        .btn-unban { background-color: var(--accent-green); }
-        .btn-action { background-color: var(--secondary-card-color, #333); color: var(--text-primary); border: 1px solid var(--border-color); }
-        .btn-action:hover { background-color: var(--text-primary); color: var(--bg-color); }
-        .btn-danger { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
-
-        /* Wheel CSS */
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--border-color); overflow: hidden; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: #222; }
-        .wheel-slice { position: absolute; top: 0; right: 0; width: 50%; height: 50%; transform-origin: 0% 100%; text-align: right; padding-right: 10px; padding-top: 10px; font-weight: bold; box-sizing: border-box; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--accent-red); z-index: 10;}
-        .spin-btn { display: block; margin: 20px auto; padding: 15px 30px; font-size: 1.2rem; background: var(--accent-yellow); color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
-
-        @media (max-width: 768px) {
-            body { padding: 10px; flex-direction: column; }
-            .mobile-header { display: flex; }
-            .admin-layout { flex-direction: column; }
-            .sidebar { 
-                position: fixed; top: 0; left: -100%; height: 100vh; z-index: 1000;
-                background-color: var(--bg-color); width: 80%; max-width: 300px;
-                padding: 20px; border-right: 1px solid var(--border-color);
-            }
-            .sidebar.open { transform: translateX(100%); }
-        }
-
-
-        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-            outline: 2px solid var(--accent-blue);
-            outline-offset: 2px;
-        }
-    </style>
-</head>
-<body style="display: none;"> 
-    <div class="mobile-header">
-        <h2 style="margin:0; color: var(--accent-blue);">Admin</h2>
-        <button class="hamburger-btn" id="mobile-menu-btn" aria-label="Open sidebar" aria-expanded="false">☰</button>
-    </div>
-
-    <div class="admin-layout">
-        <aside class="sidebar" id="sidebar">
-            <div class="mobile-header" style="justify-content: flex-end;">
-                <button class="hamburger-btn" id="mobile-close-btn" aria-label="Close sidebar" aria-expanded="true">✕</button>
-            </div>
-            <div class="sidebar-header">
-                <h2>Admin Panel</h2>
-                <p id="user-email-sidebar"></p>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="index.html">← Return to Home</a></li>
-                    <li><a href="#performance" class="nav-link active">Performance</a></li>
-                    <li><a href="#bookings" class="nav-link">Bookings</a></li>
-                    <li><a href="#quotes" class="nav-link">Quotes</a></li>
-                    <li><a href="#inquiries-admin" class="nav-link">Inquiries</a></li>
-                    <li><a href="#users" class="nav-link">User Management</a></li>
-                    <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
-                    <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
-                    <li><a href="#downloads" class="nav-link">Downloads</a></li>
-                    <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
-                    <li><a href="#faqs-admin" class="nav-link">FAQ Management</a></li>
-                    <li><a href="account.html">My Account Settings</a></li>
-                </ul>
-            </nav>
-            <button class="sign-out-btn" id="sign-out">Sign Out</button>
-        </aside>
-
-        <main class="main-content">
-            <section id="performance" class="content-section active">
-                <h3>Performance Overview</h3>
-                <div class="metrics-grid">
-                    <div class="metric-card"><div class="value" id="total-revenue">$-</div><div class="label">Total Revenue</div></div>
-                    <div class="metric-card"><div class="value" id="total-purchases">-</div><div class="label">Total Purchases</div></div>
-                    <div class="metric-card"><div class="value" id="total-users">-</div><div class="label">Total Users</div></div>
-                    <div class="metric-card"><div class="value" id="new-signups">-</div><div class="label">New Sign-ups (24h)</div></div>
-                    <div class="metric-card"><div class="value" id="checkouts">-</div><div class="label">Completed Checkouts</div></div>
-                    <div class="metric-card"><div class="value" id="active-carts">-</div><div class="label">Users with Active Carts</div></div>
-                    <div class="metric-card"><div class="value" id="avg-orders">-</div><div class="label">Orders per User</div></div>
-                    <div class="metric-card"><div class="value" id="upcoming-bookings">-</div><div class="label">Upcoming Appts</div></div>
-                    <div class="metric-card"><div class="value" id="pending-quotes">-</div><div class="label">Pending Quotes</div></div>
-                </div>
-
-                <div class="graph-container">
-                    <div class="graph-header">
-                        <h4 id="graph-title">Summary</h4>
-                        <select id="graph-selector" class="graph-dropdown" aria-label="Select graph type">
-                            <option value="summary">Summary</option>
-                            <option value="signups">Sign-ups</option>
-                            <option value="purchases">Purchases</option>
-                        </select>
-                    </div>
-                    <canvas id="performance-chart"></canvas>
-                </div>
-            </section>
-            
-            <section id="bookings" class="content-section">
-                <h3>All Bookings</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Client Name</th>
-                                <th>Contact Info</th>
-                                <th>Vehicle</th>
-                                <th>Date & Time</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookings-list-body">
-                            <tr><td colspan="6" style="text-align: center;">Loading bookings...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="quotes" class="content-section">
-                <h3>Quote Requests</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Vehicle Details & Condition</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="quotes-list-body">
-                            <tr><td colspan="4" style="text-align: center;">Loading quotes...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="inquiries-admin" class="content-section">
-                <h3>General Inquiries</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Message</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inquiries-list-body">
-                            <tr><td colspan="6" style="text-align: center;">Loading inquiries...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="users" class="content-section">
-                <h3>User Management</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Sign-up Date</th>
-                                <th>Subscription</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-list-body"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="reviews-admin" class="content-section">
-                <h3>Review Management</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>User</th>
-                                <th>Rating</th>
-                                <th>Comment</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reviews-list-body">
-                            <tr><td colspan="6" style="text-align: center;">Loading reviews...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="featurerequests" class="content-section">
-                <h3>App Feature Requests (ezManage)</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Email</th>
-                                <th>Message</th>
-                                <th>Tier</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="feature-request-list-body"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="downloads" class="content-section">
-                <h3>Download Statistics</h3>
-                <div class="metrics-grid">
-                     <div class="metric-card">
-                        <div class="value" id="download-count-infosheet">-</div>
-                        <div class="label">Realm Info Sheet</div>
-                    </div>
-                </div>
-                <p style="color: var(--text-secondary); margin-top: 20px;">
-                    These stats track the number of times the "Download Official Info Sheet" button is clicked on the "What's New" page.
-                </p>
-            </section>
-
-            <section id="newsletter" class="content-section">
-                <h3>Newsletter Subscribers</h3>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead><tr><th>Email</th><th>Subscription Date</th></tr></thead>
-                        <tbody id="newsletter-list-body"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="faqs-admin" class="content-section">
-                <h3>FAQ Management</h3>
-                <div class="metric-card" style="margin-bottom: 20px;">
-                    <form id="add-faq-form" style="display: flex; flex-direction: column; gap: 15px;">
-                        <div>
-                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question:</label>
-                            <input type="text" id="faq-question" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" placeholder="Enter question">
-                        </div>
-                        <div>
-                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer:</label>
-                            <textarea id="faq-answer" required rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); font-family: inherit;" placeholder="Enter answer"></textarea>
-                        </div>
-                        <button type="submit" class="auth-btn" style="align-self: flex-start;">Add FAQ</button>
-                    </form>
-                    <p id="faq-msg" style="margin-top: 10px; font-size: 0.9rem;" aria-live="polite"></p>
-                </div>
-                <div class="user-table-container">
-                    <table class="user-table">
-                        <thead>
-                            <tr>
-                                <th>Question</th>
-                                <th>Answer</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="faqs-list-body"></tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-
    <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
-        import { escapeHTML } from './js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
@@ -468,7 +118,7 @@
                     renderInquiriesTable(inquiries);
                 } catch (inqError) {
                     console.log("Could not load inquiries. Missing Firestore rules?", inqError);
-                    document.getElementById('inquiries-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`);
+                    document.getElementById('inquiries-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
                 // Fetch Reviews
@@ -478,7 +128,7 @@
                     renderReviewsTable(reviews);
                 } catch (revError) {
                     console.error("Could not load reviews.", revError);
-                    document.getElementById('reviews-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`);
+                    document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
                 }
 
                 try {
@@ -487,7 +137,7 @@
                     renderFaqsTable(faqs);
                 } catch (faqError) {
                     console.log("Could not load FAQs", faqError);
-                    document.getElementById('faqs-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`);
+                    document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
                 }
 
                 // Fetch Feature Requests
@@ -497,7 +147,7 @@
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
                     console.error("Could not load feature requests.", frError);
-                    document.getElementById('feature-request-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`);
+                    document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
                 }
                 
                 // Download Stats
@@ -520,7 +170,7 @@
             const tbody = document.getElementById('bookings-list-body');
             tbody.innerHTML = '';
             if(bookings.length === 0) {
-                tbody.innerHTML = DOMPurify.sanitize('<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'); return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
             }
             bookings.forEach(b => {
                 const row = document.createElement('tr');
@@ -533,7 +183,7 @@
                 if(b.status === 'cancelled') badgeClass = 'cancelled';
                 if(b.status === 'completed') badgeClass = 'active'; 
                 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td><strong>${escapeHTML(name)}</strong></td>
                     <td>${escapeHTML(phone)}<br><span style="font-size:0.8rem; color:var(--text-secondary);">${escapeHTML(email)}</span></td>
                     <td style="text-transform: capitalize;">${escapeHTML(b.vehicle)}</td>
@@ -543,7 +193,7 @@
                         ${b.status !== 'cancelled' ? `<button class="btn-sm btn-danger action-btn" data-type="booking" data-action="cancel" data-id="${escapeHTML(b.id)}">Cancel</button>` : ''}
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
                     </td>
-                `);
+                `;
                 tbody.appendChild(row);
             });
         }
@@ -552,12 +202,12 @@
             const tbody = document.getElementById('quotes-list-body');
             tbody.innerHTML = '';
             if(quotes.length === 0) {
-                tbody.innerHTML = DOMPurify.sanitize('<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'); return;
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'; return;
             }
             quotes.forEach(q => {
                 const row = document.createElement('tr');
                 const badgeClass = q.status === 'responded' ? 'active' : 'pending';
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${escapeHTML(q.email)}</td>
                     <td>${escapeHTML(q.details)}</td>
                     <td><span class="status-badge ${badgeClass}">${escapeHTML(q.status) || 'pending'}</span></td>
@@ -565,7 +215,7 @@
                         ${q.status !== 'responded' ? `<button class="btn-sm btn-action action-btn" data-type="quote" data-action="responded" data-id="${escapeHTML(q.id)}">Responded</button>` : ''}
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
                     </td>
-                `);
+                `;
                 tbody.appendChild(row);
             });
         }
@@ -574,7 +224,7 @@
             const tbody = document.getElementById('inquiries-list-body');
             tbody.innerHTML = '';
             if(inquiries.length === 0) {
-                tbody.innerHTML = DOMPurify.sanitize('<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'); return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
             inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             inquiries.forEach(inq => {
@@ -584,7 +234,7 @@
                 const badgeClass = isResolved ? 'active' : 'pending';
                 const statusStr = isResolved ? 'resolved' : 'pending';
 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${inqDate}</td>
                     <td>${escapeHTML(inq.name)}</td>
                     <td>${escapeHTML(inq.email)}</td>
@@ -594,7 +244,7 @@
                         ${!isResolved ? `<button class="btn-sm btn-action action-btn" data-type="inquiry" data-action="resolve" data-id="${escapeHTML(inq.id)}">Mark Resolved</button>` : ''}
                         <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
                     </td>
-                `);
+                `;
                 tbody.appendChild(row);
             });
         }
@@ -610,13 +260,13 @@
                 const signupDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 const subStatus = user.subscription?.status === 'active' ? `<span class="subscription-text">Active Pro</span>` : `<span style="color: var(--text-secondary);">Free</span>`;
                 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${escapeHTML(user.username) || escapeHTML(user.name) || "N/A"}</td>
                     <td>${escapeHTML(user.email)}</td>
                     <td>${signupDate}</td>
                     <td>${subStatus}</td>
                     <td>${statusBadge}</td>
-                    <td>${actionButton}</td>`);
+                    <td>${actionButton}</td>`;
                 userListBody.appendChild(row);
             });
         }
@@ -625,7 +275,7 @@
             const listBody = document.getElementById('faqs-list-body');
             listBody.innerHTML = '';
             if(faqs.length === 0) {
-                listBody.innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`); return;
+                listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
             }
             faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             faqs.forEach(faq => {
@@ -633,12 +283,12 @@
                 const qText = escapeHTML(faq.question || "N/A");
                 const aText = escapeHTML(faq.answer || "N/A");
 
-                const deleteBtn = `<button class="auth-btn action-btn" data-type="faq" data-action="delete" data-id="${faq.id}" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;">Delete</button>`;
+                const deleteBtn = `<button class="auth-btn" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;" onclick="deleteFaq('${faq.id}')">Delete</button>`;
 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${qText}</td>
                     <td>${aText}</td>
-                    <td>${deleteBtn}</td>`);
+                    <td>${deleteBtn}</td>`;
                 listBody.appendChild(row);
             });
         }
@@ -647,7 +297,7 @@
             const listBody = document.getElementById('reviews-list-body');
             listBody.innerHTML = '';
             if(reviews.length === 0) {
-                listBody.innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`); return;
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
             }
             reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             reviews.forEach(review => {
@@ -664,13 +314,13 @@
                 const ratingValue = Math.max(0, Math.min(5, parseInt(review.rating, 10) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${revDate}</td>
                     <td>${escapeHTML(review.userName) || "Unknown User"}</td>
                     <td style="color: var(--gold);">${stars}</td>
                     <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
                     <td>${statusStr}</td>
-                    <td>${approveButton} ${deleteButton}</td>`);
+                    <td>${approveButton} ${deleteButton}</td>`;
                 listBody.appendChild(row);
             });
         }
@@ -679,7 +329,7 @@
             const listBody = document.getElementById('feature-request-list-body');
             listBody.innerHTML = '';
             if(requests.length === 0) {
-                listBody.innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`); return;
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
             }
             requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
             requests.forEach(req => {
@@ -692,13 +342,13 @@
                      ? `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`
                      : `<button class="btn-sm btn-unban mark-complete-btn" data-id="${escapeHTML(req.id)}">Mark Complete</button>`;
                 
-                row.innerHTML = DOMPurify.sanitize(`
+                row.innerHTML = `
                     <td>${reqDate}</td>
                     <td>${escapeHTML(req.email) || "Unknown User"}</td>
                     <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(req.message)}</td>
                     <td>${tierBadge}</td>
                     <td>${statusStr}</td>
-                    <td>${actionButton}</td>`);
+                    <td>${actionButton}</td>`;
                 listBody.appendChild(row);
             });
         }
@@ -707,13 +357,13 @@
             const newsletterListBody = document.getElementById('newsletter-list-body');
             newsletterListBody.innerHTML = '';
             if(subscribers.length === 0) {
-                newsletterListBody.innerHTML = DOMPurify.sanitize(`<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`); return;
+                newsletterListBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`; return;
             }
             subscribers.forEach(subscriber => {
                 const row = document.createElement('tr');
                 const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
                 const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
-                row.innerHTML = DOMPurify.sanitize(`<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`);
+                row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
                 newsletterListBody.appendChild(row);
             });
         }
@@ -728,6 +378,7 @@
             const avgOrders = totalUsers > 0 ? (totalOrders / totalUsers).toFixed(2) : 0;
 
             const now = new Date();
+            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) >= now);
             const upcoming = bookings.filter(b => {
                 if (b.status === 'cancelled') return false;
                 const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
@@ -749,6 +400,8 @@
             const graphTitleEl = document.getElementById('graph-title');
             
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
+            if (performanceChart) performanceChart.destroy();
+
             let chartConfig;
             switch(view) {
                 case 'signups':
@@ -761,18 +414,7 @@
                     chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
                     break;
             }
-            if (performanceChart) {
-                if (performanceChart.config.type === chartConfig.type) {
-                    performanceChart.data = chartConfig.data;
-                    performanceChart.options = chartConfig.options;
-                    performanceChart.update();
-                } else {
-                    performanceChart.destroy();
-                    performanceChart = new Chart(ctx, chartConfig);
-                }
-            } else {
-                performanceChart = new Chart(ctx, chartConfig);
-            }
+            performanceChart = new Chart(ctx, chartConfig);
         }
 
         function getChartOptions(isPieChart = false) {
@@ -800,11 +442,11 @@
                         const actionCell = row.cells[5];
 
                         if (shouldBeBanned) {
-                            statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge banned">Banned</span>`);
-                            actionCell.innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-unban" data-id="${escapeHTML(userId)}">Unban</button>`);
+                            statusCell.innerHTML = `<span class="status-badge banned">Banned</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-unban" data-id="${userId}">Unban</button>`;
                         } else {
-                            statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge active">Active</span>`);
-                            actionCell.innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-ban" data-id="${escapeHTML(userId)}">Ban</button>`);
+                            statusCell.innerHTML = `<span class="status-badge active">Active</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-ban" data-id="${userId}">Ban</button>`;
                         }
                     } catch (err) {
                         console.error("Error updating user ban status:", err.code, err);
@@ -823,8 +465,8 @@
 
                         // Optimistic UI Update
                         const row = btn.closest('tr');
-                        row.cells[4].innerHTML = DOMPurify.sanitize(`<span style="color:var(--accent-green);">Completed</span>`);
-                        row.cells[5].innerHTML = DOMPurify.sanitize(`<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`);
+                        row.cells[4].innerHTML = `<span style="color:var(--accent-green);">Completed</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`;
                     } catch (err) {
                         console.error("Error updating feature request status:", err.code, err);
                     }
@@ -844,16 +486,16 @@
 
                     if (action === 'cancel' && confirm("Cancel this booking?")) {
                         await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
-                        statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge cancelled">cancelled</span>`);
-                        actionCell.innerHTML = '';
+                        statusCell.innerHTML = `<span class="status-badge cancelled">cancelled</span>`;
+                        actionCell.innerHTML = ``;
 
                         // Update metrics optimistically
                         const el = document.getElementById('upcoming-bookings');
                         el.textContent = Math.max(0, parseInt(el.textContent) - 1);
                     } else if (action === 'complete') {
                         await updateDoc(doc(db, "bookings", id), { status: 'completed' });
-                        statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge active">completed</span>`);
-                        actionCell.innerHTML = '';
+                        statusCell.innerHTML = `<span class="status-badge active">completed</span>`;
+                        actionCell.innerHTML = ``;
 
                         // Update metrics optimistically
                         const el = document.getElementById('upcoming-bookings');
@@ -877,12 +519,12 @@
                 try {
                     if (action === 'approve') {
                         await updateDoc(doc(db, "reviews", id), { status: 'approved' });
-                        statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge active">Approved</span>`);
-                        actionCell.innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${escapeHTML(id)}">Unapprove</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(id)}">Delete</button>`);
+                        statusCell.innerHTML = `<span class="status-badge active">Approved</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${id}">Unapprove</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
                     } else if (action === 'unapprove') {
                         await updateDoc(doc(db, "reviews", id), { status: 'pending' });
-                        statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge pending">Pending</span>`);
-                        actionCell.innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${escapeHTML(id)}">Approve</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(id)}">Delete</button>`);
+                        statusCell.innerHTML = `<span class="status-badge pending">Pending</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${id}">Approve</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
                     } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
                         await deleteDoc(doc(db, "reviews", id));
                         row.remove();
@@ -906,8 +548,8 @@
 
                     if (action === 'resolve') {
                         await updateDoc(doc(db, "inquiries", id), { status: 'resolved' });
-                        row.cells[4].innerHTML = DOMPurify.sanitize(`<span class="status-badge active">resolved</span>`);
-                        row.cells[5].innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(id)}">Delete</button>`);
+                        row.cells[4].innerHTML = `<span class="status-badge active">resolved</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${id}">Delete</button>`;
                     } else if (action === 'delete' && confirm("Delete this inquiry?")) {
                         await deleteDoc(doc(db, "inquiries", id));
                         row.remove();
@@ -928,8 +570,8 @@
 
                     if (action === 'responded') {
                         await updateDoc(doc(db, "quotes", id), { status: 'responded' });
-                        row.cells[2].innerHTML = DOMPurify.sanitize(`<span class="status-badge active">responded</span>`);
-                        row.cells[3].innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(id)}">Delete</button>`);
+                        row.cells[2].innerHTML = `<span class="status-badge active">responded</span>`;
+                        row.cells[3].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${id}">Delete</button>`;
 
                         // Update metrics optimistically
                         const el = document.getElementById('pending-quotes');
@@ -1067,26 +709,11 @@
                     setTimeout(() => location.reload(), 1000);
                 } catch(error) {
                     console.error("Error adding FAQ", error);
-                    if (error.code) console.error("Error code:", error.code);
                     msgEl.style.color = "#ef4444";
                     msgEl.textContent = "Error adding FAQ.";
                 } finally {
                     btn.disabled = false;
                     btn.textContent = "Add FAQ";
-                }
-            });
-        }
-
-
-        const faqsListBody = document.getElementById('faqs-list-body');
-        if (faqsListBody) {
-            faqsListBody.addEventListener('click', async (e) => {
-                const btn = e.target.closest('.action-btn');
-                if(!btn || btn.dataset.type !== 'faq') return;
-                const action = btn.dataset.action;
-                const id = btn.dataset.id;
-                if (action === 'delete') {
-                    window.deleteFaq(id);
                 }
             });
         }
@@ -1104,5 +731,3 @@
             }
         };
     </script>
-</body>
-</html>
