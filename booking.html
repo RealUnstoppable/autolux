@@ -235,7 +235,7 @@
 
             <form id="booking-form" style="display: none;">
                 <div class="input-group">
-                    <label for="package">Select Service Package</label>
+                    <label for="package">Select Service Package <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <select id="package" required>
                         <option value="">-- Choose a Package --</option>
                         <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
@@ -247,12 +247,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="vehicle">Vehicle (Year, Make, Model & Color)</label>
+                    <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <input type="text" id="vehicle" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="date">Preferred Date & Time</label>
+                    <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: #ef4444;">*</span></label>
                     <input type="datetime-local" id="date" required>
                 </div>
 
@@ -264,7 +264,7 @@
                 <button type="submit" class="btn-primary" id="submit-btn">Submit Booking Request</button>
             </form>
 
-            <div id="msg"></div>
+            <div id="msg" aria-live="polite"></div>
         </div>
     </div>
 
@@ -343,6 +343,7 @@
             }
 
             submitBtn.disabled = true;
+            submitBtn.setAttribute('aria-busy', 'true');
             submitBtn.textContent = 'Submitting Request...';
             msgEl.textContent = '';
 
@@ -374,6 +375,7 @@
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = 'Failed to submit booking request. Please try again.';
                 submitBtn.disabled = false;
+                submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.textContent = 'Submit Booking Request';
             }
         });
