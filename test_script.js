@@ -1,0 +1,733 @@
+   <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
+        import { escapeHTML } from '/js/utils.js';
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        let performanceChart;
+
+        async function initAdminPage() {
+            try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                const userData = await ensureUserDocument(user);
+
+                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
+                if (redirectPath && !redirectPath.endsWith('admin.html')) {
+                    safeRedirect(redirectPath);
+                    return;
+                }
+
+                if (userData && userData.isAdmin) {
+                    document.body.style.display = 'flex';
+                    initializeAdminPage(user);
+                } else {
+                    safeRedirect('account.html');
+                }
+            } catch (error) {
+                console.error("Admin init error:", error);
+                safeRedirect('sign in beta.html');
+            }
+        }
+
+        initAdminPage();
+
+        function initializeAdminPage(adminUser) {
+            document.getElementById('user-email-sidebar').textContent = adminUser.email;
+            loadAdminData();
+            setupEventListeners();
+        }
+
+        async function resolveQuery(promise, collectionName, mapper = d => ({ id: d.id, ...d.data() })) {
+            try {
+                const snapshot = await promise;
+                return snapshot.docs ? snapshot.docs.map(mapper) : [];
+            } catch (error) {
+                console.error(`Error fetching ${collectionName}:`, error.message);
+                return [];
+            }
+        }
+
+        async function loadAdminData() {
+            try {
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
+                const usersPromise = getDocs(collection(db, "users"));
+                const cartsPromise = getDocs(collection(db, "carts"));
+                const ordersPromise = getDocs(collection(db, "orders"));
+                const newsletterPromise = getDocs(collection(db, "newsletterSubscribers"));
+                const bookingsPromise = getDocs(collection(db, "bookings"));
+                const quotesPromise = getDocs(collection(db, "quotes"));
+                const inquiriesPromise = getDocs(collection(db, "inquiries"));
+                const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
+                const reviewsPromise = getDocs(collection(db, "reviews"));
+                const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
+                const faqsPromise = getDocs(collection(db, "faqs"));
+
+                // We catch errors immediately to avoid unhandled rejection warnings in the console,
+                // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
+                usersPromise.catch(() => {});
+                cartsPromise.catch(() => {});
+                ordersPromise.catch(() => {});
+                newsletterPromise.catch(() => {});
+                bookingsPromise.catch(() => {});
+                quotesPromise.catch(() => {});
+                inquiriesPromise.catch(() => {});
+                featureRequestsPromise.catch(() => {});
+                reviewsPromise.catch(() => {});
+                statsPromise.catch(() => {});
+                faqsPromise.catch(() => {});
+
+                // Fetch Core Data
+                const users = await resolveQuery(usersPromise, "users");
+                const carts = await resolveQuery(cartsPromise, "carts");
+                const orders = await resolveQuery(ordersPromise, "orders", d => d.data());
+                const subscribers = await resolveQuery(newsletterPromise, "newsletter", d => d.data());
+
+                // Fetch Detailing Bookings & Quotes
+                const bookings = await resolveQuery(bookingsPromise, "bookings");
+                bookings.sort((a, b) => new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) - new Date(a.appointmentDate?.toDate ? a.appointmentDate.toDate() : a.appointmentDate));
+                bookings.sort((a, b) => {
+                    const dateA = a.appointmentDate?.toDate ? a.appointmentDate.toDate() : new Date(a.appointmentDate);
+                    const dateB = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                    return dateB - dateA;
+                });
+
+                const quotes = await resolveQuery(quotesPromise, "quotes");
+
+                // Core Calculations
+                const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
+                document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+                document.getElementById('total-purchases').textContent = orders.length;
+
+                // Renderers
+                renderUserTable(users);
+                renderNewsletterTable(subscribers); 
+                calculatePerformanceMetrics(users, carts, orders, bookings, quotes);
+                renderChart('summary', users);
+                renderBookingsTable(bookings);
+                renderQuotesTable(quotes);
+                
+                // Fetch Inquiries
+                try {
+                    const inquiriesSnapshot = await inquiriesPromise;
+                    const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderInquiriesTable(inquiries);
+                } catch (inqError) {
+                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    document.getElementById('inquiries-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
+                // Fetch Reviews
+                try {
+                    const reviewsSnapshot = await reviewsPromise;
+                    const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderReviewsTable(reviews);
+                } catch (revError) {
+                    console.error("Could not load reviews.", revError);
+                    document.getElementById('reviews-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`;
+                }
+
+                try {
+                    const faqsSnapshot = await faqsPromise;
+                    const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderFaqsTable(faqs);
+                } catch (faqError) {
+                    console.log("Could not load FAQs", faqError);
+                    document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
+                }
+
+                // Fetch Feature Requests
+                try {
+                    const featureRequestsSnapshot = await featureRequestsPromise;
+                    const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderFeatureRequestsTable(requests);
+                } catch (frError) {
+                    console.error("Could not load feature requests.", frError);
+                    document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
+                }
+                
+                // Download Stats
+                try {
+                    const statsDoc = await statsPromise;
+                    if (statsDoc.exists()) {
+                        document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
+                    }
+                } catch (e) {
+                    console.error("Error loading download stats:", e);
+                    document.getElementById('download-count-infosheet').textContent = "N/A";
+                }
+
+            } catch (error) {
+                console.error("Error loading admin data:", error);
+            }
+        }
+
+        function renderBookingsTable(bookings) {
+            const tbody = document.getElementById('bookings-list-body');
+            tbody.innerHTML = '';
+            if(bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
+            }
+            bookings.forEach(b => {
+                const row = document.createElement('tr');
+                const name = b.customerName || 'N/A';
+                const phone = b.customerPhone || 'N/A';
+                const email = b.customerEmail || 'N/A';
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
+                let badgeClass = 'active';
+                if(b.status === 'cancelled') badgeClass = 'cancelled';
+                if(b.status === 'completed') badgeClass = 'active'; 
+                
+                row.innerHTML = `
+                    <td><strong>${escapeHTML(name)}</strong></td>
+                    <td>${escapeHTML(phone)}<br><span style="font-size:0.8rem; color:var(--text-secondary);">${escapeHTML(email)}</span></td>
+                    <td style="text-transform: capitalize;">${escapeHTML(b.vehicle)}</td>
+                    <td>${formattedDate}</td>
+                    <td><span class="status-badge ${badgeClass}">${(escapeHTML(b.status) || 'unknown').replace('_', ' ')}</span></td>
+                    <td>
+                        ${b.status !== 'cancelled' ? `<button class="btn-sm btn-danger action-btn" data-type="booking" data-action="cancel" data-id="${escapeHTML(b.id)}">Cancel</button>` : ''}
+                        ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}">Mark Done</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderQuotesTable(quotes) {
+            const tbody = document.getElementById('quotes-list-body');
+            tbody.innerHTML = '';
+            if(quotes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'; return;
+            }
+            quotes.forEach(q => {
+                const row = document.createElement('tr');
+                const badgeClass = q.status === 'responded' ? 'active' : 'pending';
+                row.innerHTML = `
+                    <td>${escapeHTML(q.email)}</td>
+                    <td>${escapeHTML(q.details)}</td>
+                    <td><span class="status-badge ${badgeClass}">${escapeHTML(q.status) || 'pending'}</span></td>
+                    <td>
+                        ${q.status !== 'responded' ? `<button class="btn-sm btn-action action-btn" data-type="quote" data-action="responded" data-id="${escapeHTML(q.id)}">Responded</button>` : ''}
+                        <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderInquiriesTable(inquiries) {
+            const tbody = document.getElementById('inquiries-list-body');
+            tbody.innerHTML = '';
+            if(inquiries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
+            }
+            inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            inquiries.forEach(inq => {
+                const row = document.createElement('tr');
+                const inqDate = inq.createdAt ? new Date(inq.createdAt.toDate ? inq.createdAt.toDate() : inq.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isResolved = inq.status === 'resolved';
+                const badgeClass = isResolved ? 'active' : 'pending';
+                const statusStr = isResolved ? 'resolved' : 'pending';
+
+                row.innerHTML = `
+                    <td>${inqDate}</td>
+                    <td>${escapeHTML(inq.name)}</td>
+                    <td>${escapeHTML(inq.email)}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(inq.message)}</td>
+                    <td><span class="status-badge ${badgeClass}">${statusStr}</span></td>
+                    <td>
+                        ${!isResolved ? `<button class="btn-sm btn-action action-btn" data-type="inquiry" data-action="resolve" data-id="${escapeHTML(inq.id)}">Mark Resolved</button>` : ''}
+                        <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderUserTable(users) {
+            const userListBody = document.getElementById('user-list-body');
+            userListBody.innerHTML = '';
+            users.filter(user => !user.isAdmin).forEach(user => {
+                const row = document.createElement('tr');
+                const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
+                const actionButton = user.isBanned ? `<button class="btn-sm btn-unban" data-id="${escapeHTML(user.id)}">Unban</button>` : `<button class="btn-sm btn-ban" data-id="${escapeHTML(user.id)}">Ban</button>`;
+                const parsedDate = user.signupDate?.toDate ? user.signupDate.toDate() : new Date(user.signupDate);
+                const signupDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
+                const subStatus = user.subscription?.status === 'active' ? `<span class="subscription-text">Active Pro</span>` : `<span style="color: var(--text-secondary);">Free</span>`;
+                
+                row.innerHTML = `
+                    <td>${escapeHTML(user.username) || escapeHTML(user.name) || "N/A"}</td>
+                    <td>${escapeHTML(user.email)}</td>
+                    <td>${signupDate}</td>
+                    <td>${subStatus}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionButton}</td>`;
+                userListBody.appendChild(row);
+            });
+        }
+
+        function renderFaqsTable(faqs) {
+            const listBody = document.getElementById('faqs-list-body');
+            listBody.innerHTML = '';
+            if(faqs.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
+            }
+            faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            faqs.forEach(faq => {
+                const row = document.createElement('tr');
+                const qText = escapeHTML(faq.question || "N/A");
+                const aText = escapeHTML(faq.answer || "N/A");
+
+                const deleteBtn = `<button class="auth-btn" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;" onclick="deleteFaq('${faq.id}')">Delete</button>`;
+
+                row.innerHTML = `
+                    <td>${qText}</td>
+                    <td>${aText}</td>
+                    <td>${deleteBtn}</td>`;
+                listBody.appendChild(row);
+            });
+        }
+
+        function renderReviewsTable(reviews) {
+            const listBody = document.getElementById('reviews-list-body');
+            listBody.innerHTML = '';
+            if(reviews.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
+            }
+            reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+            reviews.forEach(review => {
+                const row = document.createElement('tr');
+                const revDate = review.createdAt ? new Date(review.createdAt.toDate ? review.createdAt.toDate() : review.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
+                const isApproved = review.status === 'approved';
+                const statusStr = isApproved ? `<span class="status-badge active">Approved</span>` : `<span class="status-badge pending">Pending</span>`;
+                const approveButton = isApproved
+                     ? `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${escapeHTML(review.id)}">Unapprove</button>`
+                     : `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${escapeHTML(review.id)}">Approve</button>`;
+                const deleteButton = `<button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${escapeHTML(review.id)}">Delete</button>`;
+
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(review.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                row.innerHTML = `
+                    <td>${revDate}</td>
+                    <td>${escapeHTML(review.userName) || "Unknown User"}</td>
+                    <td style="color: var(--gold);">${stars}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
+                    <td>${statusStr}</td>
+                    <td>${approveButton} ${deleteButton}</td>`;
+                listBody.appendChild(row);
+            });
+        }
+
+        function renderFeatureRequestsTable(requests) {
+            const listBody = document.getElementById('feature-request-list-body');
+            listBody.innerHTML = '';
+            if(requests.length === 0) {
+                listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
+            }
+            requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
+            requests.forEach(req => {
+                const row = document.createElement('tr');
+                const reqDate = req.timestamp ? new Date(req.timestamp.toDate ? req.timestamp.toDate() : req.timestamp).toLocaleDateString() : new Date().toLocaleDateString();
+                const tierBadge = req.isPro ? `<span class="status-badge pro">Priority (Pro)</span>` : `<span class="status-badge">Free Tier</span>`;
+                const isComplete = req.status === 'completed';
+                const statusStr = isComplete ? `<span style="color:var(--accent-green);">Completed</span>` : `<span style="color:var(--accent-yellow);">Pending</span>`;
+                const actionButton = isComplete 
+                     ? `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`
+                     : `<button class="btn-sm btn-unban mark-complete-btn" data-id="${escapeHTML(req.id)}">Mark Complete</button>`;
+                
+                row.innerHTML = `
+                    <td>${reqDate}</td>
+                    <td>${escapeHTML(req.email) || "Unknown User"}</td>
+                    <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(req.message)}</td>
+                    <td>${tierBadge}</td>
+                    <td>${statusStr}</td>
+                    <td>${actionButton}</td>`;
+                listBody.appendChild(row);
+            });
+        }
+
+        function renderNewsletterTable(subscribers) {
+            const newsletterListBody = document.getElementById('newsletter-list-body');
+            newsletterListBody.innerHTML = '';
+            if(subscribers.length === 0) {
+                newsletterListBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`; return;
+            }
+            subscribers.forEach(subscriber => {
+                const row = document.createElement('tr');
+                const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
+                const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
+                row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
+                newsletterListBody.appendChild(row);
+            });
+        }
+
+        function calculatePerformanceMetrics(users, carts, orders = [], bookings = [], quotes = []) {
+            const twentyFourHoursAgo = Timestamp.fromMillis(Date.now() - (24 * 60 * 60 * 1000));
+            const newSignups = users.filter(u => u.signupDate && u.signupDate > twentyFourHoursAgo).length;
+            const activeCarts = carts.filter(c => c.items && Object.keys(c.items).length > 0).length;
+
+            const totalOrders = orders.length;
+            const totalUsers = users.length;
+            const avgOrders = totalUsers > 0 ? (totalOrders / totalUsers).toFixed(2) : 0;
+
+            const now = new Date();
+            const upcoming = bookings.filter(b => b.status !== 'cancelled' && new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) >= now);
+            const upcoming = bookings.filter(b => {
+                if (b.status === 'cancelled') return false;
+                const parsedDate = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
+                return parsedDate && !isNaN(parsedDate) && parsedDate >= now;
+            });
+            const pendingQuotes = quotes.filter(q => q.status === 'pending');
+
+            document.getElementById('total-users').textContent = totalUsers;
+            document.getElementById('new-signups').textContent = newSignups;
+            document.getElementById('checkouts').textContent = totalOrders;
+            document.getElementById('active-carts').textContent = activeCarts;
+            document.getElementById('avg-orders').textContent = avgOrders;
+            document.getElementById('upcoming-bookings').textContent = upcoming.length;
+            document.getElementById('pending-quotes').textContent = pendingQuotes.length;
+        }
+
+        function renderChart(view, usersData) {
+            const ctx = document.getElementById('performance-chart').getContext('2d');
+            const graphTitleEl = document.getElementById('graph-title');
+            
+            graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
+            if (performanceChart) performanceChart.destroy();
+
+            let chartConfig;
+            switch(view) {
+                case 'signups':
+                    chartConfig = { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'New Sign-ups', data: [5, 9, 3, 5, 2, 3, 7], borderColor: '#2563EB', fill: true, backgroundColor: 'rgba(37, 99, 235, 0.2)' }] }, options: getChartOptions(false) };
+                    break;
+                case 'purchases':
+                    chartConfig = { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Purchases', data: [12, 19, 8, 15, 10, 13, 17], borderColor: '#16A34A', fill: true, backgroundColor: 'rgba(22, 163, 74, 0.2)' }] }, options: getChartOptions(false) };
+                    break;
+                default: 
+                    chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
+                    break;
+            }
+            performanceChart = new Chart(ctx, chartConfig);
+        }
+
+        function getChartOptions(isPieChart = false) {
+            return {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: isPieChart ? 'top' : 'bottom', labels: { color: 'white' } } },
+                scales: !isPieChart ? { y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }, x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } } } : {}
+            };
+        }
+    
+        function setupEventListeners() {
+            // User Ban Toggle
+            document.getElementById('user-list-body').addEventListener('click', async (e) => {
+                const btn = e.target;
+                const userId = btn.dataset.id;
+                if (!userId) return;
+                const shouldBeBanned = btn.classList.contains('btn-ban');
+                if (confirm(`Are you sure you want to ${shouldBeBanned ? 'ban' : 'unban'} this user?`)) {
+                    try {
+                        await updateDoc(doc(db, "users", userId), { isBanned: shouldBeBanned });
+
+                        // Optimistic UI Update
+                        const row = btn.closest('tr');
+                        const statusCell = row.cells[4];
+                        const actionCell = row.cells[5];
+
+                        if (shouldBeBanned) {
+                            statusCell.innerHTML = `<span class="status-badge banned">Banned</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-unban" data-id="${userId}">Unban</button>`;
+                        } else {
+                            statusCell.innerHTML = `<span class="status-badge active">Active</span>`;
+                            actionCell.innerHTML = `<button class="btn-sm btn-ban" data-id="${userId}">Ban</button>`;
+                        }
+                    } catch (err) {
+                        console.error("Error updating user ban status:", err.code, err);
+                    }
+                }
+            });
+            
+            // Feature Request Complete Toggle
+            document.getElementById('feature-request-list-body').addEventListener('click', async (e) => {
+                const btn = e.target;
+                const reqId = btn.dataset.id;
+                if (!reqId || !btn.classList.contains('mark-complete-btn')) return;
+                if (confirm(`Mark this feature request as complete?`)) {
+                    try {
+                        await updateDoc(doc(db, "feature_requests", reqId), { status: 'completed' });
+
+                        // Optimistic UI Update
+                        const row = btn.closest('tr');
+                        row.cells[4].innerHTML = `<span style="color:var(--accent-green);">Completed</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`;
+                    } catch (err) {
+                        console.error("Error updating feature request status:", err.code, err);
+                    }
+                }
+            });
+
+            // Bookings Action Buttons
+            document.getElementById('bookings-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn) return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                try {
+                    const row = btn.closest('tr');
+                    const statusCell = row.cells[4];
+                    const actionCell = row.cells[5];
+
+                    if (action === 'cancel' && confirm("Cancel this booking?")) {
+                        await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
+                        statusCell.innerHTML = `<span class="status-badge cancelled">cancelled</span>`;
+                        actionCell.innerHTML = ``;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('upcoming-bookings');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    } else if (action === 'complete') {
+                        await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                        statusCell.innerHTML = `<span class="status-badge active">completed</span>`;
+                        actionCell.innerHTML = ``;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('upcoming-bookings');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    }
+                } catch (err) {
+                    console.error("Error updating booking status:", err.code, err);
+                }
+            });
+
+            // Reviews Action Buttons
+            document.getElementById('reviews-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'review') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                const row = btn.closest('tr');
+                const statusCell = row.cells[4];
+                const actionCell = row.cells[5];
+
+                try {
+                    if (action === 'approve') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'approved' });
+                        statusCell.innerHTML = `<span class="status-badge active">Approved</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-action action-btn" data-type="review" data-action="unapprove" data-id="${id}">Unapprove</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'unapprove') {
+                        await updateDoc(doc(db, "reviews", id), { status: 'pending' });
+                        statusCell.innerHTML = `<span class="status-badge pending">Pending</span>`;
+                        actionCell.innerHTML = `<button class="btn-sm btn-unban action-btn" data-type="review" data-action="approve" data-id="${id}">Approve</button> <button class="btn-sm btn-danger action-btn" data-type="review" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Are you sure you want to delete this review?")) {
+                        await deleteDoc(doc(db, "reviews", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error managing review:", err);
+                    if (err.code) {
+                        console.error("Error code:", err.code);
+                    }
+                }
+            });
+
+            // Inquiries Action Buttons
+            document.getElementById('inquiries-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'inquiry') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                try {
+                    const row = btn.closest('tr');
+
+                    if (action === 'resolve') {
+                        await updateDoc(doc(db, "inquiries", id), { status: 'resolved' });
+                        row.cells[4].innerHTML = `<span class="status-badge active">resolved</span>`;
+                        row.cells[5].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${id}">Delete</button>`;
+                    } else if (action === 'delete' && confirm("Delete this inquiry?")) {
+                        await deleteDoc(doc(db, "inquiries", id));
+                        row.remove();
+                    }
+                } catch (err) {
+                    console.error("Error modifying inquiry:", err);
+                }
+            });
+
+            // Quotes Action Buttons
+            document.getElementById('quotes-list-body').addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if(!btn || btn.dataset.type !== 'quote') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                try {
+                    const row = btn.closest('tr');
+
+                    if (action === 'responded') {
+                        await updateDoc(doc(db, "quotes", id), { status: 'responded' });
+                        row.cells[2].innerHTML = `<span class="status-badge active">responded</span>`;
+                        row.cells[3].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${id}">Delete</button>`;
+
+                        // Update metrics optimistically
+                        const el = document.getElementById('pending-quotes');
+                        el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                    } else if (action === 'delete' && confirm("Delete this quote request?")) {
+                        await deleteDoc(doc(db, "quotes", id));
+                        row.remove();
+
+                        // Check if it was pending to update metrics
+                        if (row.cells[2].textContent.trim().toLowerCase() === 'pending') {
+                            const el = document.getElementById('pending-quotes');
+                            el.textContent = Math.max(0, parseInt(el.textContent) - 1);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error modifying quote:", err.code, err);
+                }
+            });
+
+            // Navigation
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileCloseBtn = document.getElementById('mobile-close-btn');
+            const sidebar = document.getElementById('sidebar');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.add('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'true');
+                mobileCloseBtn.setAttribute('aria-expanded', 'true');
+            });
+
+            mobileCloseBtn.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                mobileCloseBtn.setAttribute('aria-expanded', 'false');
+            });
+
+            document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    document.querySelector(e.currentTarget.getAttribute('href')).classList.add('active');
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        mobileCloseBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+
+            // Wheel Spin Logic
+            document.getElementById('spin-wheel-btn').addEventListener('click', () => {
+                if (globalDonors.length === 0) {
+                    alert("No donors to spin for!"); return;
+                }
+                
+                const wheel = document.getElementById('random-wheel');
+                document.getElementById('winner-display').style.display = 'none';
+                
+                // Random spins (at least 5 full rotations + random angle)
+                const randomDeg = Math.floor(Math.random() * 360);
+                const totalRotation = (360 * 5) + randomDeg;
+                
+                wheel.style.transform = `rotate(${totalRotation}deg)`;
+                
+                // Select winner weighted by amount
+                setTimeout(() => {
+                    const totalEntries = globalDonors.reduce((sum, d) => sum + d.amount, 0);
+                    let rand = Math.random() * totalEntries;
+                    let winner = null;
+                    
+                    for (let d of globalDonors) {
+                        if (rand < d.amount) { winner = d; break; }
+                        rand -= d.amount;
+                    }
+                    
+                    if (winner) {
+                        currentWinnerId = winner.uid;
+                        document.getElementById('winner-name').textContent = winner.email;
+                        document.getElementById('winner-display').style.display = 'block';
+                    }
+                }, 4000); // Matches CSS transition duration
+            });
+
+            // Credit Reward
+            document.getElementById('credit-reward-btn').addEventListener('click', async () => {
+                if (!currentWinnerId) return;
+                const reward = document.getElementById('reward-select').value;
+                const btn = document.getElementById('credit-reward-btn');
+                
+                btn.disabled = true;
+                btn.textContent = "Crediting...";
+                
+                try {
+                    const userRef = doc(db, "users", currentWinnerId);
+                    await updateDoc(userRef, {
+                        rewards: arrayUnion(reward)
+                    });
+                    
+                    alert(`Successfully credited "${reward}" to user!`);
+                    document.getElementById('winner-display').style.display = 'none';
+                } catch (e) {
+                    console.error(e);
+                    alert("Error crediting reward.");
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Credit Reward to Account";
+                }
+            });
+
+            document.getElementById('graph-selector').addEventListener('change', (e) => { renderChart(e.target.value); });
+            document.getElementById('sign-out').addEventListener('click', () => { signOut(auth); });
+
+            document.getElementById('add-faq-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const msgEl = document.getElementById('faq-msg');
+                const question = document.getElementById('faq-question').value.trim();
+                const answer = document.getElementById('faq-answer').value.trim();
+
+                if(!question || !answer) return;
+
+                btn.disabled = true;
+                btn.textContent = "Adding...";
+                try {
+                    await addDoc(collection(db, "faqs"), {
+                        question: question,
+                        answer: answer,
+                        createdAt: serverTimestamp()
+                    });
+                    msgEl.style.color = "#16A34A";
+                    msgEl.textContent = "FAQ added successfully!";
+                    e.target.reset();
+                    setTimeout(() => location.reload(), 1000);
+                } catch(error) {
+                    console.error("Error adding FAQ", error);
+                    msgEl.style.color = "#ef4444";
+                    msgEl.textContent = "Error adding FAQ.";
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Add FAQ";
+                }
+            });
+        }
+
+        window.deleteFaq = async (id) => {
+            if(confirm("Are you sure you want to delete this FAQ?")) {
+                try {
+                    await deleteDoc(doc(db, "faqs", id));
+                    alert("FAQ deleted.");
+                    location.reload();
+                } catch(e) {
+                    console.error("Error deleting FAQ", e);
+                    alert("Failed to delete FAQ.");
+                }
+            }
+        };
+    </script>
