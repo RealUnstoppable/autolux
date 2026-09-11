@@ -1,7 +1,6 @@
 import { db } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-
 export function escapeHTML(str) {
     if (str == null) return '';
     return String(str)
@@ -18,46 +17,11 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-// Core function to handle submitting to Firestore
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) throw new Error("User must be authenticated to submit a request.");
-    const docRef = await addDoc(collection(db, "bookings"), {
-        userId: userId,
-        ...requestData,
-        createdAt: serverTimestamp(),
-        status: 'pending'
-    });
-    return docRef;
-}
-export async function submitDetailingRequestCore(userId, requestData) {
-    return await addDoc(collection(db, "bookings"), {
-        ...requestData,
-        ...(userId && { userId }),
-        createdAt: serverTimestamp(),
-        status: 'pending'
-    });
-}
-
-export function safeSetSessionStorage(key, value) {
-    try {
-        sessionStorage.setItem(key, value);
-    } catch (e) {
-        console.error('Storage quota exceeded');
-    }
-}
-
 export async function submitDetailingRequest(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-
-/**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
- */
-export async function submitDetailingRequest(userId, requestData) {
+    
     try {
         const docRef = await addDoc(collection(db, "bookings"), {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
@@ -66,12 +30,10 @@ export async function submitDetailingRequest(userId, requestData) {
             createdAt: serverTimestamp(),
             status: 'pending'
         });
-        return { success: true, docId: docId };
+        return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) console.error(error.code);
-        console.error("Full error:", error);
-
+        if (error.code) console.error("Firebase error code:", error.code);
         return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }

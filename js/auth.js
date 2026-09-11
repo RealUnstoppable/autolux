@@ -41,9 +41,7 @@ try {
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
-    else console.error("Firebase Initialization Error", error.message);
-    console.error(error);
-    console.error("Firebase Initialization Error:", error.message);
+    console.error("Full error:", error);
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
@@ -139,8 +137,15 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
         if (!user) return 'sign in beta.html';
         return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
-    const pathname = currentPathname || window.location.pathname;
-    const decodedPath = decodeURIComponent(pathname);
+}
+
+export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
+    if (!userData && !currentPathname) {
+        // Fetch the user data if missing, instead of infinitely recursing
+        userData = await ensureUserDocument(user);
+        currentPathname = window.location.pathname;
+    }
+    const decodedPath = decodeURIComponent(currentPathname);
 
     if (!user) {
         const publicPaths = ['/index.html', '/', '/sign in beta.html', '/donate.html'];
