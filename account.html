@@ -311,9 +311,9 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');

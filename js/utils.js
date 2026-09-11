@@ -22,51 +22,28 @@ export function escapeHTML(str) {
 export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) throw new Error("User must be authenticated to submit a request.");
     const docRef = await addDoc(collection(db, "bookings"), {
-        userId: userId,
+        // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
         ...requestData,
+        userId: userId,
         createdAt: serverTimestamp(),
         status: 'pending'
     });
     return docRef;
 }
-export async function submitDetailingRequestCore(userId, requestData) {
-    return await addDoc(collection(db, "bookings"), {
-        ...requestData,
-        ...(userId && { userId }),
-        createdAt: serverTimestamp(),
-        status: 'pending'
-    });
-}
-
-export function safeSetSessionStorage(key, value) {
-    try {
-        sessionStorage.setItem(key, value);
-    } catch (e) {
-        console.error('Storage quota exceeded');
-    }
-}
-
-export async function submitDetailingRequest(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
 
 /**
- * Submits a detailing request to the bookings collection.
+ * Submits a detailing request to the bookings collection and returns a structured response.
  * @param {string} userId - The user's Firebase Auth UID.
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitDetailingRequest(userId, requestData) {
+    if (!userId) {
+        return { success: false, error: "User must be authenticated to submit a request." };
+    }
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
-            ...requestData,
-            userId: userId,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        });
-        return { success: true, docId: docId };
+        const docRef = await submitDetailingRequestCore(userId, requestData);
+        return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
         if (error.code) console.error(error.code);

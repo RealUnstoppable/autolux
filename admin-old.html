@@ -211,9 +211,9 @@
     </div>
 
    <script type="module">
-        import { auth, db } from '/js/auth.js';
-        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, getDoc, collection, getDocs, updateDoc, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db } from './js/auth.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { doc, getDoc, collection, getDocs, updateDoc, query, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // Admin Auth Guard
         onAuthStateChanged(auth, async (user) => {

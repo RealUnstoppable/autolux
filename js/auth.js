@@ -204,10 +204,7 @@ export async function submitDetailingRequest(requestData) {
         return null;
     }
     try {
-        const docId = await submitDetailingRequestCore({
-            ...requestData,
-            userId: currentUser.uid // Required by security rules
-        });
+        const docId = await submitDetailingRequestCore(currentUser.uid, requestData);
         console.log("Detailing request submitted successfully with ID:", docId);
         return docId;
     } catch (error) {

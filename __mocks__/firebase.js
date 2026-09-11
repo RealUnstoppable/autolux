@@ -13,5 +13,12 @@ export const doc = jest.fn();
 export const getDoc = jest.fn();
 export const setDoc = jest.fn();
 export const collection = jest.fn();
-export const addDoc = jest.fn();
+export const addDoc = jest.fn(async (col, data) => {
+    if (data.userId === 'error-user') {
+        const error = new Error('Permission denied');
+        error.code = 'permission-denied';
+        throw error;
+    }
+    return { id: 'mock-doc-id' };
+});
 export const serverTimestamp = jest.fn();
