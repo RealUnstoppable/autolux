@@ -40,7 +40,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase connection error. Check App Check, CORS, or config.");
+    console.error("Firebase Initialization Error:", error.message);
     if (error.code) console.error("Error code:", error.code);
     console.error("Full error:", error);
 }
@@ -178,6 +178,12 @@ export async function getUserRedirectPathAsync(user, userData = null, currentPat
         return null;
     }
 }
+
+export async function getUserRedirectPathAsyncInternal(user) {
+    const userData = await ensureUserDocument(user);
+    return getUserRedirectPath(user, userData, window.location.pathname);
+}
+
 
 /**
  * A safe wrapper for window.location.replace that checks the current pathname.
