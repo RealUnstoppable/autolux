@@ -17,7 +17,7 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-export async function submitDetailingRequest(userId, requestData) {
+export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
@@ -38,6 +38,9 @@ export async function submitDetailingRequest(userId, requestData) {
     }
 }
 
+export async function submitDetailingRequest(userId, requestData) {
+    return await submitDetailingRequestCore(userId, requestData);
+}
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key

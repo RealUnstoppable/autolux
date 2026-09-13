@@ -198,6 +198,7 @@ export function safeRedirect(targetUrl) {
  * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
  */
 
+
 export async function submitDetailingRequest(requestData) {
     if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
@@ -209,12 +210,18 @@ export async function submitDetailingRequest(requestData) {
         return null;
     }
     try {
-        const docId = await submitDetailingRequestCore(currentUser.uid, requestData);
-        console.log("Detailing request submitted successfully with ID:", docId);
-        return docId;
+        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
+        if (result.success) {
+            console.log("Detailing request submitted successfully with ID:", result.docId);
+            return result.docId;
+        } else {
+            console.error("Error submitting detailing request:", result.error);
+            if (result.code) console.error("Error code:", result.code);
+            return null;
+        }
     } catch (error) {
-         console.error("Error submitting detailing request:", error.message);
-         if (error.code) console.error("Error code:", error.code);
+        console.error("Error submitting detailing request:", error);
+        if (error.code) console.error("Error code:", error.code);
         return null;
     }
 }
