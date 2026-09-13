@@ -210,7 +210,7 @@ export function safeRedirect(targetUrl) {
 export async function submitDetailingRequest(requestData) {
     if (!auth) {
         console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return null;
+        return { success: false, error: { message: "Firebase is not fully initialized." } };
     }
     const currentUser = auth.currentUser;
     if (!currentUser) {
