@@ -405,24 +405,24 @@
 
             <form id="stripe-form">
                 <div class="form-group">
-                    <label for="donor-name">Full Name</label>
+                    <label for="donor-name">Full Name <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="donor-name" placeholder="John Doe" required>
                 </div>
                 <div class="form-group">
-                    <label for="donor-email">Email Address</label>
+                    <label for="donor-email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="email" id="donor-email" placeholder="you@example.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="card-number">Card Details (Demo Mode)</label>
+                    <label for="card-number">Card Details (Demo Mode) <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required>
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label for="card-expiry">MM/YY</label>
+                        <label for="card-expiry">MM/YY <span aria-hidden="true" style="color: var(--error);">*</span></label>
                         <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required>
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="card-cvc">CVC</label>
+                        <label for="card-cvc">CVC <span aria-hidden="true" style="color: var(--error);">*</span></label>
                         <input type="text" id="card-cvc" placeholder="123" value="123" required>
                     </div>
                 </div>
