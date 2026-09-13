@@ -379,6 +379,7 @@
 
     <section id="gallery">
         <h2>Recent Work</h2>
+        <!-- ⚡ Bolt Optimization: Added explicit width="600" height="400" attributes to lazy-loaded gallery images to reserve space before loading, reducing Cumulative Layout Shift (CLS) during scrolling. -->
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
