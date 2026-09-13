@@ -416,6 +416,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             vehicles.forEach((v, index) => {
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
@@ -425,8 +426,9 @@
                     <span>${escapeHTML(v)}</span>
                     <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
                 `;
-                list.appendChild(el);
+                fragment.appendChild(el);
             });
+            list.appendChild(fragment);
         }
 
         document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
