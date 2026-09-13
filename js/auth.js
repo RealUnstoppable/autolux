@@ -7,6 +7,8 @@ export let app, auth, db;
 
 try {
     const appName = "autolux";
+    const hostname = window.location.hostname;
+    const isAutolux = hostname.includes('autolux');
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -136,7 +138,7 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
     // Overloading support for simpler form: getUserRedirectPath(user)
     if (!userData && !currentPathname) {
         if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
+        return 'account.html';
     }
     return getUserRedirectPathAsync(user, userData, currentPathname);
 }
