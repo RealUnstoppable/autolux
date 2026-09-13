@@ -4,6 +4,12 @@
 ## 2024-05-20 - Custom Div Forms
 **Learning:** The codebase occasionally uses custom `div` containers with inline `onclick` buttons for forms (like newsletter signups) instead of semantic `<form>` elements, breaking keyboard accessibility (native "Enter" submission).
 **Action:** When working with text input and submit flows, always wrap the elements in a semantic `<form>` to inherit native "Enter" key submission behaviors.
-## 2024-05-24 - Missing aria-controls on Toggle Components
-**Learning:** The application's toggle components (like the mobile menu and FAQs) use `aria-expanded` but consistently omit `aria-controls`, breaking the programmatic relationship between the toggle button and its target content for screen readers.
-**Action:** When implementing or updating toggle widgets (menus, accordions, FAQs), always pair `aria-expanded` with `aria-controls="[id of target]"` on the trigger element to properly associate it with the collapsible container.
+## 2025-02-12 - Semantic HTML vs ARIA Roles for Links
+**Learning:** Adding `role="button"` and custom `onkeydown` handlers (like Enter/Space detection) to native `<a>` tags with `href` attributes is an anti-pattern. Screen readers and keyboards already natively understand and support `<a>` elements for navigation.
+**Action:** Use native HTML semantics whenever possible. Reserve `role="button"` and custom keyboard handlers for non-interactive elements (like `div` or `span`) that act as custom controls when semantic `<button>` or `<a>` elements truly cannot be used.
+## 2024-05-24 - Status Messages Missing Aria-Live
+**Learning:** Many status message containers across the application are dynamically updated without `aria-live`, preventing screen readers from announcing the changes.
+**Action:** Always include `aria-live="polite"` or `aria-live="assertive"` on containers that update dynamically with status messages or errors.
+## 2024-11-20 - Adding aria-live to status messages
+**Learning:** Status messages that update dynamically without page reloads (like form validation errors or login success/failure messages) are visually apparent but often missed by assistive technologies.
+**Action:** When creating or modifying dynamic message containers (e.g. `id="error-msg"`), always include `aria-live="polite"` (or `"assertive"` if critical) so screen readers proactively announce the content updates to users.
