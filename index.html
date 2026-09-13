@@ -613,8 +613,11 @@
                     }
                 });
 
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+
+            // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
+            container.appendChild(fragment);
         }
 
         // Load FAQs
