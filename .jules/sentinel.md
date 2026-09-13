@@ -18,7 +18,21 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
-## 2026-05-25 - [Information Leakage via error.message]
-**Vulnerability:** Raw error objects (specifically `error.message`) were being returned directly in client responses, alerted to users, or logged insecurely across multiple files (`admin-old.html`, `index.html`, `sign in beta.html`, `js/api.js`, `js/auth.js`, `js/utils.js`). This leaks sensitive internal details to potential attackers.
-**Learning:** Relying on raw backend/Firebase error messages directly in the UI or client-side responses fails the 'fail securely' principle and can aid in user enumeration or system profiling.
-**Prevention:** Always catch and log detailed errors (e.g., `error.code`) on the server/client for debugging, but replace the user-facing message with a generic, secure fallback message (e.g., 'An error occurred. Please try again.').
+## 2024-06-01 - [Stored XSS via innerHTML rendering of document IDs]
+**Vulnerability:** Found a Stored XSS vulnerability in `admin.html`. The application was rendering document IDs (e.g., `userId`, `id` for reviews, inquiries, quotes) directly into the DOM using `innerHTML` without sanitization within action buttons.
+**Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even metadata like document IDs.
+**Prevention:** Always use the `escapeHTML` utility function to sanitize variables before interpolating them into `innerHTML` strings.
+## 2026-08-15 - Hardcoded Firebase Configuration
+
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-10-15 - [Mass Assignment in API module]
+**Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
+**Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
+**Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
