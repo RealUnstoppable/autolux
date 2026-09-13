@@ -127,6 +127,11 @@ export function waitForAuthState() {
     });
 }
 
+export async function getUserRedirectPathAsync(user) {
+  if (!user) return 'sign in beta.html';
+  return 'account.html';
+}
+
 /**
  * Determines the correct redirect path for a user based on their role and current location.
  * @param {Object} user - The Firebase auth user object.
