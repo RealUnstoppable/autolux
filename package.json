@@ -1,5 +1,13 @@
 {
+  "name": "autolux-tests",
+  "type": "module",
+  "devDependencies": {
+    "jest": "^29.0.0"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
   "dependencies": {
-    "acorn": "^8.17.0"
+    "playwright": "^1.63.0"
   }
 }
