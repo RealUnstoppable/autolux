@@ -3,6 +3,12 @@ import { submitDetailingRequestCore } from './utils.js';
 import { db, auth } from './auth.js';
 
 export async function submitDetailingRequest(bookingData) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        console.error("Cannot submit detailing request: User is not authenticated.");
+        return { success: false, error: { message: "User must be authenticated" }, message: "An error occurred while submitting your request. Please try again later." };
+    }
+
     try {
         const userId = auth.currentUser ? auth.currentUser.uid : null;
         const result = await submitDetailingRequestCore(userId, bookingData);
@@ -15,6 +21,6 @@ export async function submitDetailingRequest(bookingData) {
         }
     } catch (error) {
         console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error };
+        return { success: false, error: error, message: "An error occurred while submitting your request. Please try again later." };
     }
 }
