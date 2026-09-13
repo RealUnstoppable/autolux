@@ -40,3 +40,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** The API utility function `submitDetailingRequest` returned the raw caught `error` object (`return { success: false, error: error };`) to the client on failure.
 **Learning:** Returning raw error objects violates the "fail securely" principle. It can inadvertently expose internal stack traces, database schema details, or sensitive error codes directly to the client/UI.
 **Prevention:** Always extract and return safe properties (like `error.message`) or generic fallback strings instead of the entire raw error object when passing errors across boundaries.
+## 2026-06-19 - [Information Exposure via Error Return]
+**Vulnerability:** Raw error objects caught in `catch` blocks within API utilities (like `submitDetailingRequest`) were being returned directly to the calling client (`return { success: false, error: error }`).
+**Learning:** Returning raw exception objects breaks the "fail securely" principle because it can leak sensitive internal details, Firebase error codes, or stack traces directly to the frontend or user.
+**Prevention:** Always catch exceptions and return a generalized, secure error message (e.g., `'An error occurred while processing the request'`) rather than the raw error object.
