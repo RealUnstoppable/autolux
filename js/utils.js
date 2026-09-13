@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { submitDetailingRequestCore } from './auth.js';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -17,23 +17,43 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-
-
-export async function submitDetailingRequest(userId, requestData) {
+export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-
+    
     try {
-        const id = await submitDetailingRequestCore({userId: userId, ...requestData});
-        return { success: true, docId: id };
+        const docRef = await addDoc(collection(db, "bookings"), {
+            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
+            ...requestData,
+            userId: userId,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+        });
+        return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
-        if (error.code) {
-            console.error("Firebase error code:", error.code);
-        }
-        console.error("Full error:", error);
+        if (error.code) console.error("Firebase error code:", error.code);
+        return { success: false, error: "Failed to submit request.", code: error.code };
+    }
+}
 
-        return { success: false, error: error.message, code: error.code, message: "An error occurred while submitting your request. Please try again later." };
+export async function submitDetailingRequest(userId, requestData) {
+    return await submitDetailingRequestCore(userId, requestData);
+}
+/**
+ * Safely sets an item in sessionStorage, catching QuotaExceededError.
+ * @param {string} key
+ * @param {string} value
+ */
+export function safeSetSessionStorage(key, value) {
+    try {
+        sessionStorage.setItem(key, value);
+    } catch (e) {
+        if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+            console.warn('Session storage quota exceeded. Unable to cache data for key:', key);
+        } else {
+            console.error('Error setting session storage for key:', key, e);
+        }
     }
 }

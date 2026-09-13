@@ -1,8 +1,6 @@
-import { db } from './auth.js';
-
-import { submitDetailingRequestCore } from './auth.js';
-
-import { auth } from './auth.js';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { submitDetailingRequestCore } from './utils.js';
+import { db, auth } from './auth.js';
 
 export async function submitDetailingRequest(bookingData) {
     const currentUser = auth.currentUser;
@@ -12,8 +10,15 @@ export async function submitDetailingRequest(bookingData) {
     }
 
     try {
-        const id = await submitDetailingRequestCore({ ...bookingData, userId: currentUser.uid });
-        return { success: true, id: id };
+        const userId = auth.currentUser ? auth.currentUser.uid : null;
+        const result = await submitDetailingRequestCore(userId, bookingData);
+        if (result.success) {
+            console.log("Document written with ID: ", result.docId);
+            return { success: true, id: result.docId };
+        } else {
+            console.error("Error adding document: ", result.code, result.error);
+            return { success: false, error: result.error };
+        }
     } catch (error) {
         console.error("Error adding document: ", error.code, error.message);
         return { success: false, error: error, message: "An error occurred while submitting your request. Please try again later." };
