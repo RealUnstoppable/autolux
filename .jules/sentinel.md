@@ -18,12 +18,21 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
-## 2024-06-29 - Firestore Rule Ownership Checks and Public Submissions
-**Vulnerability:** In an attempt to allow unauthenticated users to create bookings while simultaneously enforcing ownership checks for authenticated users, the `allow create` rule was modified to `if !isAuthenticated() || (isAuthenticated() && request.resource.data.userId == request.auth.uid) || true;`. The trailing `|| true` nullified all security, and `!isAuthenticated()` is too permissive without payload validation.
-**Learning:** You cannot just append `|| true` or `!isAuthenticated()` to bypass strict ownership rules; it creates an open door.
-**Prevention:** If a collection allows both public creation and authenticated creation with ownership, design the rule to strictly validate the payload for guests (e.g., ensuring `userId` is absent or set to a specific value) and enforce the `request.auth.uid` match strictly for authenticated users.
+## 2024-06-01 - [Stored XSS via innerHTML rendering of document IDs]
+**Vulnerability:** Found a Stored XSS vulnerability in `admin.html`. The application was rendering document IDs (e.g., `userId`, `id` for reviews, inquiries, quotes) directly into the DOM using `innerHTML` without sanitization within action buttons.
+**Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even metadata like document IDs.
+**Prevention:** Always use the `escapeHTML` utility function to sanitize variables before interpolating them into `innerHTML` strings.
+## 2026-08-15 - Hardcoded Firebase Configuration
 
-## 2024-06-29 - Preserving Module Exports
-**Vulnerability:** Truncating or re-adding duplicate `export` statements in vanilla JS modules causes `SyntaxError: Duplicate export`.
-**Learning:** Removing or duplicating `export` statements breaks module functionality, as the browser cannot parse the file.
-**Prevention:** When restoring or appending trailing `export` statements to a vanilla JavaScript module (e.g., `export { app, auth, db };`), carefully check if the export already exists to prevent duplication.
+**Vulnerability:**
+The application had hardcoded Firebase configuration values in `js/auth.js` instead of loading them exclusively from environment variables or failing securely when they were missing.
+
+**Learning:**
+Hardcoded configuration values can unintentionally establish connections to real projects or leak environment details (such as project IDs, API keys, and bucket names) in inappropriate contexts, potentially exposing the application to abuse.
+
+**Prevention:**
+Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-10-15 - [Mass Assignment in API module]
+**Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
+**Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
+**Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
