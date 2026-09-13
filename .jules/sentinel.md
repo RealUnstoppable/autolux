@@ -36,3 +36,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
 **Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
 **Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
+## 2027-06-27 - [Information Disclosure via Raw Error Objects]
+**Vulnerability:** The API utility function `submitDetailingRequest` returned the raw caught `error` object (`return { success: false, error: error };`) to the client on failure.
+**Learning:** Returning raw error objects violates the "fail securely" principle. It can inadvertently expose internal stack traces, database schema details, or sensitive error codes directly to the client/UI.
+**Prevention:** Always extract and return safe properties (like `error.message`) or generic fallback strings instead of the entire raw error object when passing errors across boundaries.
