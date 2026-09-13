@@ -1,8 +1,6 @@
-import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { submitDetailingRequestCore } from './utils.js';
-import { auth } from './auth.js';
+import { db, auth } from './auth.js';
 
 export async function submitDetailingRequest(bookingData) {
     try {
