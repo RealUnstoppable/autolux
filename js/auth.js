@@ -217,7 +217,7 @@ export async function submitDetailingRequest(requestData) {
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
-        return null;
+        return { success: false, error: "You must be signed in to submit a request." };
     }
     try {
         const result = await submitDetailingRequestCore(currentUser.uid, requestData);
