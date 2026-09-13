@@ -572,6 +572,7 @@
                 const answer = escapeHTML(data.answer || "");
                 const faqId = `faq-answer-${index}`;
 
+                const faqId = 'faq-answer-' + Math.random().toString(36).substring(2, 9);
                 const el = document.createElement('div');
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
