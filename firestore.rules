@@ -87,8 +87,8 @@ service cloud.firestore {
 
     // Quotes collection
     match /quotes/{quoteId} {
-      allow create: if true;
       allow read, write: if isAdmin();
+      allow create: if true;
     }
 
     // Feature Requests collection
