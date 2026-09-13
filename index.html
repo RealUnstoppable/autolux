@@ -622,10 +622,14 @@
             const container = document.getElementById('faq-container');
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
-            const cachedFaqs = sessionStorage.getItem('autolux_faqs');
-            if (cachedFaqs) {
-                renderFaqs(JSON.parse(cachedFaqs), container);
-                return;
+            try {
+                const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+                if (cachedFaqs) {
+                    renderFaqs(JSON.parse(cachedFaqs), container);
+                    return;
+                }
+            } catch(e) {
+                console.warn("sessionStorage access error:", e);
             }
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
