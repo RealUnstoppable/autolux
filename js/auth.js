@@ -49,6 +49,7 @@ try {
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
+
 // Debounce utility function
 export function debounce(func, wait) {
     let timeout;
