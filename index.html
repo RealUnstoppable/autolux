@@ -6,6 +6,8 @@
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -299,7 +301,7 @@
 <body>
 
     <nav>
-        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
@@ -379,7 +381,7 @@
         <h2>Recent Work</h2>
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
@@ -410,7 +412,7 @@
                 </select>
             </div>
             <div style="margin-bottom: 15px;">
-                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                 <textarea id="review-comment" required rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
@@ -460,15 +462,15 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
@@ -490,10 +492,10 @@
     </footer>
 
     <script type="module">
-        import { safeSetSessionStorage } from './js/utils.js';
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
-        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML, safeSetSessionStorage } from '/js/utils.js';
+        import { safeSetSessionStorage } from '../js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
+        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { escapeHTML, safeSetSessionStorage } from './js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -644,7 +646,7 @@
                 renderFaqs(faqs, container);
             } catch (e) {
                 console.error("Error loading FAQs", e);
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--error);">Unable to load FAQs.</div>';
             }
         }
 
@@ -799,19 +801,19 @@
             const comment = document.getElementById('review-comment').value.trim();
 
             if (!currentUser) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "You must be signed in to leave a review.";
                 return;
             }
 
             if (!comment) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please enter a comment.";
                 return;
             }
 
             if (comment.length > 1000) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Comment is too long (max 1000 characters).";
                 return;
             }
@@ -835,7 +837,7 @@
                 document.getElementById('review-comment').value = '';
             } catch (error) {
                 console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
                 btn.disabled = false;
@@ -850,7 +852,7 @@
             const msg = document.getElementById('news-msg');
             const btn = document.getElementById('news-submit-btn');
             if(!email) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Please enter an email address.";
                 return;
             }
@@ -858,7 +860,7 @@
             // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Please enter a valid email address.";
                 return;
             }
@@ -877,7 +879,7 @@
                 document.getElementById('news-email').value = '';
             } catch(error) {
                 console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Error subscribing. Please try again.";
             } finally {
                 btn.disabled = false;
@@ -895,7 +897,7 @@
             const message = document.getElementById('inq-message').value.trim();
 
             if (!name || !email || !message) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please fill out all fields.";
                 return;
             }
@@ -918,7 +920,7 @@
                 document.getElementById('inquiry-form').reset();
             } catch (error) {
                 console.error("Error submitting inquiry:", error.message, error.code);
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Error sending message. Please try again later.";
             } finally {
                 btn.disabled = false;

@@ -235,7 +235,7 @@
 
             <form id="booking-form" style="display: none;">
                 <div class="input-group">
-                    <label for="package">Select Service Package <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="package">Select Service Package <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <select id="package" required>
                         <option value="">-- Choose a Package --</option>
                         <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
@@ -247,12 +247,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="vehicle" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="datetime-local" id="date" required>
                 </div>
 
@@ -273,8 +273,8 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise } from '/js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise } from './js/auth.js';
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');

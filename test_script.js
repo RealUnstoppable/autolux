@@ -1,6 +1,6 @@
    <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { escapeHTML } from './js/utils.js';
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
@@ -709,7 +709,7 @@
                     setTimeout(() => location.reload(), 1000);
                 } catch(error) {
                     console.error("Error adding FAQ", error);
-                    msgEl.style.color = "#ef4444";
+                    msgEl.style.color = "var(--error)";
                     msgEl.textContent = "Error adding FAQ.";
                 } finally {
                     btn.disabled = false;
