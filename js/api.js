@@ -21,6 +21,6 @@ export async function submitDetailingRequest(bookingData) {
         }
     } catch (error) {
         console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error, message: "An error occurred while submitting your request. Please try again later." };
+        return { success: false, error: error.message, code: error.code, message: "An error occurred while submitting your request. Please try again later." };
     }
 }
