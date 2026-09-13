@@ -567,9 +567,10 @@
                 return;
             }
 
-            faqs.forEach(data => {
+            faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
+                const faqId = `faq-answer-${index}`;
 
                 const el = document.createElement('div');
                 el.className = 'faq-item';
