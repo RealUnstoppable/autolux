@@ -11,6 +11,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
+    function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
