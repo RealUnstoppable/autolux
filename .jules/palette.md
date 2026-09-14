@@ -20,3 +20,6 @@
 ## 2024-06-26 - Add aria-live to dynamic message containers
 **Learning:** When implementing dynamic status updates or form submission feedback (like error or success messages) without page reloads, screen readers may fail to announce these changes unless explicitly configured.
 **Action:** Always add the `aria-live="polite"` attribute to message container elements (e.g. `<div id="msg"></div>`) to ensure screen readers dynamically announce updates without interrupting the user's current task.
+## 2026-05-26 - Accessible Character Counter Initialization
+**Learning:** Adding a character counter with `aria-live="polite"` causes severe screen reader spam on every keystroke. Also, simply attaching an `input` event listener is insufficient; the counter must be initialized on load to handle browser-restored or pre-filled text.
+**Action:** When adding character counters, do NOT use `aria-live`. Instead, use `aria-describedby` on the textarea pointing to the counter's ID. Ensure the update function is explicitly called once during initialization before binding it to the `input` event.
