@@ -537,7 +537,7 @@
                             currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                         }
                     } catch (error) {
-                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+                        console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
                     }
 
                     const redirectPath = await getUserRedirectPath(user);
