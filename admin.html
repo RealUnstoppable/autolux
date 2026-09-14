@@ -379,7 +379,7 @@
                     safeRedirect('account.html');
                 }
             } catch (error) {
-                console.error("Admin init error:", error);
+                console.error("Admin init error:", { code: error.code, message: error.message, details: error });
                 safeRedirect('sign in beta.html');
             }
         }
@@ -825,7 +825,7 @@
                             actionCell.innerHTML = DOMPurify.sanitize(`<button class="btn-sm btn-ban" data-id="${escapeHTML(userId)}">Ban</button>`);
                         }
                     } catch (err) {
-                        console.error("Error updating user ban status:", err.code, err);
+                        console.error("Error updating user ban status:", { code: err.code, message: err.message, details: err });
                     }
                 }
             });
@@ -844,7 +844,7 @@
                         row.cells[4].innerHTML = DOMPurify.sanitize(`<span style="color:var(--accent-green);">Completed</span>`);
                         row.cells[5].innerHTML = DOMPurify.sanitize(`<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`);
                     } catch (err) {
-                        console.error("Error updating feature request status:", err.code, err);
+                        console.error("Error updating feature request status:", { code: err.code, message: err.message, details: err });
                     }
                 }
             });
@@ -878,7 +878,7 @@
                         el.textContent = Math.max(0, parseInt(el.textContent) - 1);
                     }
                 } catch (err) {
-                    console.error("Error updating booking status:", err.code, err);
+                    console.error("Error updating booking status:", { code: err.code, message: err.message, details: err });
                 }
             });
 
@@ -906,10 +906,7 @@
                         row.remove();
                     }
                 } catch (err) {
-                    console.error("Error managing review:", err);
-                    if (err.code) {
-                        console.error("Error code:", err.code);
-                    }
+                    console.error("Error managing review:", { code: err.code, message: err.message, details: err });
                 }
             });
 
@@ -931,7 +928,7 @@
                         row.remove();
                     }
                 } catch (err) {
-                    console.error("Error modifying inquiry:", err);
+                    console.error("Error modifying inquiry:", { code: err.code, message: err.message, details: err });
                 }
             });
 
@@ -963,7 +960,7 @@
                         }
                     }
                 } catch (err) {
-                    console.error("Error modifying quote:", err.code, err);
+                    console.error("Error modifying quote:", { code: err.code, message: err.message, details: err });
                 }
             });
 
@@ -1050,8 +1047,8 @@
                     
                     alert(`Successfully credited "${reward}" to user!`);
                     document.getElementById('winner-display').style.display = 'none';
-                } catch (e) {
-                    console.error(e);
+                } catch (error) {
+                    console.error("Error crediting reward:", { code: error.code, message: error.message, details: error });
                     alert("Error crediting reward.");
                 } finally {
                     btn.disabled = false;
@@ -1115,8 +1112,8 @@
                     await deleteDoc(doc(db, "faqs", id));
                     alert("FAQ deleted.");
                     location.reload();
-                } catch(e) {
-                    console.error("Error deleting FAQ", e);
+                } catch (error) {
+                    console.error("Error deleting FAQ:", { code: error.code, message: error.message, details: error });
                     alert("Failed to delete FAQ.");
                 }
             }
