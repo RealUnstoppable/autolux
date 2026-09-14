@@ -146,11 +146,16 @@
             color: #FBBF24;
             background: rgba(251, 191, 36, 0.15);
         }
+        .appointment-card.pending { border-left-color: var(--gold); }
+        .appointment-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        .appointment-card p { margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; }
 
         .status-badge.approved, .status-badge.completed {
             color: #16A34A;
             background: rgba(22, 163, 74, 0.15);
         }
+        .badge.pending { background: rgba(212, 175, 55, 0.2); color: var(--gold); }
+        .badge.confirmed { background: rgba(22, 163, 74, 0.2); color: #16A34A; }
 
         .status-badge.cancelled {
             color: var(--error);
