@@ -188,11 +188,27 @@
         }
 
         #loading-overlay {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             padding: 20px;
             color: var(--gold);
             font-weight: 600;
+            text-align: center;
         }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #msg {
             margin-top: 20px;
@@ -231,7 +247,10 @@
             <h1>Schedule Your Service</h1>
             <p class="desc">Select your detailing package or membership plan below to request an appointment.</p>
 
-            <div id="loading-overlay">Checking authentication status...</div>
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+                Checking authentication status...
+            </div>
 
             <form id="booking-form" style="display: none;">
                 <div class="input-group">

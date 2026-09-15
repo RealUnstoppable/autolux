@@ -312,7 +312,7 @@
             <a href="#faq" aria-label="Go to FAQ section" onclick="closeMenu()">FAQ</a>
             <a href="#contact" aria-label="Go to Contact section" onclick="closeMenu()">Contact</a>
             <a href="booking.html" aria-label="Book a detailing appointment">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account" onclick="sessionStorage.setItem('redirectAfterLogin', window.location.href);">Sign In</a>
         </div>
     </nav>
 
@@ -482,7 +482,7 @@
 
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required autocomplete="email">
             <button type="submit" id="news-submit-btn">Subscribe</button>
         </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
@@ -536,7 +536,7 @@
                             currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                         }
                     } catch (error) {
-                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+                        console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
                     }
 
                     const redirectPath = await getUserRedirectPath(user);
@@ -612,8 +612,11 @@
                     }
                 });
 
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+
+            // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
+            container.appendChild(fragment);
         }
 
         // Load FAQs
@@ -621,10 +624,14 @@
             const container = document.getElementById('faq-container');
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
-            const cachedFaqs = safeGetSessionStorage('autolux_faqs');
-            if (cachedFaqs) {
-                renderFaqs(JSON.parse(cachedFaqs), container);
-                return;
+            try {
+                const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+                if (cachedFaqs) {
+                    renderFaqs(JSON.parse(cachedFaqs), container);
+                    return;
+                }
+            } catch(e) {
+                console.warn("sessionStorage access error:", e);
             }
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
@@ -816,6 +823,29 @@
             });
         }
 
+        function renderReviews(reviews, container) {
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            reviews.forEach(r => {
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                container.appendChild(el);
+            });
+        }
+
         // Load reviews on page load
         loadReviews();
 
@@ -913,6 +943,34 @@
                 btn.textContent = "Subscribe";
             }
         });
+
+        // Character Counters Logic
+        function setupCharCounters() {
+            const reviewComment = document.getElementById('review-comment');
+            const reviewCounter = document.getElementById('review-char-count');
+
+            if (reviewComment && reviewCounter) {
+                const updateReviewCount = () => {
+                    const length = reviewComment.value.length;
+                    reviewCounter.textContent = `${length} / 1000`;
+                };
+                reviewComment.addEventListener('input', updateReviewCount);
+                updateReviewCount(); // Initial call
+            }
+
+            const inqMessage = document.getElementById('inq-message');
+            const inqCounter = document.getElementById('inq-char-count');
+
+            if (inqMessage && inqCounter) {
+                const updateInqCount = () => {
+                    const length = inqMessage.value.length;
+                    inqCounter.textContent = `${length} / 1000`;
+                };
+                inqMessage.addEventListener('input', updateInqCount);
+                updateInqCount(); // Initial call
+            }
+        }
+        setupCharCounters();
 
         // Submit Inquiry Logic
         window.submitInquiry = async (e) => {
