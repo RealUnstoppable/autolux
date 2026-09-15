@@ -12,7 +12,7 @@ global.window = {
 };
 
 import { debounce, ensureUserDocument, getUserRedirectPath, safeRedirect } from './auth.js';
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 describe('auth.js utilities', () => {
     beforeEach(() => {
@@ -88,6 +88,26 @@ describe('auth.js utilities', () => {
             global.window.location.pathname = '/account.html';
             safeRedirect('/account.html');
             expect(global.window.location.replace).not.toHaveBeenCalled();
+        });
+
+        it('should not redirect to external URLs', () => {
+            const originalConsoleError = console.error;
+            console.error = jest.fn();
+            global.window.location.pathname = '/index.html';
+            safeRedirect('https://evil.com/account.html');
+            expect(global.window.location.replace).not.toHaveBeenCalled();
+            expect(console.error).toHaveBeenCalled();
+            console.error = originalConsoleError;
+        });
+
+        it('should not redirect to javascript URIs', () => {
+            const originalConsoleError = console.error;
+            console.error = jest.fn();
+            global.window.location.pathname = '/index.html';
+            safeRedirect('javascript:alert(1)');
+            expect(global.window.location.replace).not.toHaveBeenCalled();
+            expect(console.error).toHaveBeenCalled();
+            console.error = originalConsoleError;
         });
     });
 });

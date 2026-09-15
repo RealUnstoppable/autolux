@@ -18,6 +18,10 @@
 **Vulnerability:** The application was vulnerable to Stored XSS because dynamic service package data fetched from the database was rendered directly into the DOM using `innerHTML` without escaping in `booking.html`.
 **Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even if the data is assumed to be "internal" or "safe".
 **Prevention:** Always use the `escapeHTML` utility function from `/js/utils.js` to sanitize variables before interpolating them into `innerHTML` strings, or build DOM elements using `document.createElement` and `textContent`.
+## 2024-06-01 - [Stored XSS via innerHTML rendering of document IDs]
+**Vulnerability:** Found a Stored XSS vulnerability in `admin.html`. The application was rendering document IDs (e.g., `userId`, `id` for reviews, inquiries, quotes) directly into the DOM using `innerHTML` without sanitization within action buttons.
+**Learning:** Any data retrieved from a database and injected into the DOM via `innerHTML` is an XSS vector if not properly sanitized, even metadata like document IDs.
+**Prevention:** Always use the `escapeHTML` utility function to sanitize variables before interpolating them into `innerHTML` strings.
 ## 2026-08-15 - Hardcoded Firebase Configuration
 
 **Vulnerability:**
@@ -32,3 +36,15 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
 **Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
 **Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
+## 2027-06-27 - [Information Disclosure via Raw Error Objects]
+**Vulnerability:** The API utility function `submitDetailingRequest` returned the raw caught `error` object (`return { success: false, error: error };`) to the client on failure.
+**Learning:** Returning raw error objects violates the "fail securely" principle. It can inadvertently expose internal stack traces, database schema details, or sensitive error codes directly to the client/UI.
+**Prevention:** Always extract and return safe properties (like `error.message`) or generic fallback strings instead of the entire raw error object when passing errors across boundaries.
+## 2026-06-19 - [Information Exposure via Error Return]
+**Vulnerability:** Raw error objects caught in `catch` blocks within API utilities (like `submitDetailingRequest`) were being returned directly to the calling client (`return { success: false, error: error }`).
+**Learning:** Returning raw exception objects breaks the "fail securely" principle because it can leak sensitive internal details, Firebase error codes, or stack traces directly to the frontend or user.
+**Prevention:** Always catch exceptions and return a generalized, secure error message (e.g., `'An error occurred while processing the request'`) rather than the raw error object.
+## 2026-11-20 - [Privilege Escalation via Mass Assignment]
+**Vulnerability:** A broken access control / privilege escalation vulnerability existed in `firestore.rules` because users could specify `isAdmin: true` during the creation or update of their own profile document.
+**Learning:** Even if client-side code correctly initializes non-privileged fields (e.g., `isAdmin: false`), Firebase rules must explicitly block users from mutating protected fields directly via API calls.
+**Prevention:** In Firestore rules, always enforce validation on protected properties during `create` and `update` by checking `request.resource.data` to prevent mass assignment (e.g., `(!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false)`).
