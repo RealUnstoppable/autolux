@@ -23,13 +23,19 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
+        const bookingData = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
             userId: userId,
             createdAt: serverTimestamp(),
             status: 'pending'
-        });
+        };
+
+        if (requestData.referralCode) {
+            bookingData.referralCode = requestData.referralCode.trim().toUpperCase();
+        }
+
+        const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
