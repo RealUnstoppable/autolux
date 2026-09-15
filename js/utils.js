@@ -3,13 +3,7 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 
 
 
-export function safeSetSessionStorage(key, value) {
-    try {
-        sessionStorage.setItem(key, value);
-    } catch (e) {
-        console.warn("Session storage quota exceeded or unavailable.", e);
-    }
-}
+
 export function escapeHTML(str) {
     if (str == null) return '';
     return String(str)
@@ -51,6 +45,7 @@ export async function submitDetailingRequest(userId, requestData) {
         return { success: false, error: error.message, code: error.code };
     }
 }
+
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key

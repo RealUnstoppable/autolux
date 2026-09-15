@@ -355,7 +355,9 @@
                     createdAt: serverTimestamp()
                 };
 
-                await addDoc(collection(db, "bookings"), bookingDoc);
+                const { submitDetailingRequest } = await import('/js/utils.js');
+                const result = await submitDetailingRequest(currentUser.uid, bookingDoc);
+                if (!result.success) throw new Error(result.error);
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
