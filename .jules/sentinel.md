@@ -28,3 +28,7 @@ Hardcoded configuration values can unintentionally establish connections to real
 
 **Prevention:**
 Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-05-24 - [Privilege Escalation via Firestore Rules]
+**Vulnerability:** A logic flaw in `firestore.rules` allowed users to elevate their privileges to Administrator because the `create` and `update` rules on their own document at `/users/{userId}` did not restrict them from sending `{ isAdmin: true }` in their payload.
+**Learning:** Any field that determines user roles or privileges (like `isAdmin`) must be explicitly restricted in database security rules to prevent client-side modifications (Mass Assignment) by untrusted users.
+**Prevention:** In Firestore rules, ensure that regular user `create` and `update` operations explicitly verify that sensitive role fields cannot be set or modified (e.g., `!("isAdmin" in request.resource.data) || request.resource.data.isAdmin == false`).
