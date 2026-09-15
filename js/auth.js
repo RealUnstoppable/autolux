@@ -129,7 +129,7 @@ export function waitForAuthState() {
     });
 }
 
-export async function getUserRedirectPathAsync(user) {
+export async function getUserRedirectPathAsyncSimple(user) {
   if (!user) return 'sign in beta.html';
   return 'account.html';
 }
