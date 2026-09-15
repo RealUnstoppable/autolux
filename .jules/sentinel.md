@@ -36,3 +36,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** The `submitDetailingRequest` in `js/api.js` was susceptible to Mass Assignment by spreading `...bookingData` without enforcing server-side trusted fields like `status` and `userId`.
 **Learning:** When using object spread for database writes, trusted fields must explicitly follow the user payload to prevent parameter tampering.
 **Prevention:** Always spread user payload first, then explicitly assign trusted server-determined fields afterwards.
+## 2024-05-20 - [Privilege Escalation via Firestore User Document]
+**Vulnerability:** The Firestore security rules allowed any authenticated user to update their own document without restricting modifications to sensitive fields like `isAdmin` or `banned`, potentially enabling privilege escalation.
+**Learning:** Overly permissive `allow update: if isOwner(userId)` rules inherently allow Mass Assignment/Parameter Tampering unless sensitive fields are strictly verified to remain unchanged.
+**Prevention:** Always restrict writes to sensitive fields by comparing `request.resource.data` to `resource.data` to ensure they are either absent or un-mutated by non-admin users.

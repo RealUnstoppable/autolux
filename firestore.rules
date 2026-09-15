@@ -14,8 +14,9 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      // 🛡️ Sentinel: Prevent privilege escalation. Users cannot create themselves as admin or modify their admin/banned status.
+      allow create: if isOwner(userId) && request.resource.data.get('isAdmin', false) == false;
+      allow update: if isAdmin() || (isOwner(userId) && request.resource.data.get('isAdmin', false) == resource.data.get('isAdmin', false) && request.resource.data.get('banned', false) == resource.data.get('banned', false));
       allow delete: if isAdmin();
     }
 
