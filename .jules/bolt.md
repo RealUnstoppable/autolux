@@ -17,3 +17,6 @@
 ## 2025-05-24 - [Safely Accessing sessionStorage]
 **Learning:** Browsers in strict privacy modes or incognito settings can block access to `sessionStorage`, causing `getItem` or `setItem` to throw exceptions (like `SecurityError` or `QuotaExceededError`). If these calls are not handled, they will crash the executing script and break page functionality.
 **Action:** When interacting with `sessionStorage` (or `localStorage`), always wrap the read and write operations in a `try...catch` block to gracefully fail without breaking the rest of the application execution.
+## 2025-10-24 - [Preloading CSS Background Images for LCP]
+**Learning:** Above-the-fold hero images that are loaded via CSS background properties (`background-image`) are hidden from the browser's initial HTML parser, delaying their discovery and negatively impacting Largest Contentful Paint (LCP) and First Contentful Paint (FCP).
+**Action:** Use `<link rel="preload" as="image" href="..." fetchpriority="high">` in the `<head>` of the HTML to explicitly inform the browser to fetch the critical background image immediately with high priority, bypassing the CSS parsing bottleneck.
