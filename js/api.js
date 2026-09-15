@@ -23,3 +23,19 @@ export async function submitDetailingRequestCore(requestData, userId = null) {
 export async function submitDetailingRequest(requestData, userId = null) {
     return await submitDetailingRequestCore(requestData, userId);
 }
+
+export async function submitQuoteRequest(quoteData) {
+    try {
+        const docRef = await addDoc(collection(db, "quotes"), {
+            ...quoteData,
+            status: "pending",
+            createdAt: serverTimestamp()
+        });
+        console.log("Quote request submitted successfully with ID:", docRef.id);
+        return { success: true, docId: docRef.id };
+    } catch (error) {
+        console.error("Error submitting quote request:", error.message);
+        if (error.code) console.error("Error code:", error.code);
+        return { success: false, error: error.message, code: error.code };
+    }
+}
