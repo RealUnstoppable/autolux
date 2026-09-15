@@ -3,13 +3,6 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 
 
 
-export function safeSetSessionStorage(key, value) {
-    try {
-        sessionStorage.setItem(key, value);
-    } catch (e) {
-        console.warn("Session storage quota exceeded or unavailable.", e);
-    }
-}
 export function escapeHTML(str) {
     if (str == null) return '';
     return String(str)

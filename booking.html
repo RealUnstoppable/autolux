@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+        // Use a dummy environment that simulates a successful Firebase setup
+        window.ENV = {
+            FIREBASE_API_KEY: "mock-api-key",
+            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
+            FIREBASE_PROJECT_ID: "mock-project-id",
+            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
+            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
+            FIREBASE_APP_ID: "mock-app-id",
+            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
+        };
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford">
     <meta name="description" content="Schedule your luxury detailing appointment with Unstoppable Detailing Services.">
     <title>Book a Detail | Unstoppable Detailing Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,6 +35,11 @@
         }
 
         * { box-sizing: border-box; }
+
+        input, textarea, select, button {
+            font-family: inherit;
+            font-size: 16px !important;
+        }
 
         body {
             margin: 0;
@@ -233,7 +253,7 @@
             <form id="booking-form" style="display: none;">
                 <div class="input-group">
                     <label for="package">Select Service Package</label>
-                    <select id="package" required>
+                    <select id="package" aria-label="Select Service Package" required>
                         <option value="">-- Choose a Package --</option>
                         <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
                         <option value="Luxury SUV - $250">Luxury SUV ($250)</option>
@@ -245,17 +265,17 @@
 
                 <div class="input-group">
                     <label for="vehicle">Vehicle (Year, Make, Model & Color)</label>
-                    <input type="text" id="vehicle" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
+                    <input type="text" id="vehicle" aria-label="Vehicle details" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
                 </div>
 
                 <div class="input-group">
                     <label for="date">Preferred Date & Time</label>
-                    <input type="datetime-local" id="date" required>
+                    <input type="datetime-local" id="date" aria-label="Preferred Date and Time" required>
                 </div>
 
                 <div class="input-group">
                     <label for="notes">Special Requests or Notes (Optional)</label>
-                    <textarea id="notes" rows="3" placeholder="Tell us about specific spots, pet hair, or ceramic requests..."></textarea>
+                    <textarea id="notes" aria-label="Special requests or notes" rows="3" placeholder="Tell us about specific spots, pet hair, or ceramic requests..."></textarea>
                 </div>
 
                 <button type="submit" class="btn-primary" id="submit-btn">Submit Booking Request</button>
@@ -271,7 +291,8 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise } from '/js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { submitDetailingRequest } from "/js/utils.js";
+        import { serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -355,7 +376,8 @@
                     createdAt: serverTimestamp()
                 };
 
-                await addDoc(collection(db, "bookings"), bookingDoc);
+                const result = await submitDetailingRequest(currentUser.uid, bookingDoc);
+                if (!result.success) throw new Error(result.error);
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
