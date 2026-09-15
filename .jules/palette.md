@@ -13,3 +13,6 @@
 ## 2024-11-20 - Adding aria-live to status messages
 **Learning:** Status messages that update dynamically without page reloads (like form validation errors or login success/failure messages) are visually apparent but often missed by assistive technologies.
 **Action:** When creating or modifying dynamic message containers (e.g. `id="error-msg"`), always include `aria-live="polite"` (or `"assertive"` if critical) so screen readers proactively announce the content updates to users.
+## 2024-05-25 - Custom Radiogroups
+**Learning:** Using generic `<div>` tags with custom click handlers to mimic radio button groups (e.g., pricing tiers or donation selections) prevents standard keyboard navigation and screen reader compatibility.
+**Action:** When implementing custom selection groups, always use `<button type="button" role="radio">` wrapped in a `role="radiogroup"`. Implement roving `tabindex` and sync the `aria-checked` states using JS to ensure full accessibility.
