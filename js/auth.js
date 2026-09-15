@@ -207,30 +207,3 @@ export function safeRedirect(targetUrl) {
  */
 
 
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return null;
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
-    }
-}
-

@@ -5,12 +5,6 @@ service cloud.firestore {
     function isAdmin() { return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true; }
     function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
 
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    function isAdmin() {
-      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
@@ -21,23 +15,23 @@ service cloud.firestore {
 
     // Bookings Collection
     match /bookings/{bookingId} {
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == resource.data.userId);
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
       allow delete: if isAdmin();
     }
 
     // Detailing Plans / Memberships Collection
     match /detailingPlans/{planId} {
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == resource.data.userId);
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
       allow delete: if isAdmin();
     }
     match /detailing_plans/{planId} {
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == resource.data.userId);
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
       allow delete: if isAdmin();
     }
 

@@ -37,10 +37,6 @@ export async function submitDetailingRequestCore(userId, requestData) {
         return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }
-
-export async function submitDetailingRequest(userId, requestData) {
-    return await submitDetailingRequestCore(userId, requestData);
-}
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key

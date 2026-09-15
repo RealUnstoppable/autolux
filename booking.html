@@ -215,6 +215,7 @@
             .booking-card { padding: 25px 20px; }
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -274,6 +275,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise } from './js/auth.js';
+        import { submitDetailingRequest } from './js/api.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let currentUser = null;
@@ -359,7 +361,7 @@
                     createdAt: serverTimestamp()
                 };
 
-                const result = await submitDetailingRequest(bookingDoc, currentUser.uid);
+                const result = await submitDetailingRequest(bookingDoc);
                 if (!result.success) throw result.error;
 
                 msgEl.style.color = "var(--success)";
