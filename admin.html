@@ -110,6 +110,7 @@
             outline-offset: 2px;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body style="display: none;"> 
     <div class="mobile-header">
@@ -321,11 +322,11 @@
                 <div class="metric-card" style="margin-bottom: 20px;">
                     <form id="add-faq-form" style="display: flex; flex-direction: column; gap: 15px;">
                         <div>
-                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question:</label>
+                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                             <input type="text" id="faq-question" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" placeholder="Enter question">
                         </div>
                         <div>
-                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer:</label>
+                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                             <textarea id="faq-answer" required rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); font-family: inherit;" placeholder="Enter answer"></textarea>
                         </div>
                         <button type="submit" class="auth-btn" style="align-self: flex-start;">Add FAQ</button>
@@ -351,7 +352,7 @@
    <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '../js/auth.js';
         import { escapeHTML } from '../js/utils.js';
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
 
@@ -397,7 +398,7 @@
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
             } catch (error) {
-                console.error(`Error fetching ${collectionName}:`, error.message);
+                console.error(`Error fetching ${collectionName}:`, { code: error.code, message: error.message, details: error });
                 return [];
             }
         }
@@ -439,7 +440,6 @@
 
                 // Fetch Detailing Bookings & Quotes
                 const bookings = await resolveQuery(bookingsPromise, "bookings");
-                bookings.sort((a, b) => new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) - new Date(a.appointmentDate?.toDate ? a.appointmentDate.toDate() : a.appointmentDate));
                 bookings.sort((a, b) => {
                     const dateA = a.appointmentDate?.toDate ? a.appointmentDate.toDate() : new Date(a.appointmentDate);
                     const dateB = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
@@ -467,7 +467,7 @@
                     const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderInquiriesTable(inquiries);
                 } catch (inqError) {
-                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    console.log("Could not load inquiries. Missing Firestore rules?", { code: inqError.code, message: inqError.message, details: inqError });
                     document.getElementById('inquiries-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`);
                 }
 
@@ -477,7 +477,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
-                    console.error("Could not load reviews.", revError);
+                    console.error("Could not load reviews.", { code: revError.code, message: revError.message, details: revError });
                     document.getElementById('reviews-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`);
                 }
 
@@ -486,7 +486,7 @@
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
                 } catch (faqError) {
-                    console.log("Could not load FAQs", faqError);
+                    console.log("Could not load FAQs", { code: faqError.code, message: faqError.message, details: faqError });
                     document.getElementById('faqs-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`);
                 }
 
@@ -496,7 +496,7 @@
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
-                    console.error("Could not load feature requests.", frError);
+                    console.error("Could not load feature requests.", { code: frError.code, message: frError.message, details: frError });
                     document.getElementById('feature-request-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`);
                 }
                 
@@ -507,12 +507,12 @@
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
                 } catch (e) {
-                    console.error("Error loading download stats:", e);
+                    console.error("Error loading download stats:", { code: e.code, message: e.message, details: e });
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
-                console.error("Error loading admin data:", error);
+                console.error("Error loading admin data:", { code: error.code, message: error.message, details: error });
             }
         }
 
@@ -873,7 +873,36 @@
                         const el = document.getElementById('upcoming-bookings');
                         el.textContent = Math.max(0, parseInt(el.textContent) - 1);
                     } else if (action === 'complete') {
-                        await updateDoc(doc(db, "bookings", id), { status: 'completed' });
+                        const bookingRef = doc(db, "bookings", id);
+                        const bookingSnap = await getDoc(bookingRef);
+                        const bookingData = bookingSnap.data();
+
+                        await updateDoc(bookingRef, { status: 'completed' });
+
+                        // Process referral if exists
+                        if (bookingData && bookingData.referralCode) {
+                            try {
+                                const q = query(collection(db, "users"), where("referralCode", "==", bookingData.referralCode));
+                                const userSnap = await getDocs(q);
+                                if (!userSnap.empty) {
+                                    const referrerId = userSnap.docs[0].id;
+                                    await updateDoc(doc(db, "users", referrerId), {
+                                        referralCredits: increment(25)
+                                    });
+                                    await addDoc(collection(db, "referrals"), {
+                                        referrerId: referrerId,
+                                        refereeId: bookingData.userId,
+                                        bookingId: id,
+                                        status: 'completed',
+                                        createdAt: serverTimestamp()
+                                    });
+                                    console.log("Applied $25 referral credit to user: " + referrerId);
+                                }
+                            } catch (e) {
+                                console.error("Error applying referral credits:", e);
+                            }
+                        }
+
                         statusCell.innerHTML = DOMPurify.sanitize(`<span class="status-badge active">completed</span>`);
                         actionCell.innerHTML = '';
 
