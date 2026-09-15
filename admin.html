@@ -321,11 +321,11 @@
                 <div class="metric-card" style="margin-bottom: 20px;">
                     <form id="add-faq-form" style="display: flex; flex-direction: column; gap: 15px;">
                         <div>
-                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question:</label>
+                            <label for="faq-question" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Question: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                             <input type="text" id="faq-question" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main);" placeholder="Enter question">
                         </div>
                         <div>
-                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer:</label>
+                            <label for="faq-answer" style="display: block; margin-bottom: 5px; color: var(--text-secondary); font-size: 0.9rem;">Answer: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                             <textarea id="faq-answer" required rows="3" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); font-family: inherit;" placeholder="Enter answer"></textarea>
                         </div>
                         <button type="submit" class="auth-btn" style="align-self: flex-start;">Add FAQ</button>
