@@ -384,9 +384,9 @@
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" fetchpriority="high"></div>
         </div>
     </section>
 
@@ -494,8 +494,7 @@
     </footer>
 
     <script type="module">
-        import { safeSetSessionStorage } from '../js/utils.js';
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
+                import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, safeSetSessionStorage } from './js/utils.js';
 
@@ -572,12 +571,10 @@
                 const answer = escapeHTML(data.answer || "");
                 const faqId = `faq-answer-${index}`;
 
-                const faqId = 'faq-answer-' + Math.random().toString(36).substring(2, 9);
-                const el = document.createElement('div');
+                                const el = document.createElement('div');
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
-                const faqId = `faq-answer-${Math.random().toString(36).substring(2, 9)}`;
-                el.innerHTML = `
+                                el.innerHTML = `
                     <button class="faq-question" aria-expanded="false" aria-controls="${faqId}" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
                         ${question}
                         <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
@@ -659,47 +656,10 @@
         loadFaqs();
 
         // Render Reviews helper function
-        function renderReviewsList(reviews, container) {
-            if (!reviews || reviews.length === 0) {
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                return;
-            }
 
-            container.innerHTML = '';
-
-            reviews.forEach(r => {
-                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
-                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-
-                const name = escapeHTML(r.userName || "Anonymous");
-                const comment = escapeHTML(r.comment || "");
-
-                const el = document.createElement('div');
-                el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                container.appendChild(el);
-            });
-        }
 
         // Load Reviews
-        function renderReviewsList(reviews, container) {
-            if (reviews.length === 0) {
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                return;
-            }
-            container.innerHTML = '';
-            reviews.forEach(r => {
-                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
-                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-                const name = escapeHTML(r.userName || "Anonymous");
-                const comment = escapeHTML(r.comment || "");
-                const el = document.createElement('div');
-                el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                container.appendChild(el);
-            });
-        }
+
 
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
@@ -794,28 +754,7 @@
             });
         }
 
-        function renderReviewsList(reviews, container) {
-            if (reviews.length === 0) {
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                return;
-            }
 
-            container.innerHTML = '';
-
-            reviews.forEach(r => {
-                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
-                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-
-                const name = escapeHTML(r.userName || "Anonymous");
-                const comment = escapeHTML(r.comment || "");
-
-                const el = document.createElement('div');
-                el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                container.appendChild(el);
-            });
-        }
 
         // Load reviews on page load
         loadReviews();
