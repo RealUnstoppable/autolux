@@ -552,6 +552,7 @@
             tbody.appendChild(fragment);
         }
 
+
         function renderQuotesTable(quotes) {
             const tbody = document.getElementById('quotes-list-body');
             tbody.innerHTML = '';
@@ -562,9 +563,10 @@
             quotes.forEach(q => {
                 const row = document.createElement('tr');
                 const badgeClass = q.status === 'responded' ? 'active' : 'pending';
+                const details = q.details || q.vehicleDetails || 'Not specified';
                 row.innerHTML = DOMPurify.sanitize(`
                     <td>${escapeHTML(q.email)}</td>
-                    <td>${escapeHTML(q.details)}</td>
+                    <td>${escapeHTML(details)}</td>
                     <td><span class="status-badge ${badgeClass}">${escapeHTML(q.status) || 'pending'}</span></td>
                     <td>
                         ${q.status !== 'responded' ? `<button class="btn-sm btn-action action-btn" data-type="quote" data-action="responded" data-id="${escapeHTML(q.id)}">Responded</button>` : ''}
@@ -575,6 +577,9 @@
             });
             tbody.appendChild(fragment);
         }
+
+
+
 
         function renderInquiriesTable(inquiries) {
             const tbody = document.getElementById('inquiries-list-body');

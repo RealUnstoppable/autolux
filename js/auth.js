@@ -1,4 +1,4 @@
-import { submitDetailingRequestCore } from './utils.js';
+import { submitDetailingRequestCore } from './api.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -145,6 +145,8 @@ export function waitForAuthState() {
  * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    return await getUserRedirectPathAsync(user, userData, currentPathname);
+
     // Overloading support for simpler form: getUserRedirectPath(user)
     if (!userData && !currentPathname) {
         if (!user) return 'sign in beta.html';
