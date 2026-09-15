@@ -407,8 +407,7 @@
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
-        }
-        initAccountPage();
+        });
 
         function renderBookings(snapshot) {
             try {
