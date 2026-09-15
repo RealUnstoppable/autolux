@@ -44,3 +44,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Raw error objects caught in `catch` blocks within API utilities (like `submitDetailingRequest`) were being returned directly to the calling client (`return { success: false, error: error }`).
 **Learning:** Returning raw exception objects breaks the "fail securely" principle because it can leak sensitive internal details, Firebase error codes, or stack traces directly to the frontend or user.
 **Prevention:** Always catch exceptions and return a generalized, secure error message (e.g., `'An error occurred while processing the request'`) rather than the raw error object.
+## 2026-11-20 - [Privilege Escalation via Mass Assignment]
+**Vulnerability:** A broken access control / privilege escalation vulnerability existed in `firestore.rules` because users could specify `isAdmin: true` during the creation or update of their own profile document.
+**Learning:** Even if client-side code correctly initializes non-privileged fields (e.g., `isAdmin: false`), Firebase rules must explicitly block users from mutating protected fields directly via API calls.
+**Prevention:** In Firestore rules, always enforce validation on protected properties during `create` and `update` by checking `request.resource.data` to prevent mass assignment (e.g., `(!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false)`).
