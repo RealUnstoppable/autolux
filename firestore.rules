@@ -11,11 +11,12 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
+    function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
+      allow update: if isAdmin() || (isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin));
       allow delete: if isAdmin();
     }
 
@@ -86,8 +87,8 @@ service cloud.firestore {
 
     // Quotes collection
     match /quotes/{quoteId} {
-      allow create: if true;
       allow read, write: if isAdmin();
+      allow create: if true;
     }
 
     // Feature Requests collection
