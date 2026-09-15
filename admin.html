@@ -354,6 +354,8 @@
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
+        let chartCtx;
+        let graphTitleEl;
 
         async function initAdminPage() {
             try {
@@ -745,8 +747,9 @@
         }
 
         function renderChart(view, usersData) {
-            const ctx = document.getElementById('performance-chart').getContext('2d');
-            const graphTitleEl = document.getElementById('graph-title');
+            if (!chartCtx) chartCtx = document.getElementById('performance-chart').getContext('2d');
+            if (!graphTitleEl) graphTitleEl = document.getElementById('graph-title');
+            const ctx = chartCtx;
             
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
             let chartConfig;
