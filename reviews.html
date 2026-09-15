@@ -190,8 +190,9 @@
     </footer>
 
     <script type="module">
-        import { db } from './js/auth.js';
+        import { db } from '../js/auth.js';
         import { collection, query, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { safeGetSessionStorage, safeSetSessionStorage } from '../js/utils.js';
 
         const grid = document.getElementById('reviews-grid');
         const filterBtns = document.querySelectorAll('.filter-btn');
@@ -200,7 +201,7 @@
         async function loadReviews() {
             // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
             try {
-                const cachedAllReviews = sessionStorage.getItem('autolux_all_reviews');
+                const cachedAllReviews = safeGetSessionStorage('autolux_all_reviews');
                 if (cachedAllReviews) {
                     allReviews = JSON.parse(cachedAllReviews);
                     renderReviews(allReviews);
@@ -229,7 +230,7 @@
                 allReviews = [...dbReviews, ...genReviews];
                 
                 try {
-                    sessionStorage.setItem('autolux_all_reviews', JSON.stringify(allReviews));
+                    safeSetSessionStorage('autolux_all_reviews', JSON.stringify(allReviews));
                 } catch(e) {
                     console.warn('Session storage cache write failed:', e);
                 }

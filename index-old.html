@@ -272,9 +272,9 @@
     </footer>
 
     <script type="module">
-        import { auth, db } from '/js/auth.js';
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db } from './js/auth.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -306,7 +306,7 @@
             const email = document.getElementById('news-email').value;
             const msg = document.getElementById('news-msg');
             if(!email) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Please enter an email address.";
                 return;
             }
@@ -320,7 +320,7 @@
                 msg.textContent = "Subscribed successfully! Check your inbox soon.";
                 document.getElementById('news-email').value = '';
             } catch(e) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Error subscribing. Please try again.";
             }
         };

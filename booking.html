@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Schedule your luxury detailing appointment with Unstoppable Detailing Services.">
     <title>Book a Detail | Unstoppable Detailing Services</title>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -188,11 +190,27 @@
         }
 
         #loading-overlay {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             padding: 20px;
             color: var(--gold);
             font-weight: 600;
+            text-align: center;
         }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #msg {
             margin-top: 20px;
@@ -231,11 +249,14 @@
             <h1>Schedule Your Service</h1>
             <p class="desc">Select your detailing package or membership plan below to request an appointment.</p>
 
-            <div id="loading-overlay">Checking authentication status...</div>
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+                Checking authentication status...
+            </div>
 
             <form id="booking-form" style="display: none;">
                 <div class="input-group">
-                    <label for="package">Select Service Package <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="package">Select Service Package <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <select id="package" required>
                         <option value="">-- Choose a Package --</option>
                         <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
@@ -247,12 +268,12 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="vehicle" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="datetime-local" id="date" required>
                 </div>
 
@@ -273,8 +294,9 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise } from '/js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise } from './js/auth.js';
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { safeSetSessionStorage } from './js/utils.js';
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -314,7 +336,7 @@
                     currentUser = user;
                     bookingForm.style.display = 'block';
                 } else {
-                    sessionStorage.setItem('redirectAfterLogin', 'booking.html');
+                    safeSetSessionStorage('redirectAfterLogin', 'booking.html');
                     msgEl.style.color = "var(--gold)";
                     msgEl.innerHTML = 'You must be signed in to book an appointment. <a href="sign in beta.html" style="color: var(--accent);">Sign In Here</a>';
                     setTimeout(() => {
