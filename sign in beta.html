@@ -344,7 +344,7 @@
                 }, 500);
 
             } catch (error) {
-                console.error("Auth Error:", error);
+                console.error("Auth Error:", error.message || error, error.code ? `(Code: ${error.code})` : "");
                 authMsg.style.color = "var(--error)";
                 let msg = `Authentication failed: ${error.code} - ${error.message}`;
                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {

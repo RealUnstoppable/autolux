@@ -323,14 +323,15 @@
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Not authenticated, redirect to login
-                window.location.replace('sign in beta.html');
-                return;
-            }
+        const initAccountPage = () => {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) {
+                    // Not authenticated, redirect to login
+                    window.location.replace('sign in beta.html');
+                    return;
+                }
 
-            try {
+                try {
                 // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
@@ -371,7 +372,8 @@
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
-        }
+            });
+        };
         initAccountPage();
 
         function renderBookings(snapshot) {

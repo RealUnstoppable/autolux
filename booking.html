@@ -275,6 +275,7 @@
     <script type="module">
         import { auth, db, getAuthStatePromise } from './js/auth.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { submitDetailingRequest } from './js/utils.js';
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -359,7 +360,7 @@
                     createdAt: serverTimestamp()
                 };
 
-                const result = await submitDetailingRequest(bookingDoc, currentUser.uid);
+                const result = await submitDetailingRequest(currentUser.uid, bookingDoc);
                 if (!result.success) throw result.error;
 
                 msgEl.style.color = "var(--success)";
