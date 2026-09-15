@@ -23,3 +23,6 @@
 ## 2026-05-26 - Accessible Character Counter Initialization
 **Learning:** Adding a character counter with `aria-live="polite"` causes severe screen reader spam on every keystroke. Also, simply attaching an `input` event listener is insufficient; the counter must be initialized on load to handle browser-restored or pre-filled text.
 **Action:** When adding character counters, do NOT use `aria-live`. Instead, use `aria-describedby` on the textarea pointing to the counter's ID. Ensure the update function is explicitly called once during initialization before binding it to the `input` event.
+## 2026-09-15 - Consistent Loading UX
+**Learning:** Adding standard loading spinners (like `.spinner`) to authentication checks improves perceived performance and maintains consistent UX across the app.
+**Action:** Reuse existing CSS animation patterns (like `@keyframes spin`) when creating new loading states instead of relying on plain text.
