@@ -2,5 +2,6 @@
 # Install dependencies
 npm install --silent
 
-# Run the tests
-npm run test
+# Run playwright tests wrapper
+node run_utils_test.cjs
+node run_tests.cjs

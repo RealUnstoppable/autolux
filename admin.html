@@ -379,6 +379,7 @@
                     safeRedirect('account.html');
                 }
             } catch (error) {
+                    if (error && error.code) console.error("Error code:", error.code);
                 console.error("Admin init error:", error);
                 safeRedirect('sign in beta.html');
             }
@@ -397,6 +398,7 @@
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
             } catch (error) {
+                    if (error && error.code) console.error("Error code:", error.code);
                 console.error(`Error fetching ${collectionName}:`, error.message);
                 return [];
             }
@@ -467,6 +469,7 @@
                     const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderInquiriesTable(inquiries);
                 } catch (inqError) {
+                    if (inqError && inqError.code) console.error("Error code:", inqError.code);
                     console.log("Could not load inquiries. Missing Firestore rules?", inqError);
                     document.getElementById('inquiries-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`);
                 }
@@ -477,6 +480,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
+                    if (revError && revError.code) console.error("Error code:", revError.code);
                     console.error("Could not load reviews.", revError);
                     document.getElementById('reviews-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`);
                 }
@@ -486,6 +490,7 @@
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
                 } catch (faqError) {
+                    if (faqError && faqError.code) console.error("Error code:", faqError.code);
                     console.log("Could not load FAQs", faqError);
                     document.getElementById('faqs-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`);
                 }
@@ -496,6 +501,7 @@
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
+                    if (frError && frError.code) console.error("Error code:", frError.code);
                     console.error("Could not load feature requests.", frError);
                     document.getElementById('feature-request-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`);
                 }
@@ -507,11 +513,13 @@
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
                 } catch (e) {
+                    if (e && e.code) console.error("Error code:", e.code);
                     console.error("Error loading download stats:", e);
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
+                    if (error && error.code) console.error("Error code:", error.code);
                 console.error("Error loading admin data:", error);
             }
         }
@@ -749,8 +757,6 @@
             const graphTitleEl = document.getElementById('graph-title');
             
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
-            if (performanceChart) performanceChart.destroy();
-
             let chartConfig;
             switch(view) {
                 case 'signups':
@@ -763,7 +769,18 @@
                     chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
                     break;
             }
-            performanceChart = new Chart(ctx, chartConfig);
+            if (performanceChart) {
+                if (performanceChart.config.type === chartConfig.type) {
+                    performanceChart.data = chartConfig.data;
+                    performanceChart.options = chartConfig.options;
+                    performanceChart.update();
+                } else {
+                    performanceChart.destroy();
+                    performanceChart = new Chart(ctx, chartConfig);
+                }
+            } else {
+                performanceChart = new Chart(ctx, chartConfig);
+            }
         }
 
         function getChartOptions(isPieChart = false) {
@@ -904,6 +921,7 @@
                         row.remove();
                     }
                 } catch (err) {
+                    if (err && err.code) console.error("Error code:", err.code);
                     console.error("Error modifying inquiry:", err);
                 }
             });
@@ -1024,6 +1042,7 @@
                     alert(`Successfully credited "${reward}" to user!`);
                     document.getElementById('winner-display').style.display = 'none';
                 } catch (e) {
+                    if (e && e.code) console.error("Error code:", e.code);
                     console.error(e);
                     alert("Error crediting reward.");
                 } finally {
@@ -1056,7 +1075,8 @@
                     msgEl.textContent = "FAQ added successfully!";
                     e.target.reset();
                     setTimeout(() => location.reload(), 1000);
-                } catch(error) {
+                } catch (error) {
+                    if (error && error.code) console.error("Error code:", error.code);
                     console.error("Error adding FAQ", error);
                     msgEl.style.color = "#ef4444";
                     msgEl.textContent = "Error adding FAQ.";
@@ -1087,7 +1107,8 @@
                     await deleteDoc(doc(db, "faqs", id));
                     alert("FAQ deleted.");
                     location.reload();
-                } catch(e) {
+                } catch (e) {
+                    if (e && e.code) console.error("Error code:", e.code);
                     console.error("Error deleting FAQ", e);
                     alert("Failed to delete FAQ.");
                 }

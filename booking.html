@@ -271,7 +271,8 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise } from '/js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { submitDetailingRequest } from "/js/utils.js";
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -355,7 +356,7 @@
                     createdAt: serverTimestamp()
                 };
 
-                await addDoc(collection(db, "bookings"), bookingDoc);
+                await submitDetailingRequest(currentUser.uid, bookingDoc);
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
