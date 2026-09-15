@@ -13,6 +13,16 @@
 ## 2024-11-20 - Adding aria-live to status messages
 **Learning:** Status messages that update dynamically without page reloads (like form validation errors or login success/failure messages) are visually apparent but often missed by assistive technologies.
 **Action:** When creating or modifying dynamic message containers (e.g. `id="error-msg"`), always include `aria-live="polite"` (or `"assertive"` if critical) so screen readers proactively announce the content updates to users.
-## 2024-05-25 - Custom Radiogroups
-**Learning:** Using generic `<div>` tags with custom click handlers to mimic radio button groups (e.g., pricing tiers or donation selections) prevents standard keyboard navigation and screen reader compatibility.
-**Action:** When implementing custom selection groups, always use `<button type="button" role="radio">` wrapped in a `role="radiogroup"`. Implement roving `tabindex` and sync the `aria-checked` states using JS to ensure full accessibility.
+## 2024-05-24 - Dynamic Messages and Toggle Elements Accessibility
+**Learning:** Dynamic status messages (like form submission success/error messages) and custom toggle menus (like the mobile menu or FAQ accordions) often lack the necessary ARIA attributes to be announced correctly by screen readers.
+**Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates. For interactive toggle elements, ensure they use `aria-controls="[id of target container]"` to establish the relationship between the trigger and the content.
+
+## 2024-06-26 - Add aria-live to dynamic message containers
+**Learning:** When implementing dynamic status updates or form submission feedback (like error or success messages) without page reloads, screen readers may fail to announce these changes unless explicitly configured.
+**Action:** Always add the `aria-live="polite"` attribute to message container elements (e.g. `<div id="msg"></div>`) to ensure screen readers dynamically announce updates without interrupting the user's current task.
+## 2026-05-26 - Accessible Character Counter Initialization
+**Learning:** Adding a character counter with `aria-live="polite"` causes severe screen reader spam on every keystroke. Also, simply attaching an `input` event listener is insufficient; the counter must be initialized on load to handle browser-restored or pre-filled text.
+**Action:** When adding character counters, do NOT use `aria-live`. Instead, use `aria-describedby` on the textarea pointing to the counter's ID. Ensure the update function is explicitly called once during initialization before binding it to the `input` event.
+## 2026-09-15 - Consistent Loading UX
+**Learning:** Adding standard loading spinners (like `.spinner`) to authentication checks improves perceived performance and maintains consistent UX across the app.
+**Action:** Reuse existing CSS animation patterns (like `@keyframes spin`) when creating new loading states instead of relying on plain text.
