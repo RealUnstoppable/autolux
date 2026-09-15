@@ -23,13 +23,19 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
+        const bookingData = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
             userId: userId,
             createdAt: serverTimestamp(),
             status: 'pending'
-        });
+        };
+
+        if (requestData.referralCode) {
+            bookingData.referralCode = requestData.referralCode.trim().toUpperCase();
+        }
+
+        const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Failed to submit detailing request.");
@@ -52,5 +58,19 @@ export function safeSetSessionStorage(key, value) {
         } else {
             console.error('Error setting session storage for key:', key, e);
         }
+    }
+}
+
+/**
+ * Safely gets an item from sessionStorage, catching SecurityError.
+ * @param {string} key
+ * @returns {string|null}
+ */
+export function safeGetSessionStorage(key) {
+    try {
+        return sessionStorage.getItem(key);
+    } catch (e) {
+        console.warn('Session storage read failed. Key:', key, e);
+        return null;
     }
 }
