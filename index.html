@@ -298,6 +298,7 @@
             outline-offset: 2px;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -311,8 +312,9 @@
             <a href="#reviews" aria-label="Go to Reviews section" onclick="closeMenu()">Reviews</a>
             <a href="#faq" aria-label="Go to FAQ section" onclick="closeMenu()">FAQ</a>
             <a href="#contact" aria-label="Go to Contact section" onclick="closeMenu()">Contact</a>
+            <a href="quote.html" aria-label="Request a Custom Quote">Custom Quote</a>
             <a href="booking.html" aria-label="Book a detailing appointment">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account" onclick="sessionStorage.setItem('redirectAfterLogin', window.location.href);">Sign In</a>
         </div>
     </nav>
 
@@ -384,9 +386,9 @@
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
             <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" fetchpriority="high"></div>
         </div>
     </section>
 
@@ -482,7 +484,7 @@
 
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required autocomplete="email">
             <button type="submit" id="news-submit-btn">Subscribe</button>
         </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
@@ -494,10 +496,9 @@
     </footer>
 
     <script type="module">
-        import { safeSetSessionStorage } from '../js/utils.js';
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { escapeHTML, safeSetSessionStorage } from './js/utils.js';
+        import { escapeHTML, safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -537,7 +538,7 @@
                             currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                         }
                     } catch (error) {
-                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+                        console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
                     }
 
                     const redirectPath = await getUserRedirectPath(user);
@@ -567,17 +568,16 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
                 const faqId = `faq-answer-${index}`;
 
-                const faqId = 'faq-answer-' + Math.random().toString(36).substring(2, 9);
-                const el = document.createElement('div');
+                                const el = document.createElement('div');
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
-                const faqId = `faq-answer-${Math.random().toString(36).substring(2, 9)}`;
-                el.innerHTML = `
+                                el.innerHTML = `
                     <button class="faq-question" aria-expanded="false" aria-controls="${faqId}" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
                         ${question}
                         <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
@@ -613,8 +613,11 @@
                     }
                 });
 
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+
+            // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
+            container.appendChild(fragment);
         }
 
         // Load FAQs
@@ -622,10 +625,14 @@
             const container = document.getElementById('faq-container');
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
-            const cachedFaqs = sessionStorage.getItem('autolux_faqs');
-            if (cachedFaqs) {
-                renderFaqs(JSON.parse(cachedFaqs), container);
-                return;
+            try {
+                const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+                if (cachedFaqs) {
+                    renderFaqs(JSON.parse(cachedFaqs), container);
+                    return;
+                }
+            } catch(e) {
+                console.warn("sessionStorage access error:", e);
             }
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
@@ -646,7 +653,7 @@
                     ];
                 }
 
-                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+                safeSetSessionStorage('autolux_faqs', JSON.stringify(faqs));
 
                 renderFaqs(faqs, container);
             } catch (e) {
@@ -659,50 +666,18 @@
         loadFaqs();
 
         // Render Reviews helper function
-        function renderReviewsList(reviews, container) {
-            if (!reviews || reviews.length === 0) {
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                return;
-            }
 
-            container.innerHTML = '';
-
-            reviews.forEach(r => {
-                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
-                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
-                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-
-                const name = escapeHTML(r.userName || "Anonymous");
-                const comment = escapeHTML(r.comment || "");
-
-                const el = document.createElement('div');
-                el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                container.appendChild(el);
-            });
-        }
 
         // Load Reviews
-        function renderReviewsList(reviews, container) {
-            if (reviews.length === 0) {
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
-                return;
-            }
-            container.innerHTML = '';
-            reviews.forEach(r => {
-                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
-                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-                const name = escapeHTML(r.userName || "Anonymous");
-                const comment = escapeHTML(r.comment || "");
-                const el = document.createElement('div');
-                el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                container.appendChild(el);
-            });
-        }
+
 
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
+            const cachedReviews = sessionStorage.getItem('autolux_reviews');
+            if (cachedReviews) {
+                renderReviewItems(JSON.parse(cachedReviews));
+                return;
+            }
             const defaultReviews = [
                 { userName: "Marcus T.", rating: 5, comment: "Unstoppable Detailing is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
                 { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
@@ -711,6 +686,7 @@
 
             function renderReviewItems(list) {
                 container.innerHTML = '';
+                const fragment = document.createDocumentFragment();
                 list.forEach(r => {
                     const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
@@ -728,13 +704,14 @@
                     const el = document.createElement('div');
                     el.className = 'review-card';
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name} <span style="font-size: 0.8rem; color: var(--text-muted);">(${date})</span></p>`;
-                    container.appendChild(el);
+                    fragment.appendChild(el);
                 });
+                container.appendChild(fragment);
             }
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
             try {
-                const cachedReviews = sessionStorage.getItem('autolux_reviews');
+                const cachedReviews = safeGetSessionStorage('autolux_reviews');
                 if (cachedReviews) {
                     renderReviewItems(JSON.parse(cachedReviews));
                     return;
@@ -746,7 +723,13 @@
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
-                let reviews = querySnapshot.docs.map(doc => doc.data());
+                let reviews = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    if (data.createdAt && data.createdAt.toDate) {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    }
+                    return data;
+                });
                 
                 if (reviews.length === 0) {
                     reviews = defaultReviews;
@@ -757,11 +740,12 @@
                 }
 
                 try {
-                    sessionStorage.setItem('autolux_reviews', JSON.stringify(reviews));
+                    safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
                 } catch(e) {
                     console.warn('Session storage cache write failed:', e);
                 }
 
+                safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
                 renderReviewItems(reviews);
             } catch (error) {
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
@@ -794,7 +778,9 @@
             });
         }
 
-        function renderReviewsList(reviews, container) {
+
+
+        function renderReviews(reviews, container) {
             if (reviews.length === 0) {
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
                 return;
@@ -914,6 +900,34 @@
                 btn.textContent = "Subscribe";
             }
         });
+
+        // Character Counters Logic
+        function setupCharCounters() {
+            const reviewComment = document.getElementById('review-comment');
+            const reviewCounter = document.getElementById('review-char-count');
+
+            if (reviewComment && reviewCounter) {
+                const updateReviewCount = () => {
+                    const length = reviewComment.value.length;
+                    reviewCounter.textContent = `${length} / 1000`;
+                };
+                reviewComment.addEventListener('input', updateReviewCount);
+                updateReviewCount(); // Initial call
+            }
+
+            const inqMessage = document.getElementById('inq-message');
+            const inqCounter = document.getElementById('inq-char-count');
+
+            if (inqMessage && inqCounter) {
+                const updateInqCount = () => {
+                    const length = inqMessage.value.length;
+                    inqCounter.textContent = `${length} / 1000`;
+                };
+                inqMessage.addEventListener('input', updateInqCount);
+                updateInqCount(); // Initial call
+            }
+        }
+        setupCharCounters();
 
         // Submit Inquiry Logic
         window.submitInquiry = async (e) => {

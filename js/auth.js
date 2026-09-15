@@ -1,11 +1,14 @@
+import { submitDetailingRequestCore } from './api.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export let app, auth, db;
 
 try {
     const appName = "autolux";
+    const hostname = window.location.hostname;
+    const isAutolux = hostname.includes('autolux');
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -46,6 +49,7 @@ try {
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
+
 // Debounce utility function
 export function debounce(func, wait) {
     let timeout;
@@ -73,8 +77,16 @@ export async function ensureUserDocument(user) {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-            return userDoc.data();
+            let data = userDoc.data();
+            if (!data.referralCode) {
+                const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                await setDoc(userDocRef, { referralCode: referralCode, referralCredits: 0 }, { merge: true });
+                data.referralCode = referralCode;
+                data.referralCredits = 0;
+            }
+            return data;
         } else {
+            const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             const newUserData = {
                 uid: user.uid,
                 email: user.email,
@@ -86,7 +98,8 @@ export async function ensureUserDocument(user) {
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
-                contactInfo: {}
+                contactInfo: {},
+                loyaltyPoints: 0
             };
             await setDoc(userDocRef, newUserData);
             return newUserData;
@@ -132,10 +145,12 @@ export function waitForAuthState() {
  * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
+    return await getUserRedirectPathAsync(user, userData, currentPathname);
+
     // Overloading support for simpler form: getUserRedirectPath(user)
     if (!userData && !currentPathname) {
         if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
+        return 'account.html';
     }
     return getUserRedirectPathAsync(user, userData, currentPathname);
 }
@@ -191,12 +206,80 @@ export async function getUserRedirectPathAsyncInternal(user) {
 export function safeRedirect(targetUrl) {
     if (!targetUrl) return;
 
-    const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
-    const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
+    try {
+        // 🛡️ Sentinel: Prevent Open Redirect and javascript: URI XSS
+        const dummyBase = 'http://safe-dummy-base.local';
+        const parsed = new URL(targetUrl, dummyBase);
 
-    if (currentPath !== targetPath) {
-        window.location.replace(targetUrl);
+        // If the origin is not the dummy base, it's an absolute URL (Open Redirect risk)
+        // If protocol is javascript:, it's an XSS risk
+        if (parsed.origin !== dummyBase || parsed.protocol === 'javascript:') {
+            console.error('Unsafe redirect attempt blocked:', targetUrl);
+            return;
+        }
+
+        const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
+        const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
+
+        if (currentPath !== targetPath) {
+            window.location.replace(targetUrl);
+        }
+    } catch (e) {
+        console.error('Invalid URL in safeRedirect:', targetUrl);
+    }
+}
+
+/**
+ * Submits a new detailing request to Firestore.
+ * @param {Object} requestData - The data for the detailing request.
+ * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
+ */
+
+
+export async function submitDetailingRequest(requestData) {
+    if (!auth) {
+        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
+        return { success: false, error: { message: "Firebase is not fully initialized." } };
+    }
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        console.error("Cannot submit detailing request: User is not authenticated.");
+        return { success: false, error: "You must be signed in to submit a request." };
+    }
+    try {
+        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
+        if (result.success) {
+            console.log("Detailing request submitted successfully with ID:", result.docId);
+            return result.docId;
+        } else {
+            console.error("Error submitting detailing request:", result.error);
+            if (result.code) console.error("Error code:", result.code);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error submitting detailing request:", error);
+        if (error.code) console.error("Error code:", error.code);
+        return null;
     }
 }
 
 
+/**
+ * Validates a referral code by checking if it belongs to an existing user.
+ * @param {string} code - The referral code to validate.
+ * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
+ */
+export async function validateReferralCode(code) {
+    if (!code || typeof code !== 'string') return null;
+    try {
+        const q = query(collection(db, "users"), where("referralCode", "==", code.trim().toUpperCase()));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+            return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        }
+        return null;
+    } catch (e) {
+        console.error("Error validating referral code:", e);
+        return null;
+    }
+}

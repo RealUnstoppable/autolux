@@ -17,25 +17,33 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-export async function submitDetailingRequest(userId, requestData) {
+export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
     
     try {
-        const docRef = await addDoc(collection(db, "bookings"), {
+        const bookingData = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
             userId: userId,
             createdAt: serverTimestamp(),
             status: 'pending'
-        });
+        };
+
+        if (requestData.referralCode) {
+            bookingData.referralCode = requestData.referralCode.trim().toUpperCase();
+        }
+
+        const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request:", error.message || error, error.code ? `(Code: ${error.code})` : "");
+        console.error("Failed to submit detailing request.");
+        if (error.code) console.error("Firebase error code:", error.code);
         return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }
+
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key
@@ -50,5 +58,19 @@ export function safeSetSessionStorage(key, value) {
         } else {
             console.error('Error setting session storage for key:', key, e);
         }
+    }
+}
+
+/**
+ * Safely gets an item from sessionStorage, catching SecurityError.
+ * @param {string} key
+ * @returns {string|null}
+ */
+export function safeGetSessionStorage(key) {
+    try {
+        return sessionStorage.getItem(key);
+    } catch (e) {
+        console.warn('Session storage read failed. Key:', key, e);
+        return null;
     }
 }
