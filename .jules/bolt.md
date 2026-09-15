@@ -20,3 +20,7 @@
 ## 2025-05-24 - [Safely Accessing sessionStorage]
 **Learning:** Browsers in strict privacy modes or incognito settings can block access to `sessionStorage`, causing `getItem` or `setItem` to throw exceptions (like `SecurityError` or `QuotaExceededError`). If these calls are not handled, they will crash the executing script and break page functionality.
 **Action:** When interacting with `sessionStorage` (or `localStorage`), always wrap the read and write operations in a `try...catch` block to gracefully fail without breaking the rest of the application execution.
+
+## 2026-05-24 - [Batched DOM Updates with DocumentFragment]
+**Learning:** Appending DOM elements inside loops using `container.appendChild()` causes excessive layout thrashing and repaints, drastically reducing frontend rendering performance, especially for lists.
+**Action:** Use `document.createDocumentFragment()` inside the loop to batch DOM updates, and append the fragment to the container once outside the loop to minimize performance overhead.
