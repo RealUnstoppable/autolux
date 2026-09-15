@@ -567,6 +567,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
@@ -684,6 +685,7 @@
 
             function renderReviewItems(list) {
                 container.innerHTML = '';
+                const fragment = document.createDocumentFragment();
                 list.forEach(r => {
                     const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
@@ -701,8 +703,9 @@
                     const el = document.createElement('div');
                     el.className = 'review-card';
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name} <span style="font-size: 0.8rem; color: var(--text-muted);">(${date})</span></p>`;
-                    container.appendChild(el);
+                    fragment.appendChild(el);
                 });
+                container.appendChild(fragment);
             }
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads

@@ -250,6 +250,8 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
+
             reviewsToRender.forEach(r => {
                 const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
                 let date = 'Recent';
@@ -268,8 +270,9 @@
                     <div class="author">- ${escapeHTML(r.userName || 'Anonymous')}</div>
                     <div class="date">${date}</div>
                 `;
-                grid.appendChild(el);
+                fragment.appendChild(el);
             });
+            grid.appendChild(fragment);
         }
 
         function escapeHTML(str) {
