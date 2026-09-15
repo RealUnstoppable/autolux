@@ -6,7 +6,12 @@
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format" fetchpriority="high">
     <style>
         /* =========================================
            MOBILE-FIRST BASE STYLES
@@ -293,11 +298,12 @@
             outline-offset: 2px;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
     <nav>
-        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
@@ -307,7 +313,7 @@
             <a href="#faq" aria-label="Go to FAQ section" onclick="closeMenu()">FAQ</a>
             <a href="#contact" aria-label="Go to Contact section" onclick="closeMenu()">Contact</a>
             <a href="booking.html" aria-label="Book a detailing appointment">Book Now</a>
-            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
+            <a href="sign in beta.html" class="auth-btn" id="nav-auth-btn" aria-label="Sign in to your account" onclick="sessionStorage.setItem('redirectAfterLogin', window.location.href);">Sign In</a>
         </div>
     </nav>
 
@@ -375,12 +381,13 @@
 
     <section id="gallery">
         <h2>Recent Work</h2>
+        <!-- ⚡ Bolt Optimization: Added explicit width="600" height="400" attributes to lazy-loaded gallery images to reserve space before loading, reducing Cumulative Layout Shift (CLS) during scrolling. -->
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" fetchpriority="high"></div>
         </div>
     </section>
 
@@ -408,8 +415,8 @@
                 </select>
             </div>
             <div style="margin-bottom: 15px;">
-                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment:</label>
-                <textarea id="review-comment" rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment: <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                <textarea id="review-comment" required rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
@@ -458,15 +465,15 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name:</label>
+                    <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email:</label>
+                    <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message:</label>
+                    <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
@@ -476,7 +483,7 @@
 
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Join our newsletter for detailing tips and 10% off your first wash.</p>
         <form class="newsletter" id="newsletter-form">
-            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required>
+            <input type="email" id="news-email" placeholder="Enter your email address" aria-label="Email address for newsletter" required autocomplete="email">
             <button type="submit" id="news-submit-btn">Subscribe</button>
         </form>
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
@@ -488,9 +495,9 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from '/js/auth.js';
-        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML, safeSetSessionStorage } from '/js/utils.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
+        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { escapeHTML, safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -530,7 +537,7 @@
                             currentUserName = userDoc.data().name || userDoc.data().username || "Anonymous User";
                         }
                     } catch (error) {
-                        console.error("Could not fetch user profile", error, error.code ? `(Code: ${error.code})` : '');
+                        console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
                     }
 
                     const redirectPath = await getUserRedirectPath(user);
@@ -560,19 +567,20 @@
                 return;
             }
 
-            faqs.forEach(data => {
+            faqs.forEach((data, index) => {
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
+                const faqId = `faq-answer-${index}`;
 
-                const el = document.createElement('div');
+                                const el = document.createElement('div');
                 el.className = 'faq-item';
                 el.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;';
-                el.innerHTML = `
-                    <button class="faq-question" aria-expanded="false" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
+                                el.innerHTML = `
+                    <button class="faq-question" aria-expanded="false" aria-controls="${faqId}" style="width: 100%; text-align: left; background: none; border: none; padding: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit;">
                         ${question}
                         <span class="faq-icon" style="color: var(--gold); font-size: 1.5rem; transition: transform 0.3s;">+</span>
                     </button>
-                    <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
+                    <div id="${faqId}" class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease-out; background: rgba(0,0,0,0.2);">
                         <p style="margin: 0; padding: 0 20px 20px 20px; color: var(--text-muted); line-height: 1.6;">${answer}</p>
                     </div>
                 `;
@@ -603,8 +611,11 @@
                     }
                 });
 
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+
+            // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
+            container.appendChild(fragment);
         }
 
         // Load FAQs
@@ -612,10 +623,14 @@
             const container = document.getElementById('faq-container');
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static FAQ data to save DB reads
-            const cachedFaqs = sessionStorage.getItem('autolux_faqs');
-            if (cachedFaqs) {
-                renderFaqs(JSON.parse(cachedFaqs), container);
-                return;
+            try {
+                const cachedFaqs = sessionStorage.getItem('autolux_faqs');
+                if (cachedFaqs) {
+                    renderFaqs(JSON.parse(cachedFaqs), container);
+                    return;
+                }
+            } catch(e) {
+                console.warn("sessionStorage access error:", e);
             }
 
             container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">Loading FAQs...</div>';
@@ -636,12 +651,12 @@
                     ];
                 }
 
-                sessionStorage.setItem('autolux_faqs', JSON.stringify(faqs));
+                safeSetSessionStorage('autolux_faqs', JSON.stringify(faqs));
 
                 renderFaqs(faqs, container);
             } catch (e) {
                 console.error("Error loading FAQs", e);
-                container.innerHTML = '<div style="width: 100%; text-align: center; color: #ef4444;">Unable to load FAQs.</div>';
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--error);">Unable to load FAQs.</div>';
             }
         }
 
@@ -649,8 +664,83 @@
         loadFaqs();
 
         // Render Reviews helper function
+
+
+        // Load Reviews
+
+
+        async function loadReviews() {
+            const container = document.getElementById('reviews-container-el');
+            const defaultReviews = [
+                { userName: "Marcus T.", rating: 5, comment: "Unstoppable Detailing is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
+                { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
+                { userName: "David L.", rating: 5, comment: "The safe wash and paint enhancement took out all the micro-swirls. Highly recommended for any luxury car owner." }
+            ];
+
+            function renderReviewItems(list) {
+                container.innerHTML = '';
+                list.forEach(r => {
+                    const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
+                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+                    let date = 'Recent';
+                    if (r.createdAt) {
+                        if (r.createdAt.toDate) {
+                            date = r.createdAt.toDate().toLocaleDateString();
+                        } else if (typeof r.createdAt === 'string') {
+                            date = new Date(r.createdAt).toLocaleDateString();
+                        }
+                    }
+                    const name = escapeHTML(r.userName || "Anonymous");
+                    const comment = escapeHTML(r.comment || "");
+
+                    const el = document.createElement('div');
+                    el.className = 'review-card';
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name} <span style="font-size: 0.8rem; color: var(--text-muted);">(${date})</span></p>`;
+                    container.appendChild(el);
+                });
+            }
+
+            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            try {
+                const cachedReviews = safeGetSessionStorage('autolux_reviews');
+                if (cachedReviews) {
+                    renderReviewItems(JSON.parse(cachedReviews));
+                    return;
+                }
+            } catch(e) {
+                console.warn('Session storage cache read failed:', e);
+            }
+
+            try {
+                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
+                const querySnapshot = await getDocs(q);
+                let reviews = querySnapshot.docs.map(doc => doc.data());
+                
+                if (reviews.length === 0) {
+                    reviews = defaultReviews;
+                } else {
+                    reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
+                    // Stringify timestamps for caching
+                    reviews = reviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
+                }
+
+                try {
+                    safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
+                } catch(e) {
+                    console.warn('Session storage cache write failed:', e);
+                }
+
+                renderReviewItems(reviews);
+            } catch (error) {
+                console.warn("Could not load reviews from database, rendering default testimonials:", error);
+                renderReviewItems(defaultReviews);
+            }
+        }
+
         function renderReviewsList(reviews, container) {
-            if (!reviews || reviews.length === 0) {
+            reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+            if (reviews.length === 0) {
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
                 return;
             }
@@ -672,64 +762,29 @@
             });
         }
 
-        // Load Reviews
-        function renderReviewsList(reviews, container) {
+
+
+        function renderReviews(reviews, container) {
             if (reviews.length === 0) {
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
                 return;
             }
+
             container.innerHTML = '';
+
             reviews.forEach(r => {
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                 const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
                 const name = escapeHTML(r.userName || "Anonymous");
                 const comment = escapeHTML(r.comment || "");
+
                 const el = document.createElement('div');
                 el.className = 'review-card';
                 el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
                 container.appendChild(el);
             });
-        }
-
-        async function loadReviews() {
-            const container = document.getElementById('reviews-container-el');
-            const defaultReviews = [
-                { userName: "Marcus T.", rating: 5, comment: "Unstoppable Detailing is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
-                { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
-                { userName: "David L.", rating: 5, comment: "The safe wash and paint enhancement took out all the micro-swirls. Highly recommended for any luxury car owner." }
-            ];
-
-            function renderReviewItems(list) {
-                container.innerHTML = '';
-                list.forEach(r => {
-                    const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
-                    const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
-                    const name = escapeHTML(r.userName || "Anonymous");
-                    const comment = escapeHTML(r.comment || "");
-
-                    const el = document.createElement('div');
-                    el.className = 'review-card';
-                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
-                    container.appendChild(el);
-                });
-            }
-
-            try {
-                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
-                const querySnapshot = await getDocs(q);
-                let reviews = querySnapshot.docs.map(doc => doc.data());
-                
-                if (reviews.length === 0) {
-                    reviews = defaultReviews;
-                } else {
-                    reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
-                }
-
-                renderReviewItems(reviews);
-            } catch (error) {
-                console.warn("Could not load reviews from database, rendering default testimonials:", error);
-                renderReviewItems(defaultReviews);
-            }
         }
 
         // Load reviews on page load
@@ -744,19 +799,19 @@
             const comment = document.getElementById('review-comment').value.trim();
 
             if (!currentUser) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "You must be signed in to leave a review.";
                 return;
             }
 
             if (!comment) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please enter a comment.";
                 return;
             }
 
             if (comment.length > 1000) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Comment is too long (max 1000 characters).";
                 return;
             }
@@ -780,7 +835,7 @@
                 document.getElementById('review-comment').value = '';
             } catch (error) {
                 console.error("Error submitting review", error, error.code ? `(Code: ${error.code})` : '');
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
                 btn.disabled = false;
@@ -795,7 +850,7 @@
             const msg = document.getElementById('news-msg');
             const btn = document.getElementById('news-submit-btn');
             if(!email) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Please enter an email address.";
                 return;
             }
@@ -803,7 +858,7 @@
             // Basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Please enter a valid email address.";
                 return;
             }
@@ -822,13 +877,41 @@
                 document.getElementById('news-email').value = '';
             } catch(error) {
                 console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
-                msg.style.color = "#ef4444";
+                msg.style.color = "var(--error)";
                 msg.textContent = "Error subscribing. Please try again.";
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Subscribe";
             }
         });
+
+        // Character Counters Logic
+        function setupCharCounters() {
+            const reviewComment = document.getElementById('review-comment');
+            const reviewCounter = document.getElementById('review-char-count');
+
+            if (reviewComment && reviewCounter) {
+                const updateReviewCount = () => {
+                    const length = reviewComment.value.length;
+                    reviewCounter.textContent = `${length} / 1000`;
+                };
+                reviewComment.addEventListener('input', updateReviewCount);
+                updateReviewCount(); // Initial call
+            }
+
+            const inqMessage = document.getElementById('inq-message');
+            const inqCounter = document.getElementById('inq-char-count');
+
+            if (inqMessage && inqCounter) {
+                const updateInqCount = () => {
+                    const length = inqMessage.value.length;
+                    inqCounter.textContent = `${length} / 1000`;
+                };
+                inqMessage.addEventListener('input', updateInqCount);
+                updateInqCount(); // Initial call
+            }
+        }
+        setupCharCounters();
 
         // Submit Inquiry Logic
         window.submitInquiry = async (e) => {
@@ -840,7 +923,7 @@
             const message = document.getElementById('inq-message').value.trim();
 
             if (!name || !email || !message) {
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please fill out all fields.";
                 return;
             }
@@ -863,7 +946,7 @@
                 document.getElementById('inquiry-form').reset();
             } catch (error) {
                 console.error("Error submitting inquiry:", error.message, error.code);
-                msgEl.style.color = "#ef4444";
+                msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Error sending message. Please try again later.";
             } finally {
                 btn.disabled = false;
