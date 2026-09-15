@@ -1,7 +1,7 @@
 import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export let app, auth, db;
 
@@ -74,8 +74,16 @@ export async function ensureUserDocument(user) {
         const userDoc = await getDoc(userDocRef);
 
         if (userDoc.exists()) {
-            return userDoc.data();
+            let data = userDoc.data();
+            if (!data.referralCode) {
+                const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                await setDoc(userDocRef, { referralCode: referralCode, referralCredits: 0 }, { merge: true });
+                data.referralCode = referralCode;
+                data.referralCredits = 0;
+            }
+            return data;
         } else {
+            const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
             const newUserData = {
                 uid: user.uid,
                 email: user.email,
@@ -87,7 +95,9 @@ export async function ensureUserDocument(user) {
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
-                contactInfo: {}
+                contactInfo: {},
+                referralCode: referralCode,
+                referralCredits: 0
             };
             await setDoc(userDocRef, newUserData);
             return newUserData;
@@ -234,3 +244,23 @@ export async function submitDetailingRequest(requestData) {
     }
 }
 
+
+/**
+ * Validates a referral code by checking if it belongs to an existing user.
+ * @param {string} code - The referral code to validate.
+ * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
+ */
+export async function validateReferralCode(code) {
+    if (!code || typeof code !== 'string') return null;
+    try {
+        const q = query(collection(db, "users"), where("referralCode", "==", code.trim().toUpperCase()));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+            return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        }
+        return null;
+    } catch (e) {
+        console.error("Error validating referral code:", e);
+        return null;
+    }
+}

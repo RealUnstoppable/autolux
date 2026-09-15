@@ -96,6 +96,14 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Referrals collection
+    match /referrals/{referralId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.referrerId == request.auth.uid);
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // Site Stats collection
     match /site_stats/{docId} {
       allow read: if true;
