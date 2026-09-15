@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install dependencies
 npm install --silent
-
-# Run the tests
-npm run test
+npx playwright install
+node run_tests.cjs
+node run_utils_test.cjs

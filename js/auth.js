@@ -137,6 +137,24 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
         if (!user) return 'sign in beta.html';
         return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
+
+    const decodedPath = decodeURIComponent(currentPathname || window.location.pathname);
+
+    if (!user) {
+        const publicPaths = ['/index.html', '/', '/sign in beta.html', '/donate.html'];
+        const isPublicPath = publicPaths.some(p => decodedPath.endsWith(p));
+        return isPublicPath ? null : 'sign in beta.html';
+    }
+
+    // Authenticated user routing
+    if (userData?.isAdmin) {
+        if (!decodedPath.endsWith('/admin.html')) return 'admin.html';
+    } else {
+        if (decodedPath.endsWith('/admin.html')) return 'account.html';
+        if (decodedPath.endsWith('/sign in beta.html')) return 'account.html';
+    }
+
+    return null;
 }
 
 export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
@@ -209,10 +227,9 @@ export async function submitDetailingRequest(requestData) {
         return null;
     }
     try {
-        const docId = await submitDetailingRequestCore({
-            ...requestData,
-            userId: currentUser.uid // Required by security rules
-        });
+        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
+        if (!result.success) throw new Error(result.error);
+        const docId = result.docId;
         console.log("Detailing request submitted successfully with ID:", docId);
         return docId;
     } catch (error) {
