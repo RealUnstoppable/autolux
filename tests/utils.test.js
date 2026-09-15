@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert';
 
 // Import the dynamically generated, modified target that doesn't use network imports
-import { escapeHTML, submitDetailingRequest } from './tmp/utils.test_target.js';
+import { escapeHTML, submitDetailingRequest } from '../js/utils.js';
 
 test('escapeHTML escapes HTML characters correctly', () => {
     assert.strictEqual(escapeHTML('<script>alert("test")&\'</script>'), '&lt;script&gt;alert(&quot;test&quot;)&amp;&#039;&lt;/script&gt;');

@@ -5,7 +5,7 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp 
 export let app, auth, db;
 
 try {
-    const appName = "autolux";
+    const appName = "autolux_" + window.location.hostname.replace(/[^a-zA-Z0-9]/g, "_");
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -37,6 +37,9 @@ try {
     db = getFirestore(app);
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
+    if (firebaseConfig.authDomain && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && !firebaseConfig.authDomain.includes(window.location.hostname)) {
+        console.warn(`Cross-Origin Auth Warning: Current hostname (${window.location.hostname}) is not in Firebase authDomain (${firebaseConfig.authDomain}). Authentication may fail.`);
+    }
 } catch (error) {
     console.error("Firebase connection error. Check App Check, CORS, or config.");
     if (error.code) console.error("Error code:", error.code);
@@ -45,7 +48,7 @@ try {
     console.error("Firebase Initialization Error:", error.message);
 }
 
-export { app, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
+export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -138,7 +141,6 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
         if (!user) return 'sign in beta.html';
         return 'account.html'; // Basic fallback if userData is not provided synchronously
     }
-    const decodedPath = decodeURIComponent(currentPathname);
     const pathname = currentPathname || window.location.pathname;
     const decodedPath = decodeURIComponent(pathname);
 
