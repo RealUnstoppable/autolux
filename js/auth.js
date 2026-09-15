@@ -7,6 +7,8 @@ export let app, auth, db;
 
 try {
     const appName = "autolux";
+    const hostname = window.location.hostname;
+    const isAutolux = hostname.includes('autolux');
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -46,6 +48,7 @@ try {
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
+
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -87,7 +90,8 @@ export async function ensureUserDocument(user) {
                 signupDate: serverTimestamp(),
                 vehicles: [],
                 appointments: [],
-                contactInfo: {}
+                contactInfo: {},
+                loyaltyPoints: 0
             };
             await setDoc(userDocRef, newUserData);
             return newUserData;
@@ -125,6 +129,11 @@ export function waitForAuthState() {
     });
 }
 
+export async function getUserRedirectPathAsyncSimple(user) {
+  if (!user) return 'sign in beta.html';
+  return 'account.html';
+}
+
 /**
  * Determines the correct redirect path for a user based on their role and current location.
  * @param {Object} user - The Firebase auth user object.
@@ -136,7 +145,7 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
     // Overloading support for simpler form: getUserRedirectPath(user)
     if (!userData && !currentPathname) {
         if (!user) return 'sign in beta.html';
-        return 'account.html'; // Basic fallback if userData is not provided synchronously
+        return 'account.html';
     }
     return getUserRedirectPathAsync(user, userData, currentPathname);
 }
@@ -215,7 +224,7 @@ export async function submitDetailingRequest(requestData) {
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
-        return null;
+        return { success: false, error: "You must be signed in to submit a request." };
     }
     try {
         const result = await submitDetailingRequestCore(currentUser.uid, requestData);

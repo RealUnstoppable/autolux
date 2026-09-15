@@ -146,11 +146,16 @@
             color: #FBBF24;
             background: rgba(251, 191, 36, 0.15);
         }
+        .appointment-card.pending { border-left-color: var(--gold); }
+        .appointment-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        .appointment-card p { margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; }
 
         .status-badge.approved, .status-badge.completed {
             color: #16A34A;
             background: rgba(22, 163, 74, 0.15);
         }
+        .badge.pending { background: rgba(212, 175, 55, 0.2); color: var(--gold); }
+        .badge.confirmed { background: rgba(22, 163, 74, 0.2); color: #16A34A; }
 
         .status-badge.cancelled {
             color: var(--error);
@@ -416,6 +421,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             vehicles.forEach((v, index) => {
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
@@ -425,8 +431,9 @@
                     <span>${escapeHTML(v)}</span>
                     <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
                 `;
-                list.appendChild(el);
+                fragment.appendChild(el);
             });
+            list.appendChild(fragment);
         }
 
         document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
