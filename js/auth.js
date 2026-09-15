@@ -1,4 +1,3 @@
-import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -7,7 +6,7 @@ export let app, auth, db;
 
 try {
     const appName = "autolux";
-    const hostname = window.location.hostname;
+    const hostname = (typeof window !== 'undefined' && window.location) ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
@@ -29,12 +28,13 @@ try {
     };
 
     const apps = getApps();
-    const existingApp = apps.find(a => a.name === appName);
+    const fullAppName = appName + '-' + hostname;
+    const existingApp = apps.find(a => a.name === fullAppName);
 
     if (existingApp) {
         app = existingApp;
     } else {
-        app = initializeApp(firebaseConfig, appName);
+        app = initializeApp(firebaseConfig, fullAppName);
     }
 
     auth = getAuth(app);
@@ -129,11 +129,6 @@ export function waitForAuthState() {
     });
 }
 
-export async function getUserRedirectPathAsync(user) {
-  if (!user) return 'sign in beta.html';
-  return 'account.html';
-}
-
 /**
  * Determines the correct redirect path for a user based on their role and current location.
  * @param {Object} user - The Firebase auth user object.
@@ -206,40 +201,6 @@ export function safeRedirect(targetUrl) {
 
     if (currentPath !== targetPath) {
         window.location.replace(targetUrl);
-    }
-}
-
-/**
- * Submits a new detailing request to Firestore.
- * @param {Object} requestData - The data for the detailing request.
- * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
- */
-
-
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "You must be signed in to submit a request." };
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
     }
 }
 
