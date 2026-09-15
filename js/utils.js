@@ -57,3 +57,17 @@ export function safeSetSessionStorage(key, value) {
         }
     }
 }
+
+/**
+ * Safely gets an item from sessionStorage, catching SecurityError.
+ * @param {string} key
+ * @returns {string|null}
+ */
+export function safeGetSessionStorage(key) {
+    try {
+        return sessionStorage.getItem(key);
+    } catch (e) {
+        console.warn('Session storage read failed. Key:', key, e);
+        return null;
+    }
+}
