@@ -304,6 +304,7 @@
         import { auth, db, getAuthStatePromise, validateReferralCode } from './js/auth.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage } from './js/utils.js';
+        import { submitDetailingRequest } from './js/api.js';
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
