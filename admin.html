@@ -397,7 +397,7 @@
                 const snapshot = await promise;
                 return snapshot.docs ? snapshot.docs.map(mapper) : [];
             } catch (error) {
-                console.error(`Error fetching ${collectionName}:`, error.message);
+                console.error(`Error fetching ${collectionName}:`, { code: error.code, message: error.message, details: error });
                 return [];
             }
         }
@@ -439,7 +439,6 @@
 
                 // Fetch Detailing Bookings & Quotes
                 const bookings = await resolveQuery(bookingsPromise, "bookings");
-                bookings.sort((a, b) => new Date(b.appointmentDate?.toDate ? b.appointmentDate.toDate() : b.appointmentDate) - new Date(a.appointmentDate?.toDate ? a.appointmentDate.toDate() : a.appointmentDate));
                 bookings.sort((a, b) => {
                     const dateA = a.appointmentDate?.toDate ? a.appointmentDate.toDate() : new Date(a.appointmentDate);
                     const dateB = b.appointmentDate?.toDate ? b.appointmentDate.toDate() : new Date(b.appointmentDate);
@@ -467,7 +466,7 @@
                     const inquiries = inquiriesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderInquiriesTable(inquiries);
                 } catch (inqError) {
-                    console.log("Could not load inquiries. Missing Firestore rules?", inqError);
+                    console.log("Could not load inquiries. Missing Firestore rules?", { code: inqError.code, message: inqError.message, details: inqError });
                     document.getElementById('inquiries-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`);
                 }
 
@@ -477,7 +476,7 @@
                     const reviews = reviewsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderReviewsTable(reviews);
                 } catch (revError) {
-                    console.error("Could not load reviews.", revError);
+                    console.error("Could not load reviews.", { code: revError.code, message: revError.message, details: revError });
                     document.getElementById('reviews-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`);
                 }
 
@@ -486,7 +485,7 @@
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
                 } catch (faqError) {
-                    console.log("Could not load FAQs", faqError);
+                    console.log("Could not load FAQs", { code: faqError.code, message: faqError.message, details: faqError });
                     document.getElementById('faqs-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`);
                 }
 
@@ -496,7 +495,7 @@
                     const requests = featureRequestsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFeatureRequestsTable(requests);
                 } catch (frError) {
-                    console.error("Could not load feature requests.", frError);
+                    console.error("Could not load feature requests.", { code: frError.code, message: frError.message, details: frError });
                     document.getElementById('feature-request-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`);
                 }
                 
@@ -507,12 +506,12 @@
                         document.getElementById('download-count-infosheet').textContent = statsDoc.data().infoSheet || 0;
                     }
                 } catch (e) {
-                    console.error("Error loading download stats:", e);
+                    console.error("Error loading download stats:", { code: e.code, message: e.message, details: e });
                     document.getElementById('download-count-infosheet').textContent = "N/A";
                 }
 
             } catch (error) {
-                console.error("Error loading admin data:", error);
+                console.error("Error loading admin data:", { code: error.code, message: error.message, details: error });
             }
         }
 
