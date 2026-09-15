@@ -304,7 +304,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
+        import { auth, db, safeRedirect, onAuthStateChanged, signOut, getAuthStatePromise } from '/js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
         import { escapeHTML } from '/js/utils.js';
 
@@ -314,7 +314,8 @@
         const appointmentsListEl = document.getElementById('appointments-list');
         const logoutBtn = document.getElementById('logout-btn');
 
-        onAuthStateChanged(auth, async (user) => {
+        async function initAccountPage() {
+            const user = await getAuthStatePromise();
             if (!user) {
                 // Not authenticated, redirect to login
                 window.location.replace('sign in beta.html');
