@@ -38,9 +38,6 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
 }
 
-export async function submitDetailingRequest(userId, requestData) {
-    return await submitDetailingRequestCore(userId, requestData);
-}
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
  * @param {string} key

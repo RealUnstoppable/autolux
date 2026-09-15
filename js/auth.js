@@ -129,11 +129,6 @@ export function waitForAuthState() {
     });
 }
 
-export async function getUserRedirectPathAsyncSimple(user) {
-  if (!user) return 'sign in beta.html';
-  return 'account.html';
-}
-
 /**
  * Determines the correct redirect path for a user based on their role and current location.
  * @param {Object} user - The Firebase auth user object.
@@ -206,40 +201,6 @@ export function safeRedirect(targetUrl) {
 
     if (currentPath !== targetPath) {
         window.location.replace(targetUrl);
-    }
-}
-
-/**
- * Submits a new detailing request to Firestore.
- * @param {Object} requestData - The data for the detailing request.
- * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
- */
-
-
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "You must be signed in to submit a request." };
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
     }
 }
 
