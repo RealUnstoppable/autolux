@@ -22,3 +22,6 @@ export const addDoc = jest.fn(async (col, data) => {
     return { id: 'mock-doc-id' };
 });
 export const serverTimestamp = jest.fn();
+export const query = jest.fn();
+export const where = jest.fn();
+export const getDocs = jest.fn();

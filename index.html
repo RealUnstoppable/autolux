@@ -131,6 +131,12 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
             transform: scale(0.96);
         }
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            padding: 80px 20px 20px 20px; box-sizing: border-box;
+            position: relative; z-index: 1;
+        }
+
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
         .hero p { font-size: 1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;}
         
@@ -298,6 +304,7 @@
             outline-offset: 2px;
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -670,6 +677,11 @@
 
         async function loadReviews() {
             const container = document.getElementById('reviews-container-el');
+            const cachedReviews = sessionStorage.getItem('autolux_reviews');
+            if (cachedReviews) {
+                renderReviewItems(JSON.parse(cachedReviews));
+                return;
+            }
             const defaultReviews = [
                 { userName: "Marcus T.", rating: 5, comment: "Unstoppable Detailing is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
                 { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
@@ -713,7 +725,13 @@
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
-                let reviews = querySnapshot.docs.map(doc => doc.data());
+                let reviews = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    if (data.createdAt && data.createdAt.toDate) {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    }
+                    return data;
+                });
                 
                 if (reviews.length === 0) {
                     reviews = defaultReviews;
@@ -729,6 +747,7 @@
                     console.warn('Session storage cache write failed:', e);
                 }
 
+                safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
                 renderReviewItems(reviews);
             } catch (error) {
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
