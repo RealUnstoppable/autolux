@@ -1,16 +1,8 @@
 import { db } from './auth.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+import { submitDetailingRequest as utilSubmit } from './utils.js';
 export async function submitDetailingRequest(bookingData) {
-    try {
-        const docRef = await addDoc(collection(db, "bookings"), {
-            ...bookingData,
-            createdAt: serverTimestamp()
-        });
-        console.log("Document written with ID: ", docRef.id);
-        return { success: true, id: docRef.id };
-    } catch (error) {
-        console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error };
-    }
+    // Assuming bookingData has userId, if not, we pass null and it will fail unless modified
+    return await utilSubmit(bookingData.userId, bookingData);
 }

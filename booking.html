@@ -271,6 +271,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise } from '/js/auth.js';
+        import { submitDetailingRequest } from '/js/utils.js';
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
         let currentUser = null;
@@ -320,6 +321,7 @@
                 }
             } catch(e) {
                 console.error('Error initializing booking page', e);
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
         initBookingPage();
@@ -355,7 +357,8 @@
                     createdAt: serverTimestamp()
                 };
 
-                await addDoc(collection(db, "bookings"), bookingDoc);
+                const result = await submitDetailingRequest(currentUser.uid, { customerEmail: currentUser.email || "", package: selectedPackage, vehicle: vehicle, appointmentDate: appointmentDate, notes: notes });
+                if (!result.success) throw new Error(result.error || "Failed to book");
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
@@ -371,6 +374,7 @@
                 msgEl.textContent = 'Failed to submit booking request. Please try again.';
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Booking Request';
+                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>
