@@ -28,3 +28,7 @@ Hardcoded configuration values can unintentionally establish connections to real
 
 **Prevention:**
 Always load configuration dynamically from an environment object (e.g., `window.ENV`) and strictly enforce a fail-secure state by throwing an error if the required configuration is missing, avoiding real or plausible fallback values.
+## 2026-08-16 - Open Redirect in window.location.replace
+**Vulnerability:** Found an Open Redirect and possible XSS vulnerability in `js/auth.js` where unvalidated target URLs were passed to `window.location.replace`. An attacker could exploit this by providing absolute URLs pointing to malicious domains or passing `javascript:` URIs.
+**Learning:** Any URL used for redirection client-side must be strictly validated to ensure it's on the same origin (or relative) and doesn't use potentially dangerous protocols like `javascript:`. Even if the path filename looks benign, the protocol and origin must be verified.
+**Prevention:** Always validate target URLs using the `URL` constructor with a safe dummy base URL and check the `origin` and `protocol` properties to block absolute or `javascript:` URLs.

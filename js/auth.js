@@ -170,11 +170,26 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
 export function safeRedirect(targetUrl) {
     if (!targetUrl) return;
 
-    const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
-    const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
+    try {
+        // 🛡️ Sentinel: Prevent Open Redirect and javascript: URI XSS
+        const dummyBase = 'http://safe-dummy-base.local';
+        const parsed = new URL(targetUrl, dummyBase);
 
-    if (currentPath !== targetPath) {
-        window.location.replace(targetUrl);
+        // If the origin is not the dummy base, it's an absolute URL (Open Redirect risk)
+        // If protocol is javascript:, it's an XSS risk
+        if (parsed.origin !== dummyBase || parsed.protocol === 'javascript:') {
+            console.error('Unsafe redirect attempt blocked:', targetUrl);
+            return;
+        }
+
+        const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
+        const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
+
+        if (currentPath !== targetPath) {
+            window.location.replace(targetUrl);
+        }
+    } catch (e) {
+        console.error('Invalid URL in safeRedirect:', targetUrl);
     }
 }
 
