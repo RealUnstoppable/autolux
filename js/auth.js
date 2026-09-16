@@ -229,10 +229,12 @@ export function safeRedirect(targetUrl) {
     }
 }
 
+
+
 /**
- * Submits a new detailing request to Firestore.
- * @param {Object} requestData - The data for the detailing request.
- * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
+ * Validates a referral code by checking if it belongs to an existing user.
+ * @param {string} code - The referral code to validate.
+ * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
  */
 
 

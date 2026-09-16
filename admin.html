@@ -808,7 +808,9 @@
                 if (performanceChart.config.type === chartConfig.type) {
                     performanceChart.data = chartConfig.data;
                     performanceChart.options = chartConfig.options;
-                    performanceChart.update();
+                    requestAnimationFrame(() => {
+                        performanceChart.update();
+                    });
                 } else {
                     performanceChart.destroy();
                     performanceChart = new Chart(ctx, chartConfig);

@@ -531,7 +531,7 @@
                         totalRaised += (doc.data().amount || 0);
                     });
                 } catch(dbErr) {
-                    console.warn("Could not load donations from db:", dbErr.code);
+                    console.warn("Could not load donations from db:", dbErr.message || dbErr, dbErr.code ? `(Code: ${dbErr.code})` : "");
                     totalRaised += 350; // Mock additional donations
                 }
 
@@ -541,7 +541,7 @@
                 progressTextEl.textContent = `$${totalRaised.toLocaleString()} / $100,000 Raised!`;
                 progressFillEl.style.width = `${percentage}%`;
             } catch (e) {
-                console.error("Error loading donation progress:", e);
+                console.error("Error loading donation progress:", e.message || e, e.code ? `(Code: ${e.code})` : "");
                 progressTextEl.textContent = `$1,500 / $100,000 Raised!`;
                 progressFillEl.style.width = `1.5%`;
             }

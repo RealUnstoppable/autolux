@@ -516,7 +516,7 @@
 
                 input.value = '';
             } catch (err) {
-                console.error("Error adding vehicle:", err);
+                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                 alert("Failed to add vehicle.");
             } finally {
                 btn.textContent = originalText;
@@ -551,7 +551,7 @@
                         list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
                     }
                 } catch (err) {
-                    console.error("Error removing vehicle:", err);
+                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                     alert("Failed to remove vehicle.");
                     e.target.textContent = originalText;
                     e.target.disabled = false;

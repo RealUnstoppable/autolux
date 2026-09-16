@@ -291,7 +291,7 @@
                     }
                 }
             } catch(e) {
-                console.error('Error checking auth state on sign in page', e);
+                console.error("Error checking auth state on sign in page:", e.message || e, e.code ? `(Code: ${e.code})` : "");
             }
         }
         initSignInPage();
