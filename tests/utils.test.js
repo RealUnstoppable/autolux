@@ -1,39 +1,43 @@
 import { jest } from '@jest/globals';
+import { escapeHTML, submitDetailingRequestCore } from '../js/utils.js';
 
-// Import the dynamically generated, modified target that doesn't use network imports
-import { escapeHTML, submitDetailingRequest } from './tmp/utils.test_target.js';
+describe('utils.js', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-it('escapeHTML escapes HTML characters correctly', () => {
-    expect(escapeHTML('<script>alert("test")&\'</script>')).toStrictEqual('&lt;script&gt;alert(&quot;test&quot;)&amp;&#039;&lt;/script&gt;');
-});
+    test('escapeHTML escapes HTML characters correctly', () => {
+        expect(escapeHTML('<script>alert("test")&\'</script>')).toBe('&lt;script&gt;alert(&quot;test&quot;)&amp;&#039;&lt;/script&gt;');
+    });
 
-it('escapeHTML handles null and undefined gracefully', () => {
-    expect(escapeHTML(null)).toStrictEqual('');
-    expect(escapeHTML(undefined)).toStrictEqual('');
-});
+    test('escapeHTML handles null and undefined gracefully', () => {
+        expect(escapeHTML(null)).toBe('');
+        expect(escapeHTML(undefined)).toBe('');
+    });
 
-it('submitDetailingRequest fails if no userId provided', async () => {
-    const originalError = console.error;
-    console.error = () => {};
-    const result = await submitDetailingRequest(null, { service: 'Wash' });
-    console.error = originalError;
+    test('submitDetailingRequestCore fails if no userId provided', async () => {
+        const originalError = console.error;
+        console.error = jest.fn();
+        const result = await submitDetailingRequestCore(null, { service: 'Wash' });
+        console.error = originalError;
 
-    expect(result.success).toStrictEqual(false);
-    expect(result.error).toStrictEqual('User must be authenticated to submit a request.');
-});
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('User must be authenticated to submit a request.');
+    });
 
-it('submitDetailingRequest succeeds with valid data', async () => {
-    const result = await submitDetailingRequest('user123', { service: 'Wash' });
-    expect(result.success).toStrictEqual(true);
-    expect(result.docId).toStrictEqual('mock-doc-id');
-});
+    test('submitDetailingRequestCore succeeds with valid data', async () => {
+        const result = await submitDetailingRequestCore('user123', { service: 'Wash' });
+        expect(result.success).toBe(true);
+        expect(result.docId).toBe('mock-doc-id');
+    });
 
-it('submitDetailingRequest handles errors during addDoc', async () => {
-    const originalError = console.error;
-    console.error = () => {};
-    const result = await submitDetailingRequest('error-user', { service: 'Wash' });
-    console.error = originalError;
+    test('submitDetailingRequestCore handles errors during addDoc', async () => {
+        const originalError = console.error;
+        console.error = jest.fn();
+        const result = await submitDetailingRequestCore('error-user', { service: 'Wash' });
+        console.error = originalError;
 
-    expect(result.success).toStrictEqual(false);
-    expect(result.code).toStrictEqual('permission-denied');
+        expect(result.success).toBe(false);
+        expect(result.code).toBe('permission-denied');
+    });
 });
