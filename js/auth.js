@@ -1,4 +1,4 @@
-import { submitDetailingRequestCore } from './api.js';
+import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -42,9 +42,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
-    if (error.code) console.error("Error code:", error.code);
-    console.error("Full error:", error);
+    console.error({ code: error.code, message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
@@ -252,13 +250,11 @@ export async function submitDetailingRequest(requestData) {
             console.log("Detailing request submitted successfully with ID:", result.docId);
             return result.docId;
         } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
+            console.error({ code: result.code, message: result.error, details: result.error });
             return null;
         }
     } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
+        console.error({ code: error.code, message: error.message, details: error });
         return null;
     }
 }
