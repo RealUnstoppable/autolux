@@ -26,3 +26,6 @@
 ## 2026-09-15 - Consistent Loading UX
 **Learning:** Adding standard loading spinners (like `.spinner`) to authentication checks improves perceived performance and maintains consistent UX across the app.
 **Action:** Reuse existing CSS animation patterns (like `@keyframes spin`) when creating new loading states instead of relying on plain text.
+## 2024-11-21 - Missing Autocomplete Attributes
+**Learning:** Many standard input fields across different forms (e.g., name, email, phone, credit card details) were missing the `autocomplete` attribute. This is a crucial accessibility and usability feature (WCAG 1.3.5) that allows browsers to autofill user information, saving time and reducing friction.
+**Action:** When creating or modifying forms, always ensure that standard input fields include the appropriate `autocomplete` attributes (like `name`, `email`, `tel`, `cc-number`, etc.).
