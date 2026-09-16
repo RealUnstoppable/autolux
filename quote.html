@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Request a custom detailing quote from Unstoppable Detailing Services.">
+    <title>Custom Quote | Unstoppable Detailing Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --text-main: #F5F5F7;
+            --text-muted: #A3A3A3;
+            --accent: #2563EB;
+            --gold: #D4AF37;
+            --border: rgba(255, 255, 255, 0.1);
+            --error: #ef4444;
+            --success: #16a34a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:not(.auth-btn) {
+            color: var(--text-main);
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:not(.auth-btn):hover {
+            color: var(--accent);
+        }
+
+        .quote-container {
+            max-width: 650px;
+            margin: 50px auto;
+            width: 100%;
+            padding: 0 20px;
+            flex-grow: 1;
+        }
+
+        .quote-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .quote-card h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .quote-card p.desc {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Unified Button Styles */
+        .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
+            background: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 700 !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
+            content: '';
+            position: absolute;
+            top: 100%; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
+            z-index: -1;
+            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: inherit;
+        }
+
+        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
+            color: #000000 !important;
+        }
+
+        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
+            top: 0;
+        }
+
+        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 1), 0 0 10px 4px rgba(212, 175, 55, 0.6), 0 0 25px 8px rgba(212, 175, 55, 0.2) !important;
+            transform: scale(0.96);
+        }
+
+        #msg {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 15px 20px; }
+            .quote-card { padding: 25px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking.html">Book Service</a>
+            <a href="account.html">My Account</a>
+        </div>
+    </nav>
+
+    <div class="quote-container">
+        <div class="quote-card">
+            <h1>Request a Custom Quote</h1>
+            <p class="desc">Looking for Paint Protection Film, Ceramic Coating, or a custom fleet service? Fill out the form below and we'll get back to you with a personalized quote.</p>
+
+            <form id="quote-form">
+                <div class="input-group">
+                    <label for="name">Full Name <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="text" id="name" required autocomplete="name">
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="email" id="email" required autocomplete="email">
+                </div>
+
+                <div class="input-group">
+                    <label for="phone">Phone Number <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="tel" id="phone" required autocomplete="tel">
+                </div>
+
+                <div class="input-group">
+                    <label for="vehicle">Vehicle(s) Details (Year, Make, Model) <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <input type="text" id="vehicle" placeholder="e.g. 2024 Porsche 911" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="service">Service Requested <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <select id="service" required>
+                        <option value="">-- Choose a Service --</option>
+                        <option value="Ceramic Coating">Ceramic Coating</option>
+                        <option value="Paint Protection Film (PPF)">Paint Protection Film (PPF)</option>
+                        <option value="Paint Correction">Paint Correction</option>
+                        <option value="Fleet / Dealership Wash">Fleet / Dealership Wash</option>
+                        <option value="Custom Wrap">Custom Wrap</option>
+                        <option value="Other">Other (Please specify in notes)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="notes">Additional Notes / Condition Details <span aria-hidden="true" style="color: #ef4444;">*</span></label>
+                    <textarea id="notes" rows="4" placeholder="Tell us more about what you're looking for..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submit-btn" style="width: 100%;">Request Quote</button>
+            </form>
+
+            <div id="msg" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Unstoppable Detailing Services. Buford, GA.
+    </footer>
+
+    <script type="module">
+        import { submitQuoteRequest } from '/js/api.js';
+
+        const form = document.getElementById('quote-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const msgEl = document.getElementById('msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const quoteData = {
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                details: document.getElementById('vehicle').value.trim(),
+                serviceRequested: document.getElementById('service').value,
+                additionalNotes: document.getElementById('notes').value.trim()
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            msgEl.textContent = '';
+
+            const result = await submitQuoteRequest(quoteData);
+
+            if (result && result.success) {
+                msgEl.style.color = "var(--success)";
+                msgEl.textContent = "Quote request submitted successfully! We will contact you soon.";
+                form.reset();
+            } else {
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to submit quote request. Please try again later.";
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Request Quote';
+        });
+    </script>
+</body>
+</html>
