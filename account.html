@@ -434,6 +434,8 @@
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
+                // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
+                const fragment = document.createDocumentFragment();
                 bookings.forEach(b => {
                     const pkg = escapeHTML(b.package || 'Detailing Service');
                     const vehicle = escapeHTML(b.vehicle || 'Vehicle');
@@ -449,8 +451,9 @@
                         </div>
                         <span class="status-badge ${status}">${status}</span>
                     `;
-                    appointmentsListEl.appendChild(item);
+                    fragment.appendChild(item);
                 });
+                appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
