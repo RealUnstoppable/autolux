@@ -1,12 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+        // Use a dummy environment that simulates a successful Firebase setup
+        window.ENV = {
+            FIREBASE_API_KEY: "mock-api-key",
+            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
+            FIREBASE_PROJECT_ID: "mock-project-id",
+            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
+            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
+            FIREBASE_APP_ID: "mock-app-id",
+            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
+        };
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Donate to enter the Unstoppable Detailing Community Sweepstakes and win massive prizes.">
     <title>Donate to Enter Sweepstakes | Unstoppable Detailing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -130,6 +146,10 @@
         }
 
         .tier-card {
+            display: block;
+            width: 100%;
+            color: inherit;
+            font-family: inherit;
             background: var(--bg-card);
             border: 2px solid var(--border);
             border-radius: 12px;
@@ -140,6 +160,7 @@
             position: relative;
         }
 
+        .tier-card:focus-visible,
         .tier-card:hover, .tier-card.selected {
             border-color: var(--gold);
             transform: translateY(-4px);
@@ -331,6 +352,7 @@
             .hero-banner h1 { font-size: 1.8rem; }
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -355,31 +377,31 @@
 
         <h2 style="text-align: center; margin-bottom: 25px; color: var(--gold);">Select Your Donation Tier</h2>
 
-        <div class="tier-grid">
-            <div class="tier-card" data-amount="10" data-entries="10">
+        <div class="tier-grid" role="radiogroup" aria-label="Donation Tiers">
+            <button type="button" class="tier-card" role="radio" aria-checked="false" tabindex="-1" data-amount="10" data-entries="10">
                 <div class="tier-amount">$10</div>
                 <div class="tier-entries">10 Entries</div>
                 <div class="tier-desc">Basic Supporter Entry</div>
-            </div>
+            </button>
 
-            <div class="tier-card selected" data-amount="25" data-entries="30">
+            <button type="button" class="tier-card selected" role="radio" aria-checked="true" tabindex="0" data-amount="25" data-entries="30">
                 <span class="badge-popular">Most Popular</span>
                 <div class="tier-amount">$25</div>
                 <div class="tier-entries">30 Entries (20% Bonus)</div>
                 <div class="tier-desc">Bronze Sweepstakes Pack</div>
-            </div>
+            </button>
 
-            <div class="tier-card" data-amount="50" data-entries="70">
+            <button type="button" class="tier-card" role="radio" aria-checked="false" tabindex="-1" data-amount="50" data-entries="70">
                 <div class="tier-amount">$50</div>
                 <div class="tier-entries">70 Entries (40% Bonus)</div>
                 <div class="tier-desc">Silver Sweepstakes Pack</div>
-            </div>
+            </button>
 
-            <div class="tier-card" data-amount="100" data-entries="150">
+            <button type="button" class="tier-card" role="radio" aria-checked="false" tabindex="-1" data-amount="100" data-entries="150">
                 <div class="tier-amount">$100</div>
                 <div class="tier-entries">150 Entries (50% Bonus)</div>
                 <div class="tier-desc">Gold Sweepstakes Pack</div>
-            </div>
+            </button>
         </div>
 
         <div class="donate-action-bar">
@@ -393,7 +415,7 @@
     <!-- Stripe Checkout Modal -->
     <div class="modal-overlay" id="stripe-modal">
         <div class="modal-card">
-            <button class="modal-close" id="modal-close-btn">&times;</button>
+            <button class="modal-close" id="modal-close-btn" aria-label="Close modal">&times;</button>
             <div class="stripe-badge">🔒 Powered by Stripe</div>
             <h2>Complete Your Donation</h2>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" id="modal-amount-label">
@@ -402,37 +424,37 @@
 
             <form id="stripe-form">
                 <div class="form-group">
-                    <label for="donor-name">Full Name</label>
-                    <input type="text" id="donor-name" placeholder="John Doe" required>
+                    <label for="donor-name">Full Name <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <input type="text" id="donor-name" placeholder="John Doe" required autocomplete="name">
                 </div>
                 <div class="form-group">
-                    <label for="donor-email">Email Address</label>
-                    <input type="email" id="donor-email" placeholder="you@example.com" required>
+                    <label for="donor-email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <input type="email" id="donor-email" placeholder="you@example.com" required autocomplete="email">
                 </div>
                 <div class="form-group">
-                    <label for="card-number">Card Details (Demo Mode)</label>
-                    <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required>
+                    <label for="card-number">Card Details (Demo Mode) <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required autocomplete="cc-number">
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
-                        <label for="card-expiry">MM/YY</label>
-                        <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required>
+                        <label for="card-expiry">MM/YY <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                        <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required autocomplete="cc-exp">
                     </div>
                     <div class="form-group" style="flex: 1;">
-                        <label for="card-cvc">CVC</label>
-                        <input type="text" id="card-cvc" placeholder="123" value="123" required>
+                        <label for="card-cvc">CVC <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                        <input type="text" id="card-cvc" placeholder="123" value="123" required autocomplete="cc-csc">
                     </div>
                 </div>
 
                 <button type="submit" class="btn-primary" id="pay-btn" style="width: 100% !important; margin-top: 10px; padding: 15px; font-size: 1.05rem;">Pay $25 & Enter Sweepstakes</button>
             </form>
 
-            <div id="stripe-msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight: 600;"></div>
+            <div id="stripe-msg" style="margin-top: 15px; font-size: 0.9rem; text-align: center; font-weight: 600;" aria-live="polite"></div>
         </div>
     </div>
 
     <script type="module">
-        import { db } from './js/auth.js';
+        import { db } from '../js/auth.js';
         import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let selectedAmount = 25;
@@ -450,11 +472,37 @@
         const progressTextEl = document.getElementById('progress-text-el');
         const progressFillEl = document.getElementById('progress-fill-el');
 
+
+        // Handle Keyboard Navigation for Radiogroup
+        const tierGrid = document.querySelector('.tier-grid');
+        tierGrid.addEventListener('keydown', (e) => {
+            if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(e.key)) {
+                e.preventDefault();
+                const cards = Array.from(tierCards);
+                let currentIndex = cards.findIndex(c => c.classList.contains('selected'));
+
+                if (['ArrowRight', 'ArrowDown'].includes(e.key)) {
+                    currentIndex = (currentIndex + 1) % cards.length;
+                } else {
+                    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                }
+
+                cards[currentIndex].click();
+                cards[currentIndex].focus();
+            }
+        });
+
         // Handle Tier Selection
         tierCards.forEach(card => {
             card.addEventListener('click', () => {
-                tierCards.forEach(c => c.classList.remove('selected'));
+                tierCards.forEach(c => {
+                    c.classList.remove('selected');
+                    c.setAttribute('aria-checked', 'false');
+                    c.setAttribute('tabindex', '-1');
+                });
                 card.classList.add('selected');
+                card.setAttribute('aria-checked', 'true');
+                card.setAttribute('tabindex', '0');
 
                 selectedAmount = parseInt(card.getAttribute('data-amount'), 10);
                 selectedEntries = parseInt(card.getAttribute('data-entries'), 10);
@@ -535,8 +583,7 @@
                 }, 2500);
 
             } catch (error) {
-                console.error("Donation Error:", error.message);
-                if (error.code) console.error("Error code:", error.code);
+                console.error("Donation Error:", error.message, error.code ? `Code: ${error.code}` : "");
                 stripeMsg.style.color = "var(--error)";
                 stripeMsg.textContent = "Payment processing error. Please try again.";
                 payBtn.disabled = false;

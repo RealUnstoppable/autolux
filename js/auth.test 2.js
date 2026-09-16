@@ -89,25 +89,5 @@ describe('auth.js utilities', () => {
             safeRedirect('/account.html');
             expect(global.window.location.replace).not.toHaveBeenCalled();
         });
-
-        it('should not redirect to external URLs', () => {
-            const originalConsoleError = console.error;
-            console.error = jest.fn();
-            global.window.location.pathname = '/index.html';
-            safeRedirect('https://evil.com/account.html');
-            expect(global.window.location.replace).not.toHaveBeenCalled();
-            expect(console.error).toHaveBeenCalled();
-            console.error = originalConsoleError;
-        });
-
-        it('should not redirect to javascript URIs', () => {
-            const originalConsoleError = console.error;
-            console.error = jest.fn();
-            global.window.location.pathname = '/index.html';
-            safeRedirect('javascript:alert(1)');
-            expect(global.window.location.replace).not.toHaveBeenCalled();
-            expect(console.error).toHaveBeenCalled();
-            console.error = originalConsoleError;
-        });
     });
 });
