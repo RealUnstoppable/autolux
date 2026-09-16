@@ -398,10 +398,10 @@
         <!-- ⚡ Bolt Optimization: Added explicit width="600" height="400" attributes to lazy-loaded gallery images to reserve space before loading, reducing Cumulative Layout Shift (CLS) during scrolling. -->
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy" decoding="async"></div>
         </div>
     </section>
 
@@ -480,11 +480,11 @@
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="email" id="inq-email" required autocomplete="email" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: var(--error);">*</span></label>
@@ -850,11 +850,14 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "reviews"), {
+                const reviewPayload = {
                     userId: currentUser.uid,
                     userName: currentUserName,
                     rating: rating,
-                    comment: comment,
+                    comment: comment
+                };
+                await addDoc(collection(db, "reviews"), {
+                    ...reviewPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
@@ -962,10 +965,13 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "inquiries"), {
+                const inquiryPayload = {
                     name: name,
                     email: email,
-                    message: message,
+                    message: message
+                };
+                await addDoc(collection(db, "inquiries"), {
+                    ...inquiryPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
