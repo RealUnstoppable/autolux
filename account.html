@@ -349,7 +349,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
@@ -361,14 +361,18 @@
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Not authenticated, redirect to login
-                window.location.replace('sign in beta.html');
-                return;
-            }
-
+        async function initAccountPage() {
             try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    // Not authenticated, redirect to login
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                currentUser = user; // Save for handlers
+
                 // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
@@ -400,9 +404,13 @@
                     await setDoc(userRef, userData, { merge: true });
                 }
 
-
+                // Render User Info
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
+
+                if (userData?.vehicles) {
+                    renderVehicles(userData.vehicles);
+                }
 
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
@@ -414,13 +422,21 @@
                     referralCreditsEl.textContent = `$${userData.referralCredits}`;
                 }
 
-
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
+        }
+
+        initAccountPage();
+
+        // Ensure state reacts to session changes after initial load
+        onAuthStateChanged(auth, (user) => {
+             if (!user && currentUser) {
+                 safeRedirect('sign in beta.html');
+             }
         });
 
         function renderBookings(snapshot) {
