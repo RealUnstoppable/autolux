@@ -1,12 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+        // Use a dummy environment that simulates a successful Firebase setup
+        window.ENV = {
+            FIREBASE_API_KEY: "mock-api-key",
+            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
+            FIREBASE_PROJECT_ID: "mock-project-id",
+            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
+            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
+            FIREBASE_APP_ID: "mock-app-id",
+            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
+        };
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Client Portal for Unstoppable Detailing Services clients.">
     <title>Client Portal | Unstoppable Detailing Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
             --bg-dark: #0A0A0A;
             --bg-card: #141414;
@@ -143,11 +159,16 @@
             color: #FBBF24;
             background: rgba(251, 191, 36, 0.15);
         }
+        .appointment-card.pending { border-left-color: var(--gold); }
+        .appointment-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+        .appointment-card p { margin: 5px 0; color: var(--text-muted); font-size: 0.9rem; }
 
         .status-badge.approved, .status-badge.completed {
             color: #16A34A;
             background: rgba(22, 163, 74, 0.15);
         }
+        .badge.pending { background: rgba(212, 175, 55, 0.2); color: var(--gold); }
+        .badge.confirmed { background: rgba(22, 163, 74, 0.2); color: #16A34A; }
 
         .status-badge.cancelled {
             color: var(--error);
@@ -242,6 +263,7 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -254,6 +276,7 @@
         <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="quote.html">Custom Quote</a>
             <a href="booking.html">Book Service</a>
             <button class="btn-logout" id="logout-btn">Sign Out</button>
         </div>
@@ -279,6 +302,24 @@
                     </p>
                     <a href="booking.html?package=club" class="btn-schedule" style="background: var(--gold); color: black; width: 100%; text-align: center;">Join AutoLux Club</a>
                 </div>
+
+                <div class="card">
+                    <h2>Refer & Earn</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                        Share your unique referral code with friends. They get a premium wash, and you earn rewards!
+                    </p>
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="user-referral-code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="Loading...">
+                            <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
+                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Main Content Area -->
@@ -298,21 +339,27 @@
                     <div id="vehicles-list">
                         <p style="color: var(--text-muted);">No vehicles registered yet.</p>
                     </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from '/js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-        import { escapeHTML } from '/js/utils.js';
+        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { escapeHTML } from './js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
         const userEmailEl = document.getElementById('user-email');
         const appointmentsListEl = document.getElementById('appointments-list');
         const logoutBtn = document.getElementById('logout-btn');
+
+        let currentUser = null;
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
@@ -353,17 +400,28 @@
                     await setDoc(userRef, userData, { merge: true });
                 }
 
+
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
+
+                // Set referral data
+                const referralCodeEl = document.getElementById('user-referral-code');
+                const referralCreditsEl = document.getElementById('user-referral-credits');
+                if (referralCodeEl && userData?.referralCode) {
+                    referralCodeEl.value = userData.referralCode;
+                }
+                if (referralCreditsEl && userData?.referralCredits !== undefined) {
+                    referralCreditsEl.textContent = `$${userData.referralCredits}`;
+                }
+
 
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
-                console.error("Error loading user profile or bookings:", error);
+                console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
-        }
-        initAccountPage();
+        });
 
         function renderBookings(snapshot) {
             try {
@@ -394,9 +452,128 @@
                     appointmentsListEl.appendChild(item);
                 });
             } catch (error) {
-                console.error("Error rendering user bookings:", error);
+                console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
+        }
+
+        function renderVehicles(vehicles) {
+            const list = document.getElementById('vehicles-list');
+            list.innerHTML = '';
+            if (!vehicles || vehicles.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            vehicles.forEach((v, index) => {
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'vehicle-item';
+
+                el.innerHTML = `
+                    <span>${escapeHTML(v)}</span>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
+                `;
+                fragment.appendChild(el);
+            });
+            list.appendChild(fragment);
+        }
+
+        document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
+            if (!currentUser) return;
+            const input = document.getElementById('new-vehicle');
+            const val = input.value.trim();
+            if (!val) return;
+
+            const btn = document.getElementById('add-vehicle-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+
+                // PERFORMANCE OPTIMIZATION: Avoid N+1 query by using arrayUnion
+                // This eliminates the need to fetch the document first just to update the array
+                await updateDoc(userRef, { vehicles: arrayUnion(val) });
+
+                // Optimistically update the UI without another read
+                const list = document.getElementById('vehicles-list');
+                const emptyMsg = list.querySelector('p');
+                if (emptyMsg && emptyMsg.textContent.includes('No vehicles')) {
+                    list.innerHTML = '';
+                }
+
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'vehicle-item';
+                el.innerHTML = `
+                    <span>${escapeHTML(val)}</span>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(val)}">Remove</button>
+                `;
+                list.appendChild(el);
+
+                input.value = '';
+            } catch (err) {
+                console.error("Error adding vehicle:", err);
+                alert("Failed to add vehicle.");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('vehicles-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-vehicle-btn')) {
+                if (!currentUser) return;
+                const vehicleToRemove = e.target.dataset.vehicle;
+                if (!vehicleToRemove) return;
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+
+                    // PERFORMANCE OPTIMIZATION: Avoid read-modify-write pattern by using arrayRemove
+                    await updateDoc(userRef, { vehicles: arrayRemove(vehicleToRemove) });
+
+                    // Optimistically update UI
+                    const vehicleItem = e.target.closest('.vehicle-item');
+                    if (vehicleItem) {
+                        vehicleItem.remove();
+                    }
+
+                    const list = document.getElementById('vehicles-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+                    }
+                } catch (err) {
+                    console.error("Error removing vehicle:", err);
+                    alert("Failed to remove vehicle.");
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
+
+        // Copy referral code to clipboard
+        const copyReferralBtn = document.getElementById('copy-referral-btn');
+        if (copyReferralBtn) {
+            copyReferralBtn.addEventListener('click', () => {
+                const codeEl = document.getElementById('user-referral-code');
+                if (codeEl && codeEl.value !== 'Loading...') {
+                    navigator.clipboard.writeText(codeEl.value).then(() => {
+                        const originalText = copyReferralBtn.textContent;
+                        copyReferralBtn.textContent = 'Copied!';
+                        setTimeout(() => { copyReferralBtn.textContent = originalText; }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                }
+            });
         }
 
         logoutBtn.addEventListener('click', async () => {
@@ -404,7 +581,7 @@
                 await signOut(auth);
                 safeRedirect('index.html');
             } catch (e) {
-                console.error("Logout error", e);
+                console.error("Logout error", e.message, e.code ? `Code: ${e.code}` : "");
             }
         });
     </script>
