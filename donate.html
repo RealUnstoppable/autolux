@@ -544,6 +544,7 @@
                 console.error("Error loading donation progress:", e.message || e, e.code ? `(Code: ${e.code})` : "");
                 progressTextEl.textContent = `$1,500 / $100,000 Raised!`;
                 progressFillEl.style.width = `1.5%`;
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
 
@@ -588,6 +589,7 @@
                 stripeMsg.textContent = "Payment processing error. Please try again.";
                 payBtn.disabled = false;
                 payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>

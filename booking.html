@@ -373,6 +373,7 @@
                 }
             } catch(e) {
                 console.error('Error initializing booking page', e);
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
         initBookingPage();
@@ -465,6 +466,7 @@
                 submitBtn.disabled = false;
                 submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.textContent = 'Submit Booking Request';
+                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>

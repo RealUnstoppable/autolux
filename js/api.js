@@ -2,6 +2,7 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 import { submitDetailingRequestCore } from './utils.js';
 import { db, auth } from './auth.js';
 
+import { submitDetailingRequest as utilSubmit } from './utils.js';
 export async function submitDetailingRequest(bookingData) {
     const currentUser = auth.currentUser;
     if (!currentUser) {

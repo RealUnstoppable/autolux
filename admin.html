@@ -484,6 +484,7 @@
                 } catch (inqError) {
                     console.log("Could not load inquiries. Missing Firestore rules?", { code: inqError.code, message: inqError.message, details: inqError });
                     document.getElementById('inquiries-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Inquiries. Please check your Firebase Database Rules.</td></tr>`);
+                    if (inqError && inqError.code) console.error('Error code:', inqError.code);
                 }
 
                 // Fetch Reviews
@@ -494,6 +495,7 @@
                 } catch (revError) {
                     console.error("Could not load reviews.", { code: revError.code, message: revError.message, details: revError });
                     document.getElementById('reviews-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Reviews. Please check your Firebase Database Rules.</td></tr>`);
+                    if (revError && revError.code) console.error('Error code:', revError.code);
                 }
 
                 try {
@@ -503,6 +505,7 @@
                 } catch (faqError) {
                     console.log("Could not load FAQs", { code: faqError.code, message: faqError.message, details: faqError });
                     document.getElementById('faqs-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`);
+                    if (faqError && faqError.code) console.error('Error code:', faqError.code);
                 }
 
                 // Fetch Feature Requests
@@ -513,6 +516,7 @@
                 } catch (frError) {
                     console.error("Could not load feature requests.", { code: frError.code, message: frError.message, details: frError });
                     document.getElementById('feature-request-list-body').innerHTML = DOMPurify.sanitize(`<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`);
+                    if (frError && frError.code) console.error('Error code:', frError.code);
                 }
                 
                 // Download Stats
@@ -524,6 +528,7 @@
                 } catch (e) {
                     console.error("Error loading download stats:", { code: e.code, message: e.message, details: e });
                     document.getElementById('download-count-infosheet').textContent = "N/A";
+                    if (e && e.code) console.error('Error code:', e.code);
                 }
 
             } catch (error) {
@@ -1115,6 +1120,7 @@
                 } finally {
                     btn.disabled = false;
                     btn.textContent = "Credit Reward to Account";
+                    if (e && e.code) console.error('Error code:', e.code);
                 }
             });
 
@@ -1147,6 +1153,7 @@
                     if (error.code) console.error("Error code:", error.code);
                     msgEl.style.color = "var(--error)";
                     msgEl.textContent = "Error adding FAQ.";
+                    if (error && error.code) console.error('Error code:', error.code);
                 } finally {
                     btn.disabled = false;
                     btn.textContent = "Add FAQ";
@@ -1177,6 +1184,7 @@
                 } catch (error) {
                     console.error("Error deleting FAQ:", { code: error.code, message: error.message, details: error });
                     alert("Failed to delete FAQ.");
+                    if (e && e.code) console.error('Error code:', e.code);
                 }
             }
         };

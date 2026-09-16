@@ -253,6 +253,7 @@
             } catch (error) {
                 console.error("Error loading reviews:", error.message || error, error.code ? `(Code: ${error.code})` : "");
                 grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error);">Failed to load reviews.</div>';
+                if (error && error.code) console.error('Error code:', error.code);
             }
         }
 

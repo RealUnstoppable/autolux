@@ -568,6 +568,7 @@
                 }
             } catch(e) {
                 console.error("Error initializing index auth", e);
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
 
@@ -764,6 +765,7 @@
             } catch (error) {
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
                 renderReviewItems(defaultReviews);
+                if (error && error.code) console.error('Error code:', error.code);
             }
         }
 
