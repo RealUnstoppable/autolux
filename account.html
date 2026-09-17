@@ -361,8 +361,8 @@
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
@@ -373,14 +373,18 @@
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Not authenticated, redirect to login
-                window.location.replace('sign in beta.html');
-                return;
-            }
-
+        async function initAccountPage() {
             try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    // Not authenticated, redirect to login
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                currentUser = user; // Save for handlers
+
                 // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
@@ -412,9 +416,13 @@
                     await setDoc(userRef, userData, { merge: true });
                 }
 
-
+                // Render User Info
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
+
+                if (userData?.vehicles) {
+                    renderVehicles(userData.vehicles);
+                }
 
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
@@ -426,16 +434,21 @@
                     referralCreditsEl.textContent = `$${userData.referralCredits}`;
                 }
 
-
-                if (userData.vehicles) renderVehicles(userData.vehicles);
-                if (userData.addresses) renderAddresses(userData.addresses);
-
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
+        }
+
+        initAccountPage();
+
+        // Ensure state reacts to session changes after initial load
+        onAuthStateChanged(auth, (user) => {
+             if (!user && currentUser) {
+                 safeRedirect('sign in beta.html');
+             }
         });
 
         function renderBookings(snapshot) {
@@ -449,6 +462,8 @@
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
+                // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
+                const fragment = document.createDocumentFragment();
                 bookings.forEach(b => {
                     const pkg = escapeHTML(b.package || 'Detailing Service');
                     const vehicle = escapeHTML(b.vehicle || 'Vehicle');
@@ -464,8 +479,9 @@
                         </div>
                         <span class="status-badge ${status}">${status}</span>
                     `;
-                    appointmentsListEl.appendChild(item);
+                    fragment.appendChild(item);
                 });
+                appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
@@ -648,7 +664,7 @@
 
                 input.value = '';
             } catch (err) {
-                console.error("Error adding vehicle:", err);
+                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                 alert("Failed to add vehicle.");
             } finally {
                 btn.textContent = originalText;
@@ -683,7 +699,7 @@
                         list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
                     }
                 } catch (err) {
-                    console.error("Error removing vehicle:", err);
+                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                     alert("Failed to remove vehicle.");
                     e.target.textContent = originalText;
                     e.target.disabled = false;
