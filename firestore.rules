@@ -12,6 +12,14 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Customer Interactions Collection
+    match /customer_interactions/{interactionId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow delete: if isAdmin();
+    }
+
     // Bookings Collection
     match /bookings/{bookingId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);

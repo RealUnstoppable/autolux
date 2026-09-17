@@ -6,13 +6,13 @@ export let app, auth, db;
 
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isAutolux = hostname.includes('autolux');
+    const isAutolux = hostname === 'autolux.realunstoppable.store';
     const appName = isAutolux ? "autolux" : "ezmanage";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
     // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
-    if (typeof window !== 'undefined' && !window.ENV) {
+    if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
         throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
@@ -41,7 +41,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error({ code: error.code, message: error.message, details: error });
+    console.error("Firebase connection error:", { code: error.code || 'UNKNOWN', message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
