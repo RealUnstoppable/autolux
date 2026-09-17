@@ -101,8 +101,7 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error.message);
-        if (error.code) console.error("Error code:", error.code);
+        console.error("Error ensuring user document:", { code: error.code, message: error.message, details: error });
         return null;
     }
 }
@@ -213,7 +212,7 @@ export function safeRedirect(targetUrl) {
             window.location.replace(targetUrl);
         }
     } catch (e) {
-        console.error('Invalid URL in safeRedirect:', targetUrl);
+        console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
     }
 }
 
@@ -240,7 +239,7 @@ export async function validateReferralCode(code) {
         }
         return null;
     } catch (e) {
-        console.error("Error validating referral code:", e);
+        console.error("Error validating referral code:", { code: e.code, message: e.message, details: e });
         return null;
     }
 }

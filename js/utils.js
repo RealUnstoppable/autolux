@@ -53,9 +53,9 @@ export function safeSetSessionStorage(key, value) {
         sessionStorage.setItem(key, value);
     } catch (e) {
         if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-            console.warn('Session storage quota exceeded. Unable to cache data for key:', key);
+            console.warn('Session storage quota exceeded. Unable to cache data for key:', key, { code: e.code, message: e.message, details: e });
         } else {
-            console.error('Error setting session storage for key:', key, e);
+            console.error('Error setting session storage for key:', key, { code: e.code, message: e.message, details: e });
         }
     }
 }
@@ -69,7 +69,7 @@ export function safeGetSessionStorage(key) {
     try {
         return sessionStorage.getItem(key);
     } catch (e) {
-        console.warn('Session storage read failed. Key:', key, e);
+        console.warn('Session storage read failed. Key:', key, { code: e.code, message: e.message, details: e });
         return null;
     }
 }
