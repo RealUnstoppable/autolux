@@ -1,4 +1,3 @@
-import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -6,9 +5,9 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 export let app, auth, db;
 
 try {
-    const appName = "autolux";
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
+    const appName = isAutolux ? "autolux" : "ezmanage";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -237,33 +236,6 @@ export function safeRedirect(targetUrl) {
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
  */
 
-
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "You must be signed in to submit a request." };
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
-    }
-}
 
 
 /**
