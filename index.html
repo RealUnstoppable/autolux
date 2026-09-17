@@ -431,7 +431,8 @@
             </div>
             <div style="margin-bottom: 15px;">
                 <label for="review-comment" style="display: block; margin-bottom: 5px; text-align: left; font-size: 0.9rem;">Comment: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                <textarea id="review-comment" required rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..."></textarea>
+                <textarea id="review-comment" required rows="4" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;" placeholder="Tell us about your experience..." aria-describedby="review-char-count"></textarea>
+                <span id="review-char-count" style="display: block; text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">0 / 1000</span>
             </div>
             <button type="submit" id="submit-review-btn" class="btn-primary" style="width: auto; padding: 10px 20px;">Submit Review</button>
             <p id="review-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></p>
@@ -489,7 +490,8 @@
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;"></textarea>
+                    <textarea id="inq-message" rows="4" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box; resize: vertical;" aria-describedby="inq-char-count"></textarea>
+                    <span id="inq-char-count" style="display: block; text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">0 / 1000</span>
                 </div>
                 <button type="submit" id="submit-inquiry-btn" class="btn-primary" style="width: 100%; border: none;">Send Message</button>
                 <p id="inquiry-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600; text-align: center;"></p>
