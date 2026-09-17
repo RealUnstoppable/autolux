@@ -54,7 +54,7 @@ service cloud.firestore {
 
     // Sweepstakes / Donations Collection
     match /donations/{donationId} {
-      allow read: if true;
+      allow read: if isAdmin();
       allow create: if true;
       allow update, delete: if isAdmin();
     }
