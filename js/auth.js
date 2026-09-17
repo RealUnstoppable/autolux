@@ -41,9 +41,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
-    if (error.code) console.error("Error code:", error.code);
-    console.error("Full error:", error);
+    console.error({ code: error.code, message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
