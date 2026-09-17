@@ -20,8 +20,7 @@ export async function submitDetailingRequest(bookingData) {
             return { success: false, error: result.error };
         }
     } catch (error) {
-        console.error("Error adding document:", error.message);
-        if (error.code) console.error("Firebase error code:", error.code);
+        console.error("Error adding document:", { code: error.code, message: error.message, details: error });
         return { success: false, error: error.message, code: error.code, message: "An error occurred while submitting your request. Please try again later." };
     }
 }

@@ -1,4 +1,3 @@
-import { submitDetailingRequestCore } from './api.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -42,9 +41,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
-    if (error.code) console.error("Error code:", error.code);
-    console.error("Full error:", error);
+    console.error("Firebase Initialization Error:", { code: error.code, message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
@@ -105,8 +102,7 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error.message);
-        if (error.code) console.error("Error code:", error.code);
+        console.error("Error ensuring user document:", { code: error.code, message: error.message, details: error });
         return null;
     }
 }
@@ -225,43 +221,13 @@ export function safeRedirect(targetUrl) {
             window.location.replace(targetUrl);
         }
     } catch (e) {
-        console.error('Invalid URL in safeRedirect:', targetUrl);
+        console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
     }
 }
 
 /**
  * Submits a new detailing request to Firestore.
  * @param {Object} requestData - The data for the detailing request.
- * @returns {Promise<string|null>} - Returns the document ID on success, or null on error.
- */
-
-
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "You must be signed in to submit a request." };
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
-    }
-}
 
 
 /**
@@ -279,7 +245,7 @@ export async function validateReferralCode(code) {
         }
         return null;
     } catch (e) {
-        console.error("Error validating referral code:", e);
+        console.error("Error validating referral code:", { code: e.code, message: e.message, details: e });
         return null;
     }
 }
