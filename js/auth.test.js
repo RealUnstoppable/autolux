@@ -8,15 +8,6 @@ global.window = {
     location: {
         pathname: '/',
         replace: jest.fn()
-    },
-    ENV: {
-        FIREBASE_API_KEY: 'test',
-        FIREBASE_AUTH_DOMAIN: 'test',
-        FIREBASE_PROJECT_ID: 'test',
-        FIREBASE_STORAGE_BUCKET: 'test',
-        FIREBASE_MESSAGING_SENDER_ID: 'test',
-        FIREBASE_APP_ID: 'test',
-        FIREBASE_MEASUREMENT_ID: 'test'
     }
 };
 

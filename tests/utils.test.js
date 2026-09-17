@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
-import { submitDetailingRequestCore } from '../js/api.js';
-import { escapeHTML } from '../js/utils.js';
+import { escapeHTML, submitDetailingRequestCore } from '../js/utils.js';
 
 describe('utils.js', () => {
     afterEach(() => {

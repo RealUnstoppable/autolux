@@ -5,14 +5,6 @@ service cloud.firestore {
     function isAdmin() { return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true; }
     function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
 
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    function isAdmin() {
-      return isAuthenticated() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-    function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
-
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
@@ -23,22 +15,22 @@ service cloud.firestore {
     // Bookings Collection
     match /bookings/{bookingId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending');
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
       allow delete: if isAdmin();
     }
 
     // Detailing Plans / Memberships Collection
     match /detailingPlans/{planId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending');
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
       allow delete: if isAdmin();
     }
     match /detailing_plans/{planId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending');
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
       allow delete: if isAdmin();
     }
 
@@ -62,7 +54,7 @@ service cloud.firestore {
 
     // Sweepstakes / Donations Collection
     match /donations/{donationId} {
-      allow read: if isAdmin();
+      allow read: if true;
       allow create: if true;
       allow update, delete: if isAdmin();
     }
