@@ -853,11 +853,14 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "reviews"), {
+                const reviewPayload = {
                     userId: currentUser.uid,
                     userName: currentUserName,
                     rating: rating,
-                    comment: comment,
+                    comment: comment
+                };
+                await addDoc(collection(db, "reviews"), {
+                    ...reviewPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
@@ -965,10 +968,13 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "inquiries"), {
+                const inquiryPayload = {
                     name: name,
                     email: email,
-                    message: message,
+                    message: message
+                };
+                await addDoc(collection(db, "inquiries"), {
+                    ...inquiryPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
