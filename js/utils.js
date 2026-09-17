@@ -38,8 +38,8 @@ export async function submitDetailingRequestCore(userId, requestData) {
         const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request:", { code: error.code, message: error.message, details: error });
-        return { success: false, error: "Failed to submit request.", code: error.code };
+        console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
 
