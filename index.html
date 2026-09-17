@@ -718,7 +718,7 @@
 
                     const el = document.createElement('div');
                     el.className = 'review-card';
-                    el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name} <span style="font-size: 0.8rem; color: var(--text-muted);">(${date})</span></p>`;
+                    el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)} <span style="font-size: 0.8rem; color: var(--text-muted);">(${escapeHTML(date)})</span></p>`;
                     fragment.appendChild(el);
                 });
                 container.appendChild(fragment);
@@ -789,7 +789,7 @@
 
                 const el = document.createElement('div');
                 el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
                 container.appendChild(el);
             });
         }
@@ -814,7 +814,7 @@
 
                 const el = document.createElement('div');
                 el.className = 'review-card';
-                el.innerHTML = `<div class="stars">${stars}</div><p>"${comment}"<br><br>- ${name}</p>`;
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
                 container.appendChild(el);
             });
         }
