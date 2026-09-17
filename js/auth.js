@@ -1,4 +1,3 @@
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -6,9 +5,9 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 export let app, auth, db;
 
 try {
-    const appName = "autolux";
-    const hostname = window.location.hostname;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
+    const appName = isAutolux ? "autolux" : "ezmanage";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -225,6 +224,8 @@ export function safeRedirect(targetUrl) {
  * @param {string} code - The referral code to validate.
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
  */
+
+
 
 /**
  * Validates a referral code by checking if it belongs to an existing user.
