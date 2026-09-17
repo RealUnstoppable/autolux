@@ -1,4 +1,4 @@
-import { submitDetailingRequestCore } from './api.js';
+import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -97,6 +97,7 @@ export async function ensureUserDocument(user) {
                 membershipLevel: 'free',
                 signupDate: serverTimestamp(),
                 vehicles: [],
+                addresses: [],
                 appointments: [],
                 contactInfo: {},
                 loyaltyPoints: 0

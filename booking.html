@@ -293,7 +293,16 @@
                     <input type="text" id="vehicle" placeholder="e.g. 2024 Mercedes G63 AMG - Black" required>
                 </div>
 
+
                 <div class="input-group">
+                    <label for="service-address">Service Location <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <select id="service-address" name="serviceAddress" autocomplete="street-address" required style="margin-bottom: 10px;">
+                        <option value="">-- Select a saved address or enter new --</option>
+                        <option value="new">Enter a new address...</option>
+                    </select>
+                    <input type="text" id="new-service-address" autocomplete="street-address" placeholder="e.g. 123 Main St, Buford, GA 30518" style="display: none; margin-top: 5px;">
+                </div>
+<div class="input-group">
                     <label for="date">Preferred Date & Time <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="datetime-local" id="date" required>
                 </div>
@@ -322,7 +331,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise, validateReferralCode } from './js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage } from './js/utils.js';
         import { submitDetailingRequest } from './js/api.js';
 
@@ -360,9 +369,43 @@
             try {
                 const user = await getAuthStatePromise();
                 overlay.style.display = 'none';
+
                 if (user) {
                     currentUser = user;
+                    try {
+                        const userDocRef = doc(db, 'users', user.uid);
+                        const userDoc = await getDoc(userDocRef);
+                        if (userDoc.exists()) {
+                            const addresses = userDoc.data().addresses || [];
+                            const select = document.getElementById('service-address');
+                            if (addresses.length > 0) {
+                                // Insert saved addresses before the 'new' option
+                                const newOption = select.querySelector('option[value="new"]');
+                                addresses.forEach(addr => {
+                                    const opt = document.createElement('option');
+                                    opt.value = addr;
+                                    opt.textContent = addr;
+                                    select.insertBefore(opt, newOption);
+                                });
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Error fetching user addresses:', err);
+                    }
+
+                    document.getElementById('service-address').addEventListener('change', (e) => {
+                        const newAddressInput = document.getElementById('new-service-address');
+                        if (e.target.value === 'new') {
+                            newAddressInput.style.display = 'block';
+                            newAddressInput.required = true;
+                        } else {
+                            newAddressInput.style.display = 'none';
+                            newAddressInput.required = false;
+                        }
+                    });
+
                     bookingForm.style.display = 'block';
+
                 } else {
                     safeSetSessionStorage('redirectAfterLogin', 'booking.html');
                     msgEl.style.color = "var(--gold)";
@@ -382,6 +425,7 @@
             e.preventDefault();
             if (!currentUser) return;
 
+
             const selectedPackage = packageSelect.value;
             const vehicle = document.getElementById('vehicle').value.trim();
             const appointmentDate = document.getElementById('date').value;
@@ -389,9 +433,16 @@
             const referralCode = document.getElementById('referral-code').value.trim();
             const referralMsg = document.getElementById('referral-msg');
 
+            const serviceAddressSelect = document.getElementById('service-address').value;
+            let serviceAddress = serviceAddressSelect;
+            if (serviceAddressSelect === 'new') {
+                serviceAddress = document.getElementById('new-service-address').value.trim();
+            }
+
             if (referralMsg) referralMsg.textContent = '';
 
-            if (!selectedPackage || !vehicle || !appointmentDate) {
+            if (!selectedPackage || !vehicle || !appointmentDate || !serviceAddress) {
+
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please fill in all required fields.";
                 return;
@@ -433,12 +484,15 @@
             submitBtn.textContent = 'Submitting Request...';
 
             try {
+
                 const bookingDoc = {
                     userId: currentUser.uid,
                     customerEmail: currentUser.email || "",
                     package: selectedPackage,
                     vehicle: vehicle,
+                    serviceAddress: serviceAddress,
                     appointmentDate: appointmentDate,
+
                     notes: notes,
                     status: 'pending',
                     createdAt: serverTimestamp()
