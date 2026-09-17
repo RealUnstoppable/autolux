@@ -344,12 +344,24 @@
                         <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
                     </div>
                 </div>
+
+                <div class="card">
+                    <h2>My Service Addresses</h2>
+                    <div id="addresses-list">
+                        <p style="color: var(--text-muted);">No service addresses saved yet.</p>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-address-val" placeholder="Full Address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
@@ -361,14 +373,18 @@
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Not authenticated, redirect to login
-                window.location.replace('sign in beta.html');
-                return;
-            }
-
+        async function initAccountPage() {
             try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    // Not authenticated, redirect to login
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                currentUser = user; // Save for handlers
+
                 // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
@@ -400,9 +416,13 @@
                     await setDoc(userRef, userData, { merge: true });
                 }
 
-
+                // Render User Info
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
+
+                if (userData?.vehicles) {
+                    renderVehicles(userData.vehicles);
+                }
 
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
@@ -414,13 +434,21 @@
                     referralCreditsEl.textContent = `$${userData.referralCredits}`;
                 }
 
-
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
+        }
+
+        initAccountPage();
+
+        // Ensure state reacts to session changes after initial load
+        onAuthStateChanged(auth, (user) => {
+             if (!user && currentUser) {
+                 safeRedirect('sign in beta.html');
+             }
         });
 
         function renderBookings(snapshot) {
@@ -434,6 +462,8 @@
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
+                // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
+                const fragment = document.createDocumentFragment();
                 bookings.forEach(b => {
                     const pkg = escapeHTML(b.package || 'Detailing Service');
                     const vehicle = escapeHTML(b.vehicle || 'Vehicle');
@@ -449,13 +479,131 @@
                         </div>
                         <span class="status-badge ${status}">${status}</span>
                     `;
-                    appointmentsListEl.appendChild(item);
+                    fragment.appendChild(item);
                 });
+                appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
         }
+
+        function renderAddresses(addresses) {
+            const list = document.getElementById('addresses-list');
+            list.innerHTML = '';
+            if (!addresses || addresses.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            addresses.forEach((a, index) => {
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'address-item';
+
+                el.innerHTML = `
+                    <div>
+                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label)}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address)}</span>
+                    </div>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
+                `;
+                fragment.appendChild(el);
+            });
+            list.appendChild(fragment);
+        }
+
+        document.getElementById('add-address-btn').addEventListener('click', async () => {
+            if (!currentUser) return;
+            const labelInput = document.getElementById('new-address-label');
+            const addressInput = document.getElementById('new-address-val');
+
+            const label = labelInput.value.trim();
+            const address = addressInput.value.trim();
+            if (!label || !address) {
+                alert("Please provide both a label and an address.");
+                return;
+            }
+
+            const btn = document.getElementById('add-address-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            const newAddressObj = { label, address };
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+
+                await updateDoc(userRef, { addresses: arrayUnion(newAddressObj) });
+
+                // Optimistically update the UI
+                const list = document.getElementById('addresses-list');
+                const emptyMsg = list.querySelector('p');
+                if (emptyMsg && emptyMsg.textContent.includes('No service addresses')) {
+                    list.innerHTML = '';
+                }
+
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'address-item';
+                el.innerHTML = `
+                    <div>
+                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(label)}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(address)}</span>
+                    </div>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}">Remove</button>
+                `;
+                list.appendChild(el);
+
+                labelInput.value = '';
+                addressInput.value = '';
+            } catch (err) {
+                console.error("Error adding address:", err);
+                alert("Failed to add address.");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('addresses-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-address-btn')) {
+                if (!currentUser) return;
+                const labelToRemove = e.target.dataset.label;
+                const addressToRemove = e.target.dataset.address;
+                if (!labelToRemove || !addressToRemove) return;
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                const addressObjToRemove = { label: labelToRemove, address: addressToRemove };
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+
+                    await updateDoc(userRef, { addresses: arrayRemove(addressObjToRemove) });
+
+                    // Optimistically update UI
+                    const addressItem = e.target.closest('.address-item');
+                    if (addressItem) {
+                        addressItem.remove();
+                    }
+
+                    const list = document.getElementById('addresses-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+                    }
+                } catch (err) {
+                    console.error("Error removing address:", err);
+                    alert("Failed to remove address.");
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
 
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');
@@ -516,7 +664,7 @@
 
                 input.value = '';
             } catch (err) {
-                console.error("Error adding vehicle:", err);
+                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                 alert("Failed to add vehicle.");
             } finally {
                 btn.textContent = originalText;
@@ -551,7 +699,7 @@
                         list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
                     }
                 } catch (err) {
-                    console.error("Error removing vehicle:", err);
+                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                     alert("Failed to remove vehicle.");
                     e.target.textContent = originalText;
                     e.target.disabled = false;

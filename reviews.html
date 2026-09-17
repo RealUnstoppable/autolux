@@ -251,8 +251,9 @@
 
                 renderReviews(allReviews);
             } catch (error) {
-                console.error("Error loading reviews:", error);
+                console.error("Error loading reviews:", error.message || error, error.code ? `(Code: ${error.code})` : "");
                 grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error);">Failed to load reviews.</div>';
+                if (error && error.code) console.error('Error code:', error.code);
             }
         }
 
@@ -266,7 +267,9 @@
             const fragment = document.createDocumentFragment();
 
             reviewsToRender.forEach(r => {
-                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                 let date = 'Recent';
                 if (r.createdAt) {
                     if (r.createdAt.toDate) {

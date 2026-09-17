@@ -23,3 +23,6 @@
 ## 2025-10-24 - [Preloading CSS Background Images for LCP]
 **Learning:** Above-the-fold hero images that are loaded via CSS background properties (`background-image`) are hidden from the browser's initial HTML parser, delaying their discovery and negatively impacting Largest Contentful Paint (LCP) and First Contentful Paint (FCP).
 **Action:** Use `<link rel="preload" as="image" href="..." fetchpriority="high">` in the `<head>` of the HTML to explicitly inform the browser to fetch the critical background image immediately with high priority, bypassing the CSS parsing bottleneck.
+## 2025-10-24 - [Avoid Eager Fetching Below-the-fold Images]
+**Learning:** Using `fetchpriority="high"` on images located below the fold (e.g., in galleries) forces the browser to prioritize them over critical above-the-fold assets, hurting LCP and initial load performance.
+**Action:** Always use `loading="lazy"` and `decoding="async"` for images that are not immediately visible in the initial viewport, allowing the browser to optimize network requests and rendering thread availability.

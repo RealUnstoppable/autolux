@@ -21,7 +21,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-
+    
     try {
         const bookingData = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
@@ -38,8 +38,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
         const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit detailing request.");
-        if (error.code) console.error("Firebase error code:", error.code);
+        console.error("Failed to submit detailing request:", { code: error.code, message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code };
     }
 }
@@ -54,9 +53,9 @@ export function safeSetSessionStorage(key, value) {
         sessionStorage.setItem(key, value);
     } catch (e) {
         if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-            console.warn('Session storage quota exceeded. Unable to cache data for key:', key);
+            console.warn('Session storage quota exceeded. Unable to cache data for key:', key, { code: e.code, message: e.message, details: e });
         } else {
-            console.error('Error setting session storage for key:', key, e);
+            console.error('Error setting session storage for key:', key, { code: e.code, message: e.message, details: e });
         }
     }
 }
@@ -70,7 +69,7 @@ export function safeGetSessionStorage(key) {
     try {
         return sessionStorage.getItem(key);
     } catch (e) {
-        console.warn('Session storage read failed. Key:', key, e);
+        console.warn('Session storage read failed. Key:', key, { code: e.code, message: e.message, details: e });
         return null;
     }
 }

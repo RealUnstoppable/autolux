@@ -105,12 +105,12 @@
 
                 // Renderers
                 renderUserTable(users);
-                renderNewsletterTable(subscribers);
+                renderNewsletterTable(subscribers); 
                 calculatePerformanceMetrics(users, carts, orders, bookings, quotes);
                 renderChart('summary', users);
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
-
+                
                 // Fetch Inquiries
                 try {
                     const inquiriesSnapshot = await inquiriesPromise;
@@ -149,7 +149,7 @@
                     console.error("Could not load feature requests.", frError);
                     document.getElementById('feature-request-list-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">Failed to load Feature Requests. Please check your Firebase Database Rules.</td></tr>`;
                 }
-
+                
                 // Download Stats
                 try {
                     const statsDoc = await statsPromise;
@@ -181,8 +181,8 @@
                 const formattedDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleString([], {weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
                 let badgeClass = 'active';
                 if(b.status === 'cancelled') badgeClass = 'cancelled';
-                if(b.status === 'completed') badgeClass = 'active';
-
+                if(b.status === 'completed') badgeClass = 'active'; 
+                
                 row.innerHTML = `
                     <td><strong>${escapeHTML(name)}</strong></td>
                     <td>${escapeHTML(phone)}<br><span style="font-size:0.8rem; color:var(--text-secondary);">${escapeHTML(email)}</span></td>
@@ -259,7 +259,7 @@
                 const parsedDate = user.signupDate?.toDate ? user.signupDate.toDate() : new Date(user.signupDate);
                 const signupDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 const subStatus = user.subscription?.status === 'active' ? `<span class="subscription-text">Active Pro</span>` : `<span style="color: var(--text-secondary);">Free</span>`;
-
+                
                 row.innerHTML = `
                     <td>${escapeHTML(user.username) || escapeHTML(user.name) || "N/A"}</td>
                     <td>${escapeHTML(user.email)}</td>
@@ -338,10 +338,10 @@
                 const tierBadge = req.isPro ? `<span class="status-badge pro">Priority (Pro)</span>` : `<span class="status-badge">Free Tier</span>`;
                 const isComplete = req.status === 'completed';
                 const statusStr = isComplete ? `<span style="color:var(--accent-green);">Completed</span>` : `<span style="color:var(--accent-yellow);">Pending</span>`;
-                const actionButton = isComplete
+                const actionButton = isComplete 
                      ? `<button class="btn-sm" style="background-color:var(--border-color); cursor:not-allowed;" disabled>Done</button>`
                      : `<button class="btn-sm btn-unban mark-complete-btn" data-id="${escapeHTML(req.id)}">Mark Complete</button>`;
-
+                
                 row.innerHTML = `
                     <td>${reqDate}</td>
                     <td>${escapeHTML(req.email) || "Unknown User"}</td>
@@ -398,7 +398,7 @@
         function renderChart(view, usersData) {
             const ctx = document.getElementById('performance-chart').getContext('2d');
             const graphTitleEl = document.getElementById('graph-title');
-
+            
             graphTitleEl.textContent = document.querySelector(`#graph-selector option[value=${view}]`).textContent;
             if (performanceChart) performanceChart.destroy();
 
@@ -410,7 +410,7 @@
                 case 'purchases':
                     chartConfig = { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Purchases', data: [12, 19, 8, 15, 10, 13, 17], borderColor: '#16A34A', fill: true, backgroundColor: 'rgba(22, 163, 74, 0.2)' }] }, options: getChartOptions(false) };
                     break;
-                default:
+                default: 
                     chartConfig = { type: 'doughnut', data: { labels: ['Total Sign-ups', 'Total Purchases'], datasets: [{ data: [296, 173], backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(22, 163, 74, 0.8)'], borderColor: ['#2563EB', '#16A34A'], borderWidth: 2 }] }, options: getChartOptions(true) };
                     break;
             }
@@ -424,7 +424,7 @@
                 scales: !isPieChart ? { y: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } }, x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: 'white' } } } : {}
             };
         }
-
+    
         function setupEventListeners() {
             // User Ban Toggle
             document.getElementById('user-list-body').addEventListener('click', async (e) => {
@@ -453,7 +453,7 @@
                     }
                 }
             });
-
+            
             // Feature Request Complete Toggle
             document.getElementById('feature-request-list-body').addEventListener('click', async (e) => {
                 const btn = e.target;
@@ -657,27 +657,27 @@
                 if (globalDonors.length === 0) {
                     alert("No donors to spin for!"); return;
                 }
-
+                
                 const wheel = document.getElementById('random-wheel');
                 document.getElementById('winner-display').style.display = 'none';
-
+                
                 // Random spins (at least 5 full rotations + random angle)
                 const randomDeg = Math.floor(Math.random() * 360);
                 const totalRotation = (360 * 5) + randomDeg;
-
+                
                 wheel.style.transform = `rotate(${totalRotation}deg)`;
-
+                
                 // Select winner weighted by amount
                 setTimeout(() => {
                     const totalEntries = globalDonors.reduce((sum, d) => sum + d.amount, 0);
                     let rand = Math.random() * totalEntries;
                     let winner = null;
-
+                    
                     for (let d of globalDonors) {
                         if (rand < d.amount) { winner = d; break; }
                         rand -= d.amount;
                     }
-
+                    
                     if (winner) {
                         currentWinnerId = winner.uid;
                         document.getElementById('winner-name').textContent = winner.email;
@@ -691,16 +691,16 @@
                 if (!currentWinnerId) return;
                 const reward = document.getElementById('reward-select').value;
                 const btn = document.getElementById('credit-reward-btn');
-
+                
                 btn.disabled = true;
                 btn.textContent = "Crediting...";
-
+                
                 try {
                     const userRef = doc(db, "users", currentWinnerId);
                     await updateDoc(userRef, {
                         rewards: arrayUnion(reward)
                     });
-
+                    
                     alert(`Successfully credited "${reward}" to user!`);
                     document.getElementById('winner-display').style.display = 'none';
                 } catch (e) {
