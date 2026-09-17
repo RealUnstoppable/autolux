@@ -48,7 +48,6 @@ try {
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
 
-
 // Debounce utility function
 export function debounce(func, wait) {
     let timeout;
@@ -145,13 +144,6 @@ export function waitForAuthState() {
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     return await getUserRedirectPathAsync(user, userData, currentPathname);
-
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html';
-    }
-    return getUserRedirectPathAsync(user, userData, currentPathname);
 }
 
 export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
@@ -197,7 +189,6 @@ export async function getUserRedirectPathAsyncInternal(user) {
     return getUserRedirectPath(user, userData, window.location.pathname);
 }
 
-
 /**
  * A safe wrapper for window.location.replace that checks the current pathname.
  * @param {string} targetUrl - The URL to redirect to.
@@ -227,8 +218,6 @@ export function safeRedirect(targetUrl) {
         console.error('Invalid URL in safeRedirect:', targetUrl);
     }
 }
-
-
 
 /**
  * Validates a referral code by checking if it belongs to an existing user.
