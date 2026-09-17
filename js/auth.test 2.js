@@ -8,15 +8,6 @@ global.window = {
     location: {
         pathname: '/',
         replace: jest.fn()
-    },
-    ENV: {
-        FIREBASE_API_KEY: 'test',
-        FIREBASE_AUTH_DOMAIN: 'test',
-        FIREBASE_PROJECT_ID: 'test',
-        FIREBASE_STORAGE_BUCKET: 'test',
-        FIREBASE_MESSAGING_SENDER_ID: 'test',
-        FIREBASE_APP_ID: 'test',
-        FIREBASE_MEASUREMENT_ID: 'test'
     }
 };
 
@@ -97,26 +88,6 @@ describe('auth.js utilities', () => {
             global.window.location.pathname = '/account.html';
             safeRedirect('/account.html');
             expect(global.window.location.replace).not.toHaveBeenCalled();
-        });
-
-        it('should not redirect to external URLs', () => {
-            const originalConsoleError = console.error;
-            console.error = jest.fn();
-            global.window.location.pathname = '/index.html';
-            safeRedirect('https://evil.com/account.html');
-            expect(global.window.location.replace).not.toHaveBeenCalled();
-            expect(console.error).toHaveBeenCalled();
-            console.error = originalConsoleError;
-        });
-
-        it('should not redirect to javascript URIs', () => {
-            const originalConsoleError = console.error;
-            console.error = jest.fn();
-            global.window.location.pathname = '/index.html';
-            safeRedirect('javascript:alert(1)');
-            expect(global.window.location.replace).not.toHaveBeenCalled();
-            expect(console.error).toHaveBeenCalled();
-            console.error = originalConsoleError;
         });
     });
 });

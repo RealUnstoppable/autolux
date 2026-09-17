@@ -1,5 +1,5 @@
-import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { db } from '../../js/auth.js';
+import { collection, addDoc, serverTimestamp } from "../../__mocks__/firebase.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -21,7 +21,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-    
+
     try {
         const bookingData = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
