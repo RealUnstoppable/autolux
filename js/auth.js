@@ -1,4 +1,3 @@
-import { submitDetailingRequestCore } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -6,9 +5,9 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 export let app, auth, db;
 
 try {
-    const appName = "autolux";
-    const hostname = window.location.hostname;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
+    const appName = isAutolux ? "autolux" : "ezmanage";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -42,13 +41,10 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", error.message);
-    if (error.code) console.error("Error code:", error.code);
-    console.error("Full error:", error);
+    console.error({ code: error.code, message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
-
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -97,7 +93,6 @@ export async function ensureUserDocument(user) {
                 membershipLevel: 'free',
                 signupDate: serverTimestamp(),
                 vehicles: [],
-                addresses: [],
                 appointments: [],
                 contactInfo: {},
                 loyaltyPoints: 0
@@ -106,8 +101,7 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", error.message);
-        if (error.code) console.error("Error code:", error.code);
+        console.error("Error ensuring user document:", { code: error.code, message: error.message, details: error });
         return null;
     }
 }
@@ -147,13 +141,6 @@ export function waitForAuthState() {
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     return await getUserRedirectPathAsync(user, userData, currentPathname);
-
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html';
-    }
-    return getUserRedirectPathAsync(user, userData, currentPathname);
 }
 
 export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
@@ -199,7 +186,6 @@ export async function getUserRedirectPathAsyncInternal(user) {
     return getUserRedirectPath(user, userData, window.location.pathname);
 }
 
-
 /**
  * A safe wrapper for window.location.replace that checks the current pathname.
  * @param {string} targetUrl - The URL to redirect to.
@@ -226,11 +212,9 @@ export function safeRedirect(targetUrl) {
             window.location.replace(targetUrl);
         }
     } catch (e) {
-        console.error('Invalid URL in safeRedirect:', targetUrl);
+        console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
     }
 }
-
-
 
 /**
  * Validates a referral code by checking if it belongs to an existing user.
@@ -238,33 +222,6 @@ export function safeRedirect(targetUrl) {
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
  */
 
-
-export async function submitDetailingRequest(requestData) {
-    if (!auth) {
-        console.error("Cannot submit detailing request: Firebase is not fully initialized.");
-        return { success: false, error: { message: "Firebase is not fully initialized." } };
-    }
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "You must be signed in to submit a request." };
-    }
-    try {
-        const result = await submitDetailingRequestCore(currentUser.uid, requestData);
-        if (result.success) {
-            console.log("Detailing request submitted successfully with ID:", result.docId);
-            return result.docId;
-        } else {
-            console.error("Error submitting detailing request:", result.error);
-            if (result.code) console.error("Error code:", result.code);
-            return null;
-        }
-    } catch (error) {
-        console.error("Error submitting detailing request:", error);
-        if (error.code) console.error("Error code:", error.code);
-        return null;
-    }
-}
 
 
 /**
@@ -282,7 +239,7 @@ export async function validateReferralCode(code) {
         }
         return null;
     } catch (e) {
-        console.error("Error validating referral code:", e);
+        console.error("Error validating referral code:", { code: e.code, message: e.message, details: e });
         return null;
     }
 }
