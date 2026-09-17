@@ -425,24 +425,24 @@
             <form id="stripe-form">
                 <div class="form-group">
                     <label for="donor-name">Full Name <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="text" id="donor-name" placeholder="John Doe" required>
+                    <input type="text" id="donor-name" placeholder="John Doe" required autocomplete="name">
                 </div>
                 <div class="form-group">
                     <label for="donor-email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="email" id="donor-email" placeholder="you@example.com" required>
+                    <input type="email" id="donor-email" placeholder="you@example.com" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label for="card-number">Card Details (Demo Mode) <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required>
+                    <input type="text" id="card-number" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242" required autocomplete="cc-number">
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <div class="form-group" style="flex: 1;">
                         <label for="card-expiry">MM/YY <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                        <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required>
+                        <input type="text" id="card-expiry" placeholder="12/28" value="12/28" required autocomplete="cc-exp">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label for="card-cvc">CVC <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                        <input type="text" id="card-cvc" placeholder="123" value="123" required>
+                        <input type="text" id="card-cvc" placeholder="123" value="123" required autocomplete="cc-csc">
                     </div>
                 </div>
 
@@ -531,7 +531,7 @@
                         totalRaised += (doc.data().amount || 0);
                     });
                 } catch(dbErr) {
-                    console.warn("Could not load donations from db:", dbErr.code);
+                    console.warn("Could not load donations from db:", dbErr.message || dbErr, dbErr.code ? `(Code: ${dbErr.code})` : "");
                     totalRaised += 350; // Mock additional donations
                 }
 
@@ -541,9 +541,10 @@
                 progressTextEl.textContent = `$${totalRaised.toLocaleString()} / $100,000 Raised!`;
                 progressFillEl.style.width = `${percentage}%`;
             } catch (e) {
-                console.error("Error loading donation progress:", e);
+                console.error("Error loading donation progress:", e.message || e, e.code ? `(Code: ${e.code})` : "");
                 progressTextEl.textContent = `$1,500 / $100,000 Raised!`;
                 progressFillEl.style.width = `1.5%`;
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
 
@@ -588,6 +589,7 @@
                 stripeMsg.textContent = "Payment processing error. Please try again.";
                 payBtn.disabled = false;
                 payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>

@@ -5,9 +5,9 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 export let app, auth, db;
 
 try {
-    const appName = "autolux";
-    const hostname = window.location.hostname;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
+    const appName = isAutolux ? "autolux" : "ezmanage";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -41,11 +41,10 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase Initialization Error:", { code: error.code, message: error.message, details: error });
+    console.error({ code: error.code, message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
-
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -142,13 +141,6 @@ export function waitForAuthState() {
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
     return await getUserRedirectPathAsync(user, userData, currentPathname);
-
-    // Overloading support for simpler form: getUserRedirectPath(user)
-    if (!userData && !currentPathname) {
-        if (!user) return 'sign in beta.html';
-        return 'account.html';
-    }
-    return getUserRedirectPathAsync(user, userData, currentPathname);
 }
 
 export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
@@ -194,7 +186,6 @@ export async function getUserRedirectPathAsyncInternal(user) {
     return getUserRedirectPath(user, userData, window.location.pathname);
 }
 
-
 /**
  * A safe wrapper for window.location.replace that checks the current pathname.
  * @param {string} targetUrl - The URL to redirect to.
@@ -226,8 +217,11 @@ export function safeRedirect(targetUrl) {
 }
 
 /**
- * Submits a new detailing request to Firestore.
- * @param {Object} requestData - The data for the detailing request.
+ * Validates a referral code by checking if it belongs to an existing user.
+ * @param {string} code - The referral code to validate.
+ * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
+ */
+
 
 
 /**

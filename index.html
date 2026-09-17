@@ -317,7 +317,7 @@
 
     <nav>
         <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
-        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
             <a href="#pricing" aria-label="Go to Pricing section" onclick="closeMenu()">Pricing</a>
@@ -396,12 +396,13 @@
     <section id="gallery">
         <h2>Recent Work</h2>
         <!-- ⚡ Bolt Optimization: Added explicit width="600" height="400" attributes to lazy-loaded gallery images to reserve space before loading, reducing Cumulative Layout Shift (CLS) during scrolling. -->
+        <!-- ⚡ Bolt Optimization: Replaced fetchpriority="high" with loading="lazy" and decoding="async" for below-the-fold gallery images to improve initial load time (LCP/FCP) -->
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" fetchpriority="high"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" fetchpriority="high" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" fetchpriority="high"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy" decoding="async"></div>
         </div>
     </section>
 
@@ -480,11 +481,11 @@
             <form id="inquiry-form" onsubmit="submitInquiry(event)">
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="text" id="inq-name" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 15px;">
                     <label for="inq-email" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Email: <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="email" id="inq-email" required style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
+                    <input type="email" id="inq-email" required autocomplete="email" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label for="inq-message" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Message: <span aria-hidden="true" style="color: var(--error);">*</span></label>
@@ -567,6 +568,7 @@
                 }
             } catch(e) {
                 console.error("Error initializing index auth", e);
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
 
@@ -763,6 +765,7 @@
             } catch (error) {
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
                 renderReviewItems(defaultReviews);
+                if (error && error.code) console.error('Error code:', error.code);
             }
         }
 
@@ -850,11 +853,14 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "reviews"), {
+                const reviewPayload = {
                     userId: currentUser.uid,
                     userName: currentUserName,
                     rating: rating,
-                    comment: comment,
+                    comment: comment
+                };
+                await addDoc(collection(db, "reviews"), {
+                    ...reviewPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
@@ -962,10 +968,13 @@
             msgEl.textContent = "";
 
             try {
-                await addDoc(collection(db, "inquiries"), {
+                const inquiryPayload = {
                     name: name,
                     email: email,
-                    message: message,
+                    message: message
+                };
+                await addDoc(collection(db, "inquiries"), {
+                    ...inquiryPayload,
                     status: "pending",
                     createdAt: serverTimestamp()
                 });
