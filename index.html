@@ -727,11 +727,12 @@
             }
 
             // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
+            // Implement stale-while-revalidate pattern to show cached data immediately while fetching fresh data
+            let cachedReviewsString = null;
             try {
-                const cachedReviews = safeGetSessionStorage('autolux_reviews');
-                if (cachedReviews) {
-                    renderReviewItems(JSON.parse(cachedReviews));
-                    return;
+                cachedReviewsString = safeGetSessionStorage('autolux_reviews');
+                if (cachedReviewsString) {
+                    renderReviewItems(JSON.parse(cachedReviewsString));
                 }
             } catch(e) {
                 console.warn('Session storage cache read failed:', e);
@@ -756,17 +757,22 @@
                     reviews = reviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
                 }
 
-                try {
-                    safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
-                } catch(e) {
-                    console.warn('Session storage cache write failed:', e);
-                }
+                const newReviewsString = JSON.stringify(reviews);
 
-                safeSetSessionStorage('autolux_reviews', JSON.stringify(reviews));
-                renderReviewItems(reviews);
+                // Only re-render and update cache if data has changed
+                if (newReviewsString !== cachedReviewsString) {
+                    try {
+                        safeSetSessionStorage('autolux_reviews', newReviewsString);
+                    } catch(e) {
+                        console.warn('Session storage cache write failed:', e);
+                    }
+                    renderReviewItems(reviews);
+                }
             } catch (error) {
                 console.warn("Could not load reviews from database, rendering default testimonials:", error);
-                renderReviewItems(defaultReviews);
+                if (!cachedReviewsString) {
+                    renderReviewItems(defaultReviews);
+                }
                 if (error && error.code) console.error('Error code:', error.code);
             }
         }
