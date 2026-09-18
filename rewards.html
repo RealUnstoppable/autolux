@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoLux Rewards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="env.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0A0A0A;
+            --bg-card: #141414;
+            --text-main: #F5F5F7;
+            --text-muted: #A3A3A3;
+            --accent: #2563EB;
+            --gold: #D4AF37;
+            --error: #EF4444;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main);
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border); padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px;}
+        .nav-links a { color: var(--text-main); text-decoration: none; margin-left: 30px; font-weight: 500; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--accent); }
+        .btn-logout { background: none; border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 30px; }
+        .btn-logout:hover { background: #222; }
+
+        /* Container */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--gold); text-align: center; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 40px; }
+
+        /* Points Display */
+        .points-card {
+            background: linear-gradient(135deg, #141414, #1a1a1a);
+            border: 1px solid var(--gold); border-radius: 12px;
+            padding: 40px; text-align: center; margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+        }
+        .points-card h2 { margin: 0 0 10px 0; color: var(--text-main); font-size: 1.2rem; font-weight: 400; }
+        .points-value { font-size: 4rem; font-weight: 800; color: var(--gold); margin: 0; line-height: 1; text-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+
+        /* Rewards Grid */
+        h2.section-title { font-size: 1.8rem; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 60px; }
+        .reward-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+            padding: 25px; display: flex; flex-direction: column;
+        }
+        .reward-card h3 { margin: 0 0 10px 0; font-size: 1.3rem; }
+        .reward-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+        .reward-cost { font-weight: 800; color: var(--gold); font-size: 1.2rem; margin-bottom: 15px; }
+
+        .btn-redeem {
+            background: var(--text-main); color: var(--bg-dark); padding: 12px;
+            border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            width: 100%; font-size: 1rem;
+        }
+        .btn-redeem:hover:not(:disabled) { background: var(--accent); color: white; }
+        .btn-redeem:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        /* Status Messages */
+        #msg-container { text-align: center; margin-bottom: 20px; font-weight: 600; min-height: 24px; }
+
+        /* My Rewards List */
+        .my-rewards-list { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .my-reward-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .my-reward-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .my-reward-title { font-weight: 600; }
+        .my-reward-date { color: var(--text-muted); font-size: 0.85rem; }
+        .my-reward-status { background: rgba(37, 99, 235, 0.2); color: #60A5FA; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="account.html">Account</a>
+            <a href="booking.html">Book Service</a>
+            <button class="btn-logout" id="logout-btn">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>AutoLux Rewards</h1>
+        <p class="subtitle">Earn points with every service. Redeem for exclusive perks.</p>
+
+        <div class="points-card">
+            <h2>Your Loyalty Points</h2>
+            <p class="points-value" id="points-display">...</p>
+        </div>
+
+        <div id="msg-container"></div>
+
+        <h2 class="section-title">Available Rewards</h2>
+        <div class="grid" id="rewards-grid">
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">Loading rewards...</p>
+        </div>
+
+        <h2 class="section-title">My Redeemed Rewards</h2>
+        <div class="my-rewards-list" id="my-rewards-list">
+            <p style="color: var(--text-muted); text-align: center;">Loading your rewards...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, getAuthStatePromise, signOut } from './js/auth.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAvailableRewards, redeemReward, getUserRewards } from './js/rewards.js';
+        import { escapeHTML } from './js/utils.js';
+
+        const pointsDisplay = document.getElementById('points-display');
+        const rewardsGrid = document.getElementById('rewards-grid');
+        const myRewardsList = document.getElementById('my-rewards-list');
+        const msgContainer = document.getElementById('msg-container');
+
+        let currentUserPoints = 0;
+
+        async function initRewardsPage() {
+            const user = await getAuthStatePromise();
+            if (!user) {
+                window.location.replace('sign in beta.html');
+                return;
+            }
+
+            await loadUserPoints(user.uid);
+            await loadRewardsGrid();
+            await loadMyRewards();
+        }
+
+        async function loadUserPoints(uid) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", uid));
+                if (userDoc.exists()) {
+                    currentUserPoints = userDoc.data().loyaltyPoints || 0;
+                    pointsDisplay.textContent = currentUserPoints.toLocaleString();
+                } else {
+                    pointsDisplay.textContent = "0";
+                }
+            } catch (error) {
+                console.error("Error loading points:", error);
+                pointsDisplay.textContent = "Error";
+            }
+        }
+
+        async function loadRewardsGrid() {
+            const rewards = await getAvailableRewards();
+            rewardsGrid.innerHTML = '';
+
+            if (rewards.length === 0) {
+                rewardsGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">No rewards available at this time.</p>';
+                return;
+            }
+
+            rewards.forEach(reward => {
+                const canAfford = currentUserPoints >= reward.cost;
+                const card = document.createElement('div');
+                card.className = 'reward-card';
+                card.innerHTML = `
+                    <h3>${escapeHTML(reward.title)}</h3>
+                    <p>${escapeHTML(reward.description || "")}</p>
+                    <div class="reward-cost">${reward.cost.toLocaleString()} pts</div>
+                    <button class="btn-redeem" data-id="${escapeHTML(reward.id)}" data-cost="${reward.cost}" data-title="${escapeHTML(reward.title)}" ${canAfford ? '' : 'disabled'}>
+                        ${canAfford ? 'Redeem' : 'Not Enough Points'}
+                    </button>
+                `;
+                rewardsGrid.appendChild(card);
+            });
+        }
+
+        async function loadMyRewards() {
+            const myRewards = await getUserRewards();
+            myRewardsList.innerHTML = '';
+
+            if (myRewards.length === 0) {
+                myRewardsList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px 0;">You haven\'t redeemed any rewards yet.</p>';
+                return;
+            }
+
+            myRewards.forEach(r => {
+                const dateStr = r.redeemedAt?.toDate ? r.redeemedAt.toDate().toLocaleDateString() : 'Just now';
+                const item = document.createElement('div');
+                item.className = 'my-reward-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="my-reward-title">${escapeHTML(r.title)}</div>
+                        <div class="my-reward-date">Redeemed: ${dateStr} &bull; -${r.cost} pts</div>
+                    </div>
+                    <div class="my-reward-status">${escapeHTML(r.status || 'Active')}</div>
+                `;
+                myRewardsList.appendChild(item);
+            });
+        }
+
+        // Event Delegation for Redeem Buttons
+        rewardsGrid.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-redeem')) {
+                const btn = e.target;
+                const id = btn.dataset.id;
+                const cost = parseInt(btn.dataset.cost, 10);
+                const title = btn.dataset.title;
+
+                btn.disabled = true;
+                btn.textContent = "Processing...";
+                msgContainer.textContent = "";
+
+                const result = await redeemReward(id, cost, title);
+
+                if (result.success) {
+                    msgContainer.style.color = "#16A34A";
+                    msgContainer.textContent = result.message;
+
+                    // Reload data
+                    await loadUserPoints(auth.currentUser.uid);
+                    await loadRewardsGrid();
+                    await loadMyRewards();
+                } else {
+                    msgContainer.style.color = "var(--error)";
+                    msgContainer.textContent = result.message;
+                    btn.disabled = false;
+                    btn.textContent = "Redeem";
+                }
+
+                setTimeout(() => { msgContainer.textContent = ""; }, 5000);
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.replace('index.html');
+        });
+
+        initRewardsPage();
+    </script>
+</body>
+</html>
