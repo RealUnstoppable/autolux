@@ -669,11 +669,16 @@
                 
                 // Select winner weighted by amount
                 setTimeout(() => {
-                    const totalEntries = globalDonors.reduce((sum, d) => sum + d.amount, 0);
+                    let totalEntries = 0;
+                    for (let i = 0, len = globalDonors.length; i < len; i++) {
+                        totalEntries += globalDonors[i].amount;
+                    }
+
                     let rand = Math.random() * totalEntries;
                     let winner = null;
                     
-                    for (let d of globalDonors) {
+                    for (let i = 0, len = globalDonors.length; i < len; i++) {
+                        const d = globalDonors[i];
                         if (rand < d.amount) { winner = d; break; }
                         rand -= d.amount;
                     }
