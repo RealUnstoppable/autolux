@@ -2,11 +2,12 @@ import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/fir
 import { submitDetailingRequestCore } from './utils.js';
 import { db, auth } from './auth.js';
 
+
 export async function submitDetailingRequest(bookingData) {
     const currentUser = auth.currentUser;
     if (!currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: { message: "User must be authenticated" }, message: "An error occurred while submitting your request. Please try again later." };
+        return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
 
     try {
@@ -17,10 +18,11 @@ export async function submitDetailingRequest(bookingData) {
             return { success: true, id: result.docId };
         } else {
             console.error("Error adding document: ", result.code, result.error);
-            return { success: false, error: result.error };
+            return { success: false, error: "An error occurred while submitting your request. Please try again later." };
         }
     } catch (error) {
-        console.error("Error adding document: ", error.code, error.message);
-        return { success: false, error: error.message, code: error.code, message: "An error occurred while submitting your request. Please try again later." };
+        console.error("Error adding document:", error.message);
+        if (error.code) console.error("Firebase error code:", error.code);
+        return { success: false, error: "An error occurred while submitting your request. Please try again later.", message: "An error occurred while submitting your request. Please try again later." };
     }
 }

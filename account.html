@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+        // Use a dummy environment that simulates a successful Firebase setup
+        window.ENV = {
+            FIREBASE_API_KEY: "mock-api-key",
+            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
+            FIREBASE_PROJECT_ID: "mock-project-id",
+            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
+            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
+            FIREBASE_APP_ID: "mock-app-id",
+            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
+        };
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Client Portal for Unstoppable Detailing Services clients.">
@@ -250,6 +263,7 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -262,7 +276,9 @@
         <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="quote.html">Custom Quote</a>
             <a href="booking.html">Book Service</a>
+            <a href="rewards.html">Rewards</a>
             <button class="btn-logout" id="logout-btn">Sign Out</button>
         </div>
     </nav>
@@ -286,6 +302,24 @@
                         Subscribe to our maintenance plan for 15% off all detailing services.
                     </p>
                     <a href="booking.html?package=club" class="btn-schedule" style="background: var(--gold); color: black; width: 100%; text-align: center;">Join AutoLux Club</a>
+                </div>
+
+                <div class="card">
+                    <h2>Refer & Earn</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                        Share your unique referral code with friends. They get a premium wash, and you earn rewards!
+                    </p>
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="user-referral-code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="Loading...">
+                            <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
+                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
+                    </div>
                 </div>
             </div>
 
@@ -311,12 +345,24 @@
                         <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
                     </div>
                 </div>
+
+                <div class="card">
+                    <h2>My Service Addresses</h2>
+                    <div id="addresses-list">
+                        <p style="color: var(--text-muted);">No service addresses saved yet.</p>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-address-val" placeholder="Full Address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { auth, db, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
@@ -328,14 +374,18 @@
 
         let currentUser = null;
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Not authenticated, redirect to login
-                window.location.replace('sign in beta.html');
-                return;
-            }
-
+        async function initAccountPage() {
             try {
+                const user = await getAuthStatePromise();
+
+                if (!user) {
+                    // Not authenticated, redirect to login
+                    safeRedirect('sign in beta.html');
+                    return;
+                }
+
+                currentUser = user; // Save for handlers
+
                 // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
@@ -367,8 +417,23 @@
                     await setDoc(userRef, userData, { merge: true });
                 }
 
+                // Render User Info
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email;
+
+                if (userData?.vehicles) {
+                    renderVehicles(userData.vehicles);
+                }
+
+                // Set referral data
+                const referralCodeEl = document.getElementById('user-referral-code');
+                const referralCreditsEl = document.getElementById('user-referral-credits');
+                if (referralCodeEl && userData?.referralCode) {
+                    referralCodeEl.value = userData.referralCode;
+                }
+                if (referralCreditsEl && userData?.referralCredits !== undefined) {
+                    referralCreditsEl.textContent = `$${userData.referralCredits}`;
+                }
 
                 renderBookings(appointmentsSnap);
                 overlay.style.display = 'none';
@@ -377,7 +442,15 @@
                 overlay.style.display = 'none';
             }
         }
+
         initAccountPage();
+
+        // Ensure state reacts to session changes after initial load
+        onAuthStateChanged(auth, (user) => {
+             if (!user && currentUser) {
+                 safeRedirect('sign in beta.html');
+             }
+        });
 
         function renderBookings(snapshot) {
             try {
@@ -390,6 +463,8 @@
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
+                // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
+                const fragment = document.createDocumentFragment();
                 bookings.forEach(b => {
                     const pkg = escapeHTML(b.package || 'Detailing Service');
                     const vehicle = escapeHTML(b.vehicle || 'Vehicle');
@@ -405,13 +480,131 @@
                         </div>
                         <span class="status-badge ${status}">${status}</span>
                     `;
-                    appointmentsListEl.appendChild(item);
+                    fragment.appendChild(item);
                 });
+                appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
             }
         }
+
+        function renderAddresses(addresses) {
+            const list = document.getElementById('addresses-list');
+            list.innerHTML = '';
+            if (!addresses || addresses.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            addresses.forEach((a, index) => {
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'address-item';
+
+                el.innerHTML = `
+                    <div>
+                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label)}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address)}</span>
+                    </div>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
+                `;
+                fragment.appendChild(el);
+            });
+            list.appendChild(fragment);
+        }
+
+        document.getElementById('add-address-btn').addEventListener('click', async () => {
+            if (!currentUser) return;
+            const labelInput = document.getElementById('new-address-label');
+            const addressInput = document.getElementById('new-address-val');
+
+            const label = labelInput.value.trim();
+            const address = addressInput.value.trim();
+            if (!label || !address) {
+                alert("Please provide both a label and an address.");
+                return;
+            }
+
+            const btn = document.getElementById('add-address-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            const newAddressObj = { label, address };
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+
+                await updateDoc(userRef, { addresses: arrayUnion(newAddressObj) });
+
+                // Optimistically update the UI
+                const list = document.getElementById('addresses-list');
+                const emptyMsg = list.querySelector('p');
+                if (emptyMsg && emptyMsg.textContent.includes('No service addresses')) {
+                    list.innerHTML = '';
+                }
+
+                const el = document.createElement('div');
+                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
+                el.className = 'address-item';
+                el.innerHTML = `
+                    <div>
+                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(label)}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(address)}</span>
+                    </div>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}">Remove</button>
+                `;
+                list.appendChild(el);
+
+                labelInput.value = '';
+                addressInput.value = '';
+            } catch (err) {
+                console.error("Error adding address:", err);
+                alert("Failed to add address.");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('addresses-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-address-btn')) {
+                if (!currentUser) return;
+                const labelToRemove = e.target.dataset.label;
+                const addressToRemove = e.target.dataset.address;
+                if (!labelToRemove || !addressToRemove) return;
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                const addressObjToRemove = { label: labelToRemove, address: addressToRemove };
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+
+                    await updateDoc(userRef, { addresses: arrayRemove(addressObjToRemove) });
+
+                    // Optimistically update UI
+                    const addressItem = e.target.closest('.address-item');
+                    if (addressItem) {
+                        addressItem.remove();
+                    }
+
+                    const list = document.getElementById('addresses-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+                    }
+                } catch (err) {
+                    console.error("Error removing address:", err);
+                    alert("Failed to remove address.");
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
 
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');
@@ -472,7 +665,7 @@
 
                 input.value = '';
             } catch (err) {
-                console.error("Error adding vehicle:", err);
+                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                 alert("Failed to add vehicle.");
             } finally {
                 btn.textContent = originalText;
@@ -507,13 +700,30 @@
                         list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
                     }
                 } catch (err) {
-                    console.error("Error removing vehicle:", err);
+                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
                     alert("Failed to remove vehicle.");
                     e.target.textContent = originalText;
                     e.target.disabled = false;
                 }
             }
         });
+
+        // Copy referral code to clipboard
+        const copyReferralBtn = document.getElementById('copy-referral-btn');
+        if (copyReferralBtn) {
+            copyReferralBtn.addEventListener('click', () => {
+                const codeEl = document.getElementById('user-referral-code');
+                if (codeEl && codeEl.value !== 'Loading...') {
+                    navigator.clipboard.writeText(codeEl.value).then(() => {
+                        const originalText = copyReferralBtn.textContent;
+                        copyReferralBtn.textContent = 'Copied!';
+                        setTimeout(() => { copyReferralBtn.textContent = originalText; }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                }
+            });
+        }
 
         logoutBtn.addEventListener('click', async () => {
             try {

@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+        // Use a dummy environment that simulates a successful Firebase setup
+        window.ENV = {
+            FIREBASE_API_KEY: "mock-api-key",
+            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
+            FIREBASE_PROJECT_ID: "mock-project-id",
+            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
+            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
+            FIREBASE_APP_ID: "mock-app-id",
+            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
+        };
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford">
     <meta name="description" content="Schedule your luxury detailing appointment with Unstoppable Detailing Services.">
     <title>Book a Detail | Unstoppable Detailing Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +38,11 @@
         }
 
         * { box-sizing: border-box; }
+
+        input, textarea, select, button {
+            font-family: inherit;
+            font-size: 16px !important;
+        }
 
         body {
             margin: 0;
@@ -188,11 +208,27 @@
         }
 
         #loading-overlay {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             padding: 20px;
             color: var(--gold);
             font-weight: 600;
+            text-align: center;
         }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         #msg {
             margin-top: 20px;
@@ -215,6 +251,7 @@
             .booking-card { padding: 25px 20px; }
         }
     </style>
+    <script src="env.js"></script>
 </head>
 <body>
 
@@ -231,7 +268,10 @@
             <h1>Schedule Your Service</h1>
             <p class="desc">Select your detailing package or membership plan below to request an appointment.</p>
 
-            <div id="loading-overlay">Checking authentication status...</div>
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+                Checking authentication status...
+            </div>
 
             <form id="booking-form" style="display: none;">
                 <div class="input-group">
@@ -256,9 +296,23 @@
                     <input type="datetime-local" id="date" required>
                 </div>
 
+                <div class="input-group" id="address-group">
+                    <label for="address">Service Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <div id="saved-addresses-container" style="display: none; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <!-- Saved address buttons will be injected here -->
+                    </div>
+                    <input type="text" id="address" placeholder="e.g. 123 Main St, Buford, GA" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="referral-code">Referral Code <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
+                    <input type="text" id="referral-code" placeholder="e.g. A1B2C3" style="text-transform: uppercase;">
+                    <p id="referral-msg" style="font-size: 0.85rem; margin-top: 5px; font-weight: 600;"></p>
+                </div>
+
                 <div class="input-group">
                     <label for="notes">Special Requests or Notes (Optional)</label>
-                    <textarea id="notes" rows="3" placeholder="Tell us about specific spots, pet hair, or ceramic requests..."></textarea>
+                    <textarea id="notes" aria-label="Special requests or notes" rows="3" placeholder="Tell us about specific spots, pet hair, or ceramic requests..."></textarea>
                 </div>
 
                 <button type="submit" class="btn-primary" id="submit-btn">Submit Booking Request</button>
@@ -273,8 +327,10 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise } from './js/auth.js';
-        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise, validateReferralCode } from './js/auth.js';
+        import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { safeSetSessionStorage } from './js/utils.js';
+        import { submitDetailingRequest } from './js/api.js';
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -313,8 +369,39 @@
                 if (user) {
                     currentUser = user;
                     bookingForm.style.display = 'block';
+
+                    // Fetch user's saved addresses
+                    try {
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        if (userDoc.exists()) {
+                            const userData = userDoc.data();
+                            if (userData.addresses && userData.addresses.length > 0) {
+                                const container = document.getElementById('saved-addresses-container');
+                                const addressInput = document.getElementById('address');
+                                container.style.display = 'flex';
+
+                                userData.addresses.forEach(addr => {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = 'btn-schedule';
+                                    btn.style.cssText = 'padding: 5px 10px; font-size: 0.85rem; border: 1px solid var(--border); background: var(--bg-card); color: var(--gold); border-radius: 4px; cursor: pointer;';
+                                    btn.textContent = addr.label;
+                                    btn.title = addr.address; // Tooltip showing full address
+
+                                    btn.addEventListener('click', () => {
+                                        addressInput.value = addr.address;
+                                    });
+
+                                    container.appendChild(btn);
+                                });
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Failed to load saved addresses:', err);
+                    }
+
                 } else {
-                    sessionStorage.setItem('redirectAfterLogin', 'booking.html');
+                    safeSetSessionStorage('redirectAfterLogin', 'booking.html');
                     msgEl.style.color = "var(--gold)";
                     msgEl.innerHTML = 'You must be signed in to book an appointment. <a href="sign in beta.html" style="color: var(--accent);">Sign In Here</a>';
                     setTimeout(() => {
@@ -323,6 +410,7 @@
                 }
             } catch(e) {
                 console.error('Error initializing booking page', e);
+                if (e && e.code) console.error('Error code:', e.code);
             }
         }
         initBookingPage();
@@ -334,9 +422,14 @@
             const selectedPackage = packageSelect.value;
             const vehicle = document.getElementById('vehicle').value.trim();
             const appointmentDate = document.getElementById('date').value;
+            const address = document.getElementById('address').value.trim();
             const notes = document.getElementById('notes').value.trim();
+            const referralCode = document.getElementById('referral-code').value.trim();
+            const referralMsg = document.getElementById('referral-msg');
 
-            if (!selectedPackage || !vehicle || !appointmentDate) {
+            if (referralMsg) referralMsg.textContent = '';
+
+            if (!selectedPackage || !vehicle || !appointmentDate || !address) {
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Please fill in all required fields.";
                 return;
@@ -344,8 +437,38 @@
 
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-busy', 'true');
-            submitBtn.textContent = 'Submitting Request...';
+            submitBtn.textContent = 'Validating...';
             msgEl.textContent = '';
+
+            if (referralCode) {
+                const referrer = await validateReferralCode(referralCode);
+                if (!referrer) {
+                    if (referralMsg) {
+                        referralMsg.style.color = "var(--error)";
+                        referralMsg.textContent = "Invalid referral code.";
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.removeAttribute('aria-busy');
+                    submitBtn.textContent = 'Submit Booking Request';
+                    return;
+                } else if (referrer.uid === currentUser.uid) {
+                    if (referralMsg) {
+                        referralMsg.style.color = "var(--error)";
+                        referralMsg.textContent = "You cannot use your own referral code.";
+                    }
+                    submitBtn.disabled = false;
+                    submitBtn.removeAttribute('aria-busy');
+                    submitBtn.textContent = 'Submit Booking Request';
+                    return;
+                } else {
+                    if (referralMsg) {
+                        referralMsg.style.color = "#16A34A";
+                        referralMsg.textContent = "Referral code applied successfully!";
+                    }
+                }
+            }
+
+            submitBtn.textContent = 'Submitting Request...';
 
             try {
                 const bookingDoc = {
@@ -354,10 +477,15 @@
                     package: selectedPackage,
                     vehicle: vehicle,
                     appointmentDate: appointmentDate,
+                    address: address,
                     notes: notes,
                     status: 'pending',
                     createdAt: serverTimestamp()
                 };
+
+                if (referralCode) {
+                    bookingDoc.referralCode = referralCode;
+                }
 
                 const result = await submitDetailingRequest(bookingDoc, currentUser.uid);
                 if (!result.success) throw result.error;
@@ -377,6 +505,7 @@
                 submitBtn.disabled = false;
                 submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.textContent = 'Submit Booking Request';
+                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>

@@ -23,3 +23,12 @@
 ## 2026-05-26 - Accessible Character Counter Initialization
 **Learning:** Adding a character counter with `aria-live="polite"` causes severe screen reader spam on every keystroke. Also, simply attaching an `input` event listener is insufficient; the counter must be initialized on load to handle browser-restored or pre-filled text.
 **Action:** When adding character counters, do NOT use `aria-live`. Instead, use `aria-describedby` on the textarea pointing to the counter's ID. Ensure the update function is explicitly called once during initialization before binding it to the `input` event.
+## 2026-09-15 - Consistent Loading UX
+**Learning:** Adding standard loading spinners (like `.spinner`) to authentication checks improves perceived performance and maintains consistent UX across the app.
+**Action:** Reuse existing CSS animation patterns (like `@keyframes spin`) when creating new loading states instead of relying on plain text.
+## 2024-11-21 - Missing Autocomplete Attributes
+**Learning:** Many standard input fields across different forms (e.g., name, email, phone, credit card details) were missing the `autocomplete` attribute. This is a crucial accessibility and usability feature (WCAG 1.3.5) that allows browsers to autofill user information, saving time and reducing friction.
+**Action:** When creating or modifying forms, always ensure that standard input fields include the appropriate `autocomplete` attributes (like `name`, `email`, `tel`, `cc-number`, etc.).
+## 2024-05-24 - Dynamic Messages and Toggle Elements Accessibility
+**Learning:** Dynamic status messages (like form submission success/error messages) and custom toggle menus (like the mobile menu or FAQ accordions) often lack the necessary ARIA attributes to be announced correctly by screen readers.
+**Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates. For interactive toggle elements, ensure they use `aria-controls="[id of target container]"` to establish the relationship between the trigger and the content.
