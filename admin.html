@@ -436,17 +436,17 @@
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
                 // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
-                usersPromise.catch(() => {});
-                cartsPromise.catch(() => {});
-                ordersPromise.catch(() => {});
-                newsletterPromise.catch(() => {});
-                bookingsPromise.catch(() => {});
-                quotesPromise.catch(() => {});
-                inquiriesPromise.catch(() => {});
-                featureRequestsPromise.catch(() => {});
-                reviewsPromise.catch(() => {});
-                statsPromise.catch(() => {});
-                faqsPromise.catch(() => {});
+                usersPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                cartsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                ordersPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                newsletterPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                bookingsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                quotesPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                inquiriesPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                featureRequestsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                reviewsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                statsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                faqsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
 
                 // Fetch Core Data
                 const users = await resolveQuery(usersPromise, "users");

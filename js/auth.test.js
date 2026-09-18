@@ -11,8 +11,9 @@ global.window = {
     }
 };
 
-import { debounce, ensureUserDocument, getUserRedirectPath, safeRedirect } from './auth.js';
+import { debounce, ensureUserDocument, getAuthStatePromise, getUserRedirectPath, safeRedirect } from './auth.js';
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 describe('auth.js utilities', () => {
     beforeEach(() => {
@@ -41,6 +42,46 @@ describe('auth.js utilities', () => {
             jest.advanceTimersByTime(100);
             expect(func).toBeCalledTimes(1);
             jest.useRealTimers();
+        });
+    });
+
+    describe('getAuthStatePromise', () => {
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it('should resolve with user when authenticated', async () => {
+            getDoc.mockResolvedValue({
+                exists: () => true,
+                data: () => ({ referralCode: 'ABCDEF' })
+            });
+
+            const mockUser = { uid: 'user123', email: 'test@test.com' };
+            const unsubscribeMock = jest.fn();
+
+            onAuthStateChanged.mockImplementation((auth, callback) => {
+                setTimeout(() => callback(mockUser), 0);
+                return unsubscribeMock;
+            });
+
+            const result = await getAuthStatePromise();
+
+            expect(unsubscribeMock).toHaveBeenCalled();
+            expect(result).toEqual(mockUser);
+        });
+
+        it('should resolve with null when not authenticated', async () => {
+            const unsubscribeMock = jest.fn();
+
+            onAuthStateChanged.mockImplementation((auth, callback) => {
+                setTimeout(() => callback(null), 0);
+                return unsubscribeMock;
+            });
+
+            const result = await getAuthStatePromise();
+
+            expect(unsubscribeMock).toHaveBeenCalled();
+            expect(result).toBeNull();
         });
     });
 
