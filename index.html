@@ -780,6 +780,7 @@
             }
 
             container.innerHTML = '';
+            const fragment = document.createDocumentFragment();
 
             reviews.forEach(r => {
                 // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
@@ -792,8 +793,9 @@
                 const el = document.createElement('div');
                 el.className = 'review-card';
                 el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+            container.appendChild(fragment);
         }
 
 
@@ -805,6 +807,7 @@
             }
 
             container.innerHTML = '';
+            const fragment = document.createDocumentFragment();
 
             reviews.forEach(r => {
                 // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
@@ -817,8 +820,9 @@
                 const el = document.createElement('div');
                 el.className = 'review-card';
                 el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
-                container.appendChild(el);
+                fragment.appendChild(el);
             });
+            container.appendChild(fragment);
         }
 
         // Load reviews on page load
