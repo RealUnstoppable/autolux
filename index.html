@@ -15,6 +15,7 @@
     </script>
 
     <meta charset="UTF-8">
+    <link rel="preload" href="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format" as="image" fetchpriority="high">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
@@ -144,6 +145,7 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
             transform: scale(0.96);
         }
+        .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 150px 20px; text-align: center; color: white; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
         .hero p { font-size: 1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;}
         
@@ -285,7 +287,7 @@
             .auth-btn { padding: 10px 22px !important; }
 
             /* Hero Desktop */
-            .hero { padding: 0 50px; }
+            .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 250px 50px; text-align: center; color: white; }
             .hero h1 { font-size: 4rem; }
             .hero p { font-size: 1.2rem; }
             .btn-primary { display: inline-block; width: auto; }
@@ -399,10 +401,10 @@
         <!-- ⚡ Bolt Optimization: Replaced fetchpriority="high" with loading="lazy" and decoding="async" for below-the-fold gallery images to improve initial load time (LCP/FCP) -->
         <p style="text-align: center; color: var(--text-muted); margin-top: -30px; margin-bottom: 30px; font-size: 0.9rem;">(Spot the shop cat inspecting the hood in the first shot!)</p>
         <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" loading="lazy" decoding="async"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" loading="lazy" decoding="async"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
-            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="Polished Porsche" width="600" height="400" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Mercedes Interior" width="600" height="400" loading="lazy" decoding="async"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?q=80&w=800&auto=format" alt="G-Wagon Wash" width="800" height="400" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=800&auto=format'"></div>
+            <div class="gallery-item"><img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600&auto=format" alt="Sprinter Detail" width="600" height="400" loading="lazy" decoding="async"></div>
         </div>
     </section>
 
