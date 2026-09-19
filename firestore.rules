@@ -48,7 +48,8 @@ service cloud.firestore {
 
     // Inquiries Collection (Public can create, Admin reads/manages)
     match /inquiries/{inquiryId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) &&
+                    request.resource.data.status == 'pending';
       allow read, update, delete: if isAdmin();
     }
 
