@@ -465,7 +465,8 @@
                 appointmentsListEl.innerHTML = '';
                 // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
                 const fragment = document.createDocumentFragment();
-                bookings.forEach(b => {
+                for (let i = 0; i < bookings.length; i++) {
+                    const b = bookings[i];
                     const pkg = escapeHTML(b.package || 'Detailing Service');
                     const vehicle = escapeHTML(b.vehicle || 'Vehicle');
                     const dateStr = b.appointmentDate ? new Date(b.appointmentDate).toLocaleString() : 'Date TBD';
@@ -481,7 +482,7 @@
                         <span class="status-badge ${status}">${status}</span>
                     `;
                     fragment.appendChild(item);
-                });
+                }
                 appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
@@ -498,7 +499,8 @@
             }
 
             const fragment = document.createDocumentFragment();
-            addresses.forEach((a, index) => {
+            for (let index = 0; index < addresses.length; index++) {
+                const a = addresses[index];
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'address-item';
@@ -511,7 +513,7 @@
                     <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
                 `;
                 fragment.appendChild(el);
-            });
+            }
             list.appendChild(fragment);
         }
 
@@ -615,7 +617,8 @@
             }
 
             const fragment = document.createDocumentFragment();
-            vehicles.forEach((v, index) => {
+            for (let index = 0; index < vehicles.length; index++) {
+                const v = vehicles[index];
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'vehicle-item';
@@ -625,7 +628,7 @@
                     <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
                 `;
                 fragment.appendChild(el);
-            });
+            }
             list.appendChild(fragment);
         }
 
