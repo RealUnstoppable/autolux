@@ -38,6 +38,8 @@ export async function submitDetailingRequestCore(userId, requestData) {
         const docRef = await addDoc(collection(db, "bookings"), bookingData);
         return { success: true, docId: docRef.id };
     } catch (error) {
+        // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
         console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
