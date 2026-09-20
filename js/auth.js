@@ -6,8 +6,8 @@ export let app, auth, db;
 
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isAutolux = hostname === 'autolux.realunstoppable.store';
-    const appName = isAutolux ? "autolux" : "ezmanage";
+    const isAutolux = hostname === 'autolux.realunstoppable.store' || hostname.includes('autolux');
+    const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
@@ -16,6 +16,11 @@ try {
         throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
+
+    // Validate project ID to prevent ezManage cross-contamination
+    if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
+        console.warn("Warning: Environment config project ID does not match expected Autolux project ID. Possible cross-contamination.");
+    }
 
     const firebaseConfig = {
         apiKey: env.FIREBASE_API_KEY,
