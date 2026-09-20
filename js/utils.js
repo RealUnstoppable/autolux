@@ -73,3 +73,30 @@ export function safeGetSessionStorage(key) {
         return null;
     }
 }
+
+/**
+ * Submits a custom quote request to the quotes collection.
+ * @param {object} quoteData - The data for the quote request.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitQuoteRequestCore(quoteData) {
+    try {
+        const payload = {
+            // Spread user payload first to prevent Mass Assignment of trusted fields
+            ...quoteData,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+        };
+
+        // Ensure user can't inject admin status
+        if ('isAdmin' in payload) {
+            delete payload.isAdmin;
+        }
+
+        const docRef = await addDoc(collection(db, "quotes"), payload);
+        return { success: true, docId: docRef.id };
+    } catch (error) {
+        console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
