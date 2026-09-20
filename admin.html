@@ -568,7 +568,7 @@
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${escapeHTML(b.id)}" data-user-id="${escapeHTML(b.userId)}">Mark Done</button>` : ''}
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
             tbody.appendChild(fragment);
         }
@@ -594,7 +594,7 @@
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(q.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
             tbody.appendChild(fragment);
         }
@@ -629,7 +629,7 @@
                         <button class="btn-sm btn-danger action-btn" data-type="inquiry" data-action="delete" data-id="${escapeHTML(inq.id)}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
             tbody.appendChild(fragment);
         }
@@ -678,7 +678,7 @@
                     <td>${qText}</td>
                     <td>${aText}</td>
                     <td>${deleteBtn}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
             listBody.appendChild(fragment);
         }
@@ -713,7 +713,7 @@
                     <td style="max-width:300px; word-wrap:break-word;">${escapeHTML(review.comment)}</td>
                     <td>${statusStr}</td>
                     <td>${approveButton} ${deleteButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
             listBody.appendChild(fragment);
         }
@@ -744,7 +744,7 @@
                     <td>${tierBadge}</td>
                     <td>${statusStr}</td>
                     <td>${actionButton}</td>`;
-                listBody.appendChild(row);
+                fragment.appendChild(row);
             });
             listBody.appendChild(fragment);
         }
@@ -761,7 +761,7 @@
                 const parsedDate = subscriber.subscribedAt?.toDate ? subscriber.subscribedAt.toDate() : new Date(subscriber.subscribedAt);
                 const subscriptionDate = parsedDate && !isNaN(parsedDate) ? parsedDate.toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${escapeHTML(subscriber.email)}</td><td>${subscriptionDate}</td>`;
-                newsletterListBody.appendChild(row);
+                fragment.appendChild(row);
             });
             newsletterListBody.appendChild(fragment);
         }
