@@ -439,6 +439,10 @@
                     renderVehicles(userData.vehicles);
                 }
 
+                if (userData?.addresses) {
+                    renderAddresses(userData.addresses);
+                }
+
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
                 const referralCreditsEl = document.getElementById('user-referral-credits');
