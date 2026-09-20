@@ -41,7 +41,8 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase connection error:", { code: error.code || 'UNKNOWN', message: error.message, details: error });
+    console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
+    console.error("Firebase connection error:", { message: error.message, details: error });
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
