@@ -140,15 +140,15 @@ export function waitForAuthState() {
  * @returns {Promise<string|null>} - The path to redirect to, or null if no redirect is needed.
  */
 export async function getUserRedirectPath(user, userData = null, currentPathname = null) {
-    return await getUserRedirectPathAsync(user, userData, currentPathname);
-}
-
-export async function getUserRedirectPathAsync(user, userData = null, currentPathname = null) {
-    if (!userData && !currentPathname) {
+    if (!userData && user) {
         // Fetch the user data if missing, instead of infinitely recursing
         userData = await ensureUserDocument(user);
-        currentPathname = window.location.pathname;
     }
+
+    if (!currentPathname) {
+        currentPathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+    }
+
     const decodedPath = decodeURIComponent(currentPathname);
 
     if (!user) {
@@ -161,12 +161,7 @@ export async function getUserRedirectPathAsync(user, userData = null, currentPat
         return null;
     }
 
-    let data = userData;
-    if (!data && user) {
-        data = await ensureUserDocument(user);
-    }
-
-    if (data && data.isAdmin) {
+    if (userData && userData.isAdmin) {
         if (!decodedPath.endsWith('admin.html')) {
             return 'admin.html';
         }
@@ -179,11 +174,6 @@ export async function getUserRedirectPathAsync(user, userData = null, currentPat
         }
         return null;
     }
-}
-
-export async function getUserRedirectPathAsyncInternal(user) {
-    const userData = await ensureUserDocument(user);
-    return getUserRedirectPath(user, userData, window.location.pathname);
 }
 
 /**
