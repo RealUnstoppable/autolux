@@ -32,3 +32,6 @@
 ## 2024-05-24 - Dynamic Messages and Toggle Elements Accessibility
 **Learning:** Dynamic status messages (like form submission success/error messages) and custom toggle menus (like the mobile menu or FAQ accordions) often lack the necessary ARIA attributes to be announced correctly by screen readers.
 **Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates. For interactive toggle elements, ensure they use `aria-controls="[id of target container]"` to establish the relationship between the trigger and the content.
+## 2024-11-20 - Adding aria-live to points display
+**Learning:** Status points display that update dynamically without page reloads (like loyalty points updates) are visually apparent but often missed by assistive technologies.
+**Action:** When creating or modifying dynamic points display containers (e.g. `id="points-display"`), always include `aria-live="polite"` so screen readers proactively announce the content updates to users.
