@@ -344,6 +344,7 @@
                         <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
                     </div>
+                    <div id="vehicle-msg" aria-live="polite" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
                 </div>
 
                 <div class="card">
@@ -355,6 +356,7 @@
                         <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <input type="text" id="new-address-val" placeholder="Full Address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <button class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
+                        <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
                     </div>
                 </div>
             </div>
@@ -524,8 +526,11 @@
 
             const label = labelInput.value.trim();
             const address = addressInput.value.trim();
+            const msgEl = document.getElementById('address-msg');
+            msgEl.textContent = '';
             if (!label || !address) {
-                alert("Please provide both a label and an address.");
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Please provide both a label and an address.";
                 return;
             }
 
@@ -564,7 +569,8 @@
                 addressInput.value = '';
             } catch (err) {
                 console.error("Error adding address:", err);
-                alert("Failed to add address.");
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to add address.";
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -601,7 +607,9 @@
                     }
                 } catch (err) {
                     console.error("Error removing address:", err);
-                    alert("Failed to remove address.");
+                    const msgEl = document.getElementById('address-msg');
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Failed to remove address.";
                     e.target.textContent = originalText;
                     e.target.disabled = false;
                 }
@@ -636,7 +644,13 @@
             if (!currentUser) return;
             const input = document.getElementById('new-vehicle');
             const val = input.value.trim();
-            if (!val) return;
+            const msgEl = document.getElementById('vehicle-msg');
+            msgEl.textContent = '';
+            if (!val) {
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Please provide a vehicle description.";
+                return;
+            }
 
             const btn = document.getElementById('add-vehicle-btn');
             const originalText = btn.textContent;
@@ -669,7 +683,8 @@
                 input.value = '';
             } catch (err) {
                 console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
-                alert("Failed to add vehicle.");
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to add vehicle.";
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -704,7 +719,9 @@
                     }
                 } catch (err) {
                     console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
-                    alert("Failed to remove vehicle.");
+                    const msgEl = document.getElementById('vehicle-msg');
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Failed to remove vehicle.";
                     e.target.textContent = originalText;
                     e.target.disabled = false;
                 }

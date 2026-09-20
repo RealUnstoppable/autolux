@@ -26,7 +26,6 @@
 ## 2025-10-24 - [Avoid Eager Fetching Below-the-fold Images]
 **Learning:** Using `fetchpriority="high"` on images located below the fold (e.g., in galleries) forces the browser to prioritize them over critical above-the-fold assets, hurting LCP and initial load performance.
 **Action:** Always use `loading="lazy"` and `decoding="async"` for images that are not immediately visible in the initial viewport, allowing the browser to optimize network requests and rendering thread availability.
-
-## 2026-09-19 - [For Loop Optimization for DOM Rendering]
-**Learning:** Using higher-order array methods like `.forEach()` and `.filter().forEach()` inside hot DOM rendering paths (like repeatedly executing dashboard table builders) introduces unnecessary callback allocation overhead and can slow down JavaScript execution compared to standard C-style loops.
-**Action:** When iterating over arrays to generate and append DOM elements, replace `.forEach()` callbacks with standard `for (let i = 0; i < array.length; i++)` loops to achieve maximum raw iteration speed and zero allocation overhead.
+## 2025-05-24 - [Avoid DOM Appends Inside Loops]
+**Learning:** Appending elements (like `<tr>`) directly to a live DOM element (like `<tbody>`) inside a `forEach` or `for` loop causes synchronous layout reflows and repaints on every single iteration, leading to significant layout thrashing and slow rendering of long lists.
+**Action:** When generating multiple DOM elements, always append them to an in-memory `DocumentFragment` during the loop, and then append that fragment to the live DOM exactly once after the loop completes.
