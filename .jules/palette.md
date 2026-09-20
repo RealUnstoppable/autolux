@@ -35,3 +35,6 @@
 ## 2024-11-20 - Adding aria-live to points display
 **Learning:** Status points display that update dynamically without page reloads (like loyalty points updates) are visually apparent but often missed by assistive technologies.
 **Action:** When creating or modifying dynamic points display containers (e.g. `id="points-display"`), always include `aria-live="polite"` so screen readers proactively announce the content updates to users.
+## 2024-11-21 - Address Autocomplete
+**Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
+**Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
