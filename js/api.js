@@ -21,8 +21,7 @@ export async function submitDetailingRequest(bookingData) {
             return { success: false, error: "An error occurred while submitting your request. Please try again later." };
         }
     } catch (error) {
-        console.error("Error adding document:", error.message);
-        if (error.code) console.error("Firebase error code:", error.code);
+        console.error("Error adding document:", { code: error.code || "UNKNOWN_ERROR", message: error.message, details: error });
         return { success: false, error: "An error occurred while submitting your request. Please try again later.", message: "An error occurred while submitting your request. Please try again later." };
     }
 }
@@ -38,8 +37,7 @@ export async function submitQuoteRequest(quoteData) {
             return { success: false, error: "An error occurred while submitting your quote request. Please try again later." };
         }
     } catch (error) {
-        console.error("Error adding quote document:", error.message);
-        if (error.code) console.error("Firebase error code:", error.code);
+        console.error("Error adding quote document:", { code: error.code || "UNKNOWN_ERROR", message: error.message, details: error });
         return { success: false, error: "An error occurred while submitting your quote request. Please try again later.", message: "An error occurred while submitting your request. Please try again later." };
     }
 }
