@@ -325,6 +325,16 @@
 
             <!-- Main Content Area -->
             <div>
+                <!-- Notifications Panel -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">Alerts & Notifications</h2>
+                    </div>
+                    <div id="notifications-list">
+                        <p style="color: var(--text-muted);">Loading notifications...</p>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
                         <h2 style="margin: 0; border: none; padding: 0;">My Appointments</h2>
@@ -363,7 +373,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
@@ -391,11 +401,13 @@
 
                 // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
                 const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
 
                 // Fire them off concurrently
-                const [userSnap, appointmentsSnap] = await Promise.all([
+                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
                     getDoc(userRef),
-                    getDocs(appointmentsQuery)
+                    getDocs(appointmentsQuery),
+                    getDocs(notificationsQuery)
                 ]);
 
                 let userData = userSnap.data();
@@ -436,6 +448,7 @@
                 }
 
                 renderBookings(appointmentsSnap);
+                renderNotifications(notificationsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
@@ -450,6 +463,66 @@
              if (!user && currentUser) {
                  safeRedirect('sign in beta.html');
              }
+        });
+
+        function renderNotifications(snapshot) {
+            try {
+                const listEl = document.getElementById('notifications-list');
+                if (snapshot.empty) {
+                    listEl.innerHTML = '<p style="color: var(--text-muted);">No new notifications.</p>';
+                    return;
+                }
+
+                const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                notifications.sort((a, b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+
+                listEl.innerHTML = '';
+                const fragment = document.createDocumentFragment();
+                notifications.forEach(n => {
+                    const title = escapeHTML(n.title || 'Notification');
+                    const msg = escapeHTML(n.message || '');
+                    const dateStr = n.createdAt ? new Date(n.createdAt.toDate ? n.createdAt.toDate() : n.createdAt).toLocaleString() : '';
+                    const readStyle = n.read ? 'opacity: 0.7;' : 'font-weight: bold; border-left: 3px solid var(--gold); padding-left: 10px;';
+
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.style = readStyle;
+                    item.innerHTML = `
+                        <div>
+                            <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">${title}</p>
+                            <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">${msg}</small>
+                            <small style="color: var(--text-muted); font-size: 0.75rem;">${dateStr}</small>
+                        </div>
+                        ${!n.read ? `<button class="btn-sm btn-action mark-read-btn" data-id="${n.id}" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Mark Read</button>` : ''}
+                    `;
+                    fragment.appendChild(item);
+                });
+                listEl.appendChild(fragment);
+            } catch (error) {
+                console.error("Error rendering notifications:", error);
+                document.getElementById('notifications-list').innerHTML = '<p style="color: var(--error);">Error loading notifications.</p>';
+            }
+        }
+
+        document.getElementById('notifications-list')?.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('mark-read-btn')) {
+                const id = e.target.dataset.id;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+                try {
+                    await updateDoc(doc(db, "notifications", id), { read: true });
+                    const item = e.target.closest('.list-item');
+                    item.style.opacity = '0.7';
+                    item.style.fontWeight = 'normal';
+                    item.style.borderLeft = 'none';
+                    item.style.paddingLeft = '0';
+                    e.target.remove();
+                } catch (error) {
+                    console.error("Error marking notification as read:", error);
+                    e.target.textContent = 'Mark Read';
+                    e.target.disabled = false;
+                }
+            }
         });
 
         function renderBookings(snapshot) {

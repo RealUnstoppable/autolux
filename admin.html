@@ -366,7 +366,7 @@
    <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '../js/auth.js';
         import { escapeHTML } from '../js/utils.js';
-        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
         let chartCtx;
@@ -895,6 +895,21 @@
 
                     if (action === 'cancel' && confirm("Cancel this booking?")) {
                         await updateDoc(doc(db, "bookings", id), { status: 'cancelled' });
+
+                        const bookingRef = doc(db, "bookings", id);
+                        const bookingSnap = await getDoc(bookingRef);
+                        const bookingData = bookingSnap.data();
+                        if (bookingData && bookingData.userId) {
+                            await addDoc(collection(db, "notifications"), {
+                                userId: bookingData.userId,
+                                title: "Booking Cancelled",
+                                message: `Your booking for ${bookingData.vehicle || 'your vehicle'} has been cancelled.`,
+                                type: 'booking',
+                                read: false,
+                                createdAt: serverTimestamp()
+                            });
+                        }
+
                         statusCell.innerHTML = `<span class="status-badge cancelled">cancelled</span>`;
                         actionCell.innerHTML = '';
 
@@ -907,6 +922,17 @@
                         const bookingData = bookingSnap.data();
 
                         await updateDoc(bookingRef, { status: 'completed' });
+
+                        if (bookingData && bookingData.userId) {
+                            await addDoc(collection(db, "notifications"), {
+                                userId: bookingData.userId,
+                                title: "Booking Completed",
+                                message: `Your booking for ${bookingData.vehicle || 'your vehicle'} has been completed!`,
+                                type: 'booking',
+                                read: false,
+                                createdAt: serverTimestamp()
+                            });
+                        }
 
                         // Process referral if exists
                         if (bookingData && bookingData.referralCode) {
@@ -1011,6 +1037,29 @@
 
                     if (action === 'responded') {
                         await updateDoc(doc(db, "quotes", id), { status: 'responded' });
+
+                        const quoteRef = doc(db, "quotes", id);
+                        const quoteSnap = await getDoc(quoteRef);
+                        const quoteData = quoteSnap.data();
+
+                        // We will attempt to find a userId by email since quotes are public, but if there's a userId field we use it.
+                        // Or, we find user by email.
+                        if (quoteData) {
+                             const qUser = query(collection(db, "users"), where("email", "==", quoteData.email));
+                             const userSnap = await getDocs(qUser);
+                             if (!userSnap.empty) {
+                                  const userId = userSnap.docs[0].id;
+                                  await addDoc(collection(db, "notifications"), {
+                                      userId: userId,
+                                      title: "Quote Responded",
+                                      message: `Your quote request has been reviewed. Please check your email for details.`,
+                                      type: 'quote',
+                                      read: false,
+                                      createdAt: serverTimestamp()
+                                  });
+                             }
+                        }
+
                         row.cells[2].innerHTML = `<span class="status-badge active">responded</span>`;
                         row.cells[3].innerHTML = `<button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${escapeHTML(id)}">Delete</button>`;
 
@@ -1113,6 +1162,15 @@
                         rewards: arrayUnion(reward)
                     });
                     
+                    await addDoc(collection(db, "notifications"), {
+                        userId: currentWinnerId,
+                        title: "Reward Credited",
+                        message: `You have received a new reward: ${reward}`,
+                        type: 'reward',
+                        read: false,
+                        createdAt: serverTimestamp()
+                    });
+
                     alert(`Successfully credited "${reward}" to user!`);
                     document.getElementById('winner-display').style.display = 'none';
                 } catch (error) {

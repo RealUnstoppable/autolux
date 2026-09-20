@@ -125,5 +125,19 @@ service cloud.firestore {
       // Do NOT allow direct client writes to prevent fraud.
       allow write: if false;
     }
+
+    // Notifications Collection
+    match /notifications/{notificationId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isOwner(resource.data.userId) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.title == resource.data.title &&
+        request.resource.data.message == resource.data.message &&
+        request.resource.data.type == resource.data.type &&
+        request.resource.data.createdAt == resource.data.createdAt
+      );
+    }
   }
 }
