@@ -23,7 +23,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
-        const bookingData = {
+        const payload = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
             userId: userId,
@@ -31,11 +31,16 @@ export async function submitDetailingRequestCore(userId, requestData) {
             status: 'pending'
         };
 
-        if (requestData.referralCode) {
-            bookingData.referralCode = requestData.referralCode.trim().toUpperCase();
+        // Ensure user can't inject admin status
+        if ('isAdmin' in payload) {
+            delete payload.isAdmin;
         }
 
-        const docRef = await addDoc(collection(db, "bookings"), bookingData);
+        if (requestData.referralCode) {
+            payload.referralCode = requestData.referralCode.trim().toUpperCase();
+        }
+
+        const docRef = await addDoc(collection(db, "bookings"), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
         // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
