@@ -60,7 +60,7 @@ service cloud.firestore {
 
     // Inquiries Collection (Public can create, Admin reads/manages)
     match /inquiries/{inquiryId} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending';
       allow read, update, delete: if isAdmin();
     }
 
@@ -72,14 +72,14 @@ service cloud.firestore {
 
     // Newsletter Subscribers
     match /newsletterSubscribers/{email} {
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['email', 'subscribedAt']);
       allow read, update, delete: if isAdmin();
     }
 
     // Sweepstakes / Donations Collection
     match /donations/{donationId} {
       allow read: if isAdmin();
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'amount', 'entries', 'createdAt']);
       allow update, delete: if isAdmin();
     }
 
