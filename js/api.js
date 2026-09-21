@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { submitDetailingRequestCore, submitQuoteRequestCore } from './utils.js';
+import { submitDetailingRequestCore, submitQuoteRequestCore, submitDetailingPlanCore } from './utils.js';
 import { db, auth } from './auth.js';
 
 
@@ -31,4 +31,13 @@ export async function submitDetailingRequest(bookingData) {
 
 export async function submitQuoteRequest(quoteData) {
     return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+}
+
+export async function submitDetailingPlan(planData) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        console.error("Cannot submit detailing plan: User is not authenticated.");
+        return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
+    }
+    return handleApiRequest(submitDetailingPlanCore, [currentUser.uid, planData], "DetailingPlan");
 }
