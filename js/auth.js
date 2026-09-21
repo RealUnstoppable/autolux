@@ -18,8 +18,12 @@ try {
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
     // Validate project ID to prevent ezManage cross-contamination
+    if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
+        throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+    }
+
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        console.warn("Warning: Environment config project ID does not match expected Autolux project ID. Possible cross-contamination.");
+        throw new Error("Critical Error: Environment config project ID does not match expected Autolux project ID. Preventing cross-contamination.");
     }
 
     const firebaseConfig = {

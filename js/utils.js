@@ -107,3 +107,35 @@ export async function submitQuoteRequestCore(quoteData) {
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
+
+/**
+ * Submits a detailing plan request to the detailingPlans collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing plan.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitDetailingPlanCore(userId, requestData) {
+    if (!userId) {
+        return { success: false, error: "User must be authenticated to submit a plan." };
+    }
+
+    try {
+        const payload = {
+            ...requestData,
+            userId: userId,
+            createdAt: serverTimestamp(),
+            status: 'pending'
+        };
+
+        if ('isAdmin' in payload) {
+            delete payload.isAdmin;
+        }
+
+        const docRef = await addDoc(collection(db, "detailingPlans"), payload);
+        return { success: true, docId: docRef.id };
+    } catch (error) {
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("Failed to submit detailing plan:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to submit plan.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}

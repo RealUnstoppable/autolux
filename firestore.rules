@@ -58,6 +58,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Service Records Collection
+    match /service_records/{recordId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if false;
+      allow update, delete: if isAdmin();
+    }
+
     // Inquiries Collection (Public can create, Admin reads/manages)
     match /inquiries/{inquiryId} {
       allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending';
