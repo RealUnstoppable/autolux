@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2024-11-25 - Destructive Action Confirmations
+**Learning:** Destructive actions like removing saved addresses or vehicles in the user portal were executing immediately upon click, risking accidental data loss. This can be jarring and lead to poor user experience.
+**Action:** Always wrap destructive actions in a confirmation dialog (e.g., `confirm()`) to provide a safety net for users.
