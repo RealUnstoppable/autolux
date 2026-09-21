@@ -29,3 +29,6 @@
 ## 2025-05-24 - [Avoid DOM Appends Inside Loops]
 **Learning:** Appending elements (like `<tr>`) directly to a live DOM element (like `<tbody>`) inside a `forEach` or `for` loop causes synchronous layout reflows and repaints on every single iteration, leading to significant layout thrashing and slow rendering of long lists.
 **Action:** When generating multiple DOM elements, always append them to an in-memory `DocumentFragment` during the loop, and then append that fragment to the live DOM exactly once after the loop completes.
+## 2025-05-24 - [Avoid DOM Appends Inside Loops]
+**Learning:** Appending elements (like `<tr>` or `<div>`) directly to a live DOM element inside a `forEach` or `for` loop causes synchronous layout reflows and repaints on every single iteration, leading to significant layout thrashing and slow rendering of long lists.
+**Action:** When generating multiple DOM elements, always append them to an in-memory `DocumentFragment` during the loop, and then append that fragment to the live DOM exactly once after the loop completes.
