@@ -7,6 +7,7 @@ export let app, auth, db;
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname === 'autolux.realunstoppable.store' || hostname.includes('autolux');
+    // Ensure autolux.realunstoppable.store is matched regardless of port or exact string match if needed
     const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
@@ -19,7 +20,7 @@ try {
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        console.warn("Warning: Environment config project ID does not match expected Autolux project ID. Possible cross-contamination.");
+        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
     }
 
     const firebaseConfig = {
@@ -47,6 +48,7 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
     console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
+    console.error("If this is a CORS issue, please verify that autolux.realunstoppable.store is authorized in Firebase Auth domains.");
     console.error("Firebase connection error:", { message: error.message, details: error });
 }
 
