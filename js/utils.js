@@ -45,6 +45,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     } catch (error) {
         // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
         console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("If this is permission-denied, check firestore.rules. If it's CORS, check Authorized Domains.");
         console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
