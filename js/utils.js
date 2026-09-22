@@ -12,21 +12,18 @@ export function escapeHTML(str) {
 }
 
 /**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
+ * Submits a request to a given Firestore collection securely.
+ * @param {string} collectionName - The Firestore collection name.
+ * @param {object} requestData - The data payload.
+ * @param {object} additionalFields - Extra fields to append (e.g. userId).
+ * @returns {Promise<object>}
  */
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-    
+export async function submitRequestCore(collectionName, requestData, additionalFields = {}) {
     try {
         const payload = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
-            userId: userId,
+            ...additionalFields,
             createdAt: serverTimestamp(),
             status: 'pending'
         };
@@ -40,14 +37,27 @@ export async function submitDetailingRequestCore(userId, requestData) {
             payload.referralCode = requestData.referralCode.trim().toUpperCase();
         }
 
-        const docRef = await addDoc(collection(db, "bookings"), payload);
+        const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
         // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        console.error(`Firebase connection error for ${collectionName}. Code:`, error.code || 'UNKNOWN_ERROR');
+        console.error(`Failed to submit ${collectionName} request:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
+}
+
+/**
+ * Submits a detailing request to the bookings collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitDetailingRequestCore(userId, requestData) {
+    if (!userId) {
+        return { success: false, error: "User must be authenticated to submit a request." };
+    }
+    return submitRequestCore("bookings", requestData, { userId });
 }
 
 /**
@@ -87,23 +97,5 @@ export function safeGetSessionStorage(key) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitQuoteRequestCore(quoteData) {
-    try {
-        const payload = {
-            // Spread user payload first to prevent Mass Assignment of trusted fields
-            ...quoteData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        };
-
-        // Ensure user can't inject admin status
-        if ('isAdmin' in payload) {
-            delete payload.isAdmin;
-        }
-
-        const docRef = await addDoc(collection(db, "quotes"), payload);
-        return { success: true, docId: docRef.id };
-    } catch (error) {
-        console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
-    }
+    return submitRequestCore("quotes", quoteData);
 }

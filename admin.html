@@ -610,7 +610,6 @@
             if(inquiries.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
-            const fragment = document.createDocumentFragment();
             inquiries.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             const fragment = document.createDocumentFragment();
             for (let i = 0; i < inquiries.length; i++) {
@@ -669,7 +668,6 @@
             if(faqs.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
             }
-            const fragment = document.createDocumentFragment();
             faqs.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             const fragment = document.createDocumentFragment();
             for (let i = 0; i < faqs.length; i++) {
@@ -695,7 +693,6 @@
             if(reviews.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
             }
-            const fragment = document.createDocumentFragment();
             reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
             const fragment = document.createDocumentFragment();
             for (let i = 0; i < reviews.length; i++) {
@@ -731,7 +728,6 @@
             if(requests.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
             }
-            const fragment = document.createDocumentFragment();
             requests.sort((a,b) => new Date(b.timestamp?.toDate ? b.timestamp.toDate() : (b.timestamp || 0)) - new Date(a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp || 0)));
             const fragment = document.createDocumentFragment();
             for (let i = 0; i < requests.length; i++) {
