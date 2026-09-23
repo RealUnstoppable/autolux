@@ -165,6 +165,8 @@
                 return;
             }
 
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             rewards.forEach(reward => {
                 const canAfford = currentUserPoints >= reward.cost;
                 const card = document.createElement('div');
@@ -177,8 +179,9 @@
                         ${canAfford ? 'Redeem' : 'Not Enough Points'}
                     </button>
                 `;
-                rewardsGrid.appendChild(card);
+                fragment.appendChild(card);
             });
+            rewardsGrid.appendChild(fragment);
         }
 
         async function loadMyRewards() {
@@ -190,6 +193,8 @@
                 return;
             }
 
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             myRewards.forEach(r => {
                 const dateStr = r.redeemedAt?.toDate ? r.redeemedAt.toDate().toLocaleDateString() : 'Just now';
                 const item = document.createElement('div');
@@ -201,8 +206,9 @@
                     </div>
                     <div class="my-reward-status">${escapeHTML(r.status || 'Active')}</div>
                 `;
-                myRewardsList.appendChild(item);
+                fragment.appendChild(item);
             });
+            myRewardsList.appendChild(fragment);
         }
 
         // Event Delegation for Redeem Buttons
