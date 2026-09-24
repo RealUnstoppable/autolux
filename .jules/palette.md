@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2024-11-21 - Duplicate ARIA attributes
+**Learning:** Found duplicate aria-live attributes (e.g. `aria-live="polite" aria-live="polite"`) on the same element in the UI, which can cause validation errors and inconsistent screen reader announcements.
+**Action:** When adding or verifying ARIA attributes on elements, ensure that each attribute is declared only once on the element to ensure valid and accessible HTML.
