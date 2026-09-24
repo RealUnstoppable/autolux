@@ -678,7 +678,7 @@
                 const qText = escapeHTML(faq.question || "N/A");
                 const aText = escapeHTML(faq.answer || "N/A");
 
-                const deleteBtn = `<button class="auth-btn action-btn" data-type="faq" data-action="delete" data-id="${faq.id}" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;">Delete</button>`;
+                const deleteBtn = `<button class="auth-btn action-btn" data-type="faq" data-action="delete" data-id="${escapeHTML(faq.id)}" style="background:#ef4444; padding:5px 10px; font-size:0.8rem;">Delete</button>`;
 
                 row.innerHTML = `
                     <td>${qText}</td>
