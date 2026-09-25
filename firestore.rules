@@ -36,17 +36,19 @@ service cloud.firestore {
 
     // Bookings Collection (Autolux Service Business Logic)
     match /bookings/{bookingId} {
+      // Clients can only read their own booking requests; admins have full access.
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      // Ensure users can only create pending booking requests for themselves
+      // Clients can only write (create) their own booking requests
       allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending') && !('isAdmin' in request.resource.data);
-      // Ensure only admins can modify the status
       allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
       allow delete: if isAdmin();
     }
 
     // Detailing Plans Collection (Autolux Service Business Logic)
     match /detailingPlans/{planId} {
+      // Clients can only read their own detailing plans; admins have full access.
       allow read: if isAdmin() || isOwner(resource.data.userId);
+      // Clients can only write (create) their own detailing plans
       allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending') && !('isAdmin' in request.resource.data);
       allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
       allow delete: if isAdmin();
