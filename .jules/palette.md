@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2026-09-25 - Missing aria-live on referral validation message
+**Learning:** Form validation feedback that dynamically updates (like the referral code validation message in booking.html) can be missed by assistive technologies if not explicitly marked.
+**Action:** Ensure all dynamic validation and status message containers always include `aria-live="polite"`.
