@@ -44,9 +44,20 @@ export async function submitDetailingRequestCore(userId, requestData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
+        const errCode = error.code || 'UNKNOWN_ERROR';
+        console.error("Firebase connection error. Code:", errCode);
+        console.error("Failed to submit detailing request:", { code: errCode, message: error.message, details: error });
+
+        let errorMsg = "Failed to submit request. Please try again.";
+        if (errCode === 'permission-denied') {
+             errorMsg = "Permission denied. You might not be authorized.";
+        } else if (errCode === 'unavailable') {
+             errorMsg = "Service unavailable. Please check your network connection.";
+        } else if (errCode === 'unauthenticated') {
+             errorMsg = "Unauthenticated. Please log in again.";
+        }
+
+        return { success: false, error: errorMsg, code: errCode };
     }
 }
 
