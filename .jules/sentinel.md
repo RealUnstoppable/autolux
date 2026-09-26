@@ -61,3 +61,10 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+## 2026-10-25 - [Missing Firebase Error Log Extraction]
+**Vulnerability:**
+The application had generic or bundled error objects being passed directly in Firebase `try/catch` logs (e.g., `console.error(error)`), rather than extracting specific codes.
+**Learning:**
+Logging generic errors without extracting the code (`error.code`) obscures critical infrastructure bugs such as App Check, CORS blocks, or API key misconfigurations, making debugging much harder in production.
+**Prevention:**
+Always explicitly extract and log `error.code` individually (e.g., `error.code || 'UNKNOWN_ERROR'`) alongside the standard error object in all `catch` blocks involving Firebase calls.
