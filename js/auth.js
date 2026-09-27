@@ -47,7 +47,13 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
     console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
-    console.error("Firebase connection error:", { message: error.message, details: error });
+    if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+        console.error("App Check or CORS issue detected:", error.message);
+    } else if (error.code === 'auth/invalid-api-key') {
+        console.error("Invalid API key detected:", error.message);
+    } else {
+        console.error("Firebase connection error:", { message: error.message, details: error });
+    }
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
