@@ -211,16 +211,6 @@ export function safeRedirect(targetUrl) {
         console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
     }
 }
-
-/**
- * Validates a referral code by checking if it belongs to an existing user.
- * @param {string} code - The referral code to validate.
- * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
- */
-
-
-
-/**
  * Validates a referral code by checking if it belongs to an existing user.
  * @param {string} code - The referral code to validate.
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
