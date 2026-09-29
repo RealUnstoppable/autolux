@@ -165,7 +165,6 @@
                 return;
             }
 
-            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
             const fragment = document.createDocumentFragment();
             rewards.forEach(reward => {
                 const canAfford = currentUserPoints >= reward.cost;
@@ -193,7 +192,6 @@
                 return;
             }
 
-            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
             const fragment = document.createDocumentFragment();
             myRewards.forEach(r => {
                 const dateStr = r.redeemedAt?.toDate ? r.redeemedAt.toDate().toLocaleDateString() : 'Just now';
