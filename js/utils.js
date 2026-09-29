@@ -12,10 +12,11 @@ export function escapeHTML(str) {
 }
 
 /**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
+ * Submits a request to a given Firestore collection securely.
+ * @param {string} collectionName - The Firestore collection name.
+ * @param {object} requestData - The data payload.
+ * @param {object} additionalFields - Extra fields to append (e.g. userId).
+ * @returns {Promise<object>}
  */
 
 /**
@@ -67,6 +68,19 @@ export async function submitDetailingRequestCore(userId, requestData) {
         additionalData.referralCode = requestData.referralCode.trim().toUpperCase();
     }
     return await submitGenericRequest("bookings", requestData, additionalData);
+}
+
+/**
+ * Submits a detailing request to the bookings collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitDetailingRequestCore(userId, requestData) {
+    if (!userId) {
+        return { success: false, error: "User must be authenticated to submit a request." };
+    }
+    return submitRequestCore("bookings", requestData, { userId });
 }
 
 /**
