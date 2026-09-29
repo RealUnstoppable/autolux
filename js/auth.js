@@ -6,8 +6,7 @@ export let app, auth, db;
 
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isAutolux = hostname === 'autolux.realunstoppable.store' || hostname.includes('autolux');
-    // Ensure autolux.realunstoppable.store is matched regardless of port or exact string match if needed
+    const isAutolux = hostname.includes('autolux');
     const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
@@ -48,8 +47,13 @@ try {
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
     console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
-    console.error("If this is a CORS issue, please verify that autolux.realunstoppable.store is authorized in Firebase Auth domains.");
-    console.error("Firebase connection error:", { message: error.message, details: error });
+    if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+        console.error("App Check or CORS issue detected:", error.message);
+    } else if (error.code === 'auth/invalid-api-key') {
+        console.error("Invalid API key detected:", error.message);
+    } else {
+        console.error("Firebase connection error:", { message: error.message, details: error });
+    }
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
@@ -109,7 +113,8 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", { code: error.code, message: error.message, details: error });
+        console.error("Error ensuring user document - Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("Error ensuring user document:", { message: error.message, details: error });
         return null;
     }
 }
@@ -210,19 +215,10 @@ export function safeRedirect(targetUrl) {
             window.location.replace(targetUrl);
         }
     } catch (e) {
-        console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
+        console.error('Invalid URL in safeRedirect - Code:', e.code || 'UNKNOWN_ERROR');
+        console.error('Invalid URL in safeRedirect:', targetUrl, { message: e.message, details: e });
     }
 }
-
-/**
- * Validates a referral code by checking if it belongs to an existing user.
- * @param {string} code - The referral code to validate.
- * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
- */
-
-
-
-/**
  * Validates a referral code by checking if it belongs to an existing user.
  * @param {string} code - The referral code to validate.
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
@@ -237,7 +233,8 @@ export async function validateReferralCode(code) {
         }
         return null;
     } catch (e) {
-        console.error("Error validating referral code:", { code: e.code, message: e.message, details: e });
+        console.error("Error validating referral code - Code:", e.code || 'UNKNOWN_ERROR');
+        console.error("Error validating referral code:", { message: e.message, details: e });
         return null;
     }
 }

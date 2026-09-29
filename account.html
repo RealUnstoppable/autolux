@@ -627,7 +627,7 @@
                 const list = document.getElementById('addresses-list');
                 const emptyMsg = list.querySelector('p');
                 if (emptyMsg && emptyMsg.textContent.includes('No service addresses')) {
-                    list.innerHTML = '';
+                    emptyMsg.remove();
                 }
 
                 const el = document.createElement('div');
@@ -745,7 +745,7 @@
                 const list = document.getElementById('vehicles-list');
                 const emptyMsg = list.querySelector('p');
                 if (emptyMsg && emptyMsg.textContent.includes('No vehicles')) {
-                    list.innerHTML = '';
+                    emptyMsg.remove();
                 }
 
                 const el = document.createElement('div');
