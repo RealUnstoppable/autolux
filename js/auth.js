@@ -6,7 +6,7 @@ export let app, auth, db;
 
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isAutolux = hostname === 'autolux.realunstoppable.store' || hostname.includes('autolux');
+    const isAutolux = hostname.includes('autolux');
     const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
