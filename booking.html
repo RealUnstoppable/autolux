@@ -380,6 +380,7 @@
                                 const addressInput = document.getElementById('address');
                                 container.style.display = 'flex';
 
+                                const fragment = document.createDocumentFragment();
                                 userData.addresses.forEach(addr => {
                                     const btn = document.createElement('button');
                                     btn.type = 'button';
@@ -392,8 +393,9 @@
                                         addressInput.value = addr.address;
                                     });
 
-                                    container.appendChild(btn);
+                                    fragment.appendChild(btn);
                                 });
+                                container.appendChild(fragment);
                             }
                         }
                     } catch (err) {
