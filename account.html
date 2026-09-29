@@ -662,6 +662,8 @@
                 const addressToRemove = e.target.dataset.address;
                 if (!labelToRemove || !addressToRemove) return;
 
+                if (!confirm("Are you sure you want to remove this address?")) return;
+
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
                 e.target.disabled = true;
@@ -775,6 +777,8 @@
                 if (!currentUser) return;
                 const vehicleToRemove = e.target.dataset.vehicle;
                 if (!vehicleToRemove) return;
+
+                if (!confirm("Are you sure you want to remove this vehicle?")) return;
 
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
