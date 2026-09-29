@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2024-05-24 - Dynamic Validation Messages
+**Learning:** Dynamic validation status messages (like referral code validation messages) need the necessary ARIA attributes to be announced correctly by screen readers.
+**Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates.
