@@ -23,6 +23,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
+        if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
@@ -44,20 +45,15 @@ export async function submitDetailingRequestCore(userId, requestData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
-        const errCode = error.code || 'UNKNOWN_ERROR';
-        console.error("Firebase connection error. Code:", errCode);
-        console.error("Failed to submit detailing request:", { code: errCode, message: error.message, details: error });
-
-        let errorMsg = "Failed to submit request. Please try again.";
-        if (errCode === 'permission-denied') {
-             errorMsg = "Permission denied. You might not be authorized.";
-        } else if (errCode === 'unavailable') {
-             errorMsg = "Service unavailable. Please check your network connection.";
-        } else if (errCode === 'unauthenticated') {
-             errorMsg = "Unauthenticated. Please log in again.";
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         }
-
-        return { success: false, error: errorMsg, code: errCode };
+        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
 
@@ -99,6 +95,7 @@ export function safeGetSessionStorage(key) {
  */
 export async function submitQuoteRequestCore(quoteData) {
     try {
+        if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
             // Spread user payload first to prevent Mass Assignment of trusted fields
             ...quoteData,
@@ -114,7 +111,8 @@ export async function submitQuoteRequestCore(quoteData) {
         const docRef = await addDoc(collection(db, "quotes"), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("Failed to submit quote request:", { message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
