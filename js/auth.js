@@ -19,7 +19,7 @@ try {
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        console.warn("Warning: Environment config project ID does not match expected Autolux project ID. Possible cross-contamination.");
+        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
     }
 
     const firebaseConfig = {
