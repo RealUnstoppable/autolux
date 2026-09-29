@@ -23,6 +23,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
+        if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
             // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
@@ -94,6 +95,7 @@ export function safeGetSessionStorage(key) {
  */
 export async function submitQuoteRequestCore(quoteData) {
     try {
+        if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
             // Spread user payload first to prevent Mass Assignment of trusted fields
             ...quoteData,
@@ -109,7 +111,8 @@ export async function submitQuoteRequestCore(quoteData) {
         const docRef = await addDoc(collection(db, "quotes"), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("Failed to submit quote request:", { message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }

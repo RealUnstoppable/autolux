@@ -113,7 +113,8 @@ export async function ensureUserDocument(user) {
             return newUserData;
         }
     } catch (error) {
-        console.error("Error ensuring user document:", { code: error.code, message: error.message, details: error });
+        console.error("Error ensuring user document - Code:", error.code || 'UNKNOWN_ERROR');
+        console.error("Error ensuring user document:", { message: error.message, details: error });
         return null;
     }
 }
@@ -214,7 +215,8 @@ export function safeRedirect(targetUrl) {
             window.location.replace(targetUrl);
         }
     } catch (e) {
-        console.error('Invalid URL in safeRedirect:', targetUrl, { code: e.code, message: e.message, details: e });
+        console.error('Invalid URL in safeRedirect - Code:', e.code || 'UNKNOWN_ERROR');
+        console.error('Invalid URL in safeRedirect:', targetUrl, { message: e.message, details: e });
     }
 }
  * Validates a referral code by checking if it belongs to an existing user.
@@ -231,7 +233,8 @@ export async function validateReferralCode(code) {
         }
         return null;
     } catch (e) {
-        console.error("Error validating referral code:", { code: e.code, message: e.message, details: e });
+        console.error("Error validating referral code - Code:", e.code || 'UNKNOWN_ERROR');
+        console.error("Error validating referral code:", { message: e.message, details: e });
         return null;
     }
 }
