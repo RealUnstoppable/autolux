@@ -70,18 +70,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     return await submitGenericRequest("bookings", requestData, additionalData);
 }
 
-/**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
- */
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-    return submitRequestCore("bookings", requestData, { userId });
-}
+
 
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
