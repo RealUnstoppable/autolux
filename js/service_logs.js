@@ -10,7 +10,7 @@ export async function createServiceLog(logData) {
         return { success: true, id: docRef.id };
     } catch (error) {
         console.error("Error creating service log:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: error.message };
+        return { success: false, error: "Failed to create service log." };
     }
 }
 

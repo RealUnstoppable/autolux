@@ -35,7 +35,7 @@ export async function redeemReward(rewardId, cost, title) {
         return result.data;
     } catch (error) {
         console.error("Redemption error:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, message: error.message || "Failed to redeem reward. Please try again." };
+        return { success: false, message: "Failed to redeem reward. Please try again." };
     }
 }
 
