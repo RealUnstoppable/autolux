@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { submitDetailingRequestCore, submitQuoteRequestCore } from './utils.js';
+import { submitDetailingRequestCore, submitQuoteRequestCore, submitFeatureRequestCore } from './utils.js';
 import { db, auth } from './auth.js';
 
 
@@ -31,4 +31,13 @@ export async function submitDetailingRequest(bookingData) {
 
 export async function submitQuoteRequest(quoteData) {
     return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+}
+
+export async function submitFeatureRequest(requestData) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+        return { success: false, error: "User must be authenticated" };
+    }
+    const userId = currentUser.uid;
+    return handleApiRequest(submitFeatureRequestCore, [userId, requestData], "Feature Request");
 }

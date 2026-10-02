@@ -107,3 +107,27 @@ export async function submitQuoteRequestCore(quoteData) {
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
+
+
+/**
+ * Submits a feature request.
+ * @param {string} userId
+ * @param {object} requestData
+ */
+export async function submitFeatureRequestCore(userId, requestData) {
+    if (!userId) return { success: false, error: "User must be authenticated." };
+    try {
+        const payload = {
+            ...requestData,
+            userId: userId,
+            timestamp: serverTimestamp(),
+            status: 'pending'
+        };
+        if ('isAdmin' in payload) delete payload.isAdmin;
+        const docRef = await addDoc(collection(db, "feature_requests"), payload);
+        return { success: true, docId: docRef.id };
+    } catch (error) {
+        console.error("Failed to submit feature request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}

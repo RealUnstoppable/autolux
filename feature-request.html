@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Requests | AutoLux</title>
+    <style>
+        body { background: #0A0A0A; color: #F5F5F7; font-family: sans-serif; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #141414; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        input, textarea, button { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; box-sizing: border-box; }
+        input, textarea { background: #222; border: 1px solid #444; color: white; }
+        button { background: #2563EB; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .error { color: #ef4444; }
+        .success { color: #16a34a; }
+    </style>
+    <script src="env.js"></script>
+</head>
+<body>
+    <nav style="padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #333;">
+        <a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">AUTOLUX</a>
+        <a href="account.html" style="color: white; text-decoration: none;">Account</a>
+    </nav>
+    <div class="container">
+        <h2>Request a Feature (ezManage)</h2>
+        <form id="fr-form">
+            <label>Email:</label>
+            <input type="email" id="email" required>
+            <label>Message/Feature Details:</label>
+            <textarea id="message" rows="4" required></textarea>
+            <label><input type="checkbox" id="isPro" style="width:auto; margin-right:10px;"> I am a Pro User</label><br><br>
+            <button type="submit" id="submit-btn">Submit Request</button>
+        </form>
+        <div id="msg" aria-live="polite"></div>
+    </div>
+    <script type="module">
+        import { submitFeatureRequest } from './js/api.js';
+        import { auth, getAuthStatePromise } from './js/auth.js';
+
+
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
+        onAuthStateChanged(auth, user => {
+            if (!user) window.location.replace('sign in beta.html');
+        });
+
+
+        document.getElementById('fr-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const msg = document.getElementById('msg');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const data = {
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value,
+                isPro: document.getElementById('isPro').checked
+            };
+
+            const res = await submitFeatureRequest(data);
+            if (res.success) {
+                msg.className = 'success';
+                msg.textContent = 'Request submitted successfully!';
+                e.target.reset();
+            } else {
+                msg.className = 'error';
+                msg.textContent = res.error || 'Failed to submit request.';
+            }
+            btn.disabled = false;
+            btn.textContent = 'Submit Request';
+        });
+    </script>
+</body>
+</html>
