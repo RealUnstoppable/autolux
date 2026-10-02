@@ -12,18 +12,25 @@ try {
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
     // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
-    if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
-        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
-    }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
+
+    if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
+        const error = new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
+        error.code = 'CONFIG_MISSING';
+        throw error;
+    }
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
-        throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+        const error = new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+        error.code = 'CONFIG_MISMATCH_DOMAIN';
+        throw error;
     }
 
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+        const error = new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+        error.code = 'CONFIG_MISMATCH_PROJECT';
+        throw error;
     }
 
     const firebaseConfig = {
