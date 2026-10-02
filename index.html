@@ -22,6 +22,12 @@
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
+    <link rel="canonical" href="https://autolux.realunstoppable.store/">
+    <meta property="og:title" content="Unstoppable Detailing Services | Premium Auto Care">
+    <meta property="og:description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -145,7 +151,9 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
             transform: scale(0.96);
         }
-        .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 150px 20px; text-align: center; color: white; }
+        .hero { position: relative; overflow: hidden; padding: 150px 20px; text-align: center; color: white; }
+        .hero-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)); z-index: -1; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
         .hero p { font-size: 1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;}
         
@@ -287,7 +295,7 @@
             .auth-btn { padding: 10px 22px !important; }
 
             /* Hero Desktop */
-            .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 250px 50px; text-align: center; color: white; }
+            .hero { padding: 250px 50px; text-align: center; color: white; }
             .hero h1 { font-size: 4rem; }
             .hero p { font-size: 1.2rem; }
             .btn-primary { display: inline-block; width: auto; }
@@ -318,7 +326,7 @@
 <body>
 
     <nav>
-        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
@@ -335,7 +343,9 @@
     </nav>
 
     <header class="hero">
-        <div>
+        <img src="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format" alt="Luxury car detailing" class="hero-img" fetchpriority="high">
+        <div class="hero-overlay"></div>
+        <div style="position: relative; z-index: 1;">
             <h1>Flawless Finish. Unstoppable Shine.</h1>
             <p>Buford's premier luxury mobile detailing. We bring the showroom back to your driveway. (And yes, the shop cat approves of the reflection).</p>
             <a href="booking.html" class="btn-primary">Schedule Your Detail</a>
@@ -482,7 +492,7 @@
         <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
             <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
-            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+            <form id="inquiry-form" >
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
@@ -509,6 +519,8 @@
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
         
         <div class="socials">
+            <a href="tel:+15551234567" aria-label="Phone Number" style="font-weight: 600;">(555) 123-4567</a><br><br>
+            <a href="mailto:booking@autolux.com" aria-label="Email Address" style="font-weight: 600;">booking@autolux.com</a><br><br>
             <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
         </div>
         <p style="color: #666; margin-top: 40px; font-size: 0.8rem;">&copy; 2026 Unstoppable Detailing Services. Buford, GA.</p>
@@ -589,7 +601,8 @@
             }
 
             const fragment = document.createDocumentFragment();
-            faqs.forEach((data, index) => {
+            for (let index = 0; index < faqs.length; index++) {
+                const data = faqs[index];
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
                 const faqId = `faq-answer-${index}`;
@@ -616,12 +629,14 @@
                     const isActive = el.classList.contains('active');
 
                     // Close all others
-                    document.querySelectorAll('.faq-item').forEach(item => {
+                    const items = document.querySelectorAll('.faq-item');
+                    for (let j = 0; j < items.length; j++) {
+                        const item = items[j];
                         item.classList.remove('active');
                         item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
                         item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
                         item.querySelector('.faq-answer').style.maxHeight = '0';
-                    });
+                    }
 
                     // Toggle current
                     if (!isActive) {
@@ -634,7 +649,7 @@
                 });
 
                 fragment.appendChild(el);
-            });
+            }
 
             // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
             container.appendChild(fragment);
@@ -661,7 +676,10 @@
                 const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
 
-                let faqs = snapshot.docs.map(doc => doc.data());
+                let faqs = [];
+                for (let i = 0; i < snapshot.docs.length; i++) {
+                    faqs.push(snapshot.docs[i].data());
+                }
                 
                 if (faqs.length === 0) {
                     faqs = [
@@ -707,7 +725,8 @@
             function renderReviewItems(list) {
                 container.innerHTML = '';
                 const fragment = document.createDocumentFragment();
-                list.forEach(r => {
+                for (let i = 0; i < list.length; i++) {
+                    const r = list[i];
                     const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     let date = 'Recent';
@@ -725,7 +744,7 @@
                     el.className = 'review-card';
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)} <span style="font-size: 0.8rem; color: var(--text-muted);">(${escapeHTML(date)})</span></p>`;
                     fragment.appendChild(el);
-                });
+                }
                 container.appendChild(fragment);
             }
 
@@ -743,20 +762,24 @@
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
-                let reviews = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
+                let reviews = [];
+                for (let i = 0; i < querySnapshot.docs.length; i++) {
+                    const data = querySnapshot.docs[i].data();
                     if (data.createdAt && data.createdAt.toDate) {
                         data.createdAt = data.createdAt.toDate().toISOString();
                     }
-                    return data;
-                });
+                    reviews.push(data);
+                }
                 
                 if (reviews.length === 0) {
                     reviews = defaultReviews;
                 } else {
                     reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
                     // Stringify timestamps for caching
-                    reviews = reviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
+                    for (let i = 0; i < reviews.length; i++) {
+                        const r = reviews[i];
+                        reviews[i] = {...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt};
+                    }
                 }
 
                 try {
@@ -772,6 +795,62 @@
                 renderReviewItems(defaultReviews);
                 if (error && error.code) console.error('Error code:', error.code);
             }
+        }
+
+        function renderReviewsList(reviews, container) {
+            reviews.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+
+            for (let i = 0; i < reviews.length; i++) {
+                const r = reviews[i];
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
+                fragment.appendChild(el);
+            }
+            container.appendChild(fragment);
+        }
+
+
+
+        function renderReviews(reviews, container) {
+            if (reviews.length === 0) {
+                container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No reviews yet. Check back soon!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+
+            for (let i = 0; i < reviews.length; i++) {
+                const r = reviews[i];
+                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
+                const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
+                const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
+
+                const name = escapeHTML(r.userName || "Anonymous");
+                const comment = escapeHTML(r.comment || "");
+
+                const el = document.createElement('div');
+                el.className = 'review-card';
+                el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
+                fragment.appendChild(el);
+            }
+            container.appendChild(fragment);
         }
 
         // Load reviews on page load
@@ -904,7 +983,8 @@
         setupCharCounters();
 
         // Submit Inquiry Logic
-        window.submitInquiry = async (e) => {
+        const inquiryForm = document.getElementById('inquiry-form');
+        inquiryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-inquiry-btn');
             const msgEl = document.getElementById('inquiry-msg');
@@ -936,7 +1016,7 @@
 
                 msgEl.style.color = "#16A34A";
                 msgEl.textContent = "Message sent successfully! We'll be in touch.";
-                document.getElementById('inquiry-form').reset();
+                inquiryForm.reset();
             } catch (error) {
                 console.error("Error submitting inquiry:", error.message, error.code);
                 msgEl.style.color = "var(--error)";
@@ -945,7 +1025,7 @@
                 btn.disabled = false;
                 btn.textContent = "Send Message";
             }
-        };
+        });
     </script>
 </body>
 </html>
