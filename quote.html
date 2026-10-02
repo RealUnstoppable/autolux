@@ -282,19 +282,25 @@
             submitBtn.textContent = 'Submitting...';
             msgEl.textContent = '';
 
-            const result = await submitQuoteRequest(quoteData);
+            try {
+                const result = await submitQuoteRequest(quoteData);
 
-            if (result && result.success) {
-                msgEl.style.color = "var(--success)";
-                msgEl.textContent = "Quote request submitted successfully! We will contact you soon.";
-                form.reset();
-            } else {
+                if (result && result.success) {
+                    msgEl.style.color = "var(--success)";
+                    msgEl.textContent = "Quote request submitted successfully! We will contact you soon.";
+                    form.reset();
+                } else {
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Failed to submit quote request. Please try again later.";
+                }
+            } catch (error) {
+                console.error("Quote Submission Error:", error.message || error, error.code ? `Code: ${error.code}` : "");
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Failed to submit quote request. Please try again later.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Request Quote';
             }
-
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Request Quote';
         });
     </script>
 </body>
