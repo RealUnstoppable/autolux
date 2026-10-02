@@ -486,7 +486,7 @@
                 const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 notifications.sort((a, b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
 
-                listEl.innerHTML = '';
+                listEl.replaceChildren();
                 const fragment = document.createDocumentFragment();
                 notifications.forEach(n => {
                     const title = escapeHTML(n.title || 'Notification');
@@ -545,7 +545,7 @@
                 const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
-                appointmentsListEl.innerHTML = '';
+                appointmentsListEl.replaceChildren();
                 // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
                 const fragment = document.createDocumentFragment();
                 for (let i = 0; i < bookings.length; i++) {
@@ -575,7 +575,7 @@
 
         function renderAddresses(addresses) {
             const list = document.getElementById('addresses-list');
-            list.innerHTML = '';
+            list.replaceChildren();
             if (!addresses || addresses.length === 0) {
                 list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
                 return;
@@ -702,7 +702,7 @@
 
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');
-            list.innerHTML = '';
+            list.replaceChildren();
             if (!vehicles || vehicles.length === 0) {
                 list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
                 return;
