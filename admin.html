@@ -153,6 +153,7 @@
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
                     <li><a href="#inquiries-admin" class="nav-link">Inquiries</a></li>
                     <li><a href="#users" class="nav-link">User Management</a></li>
+                    <li><a href="#service-logs" class="nav-link">Service Logs</a></li>
                     <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
                     <li><a href="#downloads" class="nav-link">Downloads</a></li>
@@ -293,6 +294,39 @@
                 </div>
             </section>
 
+            <section id="service-logs" class="content-section">
+                <h3>Create Service Log</h3>
+                <div class="form-container" style="background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px;">
+                    <form id="create-service-log-form">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">User ID</label>
+                            <input type="text" id="log-userId" required style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">Vehicle Name</label>
+                            <input type="text" id="log-vehicle" required placeholder="e.g. 2021 Porsche 911" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">Service Type</label>
+                            <input type="text" id="log-serviceType" required placeholder="e.g. Ceramic Coating" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">Before Image URL</label>
+                            <input type="url" id="log-beforeImg" placeholder="https://..." style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">After Image URL</label>
+                            <input type="url" id="log-afterImg" placeholder="https://..." style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display:block; margin-bottom:5px;">Technician Notes</label>
+                            <textarea id="log-notes" rows="3" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Create Service Log</button>
+                    </form>
+                </div>
+            </section>
+
             <section id="featurerequests" class="content-section">
                 <h3>App Feature Requests (ezManage)</h3>
                 <div class="user-table-container">
@@ -370,6 +404,7 @@
    <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from '../js/auth.js';
         import { escapeHTML } from '../js/utils.js';
+        import { createServiceLog } from '../js/service_logs.js';
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         let performanceChart;
@@ -910,6 +945,35 @@
                 }
             });
             
+            // Service Log Form
+            document.getElementById('create-service-log-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button');
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+
+                const logData = {
+                    userId: document.getElementById('log-userId').value.trim(),
+                    vehicleName: document.getElementById('log-vehicle').value.trim(),
+                    serviceType: document.getElementById('log-serviceType').value.trim(),
+                    beforeImageUrl: document.getElementById('log-beforeImg').value.trim(),
+                    afterImageUrl: document.getElementById('log-afterImg').value.trim(),
+                    technicianNotes: document.getElementById('log-notes').value.trim(),
+                    serviceDate: new Date()
+                };
+
+                const res = await createServiceLog(logData);
+                if(res.success) {
+                    alert('Service Log created successfully!');
+                    e.target.reset();
+                } else {
+                    alert('Error creating log: ' + res.error);
+                }
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
+
             // Feature Request Complete Toggle
             document.getElementById('feature-request-list-body').addEventListener('click', async (e) => {
                 const btn = e.target;
