@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { submitDetailingRequestCore, submitQuoteRequestCore } from './utils.js';
+import { submitToFirestore } from './utils.js';
 import { db, auth } from './auth.js';
 
 
@@ -26,9 +26,13 @@ export async function submitDetailingRequest(bookingData) {
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
     const userId = currentUser.uid;
-    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
+    const payload = { ...bookingData, userId };
+    if (bookingData.referralCode) {
+        payload.referralCode = bookingData.referralCode.trim().toUpperCase();
+    }
+    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+    return handleApiRequest(submitToFirestore, ["quotes", quoteData], "Quote");
 }

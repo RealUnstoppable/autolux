@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { escapeHTML, submitDetailingRequestCore } from '../js/utils.js';
+import { escapeHTML, submitToFirestore } from '../js/utils.js';
 
 describe('utils.js', () => {
     afterEach(() => {
@@ -15,26 +15,26 @@ describe('utils.js', () => {
         expect(escapeHTML(undefined)).toBe('');
     });
 
-    test('submitDetailingRequestCore fails if no userId provided', async () => {
+    test('submitToFirestore succeeds', async () => {
         const originalError = console.error;
         console.error = jest.fn();
-        const result = await submitDetailingRequestCore(null, { service: 'Wash' });
+        const result = await submitToFirestore('bookings', { service: 'Wash' });
         console.error = originalError;
 
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('User must be authenticated to submit a request.');
-    });
-
-    test('submitDetailingRequestCore succeeds with valid data', async () => {
-        const result = await submitDetailingRequestCore('user123', { service: 'Wash' });
         expect(result.success).toBe(true);
         expect(result.docId).toBe('mock-doc-id');
     });
 
-    test('submitDetailingRequestCore handles errors during addDoc', async () => {
+    test('submitToFirestore succeeds with valid data', async () => {
+        const result = await submitToFirestore('bookings', { service: 'Wash' });
+        expect(result.success).toBe(true);
+        expect(result.docId).toBe('mock-doc-id');
+    });
+
+    test('submitToFirestore handles errors during addDoc', async () => {
         const originalError = console.error;
         console.error = jest.fn();
-        const result = await submitDetailingRequestCore('error-user', { service: 'Wash' });
+        const result = await submitToFirestore('bookings', { service: 'Wash', throwError: true });
         console.error = originalError;
 
         expect(result.success).toBe(false);
