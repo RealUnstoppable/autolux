@@ -318,7 +318,7 @@
 <body>
 
     <nav>
-        <a href="#" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
+        <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">AUTOLUX<svg aria-label="Checker Flag" class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" style="display: inline-block; vertical-align: middle;" aria-hidden="true"><rect width="24" height="18" fill="#FFFFFF" rx="2"/><rect x="0" y="0" width="6" height="4.5" fill="#000000"/><rect x="12" y="0" width="6" height="4.5" fill="#000000"/><rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="9" width="6" height="4.5" fill="#000000"/><rect x="12" y="9" width="6" height="4.5" fill="#000000"/><rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/><rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/></svg></a>
         <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">☰</button>
         <div class="nav-links" id="nav-links">
             <a href="#process" aria-label="Go to Process section" onclick="closeMenu()">Process</a>
@@ -482,7 +482,7 @@
         <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
             <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
-            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+            <form id="inquiry-form" >
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
@@ -509,6 +509,8 @@
         <p id="news-msg" style="font-size: 0.85rem; margin-top: 15px; font-weight: 600;" aria-live="polite"></p>
         
         <div class="socials">
+            <a href="tel:+15551234567" aria-label="Phone Number" style="font-weight: 600;">(555) 123-4567</a><br><br>
+            <a href="mailto:booking@autolux.com" aria-label="Email Address" style="font-weight: 600;">booking@autolux.com</a><br><br>
             <a href="#" aria-label="Instagram">Instagram</a> | <a href="#" aria-label="Facebook">Facebook</a> | <a href="#" aria-label="YouTube">YouTube</a>
         </div>
         <p style="color: #666; margin-top: 40px; font-size: 0.8rem;">&copy; 2026 Unstoppable Detailing Services. Buford, GA.</p>
@@ -958,7 +960,8 @@
         setupCharCounters();
 
         // Submit Inquiry Logic
-        window.submitInquiry = async (e) => {
+        const inquiryForm = document.getElementById('inquiry-form');
+        inquiryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-inquiry-btn');
             const msgEl = document.getElementById('inquiry-msg');
@@ -990,7 +993,7 @@
 
                 msgEl.style.color = "#16A34A";
                 msgEl.textContent = "Message sent successfully! We'll be in touch.";
-                document.getElementById('inquiry-form').reset();
+                inquiryForm.reset();
             } catch (error) {
                 console.error("Error submitting inquiry:", error.message, error.code);
                 msgEl.style.color = "var(--error)";
@@ -999,7 +1002,7 @@
                 btn.disabled = false;
                 btn.textContent = "Send Message";
             }
-        };
+        });
     </script>
 </body>
 </html>
