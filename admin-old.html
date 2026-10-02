@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <title>Admin Dashboard | Unstoppable</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -289,6 +293,8 @@
                 return;
             }
 
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             bookings.forEach(b => {
                 const row = document.createElement('tr');
                 
@@ -315,8 +321,9 @@
                         ${b.status !== 'completed' && b.status !== 'cancelled' ? `<button class="btn-sm btn-action action-btn" data-type="booking" data-action="complete" data-id="${b.id}">Mark Done</button>` : ''}
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
             attachActionListeners();
         }
 
@@ -329,6 +336,8 @@
                 return;
             }
 
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             quotes.forEach(q => {
                 const row = document.createElement('tr');
                 const badgeClass = q.status === 'responded' ? 'active' : 'pending';
@@ -342,8 +351,9 @@
                         <button class="btn-sm btn-danger action-btn" data-type="quote" data-action="delete" data-id="${q.id}">Delete</button>
                     </td>
                 `;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
             attachActionListeners();
         }
 
@@ -351,6 +361,8 @@
             const tbody = document.getElementById('user-list-body');
             tbody.innerHTML = '';
             
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             users.filter(user => !user.isAdmin).forEach(user => {
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
@@ -366,8 +378,9 @@
                     <td>${signupDate}</td>
                     <td>${statusBadge}</td>
                     <td>${actionButton}</td>`;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
             attachActionListeners();
         }
 
@@ -375,12 +388,15 @@
             const tbody = document.getElementById('newsletter-list-body');
             tbody.innerHTML = '';
             
+            // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
+            const fragment = document.createDocumentFragment();
             subscribers.forEach(sub => {
                 const row = document.createElement('tr');
                 const subDate = sub.subscribedAt ? sub.subscribedAt.toDate().toLocaleDateString() : 'N/A';
                 row.innerHTML = `<td>${sub.email}</td><td>${subDate}</td>`;
-                tbody.appendChild(row);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         }
 
         function updateMetrics(users, bookings, quotes) {

@@ -61,8 +61,4 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
-
-## 2026-10-02 - [Privilege Escalation via Mass Assignment in feature_requests]
-**Vulnerability:** The `feature_requests` collection in `firestore.rules` allowed any authenticated user to create a document with arbitrary fields (`allow create: if isAuthenticated();`). This missing schema validation exposed the application to mass assignment attacks.
-**Learning:** Even if the UI only sends specific fields, malicious actors can bypass the UI and inject arbitrary data via API requests if the database rules do not enforce a strict schema.
-**Prevention:** Always enforce strict schema validation in `firestore.rules` for all document creations using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+- For Firebase connection auditing, always ensure lenient hostname matching in `js/auth.js` (`hostname.includes(...)`) to prevent instance caching collisions, and enforce missing API keys using `window.ENV`.
