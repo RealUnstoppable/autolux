@@ -33,11 +33,15 @@ export async function submitDetailingRequest(bookingData) {
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
     const userId = currentUser.uid;
-    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
+    const payload = { ...bookingData, userId };
+    if (bookingData.referralCode) {
+        payload.referralCode = bookingData.referralCode.trim().toUpperCase();
+    }
+    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+    return handleApiRequest(submitToFirestore, ["quotes", quoteData], "Quote");
 }
 
 export async function submitDetailingPlan(planData) {
