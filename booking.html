@@ -1,25 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-        // Use a dummy environment that simulates a successful Firebase setup
-        window.ENV = {
-            FIREBASE_API_KEY: "mock-api-key",
-            FIREBASE_AUTH_DOMAIN: "mock-auth-domain",
-            FIREBASE_PROJECT_ID: "mock-project-id",
-            FIREBASE_STORAGE_BUCKET: "mock-storage-bucket",
-            FIREBASE_MESSAGING_SENDER_ID: "mock-sender-id",
-            FIREBASE_APP_ID: "mock-app-id",
-            FIREBASE_MEASUREMENT_ID: "mock-measurement-id"
-        };
-    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
     <meta name="description" content="Schedule your luxury detailing appointment with Unstoppable Detailing Services.">
+
+    <meta name="robots" content="index, follow">
     <title>Book a Detail | Unstoppable Detailing Services</title>
+    <link rel="canonical" href="https://autolux.realunstoppable.store/booking.html">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -282,7 +274,7 @@
                         <option value="Luxury SUV - $250">Luxury SUV ($250)</option>
                         <option value="Premium Truck - $280">Premium Truck ($280)</option>
                         <option value="Sprinter Van - $400">Sprinter Van ($400)</option>
-                        <option value="AutoLux Detailing Club Plan - $99/mo">★ AutoLux Detailing Club Plan ($99/mo)</option>
+                        <option value="AutoLux Detailing Club Plan - $99/mo">AutoLux Detailing Club Plan - $99/mo</option>
                     </select>
                 </div>
 
@@ -307,7 +299,7 @@
                 <div class="input-group">
                     <label for="referral-code">Referral Code <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
                     <input type="text" id="referral-code" placeholder="e.g. A1B2C3" style="text-transform: uppercase;">
-                    <p id="referral-msg" style="font-size: 0.85rem; margin-top: 5px; font-weight: 600;"></p>
+                    <p id="referral-msg" aria-live="polite" style="font-size: 0.85rem; margin-top: 5px; font-weight: 600;"></p>
                 </div>
 
                 <div class="input-group">
