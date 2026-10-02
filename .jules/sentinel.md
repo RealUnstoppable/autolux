@@ -61,3 +61,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+## 2026-12-25 - [Syntax Error in admin.html causing DoS]
+**Vulnerability:** A rogue `);` syntax error in `admin.html` inside the `renderUserTable` function broke JavaScript execution for the entire admin panel.
+**Learning:** Syntax errors can be introduced during code modifications and, if not caught, can result in a functional Denial of Service (DoS) for the application's users.
+**Prevention:** Always run basic syntax checks and test the application before deploying changes.
