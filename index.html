@@ -22,6 +22,12 @@
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
+    <link rel="canonical" href="https://autolux.realunstoppable.store/">
+    <meta property="og:title" content="Unstoppable Detailing Services | Premium Auto Care">
+    <meta property="og:description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -145,7 +151,9 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
             transform: scale(0.96);
         }
-        .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 150px 20px; text-align: center; color: white; }
+        .hero { position: relative; overflow: hidden; padding: 150px 20px; text-align: center; color: white; }
+        .hero-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)); z-index: -1; }
         .hero h1 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.1; }
         .hero p { font-size: 1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;}
         
@@ -287,7 +295,7 @@
             .auth-btn { padding: 10px 22px !important; }
 
             /* Hero Desktop */
-            .hero { background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format'); background-size: cover; background-position: center; padding: 250px 50px; text-align: center; color: white; }
+            .hero { padding: 250px 50px; text-align: center; color: white; }
             .hero h1 { font-size: 4rem; }
             .hero p { font-size: 1.2rem; }
             .btn-primary { display: inline-block; width: auto; }
@@ -335,7 +343,9 @@
     </nav>
 
     <header class="hero">
-        <div>
+        <img src="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format" alt="Luxury car detailing" class="hero-img" fetchpriority="high">
+        <div class="hero-overlay"></div>
+        <div style="position: relative; z-index: 1;">
             <h1>Flawless Finish. Unstoppable Shine.</h1>
             <p>Buford's premier luxury mobile detailing. We bring the showroom back to your driveway. (And yes, the shop cat approves of the reflection).</p>
             <a href="booking.html" class="btn-primary">Schedule Your Detail</a>
