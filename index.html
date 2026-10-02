@@ -613,7 +613,7 @@
                 const icon = el.querySelector('.faq-icon');
 
                 btn.addEventListener('click', () => {
-                    const isActive = el.classList.contains('active');
+                    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
 
                     // Close all others
                     document.querySelectorAll('.faq-item').forEach(item => {
@@ -624,12 +624,13 @@
                     });
 
                     // Toggle current
-                    if (!isActive) {
+                    if (!isExpanded) {
                         el.classList.add('active');
                         btn.setAttribute('aria-expanded', 'true');
                         icon.style.transform = 'rotate(45deg)';
-                        // Approximate height calculation or set to scrollHeight
                         answerDiv.style.maxHeight = answerDiv.scrollHeight + 20 + "px"; // +20 for padding
+                    } else {
+                        btn.setAttribute('aria-expanded', 'false');
                     }
                 });
 

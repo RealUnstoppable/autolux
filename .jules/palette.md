@@ -41,3 +41,6 @@
 ## 2024-05-24 - Dynamic Validation Messages
 **Learning:** Dynamic validation status messages (like referral code validation messages) need the necessary ARIA attributes to be announced correctly by screen readers.
 **Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates.
+## 2024-05-27 - FAQ Accordion ARIA states
+**Learning:** Accordion toggles that close all other accordions can easily get their `aria-expanded` state out of sync if they rely on wrapper class logic (like `classList.contains('active')`) rather than the ARIA state itself.
+**Action:** When implementing accordion toggles, always explicitly check and toggle the `aria-expanded` attribute directly on the button element to ensure screen reader state matches visual state.
