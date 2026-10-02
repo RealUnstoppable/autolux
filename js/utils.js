@@ -37,7 +37,6 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
             status: 'pending'
         };
 
-        // Ensure user can't inject admin status
         if ('isAdmin' in payload) {
             delete payload.isAdmin;
         }
@@ -45,19 +44,24 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
         const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
         console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
         if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
             console.error("App Check or CORS issue detected:", error.message);
         } else if (error.code === 'auth/invalid-api-key') {
             console.error("Invalid API key detected:", error.message);
         } else {
-            console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+            console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         }
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
 
+/**
+ * Submits a detailing request to the bookings collection.
+ * @param {string} userId - The user's Firebase Auth UID.
+ * @param {object} requestData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
 export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
@@ -69,7 +73,6 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     return await submitGenericRequest("bookings", requestData, additionalData);
 }
-
 
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
