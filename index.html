@@ -482,7 +482,7 @@
         <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
             <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
-            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+            <form id="inquiry-form" >
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
@@ -958,6 +958,7 @@
         setupCharCounters();
 
         // Submit Inquiry Logic
+        document.getElementById("inquiry-form").addEventListener("submit", async (e) => { e.preventDefault(); await window.submitInquiry(e); });
         window.submitInquiry = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-inquiry-btn');
