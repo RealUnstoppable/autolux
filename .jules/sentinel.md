@@ -62,3 +62,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
 - For Firebase connection auditing, always ensure lenient hostname matching in `js/auth.js` (`hostname.includes(...)`) to prevent instance caching collisions, and enforce missing API keys using `window.ENV`.
+## 2026-12-11 - [Mass Assignment in Authenticated Collections]
+**Vulnerability:** The `/reviews` collection in `firestore.rules` allowed any authenticated user to create a review document without enforcing strict schema validation (`hasOnly()`), making it susceptible to Mass Assignment (e.g. injecting unapproved fields or bypassing status checks).
+**Learning:** Relying solely on `isAuthenticated()` or ownership checks for document creation is insufficient to prevent malicious users from injecting arbitrary data or administrative fields into the database via direct API requests.
+**Prevention:** Always enforce strict document schema validation using `request.resource.data.keys().hasOnly([...])` for all collections, even those restricted to authenticated users.

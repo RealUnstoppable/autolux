@@ -70,18 +70,9 @@ export async function submitDetailingRequestCore(userId, requestData) {
     return await submitGenericRequest("bookings", requestData, additionalData);
 }
 
-/**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
- */
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-    return submitRequestCore("bookings", requestData, { userId });
-}
+
+
+
 
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
@@ -129,6 +120,7 @@ export async function submitQuoteRequestCore(quoteData) {
             status: 'pending'
         };
 
+
         // Ensure user can't inject admin status
         if ('isAdmin' in payload) {
             delete payload.isAdmin;
@@ -161,6 +153,7 @@ export async function submitDetailingPlanCore(userId, requestData) {
             createdAt: serverTimestamp(),
             status: 'pending'
         };
+
 
         if ('isAdmin' in payload) {
             delete payload.isAdmin;

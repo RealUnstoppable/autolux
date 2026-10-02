@@ -868,6 +868,7 @@
                     rating: rating,
                     comment: comment
                 };
+
                 await addDoc(collection(db, "reviews"), {
                     ...reviewPayload,
                     status: "pending",
@@ -982,6 +983,7 @@
                     email: email,
                     message: message
                 };
+
                 await addDoc(collection(db, "inquiries"), {
                     ...inquiryPayload,
                     status: "pending",
