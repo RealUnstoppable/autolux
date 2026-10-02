@@ -58,18 +58,6 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
     }
 }
 
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-
-    const additionalData = { userId: userId };
-    if (requestData.referralCode) {
-        additionalData.referralCode = requestData.referralCode.trim().toUpperCase();
-    }
-    return await submitGenericRequest("bookings", requestData, additionalData);
-}
-
 /**
  * Submits a detailing request to the bookings collection.
  * @param {string} userId - The user's Firebase Auth UID.
@@ -80,7 +68,12 @@ export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
-    return submitRequestCore("bookings", requestData, { userId });
+
+    const additionalData = { userId: userId };
+    if (requestData.referralCode) {
+        additionalData.referralCode = requestData.referralCode.trim().toUpperCase();
+    }
+    return await submitGenericRequest("bookings", requestData, additionalData);
 }
 
 /**
