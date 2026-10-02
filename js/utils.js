@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -125,4 +125,45 @@ export async function submitDetailingPlanCore(userId, requestData) {
         return { success: false, error: "User must be authenticated to submit a plan." };
     }
     return await submitGenericRequest("detailingPlans", requestData, { userId: userId });
+}
+
+/**
+ * Submits an inquiry to the inquiries collection.
+ * @param {object} inquiryData - The data for the inquiry.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitInquiryCore(inquiryData) {
+    try {
+        const payload = {
+            ...inquiryData,
+            status: 'pending',
+            createdAt: serverTimestamp()
+        };
+
+        const docRef = await addDoc(collection(db, "inquiries"), payload);
+        return { success: true, docId: docRef.id };
+    } catch (error) {
+        console.error("Failed to submit inquiry:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to submit inquiry.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
+
+/**
+ * Submits a newsletter subscription.
+ * @param {string} email - The email address.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitNewsletterCore(email) {
+    try {
+        const payload = {
+            email: email,
+            subscribedAt: serverTimestamp()
+        };
+
+        await setDoc(doc(db, "newsletterSubscribers", email), payload);
+        return { success: true, docId: email };
+    } catch (error) {
+        console.error("Failed to submit newsletter subscription:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to subscribe.", code: error.code || 'UNKNOWN_ERROR' };
+    }
 }
