@@ -23,15 +23,14 @@ export async function submitDetailingRequestCore(userId, requestData) {
     }
     
     try {
+        // Construct payload explicitly to prevent Mass Assignment
         const payload = {
-            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
             ...requestData,
             userId: userId,
             createdAt: serverTimestamp(),
             status: 'pending'
         };
 
-        // Ensure user can't inject admin status
         if ('isAdmin' in payload) {
             delete payload.isAdmin;
         }
@@ -43,7 +42,6 @@ export async function submitDetailingRequestCore(userId, requestData) {
         const docRef = await addDoc(collection(db, "bookings"), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        // Robust error handling: Log error.code specifically to identify App Check, CORS, or API key issues
         console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
         console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
