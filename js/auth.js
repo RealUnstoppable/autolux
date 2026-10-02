@@ -1,3 +1,4 @@
+import { handleFirebaseError } from './utils.js';
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -50,14 +51,7 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
-    if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
-        console.error("App Check or CORS issue detected:", error.message);
-    } else if (error.code === 'auth/invalid-api-key') {
-        console.error("Invalid API key detected:", error.message);
-    } else {
-        console.error("Firebase connection error:", { message: error.message, details: error });
-    }
+    handleFirebaseError(error, "Firebase connection error");
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };

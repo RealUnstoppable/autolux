@@ -44,14 +44,7 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
         const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
-            console.error("App Check or CORS issue detected:", error.message);
-        } else if (error.code === 'auth/invalid-api-key') {
-            console.error("Invalid API key detected:", error.message);
-        } else {
-            console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        }
+        handleFirebaseError(error, `Failed to submit request to ${collectionName}`);
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
@@ -165,5 +158,20 @@ export async function submitNewsletterCore(email) {
     } catch (error) {
         console.error("Failed to submit newsletter subscription:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to subscribe.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
+
+
+/**
+ * Handles Firebase connection and authentication errors securely.
+ */
+export function handleFirebaseError(error, contextMessage) {
+    console.error(`${contextMessage} - Code:`, error.code || 'UNKNOWN_ERROR');
+    if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+        console.error("App Check or CORS issue detected:", error.message);
+    } else if (error.code === 'auth/invalid-api-key') {
+        console.error("Invalid API key detected:", error.message);
+    } else {
+        console.error(`${contextMessage} Details:`, { message: error.message, details: error });
     }
 }
