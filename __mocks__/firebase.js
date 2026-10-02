@@ -8,13 +8,13 @@ export const createUserWithEmailAndPassword = jest.fn();
 export const signInWithEmailAndPassword = jest.fn();
 export const signOut = jest.fn();
 export const updateProfile = jest.fn();
-export const getFirestore = jest.fn();
+export const getFirestore = jest.fn(() => ({}));
 export const doc = jest.fn();
 export const getDoc = jest.fn();
 export const setDoc = jest.fn();
 export const collection = jest.fn();
 export const addDoc = jest.fn(async (col, data) => {
-    if (data.userId === 'error-user') {
+    if (data.userId === 'error-user' || data.throwError) {
         const error = new Error('Permission denied');
         error.code = 'permission-denied';
         throw error;

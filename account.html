@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
 <script>
         // Use a dummy environment that simulates a successful Firebase setup
         window.ENV = {
@@ -16,6 +18,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <meta name="description" content="Client Portal for Unstoppable Detailing Services clients.">
     <title>Client Portal | Unstoppable Detailing Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -313,7 +317,7 @@
                     <div style="margin-bottom: 15px;">
                         <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="user-referral-code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="Loading...">
+                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="Loading...">
                             <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
                         </div>
                     </div>
@@ -371,15 +375,22 @@
                     </div>
                 </div>
 
+                <div class="card" id="service-gallery-card" style="margin-bottom: 20px;">
+                    <h2>Service History & Gallery</h2>
+                    <div id="service-logs-list" style="display: grid; gap: 20px;">
+                        <p style="color: var(--text-muted);">Loading service history...</p>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>My Registered Vehicles</h2>
                     <div id="vehicles-list">
                         <p style="color: var(--text-muted);">No vehicles registered yet.</p>
                     </div>
-                    <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
-                    </div>
+                    <form id="add-vehicle-form" style="margin-top: 15px; display: flex; gap: 10px;">
+                        <input type="text" id="new-vehicle" aria-label="New vehicle details" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button type="submit" class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
+                    </form>
                     <div id="vehicle-msg" aria-live="polite" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
                 </div>
 
@@ -388,12 +399,12 @@
                     <div id="addresses-list">
                         <p style="color: var(--text-muted);">No service addresses saved yet.</p>
                     </div>
-                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <input type="text" id="new-address-val" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <button class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
+                    <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-address-val" aria-label="New full address" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button type="submit" class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
                         <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -403,6 +414,7 @@
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
+        import { fetchUserServiceLogs } from './js/service_logs.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
@@ -482,6 +494,10 @@
                 renderBookings(appointmentsSnap);
                 loadTickets(user);
                 renderNotifications(notificationsSnap);
+
+                const logs = await fetchUserServiceLogs(user.uid);
+                renderServiceLogs(logs);
+
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
@@ -683,7 +699,7 @@
                             <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">${msg}</small>
                             <small style="color: var(--text-muted); font-size: 0.75rem;">${dateStr}</small>
                         </div>
-                        ${!n.read ? `<button class="btn-sm btn-action mark-read-btn" data-id="${n.id}" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Mark Read</button>` : ''}
+                        ${!n.read ? `<button class="btn-sm btn-action mark-read-btn" data-id="${escapeHTML(n.id)}" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Mark Read</button>` : ''}
                     `;
                     fragment.appendChild(item);
                 });
@@ -777,10 +793,11 @@
                 `;
                 fragment.appendChild(el);
             }
+            }
             list.appendChild(fragment);
-        }
 
-        document.getElementById('add-address-btn').addEventListener('click', async () => {
+        document.getElementById('add-address-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
             if (!currentUser) return;
             const labelInput = document.getElementById('new-address-label');
             const addressInput = document.getElementById('new-address-val');
@@ -811,7 +828,7 @@
                 const list = document.getElementById('addresses-list');
                 const emptyMsg = list.querySelector('p');
                 if (emptyMsg && emptyMsg.textContent.includes('No service addresses')) {
-                    list.innerHTML = '';
+                    emptyMsg.remove();
                 }
 
                 const el = document.createElement('div');
@@ -845,6 +862,8 @@
                 const addressToRemove = e.target.dataset.address;
                 if (!labelToRemove || !addressToRemove) return;
 
+                if (!confirm("Are you sure you want to remove this address?")) return;
+
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
                 e.target.disabled = true;
@@ -877,6 +896,46 @@
             }
         });
 
+        function renderServiceLogs(logs) {
+            const list = document.getElementById('service-logs-list');
+            list.innerHTML = '';
+            if(!logs || logs.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No service history found.</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            for(let i = 0; i < logs.length; i++) {
+                const log = logs[i];
+                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds*1000).toLocaleDateString() : 'Recent');
+
+                const el = document.createElement('div');
+                el.style = "background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);";
+
+                let imagesHtml = '';
+                if(log.beforeImageUrl || log.afterImageUrl) {
+                    imagesHtml = `<div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
+                        ${log.beforeImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">Before</p><img src="${log.beforeImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                        ${log.afterImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">After</p><img src="${log.afterImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                    </div>`;
+                }
+
+                el.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin: 0 0 5px 0; color: var(--gold);">${escapeHTML(log.serviceType || 'Detailing Service')}</h3>
+                            <p style="margin: 0; font-weight: 600;">${escapeHTML(log.vehicleName || 'Vehicle')}</p>
+                        </div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${dateStr}</span>
+                    </div>
+                    ${log.technicianNotes ? `<p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"${escapeHTML(log.technicianNotes)}"</p>` : ''}
+                    ${imagesHtml}
+                `;
+                fragment.appendChild(el);
+            }
+            list.appendChild(fragment);
+        }
+
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');
             list.innerHTML = '';
@@ -901,7 +960,8 @@
             list.appendChild(fragment);
         }
 
-        document.getElementById('add-vehicle-btn').addEventListener('click', async () => {
+        document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
             if (!currentUser) return;
             const input = document.getElementById('new-vehicle');
             const val = input.value.trim();
@@ -929,7 +989,7 @@
                 const list = document.getElementById('vehicles-list');
                 const emptyMsg = list.querySelector('p');
                 if (emptyMsg && emptyMsg.textContent.includes('No vehicles')) {
-                    list.innerHTML = '';
+                    emptyMsg.remove();
                 }
 
                 const el = document.createElement('div');
@@ -957,6 +1017,8 @@
                 if (!currentUser) return;
                 const vehicleToRemove = e.target.dataset.vehicle;
                 if (!vehicleToRemove) return;
+
+                if (!confirm("Are you sure you want to remove this vehicle?")) return;
 
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
