@@ -218,7 +218,8 @@
                 const title = btn.dataset.title;
 
                 btn.disabled = true;
-                btn.textContent = "Processing...";
+                btn.setAttribute('aria-busy', 'true');
+                btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Processing...';
                 msgContainer.textContent = "";
 
                 const result = await redeemReward(id, cost, title);
@@ -235,6 +236,7 @@
                     msgContainer.style.color = "var(--error)";
                     msgContainer.textContent = result.message;
                     btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
                     btn.textContent = "Redeem";
                 }
 

@@ -333,7 +333,8 @@
 
             authMsg.textContent = '';
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
+            submitBtn.setAttribute('aria-busy', 'true');
+            submitBtn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Processing...';
 
             try {
                 let userCredential;
@@ -370,6 +371,7 @@
                 }
                 authMsg.textContent = msg;
                 submitBtn.disabled = false;
+                submitBtn.removeAttribute('aria-busy');
                 submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
             }
         });

@@ -1187,7 +1187,8 @@
                 const btn = document.getElementById('credit-reward-btn');
                 
                 btn.disabled = true;
-                btn.textContent = "Crediting...";
+                btn.setAttribute('aria-busy', 'true');
+                btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Crediting...';
                 
                 try {
                     const userRef = doc(db, "users", currentWinnerId);
@@ -1211,6 +1212,7 @@
                     alert("Error crediting reward.");
                 } finally {
                     btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
                     btn.textContent = "Credit Reward to Account";
                     if (e && e.code) console.error('Error code:', e.code);
                 }
@@ -1229,7 +1231,8 @@
                 if(!question || !answer) return;
 
                 btn.disabled = true;
-                btn.textContent = "Adding...";
+                btn.setAttribute('aria-busy', 'true');
+                btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Adding...';
                 try {
                     await addDoc(collection(db, "faqs"), {
                         question: question,
@@ -1248,6 +1251,7 @@
                     if (error && error.code) console.error('Error code:', error.code);
                 } finally {
                     btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
                     btn.textContent = "Add FAQ";
                 }
             });

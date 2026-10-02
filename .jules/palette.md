@@ -41,3 +41,6 @@
 ## 2024-05-24 - Dynamic Validation Messages
 **Learning:** Dynamic validation status messages (like referral code validation messages) need the necessary ARIA attributes to be announced correctly by screen readers.
 **Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates.
+## 2024-05-24 - Submit Button Loading States
+**Learning:** During active form submissions, visually replacing button text with a standard loading spinner improves perceived performance, while simultaneously applying `aria-busy="true"` on the button ensures screen readers are properly notified that the submission is actively being processed.
+**Action:** When working on form submission flows, always inject standard CSS `.spinner` classes directly into the submit button's inner HTML accompanied by `aria-busy="true"` attribute on the element. Always ensure to unset this attribute and restore original text upon completion or error.

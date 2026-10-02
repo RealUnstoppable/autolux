@@ -858,7 +858,8 @@
             }
 
             btn.disabled = true;
-            btn.textContent = "Submitting...";
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Submitting...';
             msgEl.textContent = "";
 
             try {
@@ -883,6 +884,7 @@
                 msgEl.textContent = "Error submitting review. Try again later.";
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.textContent = "Submit Review";
             }
         });
@@ -908,7 +910,8 @@
             }
             
             btn.disabled = true;
-            btn.textContent = "Subscribing...";
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Subscribing...';
             msg.textContent = "";
 
             try {
@@ -925,6 +928,7 @@
                 msg.textContent = "Error subscribing. Please try again.";
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.textContent = "Subscribe";
             }
         });
@@ -973,7 +977,8 @@
             }
 
             btn.disabled = true;
-            btn.textContent = "Sending...";
+            btn.setAttribute('aria-busy', 'true');
+            btn.innerHTML = '<span class="spinner" style="display: inline-block; width: 1em; height: 1em; border-width: 2px; margin-right: 8px; margin-bottom: -2px; animation: spin 1s linear infinite;"></span>Sending...';
             msgEl.textContent = "";
 
             try {
@@ -997,6 +1002,7 @@
                 msgEl.textContent = "Error sending message. Please try again later.";
             } finally {
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 btn.textContent = "Send Message";
             }
         };
