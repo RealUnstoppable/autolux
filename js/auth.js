@@ -217,14 +217,6 @@ export function safeRedirect(targetUrl) {
  * @param {string} code - The referral code to validate.
  * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
  */
-
-
-
-/**
- * Validates a referral code by checking if it belongs to an existing user.
- * @param {string} code - The referral code to validate.
- * @returns {Promise<Object|null>} - Returns the user object if valid, or null.
- */
 export async function validateReferralCode(code) {
     if (!code || typeof code !== 'string') return null;
     try {

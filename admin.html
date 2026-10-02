@@ -1220,7 +1220,30 @@
                     msgEl.style.color = "#16A34A";
                     msgEl.textContent = "FAQ added successfully!";
                     e.target.reset();
-                    setTimeout(() => location.reload(), 1000);
+
+                    // Targeted DOM update instead of full page reload
+                    const listBody = document.getElementById('faqs-list-body');
+                    const emptyRow = listBody.querySelector('td[colspan="3"]');
+                    if (emptyRow) {
+                        listBody.innerHTML = '';
+                    }
+                    const row = document.createElement('tr');
+                    const qText = escapeHTML(question);
+                    const aText = escapeHTML(answer);
+                    const faqDate = new Date().toLocaleDateString();
+                    row.innerHTML = `
+                        <td><strong>${qText}</strong><br><span style="font-size:0.85rem; color:var(--text-muted);">${aText}</span></td>
+                        <td>${faqDate}</td>
+                        <td>
+                            <button class="btn-sm btn-danger action-btn" data-type="faq" data-action="delete" data-id="newly-added-faq" disabled>Delete (Refresh Required)</button>
+                        </td>
+                    `;
+                    // Prepend to top
+                    if (listBody.firstChild) {
+                        listBody.insertBefore(row, listBody.firstChild);
+                    } else {
+                        listBody.appendChild(row);
+                    }
                 } catch(error) {
                     console.error("Error adding FAQ", error);
                     if (error.code) console.error("Error code:", error.code);
@@ -1253,7 +1276,12 @@
                 try {
                     await deleteDoc(doc(db, "faqs", id));
                     alert("FAQ deleted.");
-                    location.reload();
+                    // Targeted DOM update instead of full page reload
+                    const btn = document.querySelector(`.action-btn[data-type="faq"][data-action="delete"][data-id="${id}"]`);
+                    if (btn) {
+                        const row = btn.closest('tr');
+                        if (row) row.remove();
+                    }
                 } catch (error) {
                     console.error("Error deleting FAQ:", { code: error.code, message: error.message, details: error });
                     alert("Failed to delete FAQ.");

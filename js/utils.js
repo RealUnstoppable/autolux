@@ -17,24 +17,26 @@ export function escapeHTML(str) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
+export function createSafePayload(data, extraData = {}) {
+    const payload = {
+        ...data,
+        ...extraData,
+        createdAt: serverTimestamp(),
+        status: 'pending'
+    };
+    if ('isAdmin' in payload) {
+        delete payload.isAdmin;
+    }
+    return payload;
+}
+
 export async function submitDetailingRequestCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
     
     try {
-        const payload = {
-            // 🛡️ Sentinel: Spread user payload first to prevent Mass Assignment of trusted fields
-            ...requestData,
-            userId: userId,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        };
-
-        // Ensure user can't inject admin status
-        if ('isAdmin' in payload) {
-            delete payload.isAdmin;
-        }
+        const payload = createSafePayload(requestData, { userId: userId });
 
         if (requestData.referralCode) {
             payload.referralCode = requestData.referralCode.trim().toUpperCase();
@@ -88,21 +90,12 @@ export function safeGetSessionStorage(key) {
  */
 export async function submitQuoteRequestCore(quoteData) {
     try {
-        const payload = {
-            // Spread user payload first to prevent Mass Assignment of trusted fields
-            ...quoteData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        };
-
-        // Ensure user can't inject admin status
-        if ('isAdmin' in payload) {
-            delete payload.isAdmin;
-        }
+        const payload = createSafePayload(quoteData);
 
         const docRef = await addDoc(collection(db, "quotes"), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
+        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
         console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }

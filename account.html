@@ -294,6 +294,11 @@
                         <p><strong>Email:</strong> <span id="user-email">Loading...</span></p>
                         <p><strong>Account Status:</strong> <span id="user-status" class="status-badge approved">Active</span></p>
                     </div>
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="edit-profile-name" placeholder="Update Name" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button class="btn-schedule" id="save-profile-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Save Profile</button>
+                        <div id="profile-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -802,6 +807,48 @@
                     e.target.textContent = originalText;
                     e.target.disabled = false;
                 }
+            }
+        });
+
+        // Profile update logic with targeted DOM updates
+        document.getElementById('save-profile-btn')?.addEventListener('click', async () => {
+            if (!currentUser) return;
+            const newName = document.getElementById('edit-profile-name').value.trim();
+            const msgEl = document.getElementById('profile-msg');
+            msgEl.textContent = '';
+
+            if (!newName) {
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Please provide a name.";
+                return;
+            }
+
+            const btn = document.getElementById('save-profile-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                // Update Firebase Auth profile
+                await updateProfile(auth.currentUser, { displayName: newName });
+
+                // Update Firestore document
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, { name: newName });
+
+                // Targeted DOM update instead of full-page reload / loadUserData refetch
+                document.getElementById('user-name').textContent = newName;
+                document.getElementById('edit-profile-name').value = '';
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Profile updated successfully!";
+            } catch (err) {
+                console.error("Error updating profile:", err);
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to update profile.";
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
             }
         });
 
