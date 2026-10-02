@@ -136,9 +136,12 @@
                 return;
             }
 
-            await loadUserPoints(user.uid);
-            await loadRewardsGrid();
-            await loadMyRewards();
+            // ⚡ Bolt: Execute independent queries concurrently to improve load time
+            await Promise.all([
+                loadUserPoints(user.uid),
+                loadRewardsGrid(),
+                loadMyRewards()
+            ]);
         }
 
         async function loadUserPoints(uid) {
