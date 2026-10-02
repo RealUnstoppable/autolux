@@ -52,7 +52,7 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
         } else if (error.code === 'auth/invalid-api-key') {
             console.error("Invalid API key detected:", error.message);
         } else {
-            console.error("Failed to submit detailing request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+            console.error(`Failed to submit ${collectionName} request:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         }
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
@@ -76,12 +76,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
  * @param {object} requestData - The data for the detailing request.
  * @returns {Promise<object>} The result of the operation.
  */
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-    return submitRequestCore("bookings", requestData, { userId });
-}
+
 
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
@@ -120,27 +115,7 @@ export function safeGetSessionStorage(key) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitQuoteRequestCore(quoteData) {
-    try {
-        if (!db) throw new Error("Firestore instance not initialized");
-        const payload = {
-            // Spread user payload first to prevent Mass Assignment of trusted fields
-            ...quoteData,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        };
-
-        // Ensure user can't inject admin status
-        if ('isAdmin' in payload) {
-            delete payload.isAdmin;
-        }
-
-        const docRef = await addDoc(collection(db, "quotes"), payload);
-        return { success: true, docId: docRef.id };
-    } catch (error) {
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit quote request:", { message: error.message, details: error });
-        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
-    }
+    return await submitGenericRequest("quotes", quoteData);
 }
 
 /**
@@ -153,24 +128,5 @@ export async function submitDetailingPlanCore(userId, requestData) {
     if (!userId) {
         return { success: false, error: "User must be authenticated to submit a plan." };
     }
-
-    try {
-        const payload = {
-            ...requestData,
-            userId: userId,
-            createdAt: serverTimestamp(),
-            status: 'pending'
-        };
-
-        if ('isAdmin' in payload) {
-            delete payload.isAdmin;
-        }
-
-        const docRef = await addDoc(collection(db, "detailingPlans"), payload);
-        return { success: true, docId: docRef.id };
-    } catch (error) {
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit detailing plan:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: "Failed to submit plan.", code: error.code || 'UNKNOWN_ERROR' };
-    }
+    return await submitGenericRequest("detailingPlans", requestData, { userId: userId });
 }

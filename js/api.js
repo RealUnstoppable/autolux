@@ -10,7 +10,7 @@ async function handleApiRequest(coreFunction, payload, type) {
             console.log(`${type} document written with ID: `, result.docId);
             return { success: true, id: result.docId };
         } else {
-            console.error(`Error adding ${type.toLowerCase()} document: `, result.code, result.error);
+            console.error(`Error adding ${type.toLowerCase()} document: `, { code: result.code || "UNKNOWN_ERROR", message: result.error });
             return { success: false, error: `An error occurred while submitting your ${type.toLowerCase()} request. Please try again later.` };
         }
     } catch (error) {

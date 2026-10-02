@@ -471,6 +471,7 @@
              }
         });
 
+        let currentNotificationsState = null;
         function renderNotifications(snapshot) {
             try {
                 const listEl = document.getElementById('notifications-list');
@@ -480,6 +481,9 @@
                 }
 
                 const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const newState = JSON.stringify(notifications);
+                if (currentNotificationsState === newState) return;
+                currentNotificationsState = newState;
                 notifications.sort((a, b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
 
                 listEl.innerHTML = '';
@@ -531,6 +535,7 @@
             }
         });
 
+        let currentBookingsState = null;
         function renderBookings(snapshot) {
             try {
                 if (snapshot.empty) {
@@ -539,6 +544,9 @@
                 }
 
                 const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const newState = JSON.stringify(bookings);
+                if (currentBookingsState === newState) return;
+                currentBookingsState = newState;
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
@@ -569,7 +577,12 @@
             }
         }
 
+        let currentAddressesState = null;
         function renderAddresses(addresses) {
+            const newState = JSON.stringify(addresses);
+            if (currentAddressesState === newState) return;
+            currentAddressesState = newState;
+
             const list = document.getElementById('addresses-list');
             list.innerHTML = '';
             if (!addresses || addresses.length === 0) {
@@ -696,7 +709,12 @@
             }
         });
 
+        let currentVehiclesState = null;
         function renderVehicles(vehicles) {
+            const newState = JSON.stringify(vehicles);
+            if (currentVehiclesState === newState) return;
+            currentVehiclesState = newState;
+
             const list = document.getElementById('vehicles-list');
             list.innerHTML = '';
             if (!vehicles || vehicles.length === 0) {
