@@ -61,3 +61,8 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+- For Firebase connection auditing, always ensure lenient hostname matching in `js/auth.js` (`hostname.includes(...)`) to prevent instance caching collisions, and enforce missing API keys using `window.ENV`.
+## 2025-05-24 - [CRITICAL/HIGH] Fix Mass Assignment Vulnerability in Firestore Rules
+**Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
+**Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
+**Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.

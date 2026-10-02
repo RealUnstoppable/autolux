@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <title>AutoLux Rewards</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="env.js"></script>
@@ -136,9 +140,12 @@
                 return;
             }
 
-            await loadUserPoints(user.uid);
-            await loadRewardsGrid();
-            await loadMyRewards();
+            // ⚡ Bolt: Execute independent queries concurrently to improve load time
+            await Promise.all([
+                loadUserPoints(user.uid),
+                loadRewardsGrid(),
+                loadMyRewards()
+            ]);
         }
 
         async function loadUserPoints(uid) {
@@ -165,6 +172,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             rewards.forEach(reward => {
                 const canAfford = currentUserPoints >= reward.cost;
                 const card = document.createElement('div');
@@ -177,8 +185,9 @@
                         ${canAfford ? 'Redeem' : 'Not Enough Points'}
                     </button>
                 `;
-                rewardsGrid.appendChild(card);
+                fragment.appendChild(card);
             });
+            rewardsGrid.appendChild(fragment);
         }
 
         async function loadMyRewards() {
@@ -190,6 +199,7 @@
                 return;
             }
 
+            const fragment = document.createDocumentFragment();
             myRewards.forEach(r => {
                 const dateStr = r.redeemedAt?.toDate ? r.redeemedAt.toDate().toLocaleDateString() : 'Just now';
                 const item = document.createElement('div');
@@ -201,8 +211,9 @@
                     </div>
                     <div class="my-reward-status">${escapeHTML(r.status || 'Active')}</div>
                 `;
-                myRewardsList.appendChild(item);
+                fragment.appendChild(item);
             });
+            myRewardsList.appendChild(fragment);
         }
 
         // Event Delegation for Redeem Buttons
