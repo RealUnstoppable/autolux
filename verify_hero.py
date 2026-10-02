@@ -1,29 +1,15 @@
-from playwright.sync_api import sync_playwright
-import os
+import re
 
-def run_cuj(page):
-    page.goto("http://localhost:8000/index.html")
-    page.wait_for_timeout(1000)
+with open('index.html', 'r') as f:
+    content = f.read()
 
-    # Scroll down slightly to see gallery
-    page.evaluate("window.scrollBy(0, 500)")
-    page.wait_for_timeout(1000)
+hero_css_matches = re.findall(r'\.hero\s*{[^}]*background-image:[^}]*}', content)
+print("CSS Rules for hero background image:")
+for match in hero_css_matches:
+    print(match)
 
-    # Take screenshot at the key moment
-    os.makedirs("/home/jules/verification/screenshots", exist_ok=True)
-    page.screenshot(path="/home/jules/verification/screenshots/verification.png")
-    page.wait_for_timeout(1000)
+hero_html = re.search(r'<header class="hero">.*?</header>', content, re.DOTALL)
+if hero_html:
+    print("\nHero HTML:")
+    print(hero_html.group(0))
 
-if __name__ == "__main__":
-    os.makedirs("/home/jules/verification/videos", exist_ok=True)
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            record_video_dir="/home/jules/verification/videos"
-        )
-        page = context.new_page()
-        try:
-            run_cuj(page)
-        finally:
-            context.close()
-            browser.close()
