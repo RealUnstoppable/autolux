@@ -158,6 +158,7 @@
                     <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
                     <li><a href="#downloads" class="nav-link">Downloads</a></li>
                     <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
+                    <li><a href="#supporttickets" class="nav-link">Support Tickets</a></li>
                     <li><a href="#faqs-admin" class="nav-link">FAQ Management</a></li>
                     <li><a href="account.html">My Account Settings</a></li>
                 </ul>
@@ -359,6 +360,27 @@
                 </p>
             </section>
 
+
+            <section id="supporttickets" class="content-section">
+                <h3>Support Tickets Management</h3>
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User ID</th>
+                                <th>Subject & Category</th>
+                                <th>Status</th>
+                                <th>Messages</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="support-tickets-list-body">
+                            <tr><td colspan="6" style="text-align: center;">Loading support tickets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
             <section id="newsletter" class="content-section">
                 <h3>Newsletter Subscribers</h3>
                 <div class="user-table-container">
@@ -471,6 +493,7 @@
                 const featureRequestsPromise = getDocs(collection(db, "feature_requests"));
                 const reviewsPromise = getDocs(collection(db, "reviews"));
                 const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
+                const ticketsPromise = getDocs(collection(db, "support_tickets"));
                 const faqsPromise = getDocs(collection(db, "faqs"));
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
@@ -545,6 +568,7 @@
                     const faqsSnapshot = await faqsPromise;
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
+                renderSupportTicketsTable(tickets);
                 } catch (faqError) {
                     console.log("Could not load FAQs", { code: faqError.code, message: faqError.message, details: faqError });
                     document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
@@ -702,6 +726,57 @@
                 fragment.appendChild(row);
             }
             userListBody.appendChild(fragment);
+        }
+
+
+        function renderSupportTicketsTable(tickets) {
+            const tbody = document.getElementById('support-tickets-list-body');
+
+            if(tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No support tickets found.</td></tr>'; return;
+            }
+
+            // Sort by creation date descending
+            tickets.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < tickets.length; i++) {
+                const t = tickets[i];
+                const row = document.createElement('tr');
+                const dateStr = t.createdAt?.toDate ? t.createdAt.toDate().toLocaleString() : (t.createdAt || 'Unknown');
+                const statusColor = t.status === 'open' ? 'var(--gold)' : (t.status === 'in progress' ? '#3B82F6' : '#16A34A');
+
+                let messagesHtml = '';
+                if (t.messages && t.messages.length > 0) {
+                    messagesHtml = t.messages.map(msg => `
+                        <div style="margin-bottom: 5px; padding: 5px; background: rgba(0,0,0,0.2); border-radius: 4px; font-size: 0.85rem;">
+                            <strong style="color: ${msg.isAdmin ? 'var(--gold)' : 'white'};">${msg.isAdmin ? 'Admin' : 'User'}:</strong>
+                            ${escapeHTML(msg.text)}
+                        </div>
+                    `).join('');
+                }
+
+                row.innerHTML = `
+                    <td>${escapeHTML(dateStr)}</td>
+                    <td>${escapeHTML(t.userId || 'Unknown')}</td>
+                    <td><strong>${escapeHTML(t.subject || 'No Subject')}</strong><br><span style="font-size:0.8rem;color:var(--text-secondary);">${escapeHTML(t.category || 'General')}</span></td>
+                    <td><span style="background: ${statusColor}; color: ${t.status === 'open' ? 'black' : 'white'}; padding: 2px 6px; border-radius: 12px; font-size: 0.8rem; text-transform: capitalize;">${escapeHTML(t.status || 'open')}</span></td>
+                    <td style="max-width: 300px; max-height: 150px; overflow-y: auto;">${messagesHtml}</td>
+                    <td>
+                        <select class="ticket-status-select" data-id="${escapeHTML(t.id)}" style="padding: 4px; background: var(--bg-dark); color: white; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 5px; width: 100%;">
+                            <option value="open" ${t.status === 'open' ? 'selected' : ''}>Open</option>
+                            <option value="in progress" ${t.status === 'in progress' ? 'selected' : ''}>In Progress</option>
+                            <option value="closed" ${t.status === 'closed' ? 'selected' : ''}>Closed</option>
+                        </select>
+                        <textarea class="ticket-reply-text" placeholder="Type a reply..." style="width: 100%; padding: 4px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 4px; margin-bottom: 5px; box-sizing: border-box;"></textarea>
+                        <button class="btn-sm btn-action action-btn" data-type="support-ticket" data-action="reply" data-id="${escapeHTML(t.id)}" style="width: 100%; margin-bottom: 5px;">Send Reply</button>
+                        <button class="btn-sm btn-danger action-btn" data-type="support-ticket" data-action="delete" data-id="${escapeHTML(t.id)}" style="width: 100%;">Delete</button>
+                    </td>
+                `;
+                fragment.appendChild(row);
+            }
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
         }
 
         function renderFaqsTable(faqs) {
