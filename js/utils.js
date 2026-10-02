@@ -70,18 +70,7 @@ export async function submitDetailingRequestCore(userId, requestData) {
     return await submitGenericRequest("bookings", requestData, additionalData);
 }
 
-/**
- * Submits a detailing request to the bookings collection.
- * @param {string} userId - The user's Firebase Auth UID.
- * @param {object} requestData - The data for the detailing request.
- * @returns {Promise<object>} The result of the operation.
- */
-export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
-        return { success: false, error: "User must be authenticated to submit a request." };
-    }
-    return submitRequestCore("bookings", requestData, { userId });
-}
+
 
 /**
  * Safely sets an item in sessionStorage, catching QuotaExceededError.
@@ -138,7 +127,13 @@ export async function submitQuoteRequestCore(quoteData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit quote request:", { message: error.message, details: error });
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Failed to submit quote request:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
@@ -170,7 +165,13 @@ export async function submitDetailingPlanCore(userId, requestData) {
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Failed to submit detailing plan:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Failed to submit detailing plan:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
         return { success: false, error: "Failed to submit plan.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
