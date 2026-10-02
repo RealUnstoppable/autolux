@@ -62,15 +62,20 @@ export async function getUserRewards() {
         // Fallback for missing index during development
         if (error.code === 'failed-precondition' || error.message.includes('index')) {
             console.warn("Missing index for user_rewards. Returning unsorted list.");
-             const userRewardsRef = collection(db, "user_rewards");
-             const q = query(userRewardsRef, where("userId", "==", user.uid));
-             const snapshot = await getDocs(q);
+            try {
+                const userRewardsRef = collection(db, "user_rewards");
+                const q = query(userRewardsRef, where("userId", "==", user.uid));
+                const snapshot = await getDocs(q);
 
-             const rewards = [];
-             snapshot.forEach((doc) => {
-                 rewards.push({ id: doc.id, ...doc.data() });
-             });
-             return rewards.sort((a,b) => (b.redeemedAt?.seconds || 0) - (a.redeemedAt?.seconds || 0));
+                const rewards = [];
+                snapshot.forEach((doc) => {
+                    rewards.push({ id: doc.id, ...doc.data() });
+                });
+                return rewards.sort((a,b) => (b.redeemedAt?.seconds || 0) - (a.redeemedAt?.seconds || 0));
+            } catch (fallbackError) {
+                console.error("Error fetching user rewards fallback:", { code: fallbackError.code || 'UNKNOWN_ERROR', message: fallbackError.message, details: fallbackError });
+                return [];
+            }
         }
         return [];
     }
