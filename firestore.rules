@@ -60,13 +60,13 @@ service cloud.firestore {
 
     // Inquiries Collection (Public can create, Admin reads/manages)
     match /inquiries/{inquiryId} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending';
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending' && request.resource.data.name.size() <= 100 && request.resource.data.email.size() <= 255 && request.resource.data.message.size() <= 1000;
       allow read, update, delete: if isAdmin();
     }
 
     match /reviews/{reviewId} {
       allow read: if true;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && request.resource.data.comment.size() <= 1000 && request.resource.data.userName.size() <= 100;
       allow update, delete: if isAdmin();
     }
 
@@ -79,7 +79,7 @@ service cloud.firestore {
     // Sweepstakes / Donations Collection
     match /donations/{donationId} {
       allow read: if isAdmin();
-      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'amount', 'entries', 'createdAt']);
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'amount', 'entries', 'createdAt']) && request.resource.data.name.size() <= 100 && request.resource.data.email.size() <= 255;
       allow update, delete: if isAdmin();
     }
 
