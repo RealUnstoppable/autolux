@@ -352,7 +352,8 @@
                 authMsg.style.color = "var(--success)";
                 authMsg.textContent = "Success! Redirecting...";
 
-                const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname) || 'account.html';
+                const redirectPath = sessionStorage.getItem('redirectAfterLogin') || await getUserRedirectPath(user, userData, window.location.pathname) || 'account.html';
+                sessionStorage.removeItem('redirectAfterLogin');
                 setTimeout(() => {
                     safeRedirect(redirectPath);
                 }, 500);
