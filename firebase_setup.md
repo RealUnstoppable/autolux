@@ -12,3 +12,8 @@ To resolve the Firebase cross-origin authentication issues, you need to add your
 8.  Click **Add**.
 
 This will authorize `autolux.realunstoppable.store` to use Firebase Authentication for this project, resolving any CORS or unapproved domain errors during sign-in or API requests.
+
+
+## Troubleshooting
+
+If you encounter CORS errors or connection issues, ensure that `autolux.realunstoppable.store` is properly authorized in Firebase Authentication under Authorized Domains.
