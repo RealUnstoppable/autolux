@@ -56,7 +56,7 @@ exports.redeemReward = onCall(async (request) => {
 
         return { success: true, message: "Reward redeemed successfully!", newBalance: result.newBalance };
     } catch (error) {
-        console.error("Transaction failure:", error);
+        console.error("Transaction failure:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         throw new HttpsError("internal", error.message || "Failed to process redemption.");
     }
 });
