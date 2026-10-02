@@ -61,3 +61,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+## 2024-05-18 - Mass Assignment in Firestore Rules
+**Vulnerability:** The `feature_requests` collection allowed any authenticated user to create documents with arbitrary fields (`allow create: if isAuthenticated();`).
+**Learning:** Always enforce a strict schema on document creation using `request.resource.data.keys().hasOnly([...])` and restrict sensitive fields (like setting status to pending) even if the frontend UI does not currently submit this data. Attackers can bypass the client and hit the API directly.
+**Prevention:** Use `hasOnly` combined with explicit field value checks in `firestore.rules` for all public or user-facing document creation endpoints.

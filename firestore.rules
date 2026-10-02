@@ -113,7 +113,7 @@ service cloud.firestore {
 
     // Feature Requests collection
     match /feature_requests/{requestId} {
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.keys().hasOnly(['email', 'message', 'isPro', 'status', 'timestamp']) && request.resource.data.status == 'pending';
       allow read, write: if isAdmin();
     }
 
