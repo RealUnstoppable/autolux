@@ -122,6 +122,19 @@
             outline: 2px solid var(--accent-blue);
             outline-offset: 2px;
         }
+
+        .spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <script src="env.js"></script>
 </head>
@@ -1168,7 +1181,7 @@
                 const btn = document.getElementById('credit-reward-btn');
                 
                 btn.disabled = true;
-                btn.textContent = "Crediting...";
+                btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Crediting...';
                 
                 try {
                     const userRef = doc(db, "users", currentWinnerId);
@@ -1210,7 +1223,7 @@
                 if(!question || !answer) return;
 
                 btn.disabled = true;
-                btn.textContent = "Adding...";
+                btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Adding...';
                 try {
                     await addDoc(collection(db, "faqs"), {
                         question: question,

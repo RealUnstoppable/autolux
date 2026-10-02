@@ -191,6 +191,19 @@
             nav { padding: 15px 20px; }
             .quote-card { padding: 25px 20px; }
         }
+
+        .spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -279,7 +292,7 @@
             };
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+            submitBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Submitting...';
             msgEl.textContent = '';
 
             const result = await submitQuoteRequest(quoteData);

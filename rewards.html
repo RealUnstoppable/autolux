@@ -80,6 +80,19 @@
         .my-reward-date { color: var(--text-muted); font-size: 0.85rem; }
         .my-reward-status { background: rgba(37, 99, 235, 0.2); color: #60A5FA; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
 
+
+        .spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -214,7 +227,7 @@
                 const title = btn.dataset.title;
 
                 btn.disabled = true;
-                btn.textContent = "Processing...";
+                btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Processing...';
                 msgContainer.textContent = "";
 
                 const result = await redeemReward(id, cost, title);

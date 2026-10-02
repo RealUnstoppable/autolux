@@ -351,6 +351,19 @@
             nav { padding: 15px 20px; }
             .hero-banner h1 { font-size: 1.8rem; }
         }
+
+        .spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     <script src="env.js"></script>
 </head>
@@ -559,7 +572,7 @@
             if (!name || !email) return;
 
             payBtn.disabled = true;
-            payBtn.textContent = "Processing via Stripe...";
+            payBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Processing via Stripe...';
             stripeMsg.textContent = "";
 
             try {

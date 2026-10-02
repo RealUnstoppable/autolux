@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2026-10-25 - Standardized Loading UI For Submission Buttons
+**Learning:** Adding a spinner to the button's content dynamically (e.g. `innerHTML = '<span class="spinner" aria-hidden="true"></span> Submitting...'`) vastly improves perceived performance over just text changes, but can lead to heavy CSS duplication if there isn't a shared CSS file.
+**Action:** Consistently apply an SVG or CSS spinner to primary action buttons during async tasks. Keep `aria-hidden="true"` on the spinner to let screen readers focus on the semantic text change.
