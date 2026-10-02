@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2024-05-23 - Inputs without Labels
+**Learning:** Some forms, like the vehicle and address inputs in account.html, were missing explicit `<label>` tags or `aria-label` attributes, which makes them inaccessible to screen readers.
+**Action:** When a visible `<label>` is omitted by design, always use the `aria-label` attribute on the `<input>` element to provide an accessible name for screen readers.
