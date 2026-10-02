@@ -469,7 +469,10 @@
                 const quotes = await resolveQuery(quotesPromise, "quotes");
 
                 // Core Calculations
-                const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
+                let totalRevenue = 0;
+                for (let i = 0; i < orders.length; i++) {
+                    totalRevenue += (orders[i].amount || 0);
+                }
                 document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
                 document.getElementById('total-purchases').textContent = orders.length;
 
