@@ -38,3 +38,6 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
+## 2024-05-24 - Custom Input Autocomplete
+**Learning:** Browser autofill can obscure custom text inputs (like custom address labels, vehicle details, or internal admin questions) with irrelevant data, causing frustration.
+**Action:** Always add `autocomplete="off"` to generic `<input type="text">` fields that do not map to standard user data to prevent aggressive browser autofill.

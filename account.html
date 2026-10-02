@@ -351,7 +351,7 @@
                         <p style="color: var(--text-muted);">No vehicles registered yet.</p>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-vehicle" placeholder="e.g. 2021 Porsche 911" autocomplete="off" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <button class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
                     </div>
                     <div id="vehicle-msg" aria-live="polite" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
@@ -363,7 +363,7 @@
                         <p style="color: var(--text-muted);">No service addresses saved yet.</p>
                     </div>
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-address-label" placeholder="Label (e.g. Home, Office)" autocomplete="off" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <input type="text" id="new-address-val" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <button class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
                         <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
