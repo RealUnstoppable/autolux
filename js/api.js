@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { submitDetailingRequestCore, submitQuoteRequestCore } from './utils.js';
+import { submitDetailingRequestCore, submitQuoteRequestCore, submitInquiryCore, submitNewsletterCore } from './utils.js';
 import { db, auth } from './auth.js';
 
 
@@ -31,4 +31,11 @@ export async function submitDetailingRequest(bookingData) {
 
 export async function submitQuoteRequest(quoteData) {
     return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+}
+
+export async function submitNewsletter(email) {
+    return handleApiRequest(submitNewsletterCore, [email], "Newsletter");
+}
+export async function submitInquiry(inquiryData) {
+    return handleApiRequest(submitInquiryCore, [inquiryData], "Inquiry");
 }

@@ -19,9 +19,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Unstoppable Detailing Services - Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
     <meta name="keywords" content="auto detailing, Buford, luxury car wash, mobile detailing, ceramic coating">
+        <meta property="og:title" content="Unstoppable Detailing Services | Premium Auto Care">
+    <meta property="og:description" content="Buford, GA's premier luxury mobile detailing. We bring the showroom back to your driveway.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format">
     <title>Unstoppable Detailing Services | Premium Auto Care</title>
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
+    <meta name="geo.position" content="34.1207;-84.0044">
+    <meta name="ICBM" content="34.1207, -84.0044">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -314,6 +321,7 @@
         }
     </style>
     <script src="env.js"></script>
+    <link rel="canonical" href="https://autolux.realunstoppable.store/">
 </head>
 <body>
 
@@ -482,7 +490,7 @@
         <div style="background: var(--bg-card); padding: 30px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px; margin: 0 auto 40px auto; text-align: left;">
             <h3 style="margin-top: 0; text-align: center;">Have a Question?</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; text-align: center;">Send us a message and we'll get back to you shortly.</p>
-            <form id="inquiry-form" onsubmit="submitInquiry(event)">
+            <form id="inquiry-form">
                 <div style="margin-bottom: 15px;">
                     <label for="inq-name" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Name: <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <input type="text" id="inq-name" required autocomplete="name" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); box-sizing: border-box;">
@@ -518,6 +526,7 @@
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
         import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
+        import { submitInquiry, submitNewsletter } from './js/api.js';
 
         // Mobile Menu Toggle Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
@@ -888,46 +897,50 @@
         });
 
         // Newsletter Logic
-        document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('news-email').value;
-            const msg = document.getElementById('news-msg');
-            const btn = document.getElementById('news-submit-btn');
-            if(!email) {
-                msg.style.color = "var(--error)";
-                msg.textContent = "Please enter an email address.";
-                return;
-            }
+        const newsletterForm = document.getElementById('newsletter-form');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('news-email').value.trim();
+                const msg = document.getElementById('news-msg');
+                const btn = document.getElementById('news-submit-btn');
 
-            // Basic email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                msg.style.color = "var(--error)";
-                msg.textContent = "Please enter a valid email address.";
-                return;
-            }
-            
-            btn.disabled = true;
-            btn.textContent = "Subscribing...";
-            msg.textContent = "";
+                if(!email) {
+                    msg.style.color = "var(--error)";
+                    msg.textContent = "Please enter an email address.";
+                    return;
+                }
 
-            try {
-                await setDoc(doc(db, "newsletterSubscribers", email), {
-                    email: email,
-                    subscribedAt: serverTimestamp()
-                });
-                msg.style.color = "#16A34A";
-                msg.textContent = "Subscribed successfully! Check your inbox soon.";
-                document.getElementById('news-email').value = '';
-            } catch(error) {
-                console.error("Error subscribing to newsletter:", error, error.code ? `(Code: ${error.code})` : '');
-                msg.style.color = "var(--error)";
-                msg.textContent = "Error subscribing. Please try again.";
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Subscribe";
-            }
-        });
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    msg.style.color = "var(--error)";
+                    msg.textContent = "Please enter a valid email address.";
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = "Subscribing...";
+                msg.textContent = "";
+
+                try {
+                    const result = await submitNewsletter(email);
+                    if (result.success) {
+                        msg.style.color = "#16A34A";
+                        msg.textContent = "Subscribed successfully! Check your inbox soon.";
+                        newsletterForm.reset();
+                    } else {
+                        throw new Error(result.error || "Failed to subscribe");
+                    }
+                } catch(error) {
+                    console.error("Error subscribing to newsletter:", error.message, error.code);
+                    msg.style.color = "var(--error)";
+                    msg.textContent = "Error subscribing. Please try again.";
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Subscribe";
+                }
+            });
+        }
 
         // Character Counters Logic
         function setupCharCounters() {
@@ -958,48 +971,53 @@
         setupCharCounters();
 
         // Submit Inquiry Logic
-        window.submitInquiry = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-inquiry-btn');
-            const msgEl = document.getElementById('inquiry-msg');
-            const name = document.getElementById('inq-name').value.trim();
-            const email = document.getElementById('inq-email').value.trim();
-            const message = document.getElementById('inq-message').value.trim();
+        const inquiryForm = document.getElementById('inquiry-form');
+        if (inquiryForm) {
+            inquiryForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submit-inquiry-btn');
+                const msgEl = document.getElementById('inquiry-msg');
+                const name = document.getElementById('inq-name').value.trim();
+                const email = document.getElementById('inq-email').value.trim();
+                const message = document.getElementById('inq-message').value.trim();
 
-            if (!name || !email || !message) {
-                msgEl.style.color = "var(--error)";
-                msgEl.textContent = "Please fill out all fields.";
-                return;
-            }
+                if (!name || !email || !message) {
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Please fill out all fields.";
+                    return;
+                }
 
-            btn.disabled = true;
-            btn.textContent = "Sending...";
-            msgEl.textContent = "";
+                btn.disabled = true;
+                btn.textContent = "Sending...";
+                msgEl.textContent = "";
 
-            try {
-                const inquiryPayload = {
-                    name: name,
-                    email: email,
-                    message: message
-                };
-                await addDoc(collection(db, "inquiries"), {
-                    ...inquiryPayload,
-                    status: "pending",
-                    createdAt: serverTimestamp()
-                });
+                try {
+                    const inquiryPayload = {
+                        name: name,
+                        email: email,
+                        message: message
+                    };
 
-                msgEl.style.color = "#16A34A";
-                msgEl.textContent = "Message sent successfully! We'll be in touch.";
-                document.getElementById('inquiry-form').reset();
-            } catch (error) {
-                console.error("Error submitting inquiry:", error.message, error.code);
-                msgEl.style.color = "var(--error)";
-                msgEl.textContent = "Error sending message. Please try again later.";
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Send Message";
-            }
-        };
+                    const result = await submitInquiry(inquiryPayload);
+
+                    if (result.success) {
+                        msgEl.style.color = "#16A34A";
+                        msgEl.textContent = "Message sent successfully! We'll be in touch.";
+                        inquiryForm.reset();
+                    } else {
+                        throw new Error(result.error || "Failed to submit inquiry");
+                    }
+                } catch (error) {
+                    console.error("Error submitting inquiry:", error.message, error.code);
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Error sending message. Please try again later.";
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Send Message";
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
