@@ -60,7 +60,7 @@ service cloud.firestore {
 
     // Inquiries Collection (Public can create, Admin reads/manages)
     match /inquiries/{inquiryId} {
-      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending';
+      allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'message', 'status', 'createdAt']) && request.resource.data.status == 'pending' && request.resource.data.message.size() < 2000;
       allow read, update, delete: if isAdmin();
     }
 
@@ -107,7 +107,9 @@ service cloud.firestore {
       allow create: if isAdmin() || (
         request.resource.data.keys().hasOnly(['name', 'email', 'phone', 'details', 'serviceRequested', 'additionalNotes', 'createdAt', 'status']) &&
         (!('status' in request.resource.data) || request.resource.data.status == 'pending') &&
-        (!('isAdmin' in request.resource.data))
+        (!('isAdmin' in request.resource.data)) &&
+        (!('details' in request.resource.data) || request.resource.data.details.size() < 2000) &&
+        (!('additionalNotes' in request.resource.data) || request.resource.data.additionalNotes.size() < 2000)
       );
     }
 

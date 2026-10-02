@@ -61,3 +61,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Publicly writable collections (`inquiries`, `newsletterSubscribers`, `donations`) in `firestore.rules` allowed unrestricted creation (`allow create: if true;`), exposing the database to arbitrary data injection and mass assignment.
 **Learning:** Even if the client-side code correctly structures the payload, allowing unvalidated writes to public collections opens the door for malicious actors to inject arbitrary fields or bypass intended schemas via direct API requests.
 **Prevention:** Always enforce strict schema validation in `firestore.rules` for publicly writable collections using `request.resource.data.keys().hasOnly([...])` and validate specific field constraints (e.g., `status == 'pending'`).
+## 2026-12-11 - [Resource Exhaustion via Unbounded Inputs]
+**Vulnerability:** Publicly writable collections (`inquiries`, `quotes`) in `firestore.rules` checked field existence via `hasOnly()` but lacked field length boundaries, exposing the database to massive string injections and resulting storage/bandwidth spikes.
+**Learning:** Validating object schema (keys) is insufficient without bounding the actual data size. Attackers can bypass structural checks by inflating the size of allowed string fields.
+**Prevention:** Always enforce input length limits (e.g., `request.resource.data.message.size() < 2000`) for user-supplied data in Firestore rules as a critical defense-in-depth measure against resource exhaustion.
