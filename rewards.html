@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="geo.region" content="US-GA">
@@ -138,9 +140,12 @@
                 return;
             }
 
-            await loadUserPoints(user.uid);
-            await loadRewardsGrid();
-            await loadMyRewards();
+            // ⚡ Bolt: Execute independent queries concurrently to improve load time
+            await Promise.all([
+                loadUserPoints(user.uid),
+                loadRewardsGrid(),
+                loadMyRewards()
+            ]);
         }
 
         async function loadUserPoints(uid) {
