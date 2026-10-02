@@ -36,26 +36,48 @@ service cloud.firestore {
 
     // Bookings Collection (Autolux Service Business Logic)
     match /bookings/{bookingId} {
+      // Clients can only read their own booking requests; admins have full access.
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      // Ensure users can only create pending booking requests for themselves
-      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending') && !('isAdmin' in request.resource.data);
+      // Clients can only write (create) their own booking requests
+      // Enforce strict schema validation and restrict admin fields
+      allow create: if isOwner(request.resource.data.userId) &&
+                    request.resource.data.keys().hasOnly(['service', 'date', 'time', 'vehicleMake', 'vehicleModel', 'userId', 'status', 'createdAt', 'notes', 'address', 'referralCode']) &&
+                    (!('status' in request.resource.data) || request.resource.data.status == 'pending') &&
+                    !('isAdmin' in request.resource.data);
       // Ensure only admins can modify the status
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status) && !('isAdmin' in request.resource.data));
       allow delete: if isAdmin();
     }
 
     // Detailing Plans Collection (Autolux Service Business Logic)
     match /detailingPlans/{planId} {
+      // Clients can only read their own detailing plans; admins have full access.
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending') && !('isAdmin' in request.resource.data);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
+      // Clients can only write (create) their own detailing plans
+      // Enforce strict schema validation and restrict admin fields
+      allow create: if isOwner(request.resource.data.userId) &&
+                    request.resource.data.keys().hasOnly(['service', 'date', 'time', 'vehicleMake', 'vehicleModel', 'userId', 'status', 'createdAt', 'notes', 'address', 'referralCode']) &&
+                    (!('status' in request.resource.data) || request.resource.data.status == 'pending') &&
+                    !('isAdmin' in request.resource.data);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status) && !('isAdmin' in request.resource.data));
       allow delete: if isAdmin();
     }
     match /detailing_plans/{planId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == 'pending') && !('isAdmin' in request.resource.data);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status));
+      // Enforce strict schema validation and restrict admin fields
+      allow create: if isOwner(request.resource.data.userId) &&
+                    request.resource.data.keys().hasOnly(['service', 'date', 'time', 'vehicleMake', 'vehicleModel', 'userId', 'status', 'createdAt', 'notes', 'address', 'referralCode']) &&
+                    (!('status' in request.resource.data) || request.resource.data.status == 'pending') &&
+                    !('isAdmin' in request.resource.data);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && (!('status' in request.resource.data) || request.resource.data.status == resource.data.status) && !('isAdmin' in request.resource.data));
       allow delete: if isAdmin();
+    }
+
+    // Service Records Collection
+    match /service_records/{recordId} {
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow create: if false;
+      allow update, delete: if isAdmin();
     }
 
     // Inquiries Collection (Public can create, Admin reads/manages)
@@ -66,7 +88,7 @@ service cloud.firestore {
 
     match /reviews/{reviewId} {
       allow read: if true;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && (!('status' in request.resource.data) || request.resource.data.status == 'pending');
       allow update, delete: if isAdmin();
     }
 
@@ -78,7 +100,7 @@ service cloud.firestore {
 
     // Sweepstakes / Donations Collection
     match /donations/{donationId} {
-      allow read: if isAdmin();
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.userId);
       allow create: if request.resource.data.keys().hasOnly(['name', 'email', 'amount', 'entries', 'createdAt']);
       allow update, delete: if isAdmin();
     }
@@ -115,7 +137,7 @@ service cloud.firestore {
 
     // Feature Requests collection
     match /feature_requests/{requestId} {
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.keys().hasOnly(['email', 'message', 'isPro', 'status', 'timestamp']) && request.resource.data.status == 'pending';
       allow read, write: if isAdmin();
     }
 
