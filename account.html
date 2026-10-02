@@ -345,6 +345,13 @@
                     </div>
                 </div>
 
+                <div class="card" id="service-gallery-card" style="margin-bottom: 20px;">
+                    <h2>Service History & Gallery</h2>
+                    <div id="service-logs-list" style="display: grid; gap: 20px;">
+                        <p style="color: var(--text-muted);">Loading service history...</p>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h2>My Registered Vehicles</h2>
                     <div id="vehicles-list">
@@ -377,6 +384,7 @@
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
+        import { fetchUserServiceLogs } from './js/service_logs.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
@@ -455,6 +463,10 @@
 
                 renderBookings(appointmentsSnap);
                 renderNotifications(notificationsSnap);
+
+                const logs = await fetchUserServiceLogs(user.uid);
+                renderServiceLogs(logs);
+
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
@@ -692,6 +704,46 @@
                 }
             }
         });
+
+        function renderServiceLogs(logs) {
+            const list = document.getElementById('service-logs-list');
+            list.innerHTML = '';
+            if(!logs || logs.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">No service history found.</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            for(let i = 0; i < logs.length; i++) {
+                const log = logs[i];
+                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds*1000).toLocaleDateString() : 'Recent');
+
+                const el = document.createElement('div');
+                el.style = "background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);";
+
+                let imagesHtml = '';
+                if(log.beforeImageUrl || log.afterImageUrl) {
+                    imagesHtml = `<div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
+                        ${log.beforeImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">Before</p><img src="${log.beforeImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                        ${log.afterImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">After</p><img src="${log.afterImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                    </div>`;
+                }
+
+                el.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="margin: 0 0 5px 0; color: var(--gold);">${escapeHTML(log.serviceType || 'Detailing Service')}</h3>
+                            <p style="margin: 0; font-weight: 600;">${escapeHTML(log.vehicleName || 'Vehicle')}</p>
+                        </div>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${dateStr}</span>
+                    </div>
+                    ${log.technicianNotes ? `<p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"${escapeHTML(log.technicianNotes)}"</p>` : ''}
+                    ${imagesHtml}
+                `;
+                fragment.appendChild(el);
+            }
+            list.appendChild(fragment);
+        }
 
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');

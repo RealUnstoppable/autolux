@@ -1,4 +1,8 @@
-💡 What: Comprehensive health audit and remediation pass.
-🎯 Why: To fix dependency issues, resolve layout/integration bugs, optimize media for FCP, and improve SEO and ARIA accessibility.
-📸 Before/After: N/A - technical refactor and minor UI fixes.
-♿ Accessibility: Added missing ARIA labels to SVG elements and fixed color contrast variables for error messages.
+feat: Implement Digital Vehicle Service History & Before/After Gallery
+
+This commit adds a new feature that allows admins to document detailed service logs for users' vehicles, including before/after image URLs, service types, and technician notes. These logs are then displayed to users in their client portal (`account.html`) as a premium gallery.
+
+- Adds strict `firestore.rules` for the new `service_logs` collection.
+- Creates `js/service_logs.js` to handle CRUD operations and fallback queries.
+- Updates `admin.html` with a new form section to create service logs.
+- Updates `account.html` to securely fetch and elegantly display the user's service history.
