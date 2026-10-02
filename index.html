@@ -589,7 +589,8 @@
             }
 
             const fragment = document.createDocumentFragment();
-            faqs.forEach((data, index) => {
+            for (let index = 0; index < faqs.length; index++) {
+                const data = faqs[index];
                 const question = escapeHTML(data.question || "");
                 const answer = escapeHTML(data.answer || "");
                 const faqId = `faq-answer-${index}`;
@@ -616,12 +617,14 @@
                     const isActive = el.classList.contains('active');
 
                     // Close all others
-                    document.querySelectorAll('.faq-item').forEach(item => {
+                    const items = document.querySelectorAll('.faq-item');
+                    for (let j = 0; j < items.length; j++) {
+                        const item = items[j];
                         item.classList.remove('active');
                         item.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
                         item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
                         item.querySelector('.faq-answer').style.maxHeight = '0';
-                    });
+                    }
 
                     // Toggle current
                     if (!isActive) {
@@ -634,7 +637,7 @@
                 });
 
                 fragment.appendChild(el);
-            });
+            }
 
             // ⚡ Bolt: Append fragment to container once to avoid layout thrashing
             container.appendChild(fragment);
@@ -661,7 +664,10 @@
                 const q = query(collection(db, "faqs"), orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
 
-                let faqs = snapshot.docs.map(doc => doc.data());
+                let faqs = [];
+                for (let i = 0; i < snapshot.docs.length; i++) {
+                    faqs.push(snapshot.docs[i].data());
+                }
                 
                 if (faqs.length === 0) {
                     faqs = [
@@ -707,7 +713,8 @@
             function renderReviewItems(list) {
                 container.innerHTML = '';
                 const fragment = document.createDocumentFragment();
-                list.forEach(r => {
+                for (let i = 0; i < list.length; i++) {
+                    const r = list[i];
                     const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                     const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                     let date = 'Recent';
@@ -725,7 +732,7 @@
                     el.className = 'review-card';
                     el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)} <span style="font-size: 0.8rem; color: var(--text-muted);">(${escapeHTML(date)})</span></p>`;
                     fragment.appendChild(el);
-                });
+                }
                 container.appendChild(fragment);
             }
 
@@ -743,20 +750,24 @@
             try {
                 const q = query(collection(db, "reviews"), where("status", "==", "approved"));
                 const querySnapshot = await getDocs(q);
-                let reviews = querySnapshot.docs.map(doc => {
-                    const data = doc.data();
+                let reviews = [];
+                for (let i = 0; i < querySnapshot.docs.length; i++) {
+                    const data = querySnapshot.docs[i].data();
                     if (data.createdAt && data.createdAt.toDate) {
                         data.createdAt = data.createdAt.toDate().toISOString();
                     }
-                    return data;
-                });
+                    reviews.push(data);
+                }
                 
                 if (reviews.length === 0) {
                     reviews = defaultReviews;
                 } else {
                     reviews.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : 0) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : 0));
                     // Stringify timestamps for caching
-                    reviews = reviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
+                    for (let i = 0; i < reviews.length; i++) {
+                        const r = reviews[i];
+                        reviews[i] = {...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt};
+                    }
                 }
 
                 try {
@@ -785,7 +796,8 @@
             container.innerHTML = '';
             const fragment = document.createDocumentFragment();
 
-            reviews.forEach(r => {
+            for (let i = 0; i < reviews.length; i++) {
+                const r = reviews[i];
                 // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                 const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
@@ -797,7 +809,7 @@
                 el.className = 'review-card';
                 el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
                 fragment.appendChild(el);
-            });
+            }
             container.appendChild(fragment);
         }
 
@@ -812,7 +824,8 @@
             container.innerHTML = '';
             const fragment = document.createDocumentFragment();
 
-            reviews.forEach(r => {
+            for (let i = 0; i < reviews.length; i++) {
+                const r = reviews[i];
                 // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                 const ratingValue = Math.max(0, Math.min(5, parseInt(r.rating, 10) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
@@ -824,7 +837,7 @@
                 el.className = 'review-card';
                 el.innerHTML = `<div class="stars">${stars}</div><p>"${escapeHTML(comment)}"<br><br>- ${escapeHTML(name)}</p>`;
                 fragment.appendChild(el);
-            });
+            }
             container.appendChild(fragment);
         }
 

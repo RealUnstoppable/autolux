@@ -20,7 +20,7 @@ export async function getAvailableRewards() {
         });
         return rewards;
     } catch (error) {
-        console.error("Error fetching rewards:", error);
+        console.error("Error fetching rewards:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return [];
     }
 }
@@ -34,7 +34,7 @@ export async function redeemReward(rewardId, cost, title) {
         const result = await redeemFn({ rewardId, cost, title });
         return result.data;
     } catch (error) {
-        console.error("Redemption error:", error);
+        console.error("Redemption error:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, message: error.message || "Failed to redeem reward. Please try again." };
     }
 }
@@ -58,7 +58,7 @@ export async function getUserRewards() {
         });
         return rewards;
     } catch (error) {
-        console.error("Error fetching user rewards:", error);
+        console.error("Error fetching user rewards:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         // Fallback for missing index during development
         if (error.code === 'failed-precondition' || error.message.includes('index')) {
             console.warn("Missing index for user_rewards. Returning unsorted list.");
