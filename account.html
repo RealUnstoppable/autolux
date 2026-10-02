@@ -278,6 +278,7 @@
             <a href="index.html">Home</a>
             <a href="quote.html">Custom Quote</a>
             <a href="booking.html">Book Service</a>
+            <a href="#support-tickets" class="nav-link" data-target="support-tickets">Support Tickets</a>
             <a href="rewards.html">Rewards</a>
             <button class="btn-logout" id="logout-btn">Sign Out</button>
         </div>
@@ -326,6 +327,31 @@
             <!-- Main Content Area -->
             <div>
                 <!-- Notifications Panel -->
+
+                <div class="card" id="support-tickets-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">Support Tickets</h2>
+                        <button id="new-ticket-btn" class="btn-schedule">+ New Ticket</button>
+                    </div>
+                    <div id="tickets-list">
+                        <p style="color: var(--text-muted);">Loading tickets...</p>
+                    </div>
+
+                    <!-- New Ticket Form (Hidden) -->
+                    <div id="new-ticket-form" style="display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
+                        <h3>Create New Ticket</h3>
+                        <input type="text" id="ticket-subject" placeholder="Subject" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
+                        <select id="ticket-category" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
+                            <option value="Booking Issue">Booking Issue</option>
+                            <option value="Billing">Billing</option>
+                            <option value="General">General Questions</option>
+                        </select>
+                        <textarea id="ticket-message" placeholder="Message" rows="4" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;"></textarea>
+                        <button id="submit-ticket-btn" class="btn-primary" style="width: 100%;">Submit Ticket</button>
+                        <div id="ticket-msg" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
                         <h2 style="margin: 0; border: none; padding: 0;">Alerts & Notifications</h2>
@@ -375,7 +401,7 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML } from './js/utils.js';
 
         const overlay = document.getElementById('loading-overlay');
@@ -454,6 +480,7 @@
                 }
 
                 renderBookings(appointmentsSnap);
+                loadTickets(user);
                 renderNotifications(notificationsSnap);
                 overlay.style.display = 'none';
             } catch (error) {
@@ -470,6 +497,163 @@
                  safeRedirect('sign in beta.html');
              }
         });
+
+
+        // Support Tickets Logic
+        const ticketsListEl = document.getElementById('tickets-list');
+        const newTicketBtn = document.getElementById('new-ticket-btn');
+        const newTicketForm = document.getElementById('new-ticket-form');
+        const submitTicketBtn = document.getElementById('submit-ticket-btn');
+
+        newTicketBtn?.addEventListener('click', () => {
+            newTicketForm.style.display = newTicketForm.style.display === 'none' ? 'block' : 'none';
+        });
+
+        async function loadTickets(user) {
+            try {
+                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                const ticketsSnap = await getDocs(ticketsQuery);
+                const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Sort client-side if index is missing, or we could add orderBy to query but might need composite index
+                tickets.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
+
+                if (tickets.length === 0) {
+                    ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">No support tickets found.</p>';
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                tickets.forEach(ticket => {
+                    const el = document.createElement('div');
+                    el.style = "padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; background: var(--bg-dark);";
+
+                    const statusColor = ticket.status === 'open' ? 'var(--gold)' : (ticket.status === 'in progress' ? '#3B82F6' : '#16A34A');
+
+                    let messagesHtml = '';
+                    if (ticket.messages && ticket.messages.length > 0) {
+                        messagesHtml = ticket.messages.map(msg => `
+                            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                                <strong style="color: ${msg.isAdmin ? 'var(--gold)' : 'white'};">${msg.isAdmin ? 'Admin' : 'You'}:</strong>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${escapeHTML(msg.text)}</p>
+                            </div>
+                        `).join('');
+                    }
+
+                    el.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--gold);">${escapeHTML(ticket.subject)}</h3>
+                            <span style="background: ${statusColor}; color: ${ticket.status === 'open' ? 'black' : 'white'}; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize;">${escapeHTML(ticket.status)}</span>
+                        </div>
+                        <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Category: ${escapeHTML(ticket.category)}</p>
+                        <div style="margin-top: 15px;">
+                            ${messagesHtml}
+                        </div>
+
+                        ${ticket.status !== 'closed' ? `
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                                <button class="btn-schedule reply-btn" data-id="${ticket.id}" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    fragment.appendChild(el);
+                });
+                ticketsListEl.innerHTML = '';
+                ticketsListEl.appendChild(fragment);
+
+            } catch (e) {
+                console.error("Error loading tickets:", e);
+                ticketsListEl.innerHTML = '<p style="color: var(--error);">Error loading tickets.</p>';
+            }
+        }
+
+        submitTicketBtn?.addEventListener('click', async () => {
+            const subject = document.getElementById('ticket-subject').value.trim();
+            const category = document.getElementById('ticket-category').value;
+            const message = document.getElementById('ticket-message').value.trim();
+            const msgEl = document.getElementById('ticket-msg');
+
+            if (!subject || !message) {
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Please fill in all fields.";
+                return;
+            }
+
+            submitTicketBtn.disabled = true;
+            submitTicketBtn.textContent = "Submitting...";
+
+            try {
+                // Prevent Mass Assignment by spreading user payload first
+                const payload = {
+                    userId: currentUser.uid,
+                    subject: subject,
+                    category: category,
+                    status: 'open',
+                    messages: [{
+                        text: message,
+                        isAdmin: false,
+                        timestamp: new Date().toISOString()
+                    }],
+                    createdAt: serverTimestamp()
+                };
+
+                await addDoc(collection(db, "support_tickets"), payload);
+
+                msgEl.style.color = "#16A34A";
+                msgEl.textContent = "Ticket created successfully!";
+
+                document.getElementById('ticket-subject').value = '';
+                document.getElementById('ticket-message').value = '';
+                setTimeout(() => {
+                    newTicketForm.style.display = 'none';
+                    msgEl.textContent = '';
+                    loadTickets(currentUser);
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error creating ticket:", error);
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to create ticket.";
+            } finally {
+                submitTicketBtn.disabled = false;
+                submitTicketBtn.textContent = "Submit Ticket";
+            }
+        });
+
+        ticketsListEl?.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('reply-btn')) {
+                const ticketId = e.target.dataset.id;
+                const inputEl = e.target.previousElementSibling;
+                const replyText = inputEl.value.trim();
+
+                if (!replyText) return;
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                try {
+                    const ticketRef = doc(db, "support_tickets", ticketId);
+                    await updateDoc(ticketRef, {
+                        messages: arrayUnion({
+                            text: replyText,
+                            isAdmin: false,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+
+                    inputEl.value = '';
+                    loadTickets(currentUser);
+                } catch (error) {
+                    console.error("Error replying to ticket:", error);
+                    alert("Failed to send reply.");
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
+
 
         function renderNotifications(snapshot) {
             try {
