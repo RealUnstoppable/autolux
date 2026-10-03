@@ -26,7 +26,7 @@ export function escapeHTML(str) {
  * @param {object} [additionalData={}] - Server-controlled data to append to the payload.
  * @returns {Promise<object>} The result of the operation.
  */
-async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
+export async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
     try {
         if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
@@ -133,19 +133,7 @@ export async function submitDetailingPlanCore(userId, requestData) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitInquiryCore(inquiryData) {
-    try {
-        const payload = {
-            ...inquiryData,
-            status: 'pending',
-            createdAt: serverTimestamp()
-        };
-
-        const docRef = await addDoc(collection(db, "inquiries"), payload);
-        return { success: true, docId: docRef.id };
-    } catch (error) {
-        console.error("Failed to submit inquiry:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: "Failed to submit inquiry.", code: error.code || 'UNKNOWN_ERROR' };
-    }
+    return await submitGenericRequest("inquiries", inquiryData);
 }
 
 /**
