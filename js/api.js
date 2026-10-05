@@ -27,28 +27,28 @@ async function handleApiRequest(coreFunction, payload, type) {
 }
 
 export async function submitDetailingRequest(bookingData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
+    if (!auth || !auth.currentUser) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
+    const currentUser = auth.currentUser;
     const userId = currentUser.uid;
     const payload = { ...bookingData, userId };
     if (bookingData.referralCode) {
         payload.referralCode = bookingData.referralCode.trim().toUpperCase();
     }
-    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
+    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitToFirestore, ["quotes", quoteData], "Quote");
+    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
 }
 
 export async function submitDetailingPlan(planData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
+    if (!auth || !auth.currentUser) {
         console.error("Cannot submit detailing plan: User is not authenticated.");
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
+    const currentUser = auth.currentUser;
     return handleApiRequest(submitDetailingPlanCore, [currentUser.uid, planData], "DetailingPlan");
 }
