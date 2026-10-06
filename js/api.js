@@ -26,29 +26,38 @@ async function handleApiRequest(coreFunction, payload, type) {
     }
 }
 
-export async function submitDetailingRequest(bookingData) {
+async function requireAuthAndSubmit(submitFn, payloadBuilder, type) {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
+        console.error(`Cannot submit ${type.toLowerCase()}: User is not authenticated.`);
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
-    const userId = currentUser.uid;
-    const payload = { ...bookingData, userId };
-    if (bookingData.referralCode) {
-        payload.referralCode = bookingData.referralCode.trim().toUpperCase();
-    }
-    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
+    const payloadArgs = payloadBuilder(currentUser);
+    return handleApiRequest(submitFn, payloadArgs, type);
+}
+
+export async function submitDetailingRequest(bookingData) {
+    return requireAuthAndSubmit(
+        submitDetailingRequestCore,
+        (user) => {
+            const payload = { ...bookingData, userId: user.uid };
+            if (bookingData.referralCode) {
+                payload.referralCode = bookingData.referralCode.trim().toUpperCase();
+            }
+            return [user.uid, payload]; // Match submitDetailingRequestCore signature
+        },
+        "Detailing"
+    );
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitToFirestore, ["quotes", quoteData], "Quote");
+    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
 }
 
 export async function submitDetailingPlan(planData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-        console.error("Cannot submit detailing plan: User is not authenticated.");
-        return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
-    }
-    return handleApiRequest(submitDetailingPlanCore, [currentUser.uid, planData], "DetailingPlan");
+    return requireAuthAndSubmit(
+        submitDetailingPlanCore,
+        (user) => [user.uid, planData], // Match submitDetailingPlanCore signature
+        "DetailingPlan"
+    );
 }
