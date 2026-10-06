@@ -300,30 +300,31 @@
                 <div class="form-container" style="background: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); max-width: 600px;">
                     <form id="create-service-log-form">
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">User ID</label>
+                            <label for="log-userId" style="display:block; margin-bottom:5px;">User ID</label>
                             <input type="text" id="log-userId" required style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
                         </div>
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">Vehicle Name</label>
+                            <label for="log-vehicle" style="display:block; margin-bottom:5px;">Vehicle Name</label>
                             <input type="text" id="log-vehicle" required placeholder="e.g. 2021 Porsche 911" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
                         </div>
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">Service Type</label>
+                            <label for="log-serviceType" style="display:block; margin-bottom:5px;">Service Type</label>
                             <input type="text" id="log-serviceType" required placeholder="e.g. Ceramic Coating" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
                         </div>
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">Before Image URL</label>
+                            <label for="log-beforeImg" style="display:block; margin-bottom:5px;">Before Image URL</label>
                             <input type="url" id="log-beforeImg" placeholder="https://..." style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
                         </div>
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">After Image URL</label>
+                            <label for="log-afterImg" style="display:block; margin-bottom:5px;">After Image URL</label>
                             <input type="url" id="log-afterImg" placeholder="https://..." style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);">
                         </div>
                         <div style="margin-bottom: 15px;">
-                            <label style="display:block; margin-bottom:5px;">Technician Notes</label>
+                            <label for="log-notes" style="display:block; margin-bottom:5px;">Technician Notes</label>
                             <textarea id="log-notes" rows="3" style="width: 100%; padding: 8px; background: var(--bg-dark); color: white; border: 1px solid var(--border);"></textarea>
                         </div>
                         <button type="submit" class="btn-primary">Create Service Log</button>
+                        <p id="log-msg" aria-live="polite" style="margin-top: 15px; font-size: 0.9rem; font-weight: 600;"></p>
                     </form>
                 </div>
             </section>
@@ -1038,12 +1039,16 @@
                     serviceDate: new Date()
                 };
 
+                const msgEl = document.getElementById('log-msg');
+                msgEl.textContent = '';
                 const res = await createServiceLog(logData);
                 if(res.success) {
-                    alert('Service Log created successfully!');
+                    msgEl.style.color = "#16A34A";
+                    msgEl.textContent = 'Service Log created successfully!';
                     e.target.reset();
                 } else {
-                    alert('Error creating log: ' + res.error);
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = 'Error creating log: ' + res.error;
                 }
                 btn.disabled = false;
                 btn.textContent = originalText;

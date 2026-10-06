@@ -44,3 +44,6 @@
 ## 2024-10-31 - [Add ARIA labels to form inputs in account page]
 **Learning:** Found multiple `<input>` elements in `account.html` (e.g., referral code, new vehicle, new address) without associated `<label>` elements or `aria-label` attributes, which makes them inaccessible to screen readers.
 **Action:** Always ensure that every `<input>` has either a corresponding `<label>` (using `for` / `id` pairing) or an explicit `aria-label` attribute if a visual label is omitted by design.
+## 2024-11-23 - Alert vs aria-live for Form Feedback
+**Learning:** Using `alert()` for form submission feedback (like "Service Log created successfully!") creates a jarring, modal experience that disrupts the user's flow and can be disorienting, especially for screen reader users. It's an outdated pattern for inline form feedback.
+**Action:** Replace `alert()` calls for form submissions with inline, dynamically updated message containers using `aria-live="polite"` to provide accessible, non-blocking feedback.
