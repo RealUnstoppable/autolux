@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, setDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -165,5 +165,37 @@ export async function submitNewsletterCore(email) {
     } catch (error) {
         console.error("Failed to submit newsletter subscription:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to subscribe.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
+
+
+/**
+ * Safely fetches a query, falling back to a secondary query and in-memory sorting if an index is missing.
+ * @param {import("firebase/firestore").Query} primaryQuery - The primary query, potentially requiring an index.
+ * @param {import("firebase/firestore").Query} fallbackQuery - A simpler fallback query that does not require an index.
+ * @param {function} sortFn - A sorting function to apply to the results of the fallback query.
+ * @returns {Promise<Array>} An array of document data (with id).
+ */
+export async function fetchWithFallback(primaryQuery, fallbackQuery, sortFn) {
+    try {
+        const snapshot = await getDocs(primaryQuery);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Query failed:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error.code === 'failed-precondition' || error.message.includes('index')) {
+            console.warn("Missing index detected. Falling back to simple query and in-memory sort.");
+            try {
+                const snap = await getDocs(fallbackQuery);
+                const results = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (sortFn && typeof sortFn === 'function') {
+                    return results.sort(sortFn);
+                }
+                return results;
+            } catch (fallbackError) {
+                console.error("Fallback query also failed:", { code: fallbackError.code || 'UNKNOWN_ERROR', message: fallbackError.message, details: fallbackError });
+                return [];
+            }
+        }
+        return [];
     }
 }
