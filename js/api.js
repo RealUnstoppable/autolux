@@ -37,11 +37,11 @@ export async function submitDetailingRequest(bookingData) {
     if (bookingData.referralCode) {
         payload.referralCode = bookingData.referralCode.trim().toUpperCase();
     }
-    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
+    return handleApiRequest(submitDetailingRequestCore, [currentUser.uid, bookingData], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitToFirestore, ["quotes", quoteData], "Quote");
+    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
 }
 
 export async function submitDetailingPlan(planData) {

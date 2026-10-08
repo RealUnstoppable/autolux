@@ -13,17 +13,17 @@ try {
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
     // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
     if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
-        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
+        throw new Error("SILENT_CONFIG_ERROR: Missing required Firebase configuration in window.ENV. Failing securely.");
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
-        throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+        throw new Error("SILENT_CONFIG_ERROR: Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
     }
 
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+        throw new Error("SILENT_CONFIG_ERROR: Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
     }
 
     const firebaseConfig = {
@@ -50,13 +50,18 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
-    console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
-    if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
-        console.error("App Check or CORS issue detected:", error.message);
-    } else if (error.code === 'auth/invalid-api-key') {
-        console.error("Invalid API key detected:", error.message);
+    if (error.message && error.message.startsWith("SILENT_CONFIG_ERROR:")) {
+        console.error(error.message.replace("SILENT_CONFIG_ERROR: ", ""));
+        // Gracefully degrade without crashing the app
     } else {
-        console.error("Firebase connection error:", { message: error.message, details: error });
+        console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Firebase connection error:", { message: error.message, details: error });
+        }
     }
 }
 
