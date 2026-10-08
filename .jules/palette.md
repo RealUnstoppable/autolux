@@ -38,9 +38,3 @@
 ## 2024-11-21 - Address Autocomplete
 **Learning:** Users filling out forms related to their locations will find it frustrating to have to manually enter their street address multiple times without browser autocomplete support.
 **Action:** When adding address input fields, include `autocomplete="street-address"` to reduce friction.
-## 2024-05-24 - Dynamic Validation Messages
-**Learning:** Dynamic validation status messages (like referral code validation messages) need the necessary ARIA attributes to be announced correctly by screen readers.
-**Action:** Always add `aria-live="polite"` to empty message containers that will be populated dynamically by JavaScript to ensure screen readers announce updates.
-## 2024-10-31 - [Add ARIA labels to form inputs in account page]
-**Learning:** Found multiple `<input>` elements in `account.html` (e.g., referral code, new vehicle, new address) without associated `<label>` elements or `aria-label` attributes, which makes them inaccessible to screen readers.
-**Action:** Always ensure that every `<input>` has either a corresponding `<label>` (using `for` / `id` pairing) or an explicit `aria-label` attribute if a visual label is omitted by design.
