@@ -44,3 +44,6 @@
 ## 2024-10-31 - [Add ARIA labels to form inputs in account page]
 **Learning:** Found multiple `<input>` elements in `account.html` (e.g., referral code, new vehicle, new address) without associated `<label>` elements or `aria-label` attributes, which makes them inaccessible to screen readers.
 **Action:** Always ensure that every `<input>` has either a corresponding `<label>` (using `for` / `id` pairing) or an explicit `aria-label` attribute if a visual label is omitted by design.
+## 2024-11-21 - Custom Input Autocomplete
+**Learning:** Browsers will often try to aggressively autofill custom text inputs (like custom vehicle details, address labels, or referral codes) with irrelevant personal data (like names or random search history). This covers the UI and frustrates the user.
+**Action:** Always add `autocomplete="off"` to custom text input fields that do not map to standard, predictable user data. Keep appropriate autofill for standard fields (like `name`, `email`, `street-address`).
