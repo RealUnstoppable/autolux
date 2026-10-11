@@ -12,21 +12,26 @@ try {
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
     // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
+    let isValidConfig = true;
     if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
-        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
+        console.error("Missing required Firebase configuration in window.ENV. Failing securely.");
+        isValidConfig = false;
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
-        throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+        console.error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+        isValidConfig = false;
     }
 
     if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+        console.error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+        isValidConfig = false;
     }
 
-    const firebaseConfig = {
+    if (isValidConfig) {
+        const firebaseConfig = {
         apiKey: env.FIREBASE_API_KEY,
         authDomain: env.FIREBASE_AUTH_DOMAIN,
         projectId: env.FIREBASE_PROJECT_ID,
@@ -36,19 +41,20 @@ try {
         measurementId: env.FIREBASE_MEASUREMENT_ID
     };
 
-    const apps = getApps();
-    const existingApp = apps.find(a => a.name === appName);
+        const apps = getApps();
+        const existingApp = apps.find(a => a.name === appName);
 
-    if (existingApp) {
-        app = existingApp;
-    } else {
-        app = initializeApp(firebaseConfig, appName);
+        if (existingApp) {
+            app = existingApp;
+        } else {
+            app = initializeApp(firebaseConfig, appName);
+        }
+
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
     }
-
-    auth = getAuth(app);
-    db = getFirestore(app);
-
-    console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
     console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
     if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {

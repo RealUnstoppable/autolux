@@ -46,7 +46,7 @@ service cloud.firestore {
       // Clients can only write (create) their own booking requests
       // Enforce strict schema validation and restrict admin fields
       allow create: if isOwner(request.resource.data.userId) &&
-                    request.resource.data.keys().hasOnly(['service', 'date', 'time', 'vehicleMake', 'vehicleModel', 'userId', 'status', 'createdAt', 'notes', 'address', 'referralCode']) &&
+                    request.resource.data.keys().hasOnly(['service', 'date', 'time', 'vehicleMake', 'vehicleModel', 'userId', 'status', 'createdAt', 'notes', 'address', 'referralCode', 'planData', 'frequency']) &&
                     (!('status' in request.resource.data) || request.resource.data.status == 'pending') &&
                     !('isAdmin' in request.resource.data);
       // Ensure only admins can modify the status
