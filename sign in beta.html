@@ -289,7 +289,9 @@
                 const user = await getAuthStatePromise();
                 if (user) {
                     const userData = await ensureUserDocument(user);
-                    const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
+                    let redirectPath = sessionStorage.getItem('redirectAfterLogin') || await getUserRedirectPath(user, userData, window.location.pathname);
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    if (!redirectPath) redirectPath = 'account.html';
                     if (redirectPath && redirectPath !== 'sign in beta.html') {
                         safeRedirect(redirectPath);
                     }

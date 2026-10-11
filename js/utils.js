@@ -26,7 +26,7 @@ export function escapeHTML(str) {
  * @param {object} [additionalData={}] - Server-controlled data to append to the payload.
  * @returns {Promise<object>} The result of the operation.
  */
-async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
+export async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
     try {
         if (!db) throw new Error("Firestore instance not initialized");
         const payload = {

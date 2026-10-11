@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
@@ -39,7 +39,7 @@
             assert(escapeHTML(undefined) === '', 'escapeHTML(undefined) should return empty string');
             assert(escapeHTML('') === '', 'escapeHTML("") should return empty string');
             assert(escapeHTML('test') === 'test', 'escapeHTML("test") should return "test"');
-            assert(escapeHTML('<html>') === '&lt;html&gt;', 'escapeHTML("<html>") should return "&lt;html&gt;"');
+            assert(escapeHTML('<html lang="en">') === '&lt;html lang=&quot;en&quot;&gt;', 'escapeHTML("<html lang=\"en\">") should return "&lt;html lang=&quot;en&quot;&gt;"');
             assert(escapeHTML('a & b') === 'a &amp; b', 'escapeHTML("a & b") should return "a &amp; b"');
             assert(escapeHTML('"quoted"') === '&quot;quoted&quot;', 'escapeHTML("\"quoted\"") should return "&quot;quoted&quot;"');
             assert(escapeHTML("'quoted'") === '&#039;quoted&#039;', 'escapeHTML("\'quoted\'") should return "&#039;quoted&#039;"');
