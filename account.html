@@ -442,12 +442,16 @@
                 // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
                 const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
                 const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                const serviceLogsPromise = fetchUserServiceLogs(user.uid);
 
                 // Fire them off concurrently
-                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
+                const [userSnap, appointmentsSnap, notificationsSnap, ticketsSnap, logs] = await Promise.all([
                     getDoc(userRef),
                     getDocs(appointmentsQuery),
-                    getDocs(notificationsQuery)
+                    getDocs(notificationsQuery),
+                    getDocs(ticketsQuery),
+                    serviceLogsPromise
                 ]);
 
                 let userData = userSnap.data();
@@ -492,10 +496,9 @@
                 }
 
                 renderBookings(appointmentsSnap);
-                loadTickets(user);
+                loadTickets(user, ticketsSnap);
                 renderNotifications(notificationsSnap);
 
-                const logs = await fetchUserServiceLogs(user.uid);
                 renderServiceLogs(logs);
 
                 overlay.style.display = 'none';
@@ -525,10 +528,13 @@
             newTicketForm.style.display = newTicketForm.style.display === 'none' ? 'block' : 'none';
         });
 
-        async function loadTickets(user) {
+        async function loadTickets(user, preloadedSnap = null) {
             try {
-                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
-                const ticketsSnap = await getDocs(ticketsQuery);
+                let ticketsSnap = preloadedSnap;
+                if (!ticketsSnap) {
+                    const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                    ticketsSnap = await getDocs(ticketsQuery);
+                }
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 // Sort client-side if index is missing, or we could add orderBy to query but might need composite index
