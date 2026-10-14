@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { submitDetailingRequestCore, submitQuoteRequestCore, submitDetailingPlanCore } from './utils.js';
+import { submitDetailingRequestCore, submitQuoteRequestCore, submitDetailingPlanCore, submitToFirestore } from './utils.js';
 import { db, auth } from './auth.js';
 
 

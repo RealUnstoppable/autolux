@@ -69,17 +69,17 @@
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
                 // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
-                usersPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                cartsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                ordersPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                newsletterPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                bookingsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                quotesPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                inquiriesPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                featureRequestsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                reviewsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                statsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
-                faqsPromise.catch((e) => { console.error('Error context:', { code: e.code || 'UNKNOWN_ERROR', message: e.message, details: e }); });
+                usersPromise.catch(() => {});
+                cartsPromise.catch(() => {});
+                ordersPromise.catch(() => {});
+                newsletterPromise.catch(() => {});
+                bookingsPromise.catch(() => {});
+                quotesPromise.catch(() => {});
+                inquiriesPromise.catch(() => {});
+                featureRequestsPromise.catch(() => {});
+                reviewsPromise.catch(() => {});
+                statsPromise.catch(() => {});
+                faqsPromise.catch(() => {});
 
                 // Fetch Core Data
                 const users = await resolveQuery(usersPromise, "users");
@@ -669,16 +669,11 @@
                 
                 // Select winner weighted by amount
                 setTimeout(() => {
-                    let totalEntries = 0;
-                    for (let i = 0, len = globalDonors.length; i < len; i++) {
-                        totalEntries += globalDonors[i].amount;
-                    }
-
+                    const totalEntries = globalDonors.reduce((sum, d) => sum + d.amount, 0);
                     let rand = Math.random() * totalEntries;
                     let winner = null;
                     
-                    for (let i = 0, len = globalDonors.length; i < len; i++) {
-                        const d = globalDonors[i];
+                    for (let d of globalDonors) {
                         if (rand < d.amount) { winner = d; break; }
                         rand -= d.amount;
                     }
