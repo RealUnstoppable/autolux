@@ -116,6 +116,13 @@ describe('auth.js utilities', () => {
             const result = await getUserRedirectPath(mockUser, mockUserData, '/account.html');
             expect(result).toBe('admin.html');
         });
+
+        it('should handle clean URLs without .html extension', async () => {
+            const mockUser = { uid: 'test' };
+            const mockUserData = { isAdmin: false };
+            const result = await getUserRedirectPath(mockUser, mockUserData, '/sign in beta');
+            expect(result).toBe('account.html');
+        });
     });
 
     describe('safeRedirect', () => {
@@ -129,6 +136,13 @@ describe('auth.js utilities', () => {
             global.window.location.pathname = '/account.html';
             safeRedirect('/account.html');
             expect(global.window.location.replace).not.toHaveBeenCalled();
+        });
+
+        it('should allow same-origin absolute URLs', () => {
+            global.window.location.origin = 'https://autolux.realunstoppable.store';
+            global.window.location.pathname = '/sign in beta.html';
+            safeRedirect('https://autolux.realunstoppable.store/account.html');
+            expect(global.window.location.replace).toHaveBeenCalledWith('https://autolux.realunstoppable.store/account.html');
         });
 
         it('should not redirect to external URLs', () => {

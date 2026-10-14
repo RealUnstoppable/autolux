@@ -287,10 +287,9 @@
                 const user = await getAuthStatePromise();
                 if (user) {
                     const userData = await ensureUserDocument(user);
-                    const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname);
-                    if (redirectPath && redirectPath !== 'sign in beta.html') {
-                        safeRedirect(redirectPath);
-                    }
+                    const defaultTarget = (userData && userData.isAdmin) ? 'admin.html' : 'account.html';
+                    const redirectPath = await getUserRedirectPath(user, userData, window.location.pathname) || defaultTarget;
+                    safeRedirect(redirectPath);
                 }
             } catch(e) {
                 console.error("Error checking auth state on sign in page:", e.message || e, e.code ? `(Code: ${e.code})` : "");
@@ -354,11 +353,47 @@
                 authMsg.style.color = "var(--success)";
                 authMsg.textContent = "Success! Redirecting...";
 
-                const redirectPath = sessionStorage.getItem('redirectAfterLogin') || await getUserRedirectPath(user, userData, window.location.pathname) || 'account.html';
+                // Determine default target based on role
+                const defaultTarget = (userData && userData.isAdmin) ? 'admin.html' : 'account.html';
+
+                // Retrieve and sanitize stored redirect path
+                let targetUrl = defaultTarget;
+                const storedRedirect = sessionStorage.getItem('redirectAfterLogin');
                 sessionStorage.removeItem('redirectAfterLogin');
+
+                if (storedRedirect && typeof storedRedirect === 'string') {
+                    try {
+                        const dummyBase = 'http://safe-dummy-base.local';
+                        const parsed = new URL(storedRedirect, dummyBase);
+                        const cleanPath = decodeURIComponent(parsed.pathname).toLowerCase().replace(/\/$/, '');
+                        const filename = cleanPath.split('/').pop() || '';
+                        
+                        // Ignore redirects that loop back to sign-in or home
+                        const ignoredPages = ['', 'index.html', 'index', 'sign in beta.html', 'sign in beta', 'sign-in-beta.html', 'sign-in-beta'];
+                        if (!ignoredPages.includes(filename) && cleanPath !== '' && cleanPath !== '/') {
+                            // If user is admin and requested non-admin page, route to admin
+                            targetUrl = (userData && userData.isAdmin && filename === 'account.html') ? 'admin.html' : storedRedirect;
+                        }
+                    } catch (e) {
+                        console.warn("Invalid stored redirect:", storedRedirect);
+                    }
+                } else {
+                    const roleRedirect = await getUserRedirectPath(user, userData, window.location.pathname);
+                    if (roleRedirect && !roleRedirect.includes('sign in beta')) {
+                        targetUrl = roleRedirect;
+                    }
+                }
+
                 setTimeout(() => {
-                    safeRedirect(redirectPath);
-                }, 500);
+                    safeRedirect(targetUrl);
+                    // Failsafe in case window.location.replace is hindered
+                    setTimeout(() => {
+                        const currentPath = decodeURIComponent(window.location.pathname).toLowerCase();
+                        if (currentPath.includes('sign in beta') || currentPath.includes('sign-in-beta')) {
+                            window.location.href = targetUrl;
+                        }
+                    }, 500);
+                }, 300);
 
             } catch (error) {
                 console.error("Auth Error:", error);
