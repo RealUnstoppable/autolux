@@ -168,7 +168,7 @@
 
         function renderBookingsTable(bookings) {
             const tbody = document.getElementById('bookings-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             if(bookings.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>'; return;
             }
@@ -200,7 +200,7 @@
 
         function renderQuotesTable(quotes) {
             const tbody = document.getElementById('quotes-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             if(quotes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'; return;
             }
@@ -222,7 +222,7 @@
 
         function renderInquiriesTable(inquiries) {
             const tbody = document.getElementById('inquiries-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             if(inquiries.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No inquiries found.</td></tr>'; return;
             }
@@ -251,7 +251,7 @@
 
         function renderUserTable(users) {
             const userListBody = document.getElementById('user-list-body');
-            userListBody.innerHTML = '';
+            userListBody.replaceChildren();
             users.filter(user => !user.isAdmin).forEach(user => {
                 const row = document.createElement('tr');
                 const statusBadge = user.isBanned ? `<span class="status-badge banned">Banned</span>` : `<span class="status-badge active">Active</span>`;
@@ -273,7 +273,7 @@
 
         function renderFaqsTable(faqs) {
             const listBody = document.getElementById('faqs-list-body');
-            listBody.innerHTML = '';
+            listBody.replaceChildren();
             if(faqs.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-secondary);">No FAQs found.</td></tr>`; return;
             }
@@ -295,7 +295,7 @@
 
         function renderReviewsTable(reviews) {
             const listBody = document.getElementById('reviews-list-body');
-            listBody.innerHTML = '';
+            listBody.replaceChildren();
             if(reviews.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No reviews submitted yet.</td></tr>`; return;
             }
@@ -327,7 +327,7 @@
 
         function renderFeatureRequestsTable(requests) {
             const listBody = document.getElementById('feature-request-list-body');
-            listBody.innerHTML = '';
+            listBody.replaceChildren();
             if(requests.length === 0) {
                 listBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-secondary);">No requests submitted yet.</td></tr>`; return;
             }
@@ -355,7 +355,7 @@
 
         function renderNewsletterTable(subscribers) {
             const newsletterListBody = document.getElementById('newsletter-list-body');
-            newsletterListBody.innerHTML = '';
+            newsletterListBody.replaceChildren();
             if(subscribers.length === 0) {
                 newsletterListBody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-secondary);">No subscribers yet.</td></tr>`; return;
             }

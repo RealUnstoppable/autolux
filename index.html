@@ -593,7 +593,7 @@
 
         // Render FAQs
         function renderFaqs(faqs, container) {
-            container.innerHTML = '';
+            container.replaceChildren();
 
             if (faqs.length === 0) {
                 container.innerHTML = '<div style="width: 100%; text-align: center; color: var(--text-muted);">No FAQs available at the moment.</div>';
@@ -723,7 +723,7 @@
             ];
 
             function renderReviewItems(list) {
-                container.innerHTML = '';
+                container.replaceChildren();
                 const fragment = document.createDocumentFragment();
                 for (let i = 0; i < list.length; i++) {
                     const r = list[i];
@@ -805,7 +805,7 @@
                 return;
             }
 
-            container.innerHTML = '';
+            container.replaceChildren();
             const fragment = document.createDocumentFragment();
 
             for (let i = 0; i < reviews.length; i++) {
@@ -833,7 +833,7 @@
                 return;
             }
 
-            container.innerHTML = '';
+            container.replaceChildren();
             const fragment = document.createDocumentFragment();
 
             for (let i = 0; i < reviews.length; i++) {

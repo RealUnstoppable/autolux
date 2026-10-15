@@ -4,7 +4,7 @@ let content = fs.readFileSync('admin.html', 'utf8');
 const quoteTableScript = `
         function renderQuotesTable(quotes) {
             const tbody = document.getElementById('quotes-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             if(quotes.length === 0) {
                 tbody.innerHTML = DOMPurify.sanitize('<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>'); return;
             }

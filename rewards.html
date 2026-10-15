@@ -165,7 +165,7 @@
 
         async function loadRewardsGrid() {
             const rewards = await getAvailableRewards();
-            rewardsGrid.innerHTML = '';
+            rewardsGrid.replaceChildren();
 
             if (rewards.length === 0) {
                 rewardsGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1; text-align: center;">No rewards available at this time.</p>';
@@ -192,7 +192,7 @@
 
         async function loadMyRewards() {
             const myRewards = await getUserRewards();
-            myRewardsList.innerHTML = '';
+            myRewardsList.replaceChildren();
 
             if (myRewards.length === 0) {
                 myRewardsList.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px 0;">You haven\'t redeemed any rewards yet.</p>';

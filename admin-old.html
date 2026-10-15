@@ -249,22 +249,28 @@
 
         async function loadAdminData() {
             try {
+
                 // 1. Fetch Bookings
-                const bookingsSnap = await getDocs(collection(db, "bookings"));
+                const bookingsPromise = getDocs(collection(db, "bookings"));
+                const quotesPromise = getDocs(collection(db, "quotes"));
+                const usersPromise = getDocs(collection(db, "users"));
+                const newsletterPromise = getDocs(collection(db, "newsletterSubscribers"));
+
+                const [bookingsSnap, quotesSnap, usersSnap, newsletterSnap] = await Promise.all([
+                    bookingsPromise, quotesPromise, usersPromise, newsletterPromise
+                ]);
+
                 const bookings = bookingsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
                 // Sort bookings by date descending in JS to avoid needing complex Firestore indexes immediately
                 bookings.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
                 
                 // 2. Fetch Quotes
-                const quotesSnap = await getDocs(collection(db, "quotes"));
                 const quotes = quotesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 // 3. Fetch Users
-                const usersSnap = await getDocs(collection(db, "users"));
                 const users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 // 4. Fetch Newsletter
-                const newsletterSnap = await getDocs(collection(db, "newsletterSubscribers"));
                 const newsletterSubscribers = newsletterSnap.docs.map(d => d.data());
 
                 // Render Tables
@@ -286,7 +292,7 @@
 
         function renderBookingsTable(bookings) {
             const tbody = document.getElementById('bookings-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             
             if(bookings.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>';
@@ -329,7 +335,7 @@
 
         function renderQuotesTable(quotes) {
             const tbody = document.getElementById('quotes-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
 
             if(quotes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No quotes pending.</td></tr>';
@@ -359,7 +365,7 @@
 
         function renderUserTable(users) {
             const tbody = document.getElementById('user-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             
             // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
             const fragment = document.createDocumentFragment();
@@ -386,7 +392,7 @@
 
         function renderNewsletterTable(subscribers) {
             const tbody = document.getElementById('newsletter-list-body');
-            tbody.innerHTML = '';
+            tbody.replaceChildren();
             
             // ⚡ Bolt Optimization: Batch DOM insertions to prevent layout thrashing
             const fragment = document.createDocumentFragment();

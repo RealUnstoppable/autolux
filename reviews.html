@@ -262,7 +262,7 @@
         }
 
         function renderReviews(reviewsToRender) {
-            grid.innerHTML = '';
+            grid.replaceChildren();
             if (reviewsToRender.length === 0) {
                 grid.innerHTML = '<div style="text-align:center; width:100%;">No reviews yet.</div>';
                 return;
