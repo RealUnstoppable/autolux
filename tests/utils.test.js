@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { escapeHTML, submitToFirestore } from '../js/utils.js';
+import { escapeHTML, submitGenericRequest } from '../js/utils.js';
 
 describe('utils.js', () => {
     afterEach(() => {
@@ -15,26 +15,26 @@ describe('utils.js', () => {
         expect(escapeHTML(undefined)).toBe('');
     });
 
-    test('submitToFirestore succeeds', async () => {
+    test('submitGenericRequest succeeds', async () => {
         const originalError = console.error;
         console.error = jest.fn();
-        const result = await submitToFirestore('bookings', { service: 'Wash' });
+        const result = await submitGenericRequest('bookings', { service: 'Wash' });
         console.error = originalError;
 
         expect(result.success).toBe(true);
         expect(result.docId).toBe('mock-doc-id');
     });
 
-    test('submitToFirestore succeeds with valid data', async () => {
-        const result = await submitToFirestore('bookings', { service: 'Wash' });
+    test('submitGenericRequest succeeds with valid data', async () => {
+        const result = await submitGenericRequest('bookings', { service: 'Wash' });
         expect(result.success).toBe(true);
         expect(result.docId).toBe('mock-doc-id');
     });
 
-    test('submitToFirestore handles errors during addDoc', async () => {
+    test('submitGenericRequest handles errors during addDoc', async () => {
         const originalError = console.error;
         console.error = jest.fn();
-        const result = await submitToFirestore('bookings', { service: 'Wash', throwError: true });
+        const result = await submitGenericRequest('bookings', { service: 'Wash', throwError: true });
         console.error = originalError;
 
         expect(result.success).toBe(false);
