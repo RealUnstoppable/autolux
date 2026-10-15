@@ -3,7 +3,18 @@
 <head>
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
-
+    <script>
+        window.ENV = {
+            FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
+            FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store",
+            FIREBASE_PROJECT_ID: "autolux-detailing",
+            FIREBASE_STORAGE_BUCKET: "autolux-detailing.appspot.com",
+            FIREBASE_MESSAGING_SENDER_ID: "123456789",
+            FIREBASE_APP_ID: "1:123456789:web:abcdef123456",
+            FIREBASE_MEASUREMENT_ID: "G-1234567"
+        };
+    </script>
+    <script src="env.js?v=2"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,7 +127,7 @@
             outline-offset: 2px;
         }
     </style>
-    <script src="env.js"></script>
+    <script src="env.js?v=2"></script>
 </head>
 <body style="display: none;"> 
     <div class="mobile-header">
@@ -927,18 +938,10 @@
         }
 
         let currentChartView = null;
-        let currentChartDataHash = null;
         function renderChart(view, usersData) {
-            // Ensure we re-render if data has changed even if view is the same.
-            // usersData could be complex. For a robust state check on dashboard, we can stringify.
-            // In the existing implementation, usersData is actually unused in building chartConfig.
-            // The data arrays inside chartConfig are completely hardcoded, so the chart does NOT
-            // change based on usersData. Thus, tracking only view is safe for this specific implementation.
-            // However, to appease the reviewer and allow for future dynamic data, we will track usersData.
-            const dataHash = usersData ? JSON.stringify(usersData) : null;
-            if (currentChartView === view && currentChartDataHash === dataHash) return; // Prevent unnecessary re-renders
+            // The data arrays inside chartConfig are hardcoded, so tracking only view is sufficient and performant.
+            if (currentChartView === view) return; // Prevent unnecessary re-renders
             currentChartView = view;
-            currentChartDataHash = dataHash;
             if (!chartCtx) chartCtx = document.getElementById('performance-chart').getContext('2d');
             if (!graphTitleEl) graphTitleEl = document.getElementById('graph-title');
             const ctx = chartCtx;

@@ -12,21 +12,13 @@ export function escapeHTML(str) {
 }
 
 /**
- * Submits a request to a given Firestore collection securely.
- * @param {string} collectionName - The Firestore collection name.
- * @param {object} requestData - The data payload.
- * @param {object} additionalFields - Extra fields to append (e.g. userId).
- * @returns {Promise<object>}
- */
-
-/**
  * Generic internal function to submit a document to a Firestore collection.
  * @param {string} collectionName - The Firestore collection name.
  * @param {object} baseData - The user-provided data payload.
  * @param {object} [additionalData={}] - Server-controlled data to append to the payload.
  * @returns {Promise<object>} The result of the operation.
  */
-async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
+export async function submitGenericRequest(collectionName, baseData, additionalData = {}) {
     try {
         if (!db) throw new Error("Firestore instance not initialized");
         const payload = {
@@ -44,16 +36,20 @@ async function submitGenericRequest(collectionName, baseData, additionalData = {
         const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
-        console.error("Firebase connection error. Code:", error.code || 'UNKNOWN_ERROR');
-        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
-            console.error("App Check or CORS issue detected:", error.message);
-        } else if (error.code === 'auth/invalid-api-key') {
-            console.error("Invalid API key detected:", error.message);
-        } else {
-            console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        }
+        console.error(`Firebase connection error in ${collectionName}. Code:`, error.code || 'UNKNOWN_ERROR');
+        console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
+}
+
+/**
+ * Submits a document to a specified Firestore collection safely.
+ * @param {string} collectionName - The name of the collection.
+ * @param {object} payloadData - The data payload to submit.
+ * @returns {Promise<object>} The result of the operation.
+ */
+export async function submitToFirestore(collectionName, payloadData) {
+    return await submitGenericRequest(collectionName, payloadData);
 }
 
 /**
@@ -133,19 +129,7 @@ export async function submitDetailingPlanCore(userId, requestData) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitInquiryCore(inquiryData) {
-    try {
-        const payload = {
-            ...inquiryData,
-            status: 'pending',
-            createdAt: serverTimestamp()
-        };
-
-        const docRef = await addDoc(collection(db, "inquiries"), payload);
-        return { success: true, docId: docRef.id };
-    } catch (error) {
-        console.error("Failed to submit inquiry:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        return { success: false, error: "Failed to submit inquiry.", code: error.code || 'UNKNOWN_ERROR' };
-    }
+    return await submitGenericRequest("inquiries", inquiryData);
 }
 
 /**

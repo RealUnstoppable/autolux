@@ -167,26 +167,29 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
     }
 
     const decodedPath = decodeURIComponent(currentPathname);
+    const cleanPath = decodedPath.split('?')[0].split('#')[0].replace(/\/$/, '');
+    const filename = cleanPath.split('/').pop().toLowerCase() || '';
+    const baseName = filename.replace(/\.html$/, '');
 
     if (!user) {
-        const publicPaths = ['/index.html', '/', '/sign in beta.html', '/donate.html'];
-        const isPublicPath = publicPaths.some(p => decodedPath.endsWith(p));
+        const publicBases = ['', 'index', 'sign in beta', 'sign-in-beta', 'donate'];
+        const isPublic = publicBases.includes(baseName) || cleanPath === '' || cleanPath === '/';
 
-        if (!isPublicPath) {
+        if (!isPublic) {
             return 'sign in beta.html';
         }
         return null;
     }
 
     if (userData && userData.isAdmin) {
-        if (!decodedPath.endsWith('admin.html')) {
+        if (baseName !== 'admin') {
             return 'admin.html';
         }
         return null;
     } else {
-        if (decodedPath.endsWith('admin.html')) {
+        if (baseName === 'admin') {
             return 'account.html';
-        } else if (decodedPath.endsWith('sign in beta.html')) {
+        } else if (baseName === 'sign in beta' || baseName === 'sign-in-beta') {
             return 'account.html';
         }
         return null;
@@ -198,25 +201,42 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
  * @param {string} targetUrl - The URL to redirect to.
  */
 export function safeRedirect(targetUrl) {
-    if (!targetUrl) return;
+    if (!targetUrl || typeof targetUrl !== 'string') return;
 
     try {
         // 🛡️ Sentinel: Prevent Open Redirect and javascript: URI XSS
         const dummyBase = 'http://safe-dummy-base.local';
         const parsed = new URL(targetUrl, dummyBase);
 
-        // If the origin is not the dummy base, it's an absolute URL (Open Redirect risk)
-        // If protocol is javascript:, it's an XSS risk
-        if (parsed.origin !== dummyBase || parsed.protocol === 'javascript:') {
+        // Disallow dangerous URI protocols (XSS risk)
+        const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
+        if (dangerousProtocols.includes(parsed.protocol)) {
             console.error('Unsafe redirect attempt blocked:', targetUrl);
             return;
         }
 
-        const currentPath = decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html';
-        const targetPath = decodeURIComponent(targetUrl).split('/').pop() || 'index.html';
+        // Validate origin: allow dummyBase (relative URLs), same-origin absolute URLs, or local file: protocol
+        const currentOrigin = (typeof window !== 'undefined' && window.location && window.location.origin) ? window.location.origin : null;
+        const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:' && parsed.protocol === 'file:';
+        const isSameOrigin = (parsed.origin === dummyBase) || (Boolean(currentOrigin) && currentOrigin !== 'null' && parsed.origin === currentOrigin) || isFileProtocol;
+
+        if (!isSameOrigin) {
+            console.error('Unsafe redirect attempt blocked:', targetUrl);
+            return;
+        }
+
+        const currentPath = typeof window !== 'undefined' && window.location && window.location.pathname
+            ? decodeURIComponent(window.location.pathname).split('/').pop() || 'index.html'
+            : 'index.html';
+        const targetPath = decodeURIComponent(parsed.pathname).split('/').pop() || 'index.html';
 
         if (currentPath !== targetPath) {
-            window.location.replace(targetUrl);
+            try {
+                window.location.replace(targetUrl);
+            } catch (err) {
+                console.warn('window.location.replace failed, falling back to href:', err);
+                window.location.href = targetUrl;
+            }
         }
     } catch (e) {
         console.error('Invalid URL in safeRedirect - Code:', e.code || 'UNKNOWN_ERROR');
