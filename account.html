@@ -442,12 +442,15 @@
                 // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
                 const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
                 const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
 
                 // Fire them off concurrently
-                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
+                const [userSnap, appointmentsSnap, notificationsSnap, ticketsSnap, logs] = await Promise.all([
                     getDoc(userRef),
                     getDocs(appointmentsQuery),
-                    getDocs(notificationsQuery)
+                    getDocs(notificationsQuery),
+                    getDocs(ticketsQuery),
+                    fetchUserServiceLogs(user.uid)
                 ]);
 
                 let userData = userSnap.data();
@@ -492,10 +495,8 @@
                 }
 
                 renderBookings(appointmentsSnap);
-                loadTickets(user);
+                loadTickets(ticketsSnap);
                 renderNotifications(notificationsSnap);
-
-                const logs = await fetchUserServiceLogs(user.uid);
                 renderServiceLogs(logs);
 
                 overlay.style.display = 'none';
@@ -525,10 +526,12 @@
             newTicketForm.style.display = newTicketForm.style.display === 'none' ? 'block' : 'none';
         });
 
-        async function loadTickets(user) {
+        async function loadTickets(ticketsSnap) {
             try {
-                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
-                const ticketsSnap = await getDocs(ticketsQuery);
+                if (!ticketsSnap) {
+                    ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">No support tickets found.</p>';
+                    return;
+                }
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 // Sort client-side if index is missing, or we could add orderBy to query but might need composite index
@@ -621,10 +624,12 @@
 
                 document.getElementById('ticket-subject').value = '';
                 document.getElementById('ticket-message').value = '';
-                setTimeout(() => {
+                setTimeout(async () => {
                     newTicketForm.style.display = 'none';
                     msgEl.textContent = '';
-                    loadTickets(currentUser);
+                    const q = query(collection(db, "support_tickets"), where("userId", "==", currentUser.uid));
+                    const newTicketsSnap = await getDocs(q);
+                    loadTickets(newTicketsSnap);
                 }, 1500);
 
             } catch (error) {
@@ -660,7 +665,9 @@
                     });
 
                     inputEl.value = '';
-                    loadTickets(currentUser);
+                    const q = query(collection(db, "support_tickets"), where("userId", "==", currentUser.uid));
+                    const newTicketsSnap = await getDocs(q);
+                    loadTickets(newTicketsSnap);
                 } catch (error) {
                     console.error("Error replying to ticket:", error);
                     alert("Failed to send reply.");
