@@ -498,17 +498,14 @@
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
                 // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
-                usersPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                cartsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                ordersPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                newsletterPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                bookingsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                quotesPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                inquiriesPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                featureRequestsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                reviewsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                statsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
-                faqsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                const allPromises = [
+                    usersPromise, cartsPromise, ordersPromise, newsletterPromise,
+                    bookingsPromise, quotesPromise, inquiriesPromise, featureRequestsPromise,
+                    reviewsPromise, statsPromise, ticketsPromise, faqsPromise
+                ];
+                allPromises.forEach(p => p.catch(e => console.error("Prefetch error:", { code: e.code, message: e.message, details: e })));
+
+                await Promise.allSettled(allPromises);
 
                 // Fetch Core Data
                 const users = await resolveQuery(usersPromise, "users");
@@ -568,7 +565,10 @@
                     const faqsSnapshot = await faqsPromise;
                     const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderFaqsTable(faqs);
-                renderSupportTicketsTable(tickets);
+
+                    const ticketsSnapshot = await ticketsPromise;
+                    const tickets = ticketsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderSupportTicketsTable(tickets);
                 } catch (faqError) {
                     console.log("Could not load FAQs", { code: faqError.code, message: faqError.message, details: faqError });
                     document.getElementById('faqs-list-body').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load FAQs.</td></tr>`;
