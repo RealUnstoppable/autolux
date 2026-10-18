@@ -10,7 +10,13 @@ async function handleApiRequest(coreFunction, payload, type) {
             console.log(`${type} document written with ID: `, result.docId);
             return { success: true, id: result.docId };
         } else {
+            // Check error codes returned by the utility function
             console.error(`Error adding ${type.toLowerCase()} document: `, result.code, result.error);
+            if (result.code === 'app-check/fetch-status-error' || result.code === 'permission-denied') {
+                console.error("App Check or CORS issue detected:", result.error);
+            } else if (result.code === 'auth/invalid-api-key') {
+                console.error("Invalid API key detected:", result.error);
+            }
             return { success: false, error: `An error occurred while submitting your ${type.toLowerCase()} request. Please try again later.` };
         }
     } catch (error) {
@@ -33,11 +39,7 @@ export async function submitDetailingRequest(bookingData) {
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
     const userId = currentUser.uid;
-    const payload = { ...bookingData, userId };
-    if (bookingData.referralCode) {
-        payload.referralCode = bookingData.referralCode.trim().toUpperCase();
-    }
-    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
+    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {

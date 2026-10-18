@@ -5,10 +5,6 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 export let app, auth, db;
 
 try {
-    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-    const isAutolux = hostname.includes('autolux');
-    const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
-
     // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
     // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
     // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
@@ -16,6 +12,11 @@ try {
         throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
+
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+    // Base isAutolux on the environment config auth domain to avoid localhost cross-contamination
+    const isAutolux = hostname.includes('autolux') || (env.FIREBASE_AUTH_DOMAIN && env.FIREBASE_AUTH_DOMAIN.includes('autolux'));
+    const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
     // Validate project ID to prevent ezManage cross-contamination
     if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
