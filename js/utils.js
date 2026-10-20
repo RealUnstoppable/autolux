@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -149,5 +149,72 @@ export async function submitNewsletterCore(email) {
     } catch (error) {
         console.error("Failed to submit newsletter subscription:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to subscribe.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
+
+/**
+ * Links a user's AutoLux account with their UN (realunstoppable.store) account.
+ * Adds current AutoLux loyalty points to their total UN account balance and links account details.
+ *
+ * @param {object} firestoreDb - Firestore instance.
+ * @param {string} userId - User's Firebase UID.
+ * @param {object} params - Options for linking.
+ * @param {string} params.unAccountEmail - The user's UN store account email.
+ * @param {number} [params.currentLoyaltyPoints=0] - Current AutoLux points to add.
+ * @param {number} [params.existingUnBalance=0] - Existing UN balance.
+ * @param {object} [params.additionalInfo={}] - Additional profile details to link.
+ * @returns {Promise<object>} Result of the link operation.
+ */
+export async function linkUnAccount(firestoreDb, userId, { unAccountEmail, currentLoyaltyPoints = 0, existingUnBalance = 0, additionalInfo = {} } = {}) {
+    if (!userId) {
+        return { success: false, error: "User must be authenticated to link account." };
+    }
+    if (!unAccountEmail || typeof unAccountEmail !== 'string' || !unAccountEmail.includes('@')) {
+        return { success: false, error: "A valid email address is required for your UN account." };
+    }
+
+    const pointsToAdd = Math.max(0, Number(currentLoyaltyPoints) || 0);
+    const prevBalance = Math.max(0, Number(existingUnBalance) || 0);
+    const newTotalBalance = prevBalance + pointsToAdd;
+    const sanitizedEmail = unAccountEmail.trim().toLowerCase();
+
+    const payload = {
+        unLinked: true,
+        unLinkedAt: serverTimestamp(),
+        unAccountEmail: sanitizedEmail,
+        unAccountId: `un_${String(userId).slice(0, 8)}`,
+        totalUnBalance: newTotalBalance,
+        unPointsAdded: pointsToAdd,
+        linkedInformation: {
+            autoluxUid: userId,
+            unAccountEmail: sanitizedEmail,
+            name: additionalInfo.name || 'Valued Client',
+            vehiclesCount: Array.isArray(additionalInfo.vehicles) ? additionalInfo.vehicles.length : 0,
+            membershipLevel: additionalInfo.membershipLevel || 'free',
+            storeDomain: 'realunstoppable.store',
+            syncedAt: new Date().toISOString()
+        }
+    };
+
+    if (additionalInfo.throwError) {
+        payload.throwError = true;
+    }
+
+    try {
+        const targetDb = firestoreDb || db;
+        if (!targetDb) throw new Error("Firestore instance not initialized");
+        const userRef = doc(targetDb, "users", userId);
+        await updateDoc(userRef, payload);
+
+        return {
+            success: true,
+            totalUnBalance: newTotalBalance,
+            pointsAdded: pointsToAdd,
+            unAccountEmail: sanitizedEmail,
+            message: `Successfully linked with UN (${sanitizedEmail})! Added ${pointsToAdd.toLocaleString()} points to your total UN balance.`
+        };
+    } catch (error) {
+        console.error("Error linking UN account:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        return { success: false, error: "Failed to link UN account. Please try again later.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }

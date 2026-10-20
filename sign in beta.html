@@ -303,8 +303,8 @@
             
             if (isSignUpMode) {
                 title.textContent = 'Create Account';
-                subtitle.textContent = 'Sign up to manage your detailing bookings';
-                submitBtn.textContent = 'Sign Up';
+                subtitle.textContent = 'Sign up to claim your 100 points welcome bonus & manage bookings';
+                submitBtn.textContent = 'Sign Up & Claim 100 Pts';
                 toggleDesc.textContent = 'Already have an account?';
                 toggleBtn.textContent = 'Sign In';
                 nameGroup.style.display = 'block';
@@ -351,7 +351,9 @@
                 const userData = await ensureUserDocument(user);
 
                 authMsg.style.color = "var(--success)";
-                authMsg.textContent = "Success! Redirecting...";
+                authMsg.textContent = isSignUpMode
+                    ? "Success! 100 points sign up bonus transferred. Redirecting..."
+                    : "Success! Redirecting...";
 
                 // Determine default target based on role
                 const defaultTarget = (userData && userData.isAdmin) ? 'admin.html' : 'account.html';

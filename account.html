@@ -242,6 +242,47 @@
             transform: scale(0.96);
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
         #loading-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -298,6 +339,19 @@
                         <p><strong>Name:</strong> <span id="user-name">Loading...</span></p>
                         <p><strong>Email:</strong> <span id="user-email">Loading...</span></p>
                         <p><strong>Account Status:</strong> <span id="user-status" class="status-badge approved">Active</span></p>
+                        <p id="un-account-row" style="display: none;"><strong>UN Account:</strong> <span id="un-status-badge" class="status-badge approved">Linked</span></p>
+                        <p id="un-email-row" style="display: none;"><strong>UN Email:</strong> <span id="un-email-display" style="color: var(--text-muted); font-size: 0.85rem; word-break: break-all;"></span></p>
+                        <p id="un-balance-row" style="display: none;"><strong>Total UN Balance:</strong> <span id="un-balance-display" style="color: var(--gold); font-weight: 700;">0 pts</span></p>
+                    </div>
+                    <div id="un-link-action-container" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                        <button id="link-un-btn" class="auth-btn btn-gold" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            <span id="link-un-btn-text">Link with UN (realunstoppable.store account)</span>
+                        </button>
+                        <p id="un-link-hint" style="color: var(--text-muted); font-size: 0.78rem; margin: 8px 0 0 0; line-height: 1.4;">
+                            (This will add your current points to your total UN account balance, and link both accounts and information.)
+                        </p>
+                        <div id="un-link-msg" aria-live="polite" style="margin-top: 8px; font-size: 0.85rem; font-weight: 600;"></div>
                     </div>
                 </div>
 
@@ -325,6 +379,20 @@
                         <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
                         <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
                     </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">AutoLux Rewards</h2>
+                        <a href="rewards.html" class="btn-schedule" style="text-decoration: none; padding: 6px 12px; font-size: 0.85rem;">View Rewards</a>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 10px;">
+                        <span style="font-weight: 600; color: var(--gold);">Loyalty Points:</span>
+                        <span id="user-loyalty-points" style="font-size: 1.2rem; font-weight: 800; color: var(--gold);">100 pts</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">
+                        🎁 100 points sign up bonus active. Redeem for free washes & discounts.
+                    </p>
                 </div>
             </div>
 
@@ -410,10 +478,52 @@
         </div>
     </div>
 
+    <!-- UN Account Linking Modal -->
+    <div class="modal-overlay" id="un-link-modal" role="dialog" aria-modal="true" aria-labelledby="un-modal-title">
+        <div class="modal-card">
+            <button class="modal-close" id="un-modal-close-btn" aria-label="Close modal">&times;</button>
+            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(212, 175, 55, 0.15); color: var(--gold); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 12px;">
+                <span>realunstoppable.store</span>
+            </div>
+            <h2 id="un-modal-title" style="color: var(--gold); margin-top: 0; margin-bottom: 8px; font-size: 1.4rem;">Link with UN Account</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5;">
+                Link your AutoLux profile with your <strong>realunstoppable.store</strong> account. This will synchronize your account information and add your current AutoLux loyalty points to your total UN account balance.
+            </p>
+
+            <div style="background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Current AutoLux Points to Transfer:</span>
+                    <span id="modal-un-points" style="color: var(--gold); font-weight: 700;">0 pts</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted);">Current UN Account Balance:</span>
+                    <span id="modal-un-existing" style="color: var(--text-main); font-weight: 600;">0 pts</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border); font-size: 0.95rem;">
+                    <span style="color: var(--text-main); font-weight: 700;">New Total UN Account Balance:</span>
+                    <span id="modal-un-total" style="color: #16A34A; font-weight: 800;">0 pts</span>
+                </div>
+            </div>
+
+            <form id="un-link-form">
+                <div style="margin-bottom: 18px; text-align: left;">
+                    <label for="un-email-input" style="display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">UN Account Email (realunstoppable.store):</label>
+                    <input type="email" id="un-email-input" required autocomplete="email" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; box-sizing: border-box;" placeholder="name@realunstoppable.store">
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px; display: block;">Defaults to your AutoLux email. You can update this if your store account uses a different email address.</small>
+                </div>
+
+                <button type="submit" id="confirm-un-link-btn" class="auth-btn btn-gold" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem;">
+                    Confirm & Link UN Account
+                </button>
+                <div id="un-modal-msg" aria-live="polite" style="margin-top: 12px; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { escapeHTML } from './js/utils.js';
+        import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
 
         const overlay = document.getElementById('loading-overlay');
@@ -423,6 +533,7 @@
         const logoutBtn = document.getElementById('logout-btn');
 
         let currentUser = null;
+        let userData = null;
 
         async function initAccountPage() {
             try {
@@ -450,7 +561,7 @@
                     getDocs(notificationsQuery)
                 ]);
 
-                let userData = userSnap.data();
+                userData = userSnap.data();
 
                 if (!userSnap.exists()) {
                     userData = {
@@ -464,7 +575,9 @@
                         signupDate: serverTimestamp(),
                         vehicles: [],
                         appointments: [],
-                        contactInfo: {}
+                        contactInfo: {},
+                        loyaltyPoints: 100,
+                        bonusAwarded: true
                     };
                     await setDoc(userRef, userData, { merge: true });
                 }
@@ -484,11 +597,16 @@
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
                 const referralCreditsEl = document.getElementById('user-referral-credits');
+                const loyaltyPointsEl = document.getElementById('user-loyalty-points');
                 if (referralCodeEl && userData?.referralCode) {
                     referralCodeEl.value = userData.referralCode;
                 }
                 if (referralCreditsEl && userData?.referralCredits !== undefined) {
                     referralCreditsEl.textContent = `$${userData.referralCredits}`;
+                }
+                if (loyaltyPointsEl) {
+                    const points = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
+                    loyaltyPointsEl.textContent = `${points.toLocaleString()} pts`;
                 }
 
                 renderBookings(appointmentsSnap);
@@ -498,12 +616,181 @@
                 const logs = await fetchUserServiceLogs(user.uid);
                 renderServiceLogs(logs);
 
+                // Update UN Account status & balance in Client Profile
+                updateClientProfileUnUi(userData);
+
                 overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
             }
         }
+
+        function updateClientProfileUnUi(data) {
+            const unAccountRow = document.getElementById('un-account-row');
+            const unEmailRow = document.getElementById('un-email-row');
+            const unEmailDisplay = document.getElementById('un-email-display');
+            const unBalanceRow = document.getElementById('un-balance-row');
+            const unBalanceDisplay = document.getElementById('un-balance-display');
+            const linkUnBtnText = document.getElementById('link-un-btn-text');
+            const linkUnBtn = document.getElementById('link-un-btn');
+            const unLinkHint = document.getElementById('un-link-hint');
+
+            if (data && data.unLinked) {
+                if (unAccountRow) unAccountRow.style.display = 'block';
+                if (unEmailRow) {
+                    unEmailRow.style.display = 'block';
+                    if (unEmailDisplay) unEmailDisplay.textContent = `${data.unAccountEmail || 'realunstoppable.store'}`;
+                }
+                if (unBalanceRow) {
+                    unBalanceRow.style.display = 'block';
+                    const bal = data.totalUnBalance !== undefined ? data.totalUnBalance : (data.loyaltyPoints || 0);
+                    if (unBalanceDisplay) unBalanceDisplay.textContent = `${Number(bal).toLocaleString()} pts`;
+                }
+                if (linkUnBtnText) {
+                    linkUnBtnText.textContent = 'Linked with UN (realunstoppable.store account)';
+                }
+                if (linkUnBtn) {
+                    linkUnBtn.setAttribute('aria-label', `Linked with UN account ${data.unAccountEmail || ''}. Click to manage or sync points.`);
+                }
+                if (unLinkHint) {
+                    unLinkHint.textContent = '(Accounts linked. Total UN balance reflects your AutoLux loyalty points and realunstoppable.store balance.)';
+                }
+            } else {
+                if (unAccountRow) unAccountRow.style.display = 'none';
+                if (unEmailRow) unEmailRow.style.display = 'none';
+                if (unBalanceRow) unBalanceRow.style.display = 'none';
+                if (linkUnBtnText) {
+                    linkUnBtnText.textContent = 'Link with UN (realunstoppable.store account)';
+                }
+                if (linkUnBtn) {
+                    linkUnBtn.setAttribute('aria-label', 'Link with UN realunstoppable.store account to add points to your total UN balance');
+                }
+                if (unLinkHint) {
+                    unLinkHint.textContent = '(This will add your current points to your total UN account balance, and link both accounts and information.)';
+                }
+            }
+        }
+
+        // UN Account Linking Modal Elements & Handlers
+        const linkUnBtn = document.getElementById('link-un-btn');
+        const unLinkModal = document.getElementById('un-link-modal');
+        const unModalCloseBtn = document.getElementById('un-modal-close-btn');
+        const unLinkForm = document.getElementById('un-link-form');
+        const unEmailInput = document.getElementById('un-email-input');
+        const modalUnPoints = document.getElementById('modal-un-points');
+        const modalUnExisting = document.getElementById('modal-un-existing');
+        const modalUnTotal = document.getElementById('modal-un-total');
+        const confirmUnLinkBtn = document.getElementById('confirm-un-link-btn');
+        const unModalMsg = document.getElementById('un-modal-msg');
+        const unLinkMsg = document.getElementById('un-link-msg');
+
+        function openUnModal() {
+            if (!currentUser) return;
+            const currentPoints = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
+            const existingUnBalance = userData?.totalUnBalance || userData?.unAccountBalance || 0;
+            const projectedTotal = existingUnBalance + currentPoints;
+
+            if (modalUnPoints) modalUnPoints.textContent = `${currentPoints.toLocaleString()} pts`;
+            if (modalUnExisting) modalUnExisting.textContent = `${existingUnBalance.toLocaleString()} pts`;
+            if (modalUnTotal) modalUnTotal.textContent = `${projectedTotal.toLocaleString()} pts`;
+
+            if (unEmailInput) {
+                unEmailInput.value = userData?.unAccountEmail || currentUser.email || '';
+            }
+
+            if (unModalMsg) unModalMsg.textContent = '';
+            if (confirmUnLinkBtn) {
+                confirmUnLinkBtn.disabled = false;
+                confirmUnLinkBtn.textContent = userData?.unLinked ? 'Sync Points & Update UN Account' : 'Confirm & Link UN Account';
+            }
+
+            if (unLinkModal) {
+                unLinkModal.style.display = 'flex';
+                unEmailInput?.focus();
+            }
+        }
+
+        function closeUnModal() {
+            if (unLinkModal) {
+                unLinkModal.style.display = 'none';
+            }
+            if (unModalMsg) unModalMsg.textContent = '';
+        }
+
+        linkUnBtn?.addEventListener('click', openUnModal);
+        unModalCloseBtn?.addEventListener('click', closeUnModal);
+
+        unLinkModal?.addEventListener('click', (e) => {
+            if (e.target === unLinkModal) {
+                closeUnModal();
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && unLinkModal?.style.display === 'flex') {
+                closeUnModal();
+            }
+        });
+
+        unLinkForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const targetEmail = unEmailInput.value.trim();
+            if (!targetEmail || !targetEmail.includes('@')) {
+                unModalMsg.style.color = 'var(--error)';
+                unModalMsg.textContent = 'Please enter a valid email address.';
+                return;
+            }
+
+            confirmUnLinkBtn.disabled = true;
+            confirmUnLinkBtn.textContent = 'Linking accounts...';
+            unModalMsg.textContent = '';
+
+            const currentPoints = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
+            const existingUn = userData?.totalUnBalance || userData?.unAccountBalance || 0;
+
+            const linkResult = await linkUnAccount(db, currentUser.uid, {
+                unAccountEmail: targetEmail,
+                currentLoyaltyPoints: currentPoints,
+                existingUnBalance: existingUn,
+                additionalInfo: {
+                    name: userData?.name || currentUser.displayName || 'Valued Client',
+                    vehicles: userData?.vehicles || [],
+                    addresses: userData?.addresses || [],
+                    membershipLevel: userData?.membershipLevel || 'free'
+                }
+            });
+
+            if (linkResult.success) {
+                if (!userData) userData = {};
+                userData.unLinked = true;
+                userData.unAccountEmail = linkResult.unAccountEmail;
+                userData.totalUnBalance = linkResult.totalUnBalance;
+                userData.unLinkedAt = new Date();
+
+                unModalMsg.style.color = '#16A34A';
+                unModalMsg.textContent = linkResult.message;
+
+                updateClientProfileUnUi(userData);
+
+                if (unLinkMsg) {
+                    unLinkMsg.style.color = '#16A34A';
+                    unLinkMsg.textContent = `✓ Linked with UN! Total balance: ${linkResult.totalUnBalance.toLocaleString()} pts.`;
+                    setTimeout(() => { if (unLinkMsg) unLinkMsg.textContent = ''; }, 6000);
+                }
+
+                setTimeout(() => {
+                    closeUnModal();
+                }, 1400);
+            } else {
+                unModalMsg.style.color = 'var(--error)';
+                unModalMsg.textContent = linkResult.error || 'Failed to link UN account. Please try again.';
+                confirmUnLinkBtn.disabled = false;
+                confirmUnLinkBtn.textContent = 'Confirm & Link UN Account';
+            }
+        });
 
         initAccountPage();
 
@@ -685,6 +972,7 @@
                 listEl.innerHTML = '';
                 const fragment = document.createDocumentFragment();
                 notifications.forEach(n => {
+                    const isBonus = n.type === 'bonus' || (n.title && n.title.toLowerCase().includes('bonus'));
                     const title = escapeHTML(n.title || 'Notification');
                     const msg = escapeHTML(n.message || '');
                     const dateStr = n.createdAt ? new Date(n.createdAt.toDate ? n.createdAt.toDate() : n.createdAt).toLocaleString() : '';
@@ -694,12 +982,15 @@
                     item.className = 'list-item';
                     item.style = readStyle;
                     item.innerHTML = `
-                        <div>
-                            <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">${title}</p>
+                        <div style="flex-grow: 1;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                                <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">${isBonus ? '🎁 ' : ''}${title}</p>
+                                ${isBonus ? '<span style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">+100 PTS</span>' : ''}
+                            </div>
                             <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">${msg}</small>
                             <small style="color: var(--text-muted); font-size: 0.75rem;">${dateStr}</small>
                         </div>
-                        ${!n.read ? `<button class="btn-sm btn-action mark-read-btn" data-id="${escapeHTML(n.id)}" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Mark Read</button>` : ''}
+                        ${!n.read ? `<button class="btn-sm btn-action mark-read-btn" data-id="${escapeHTML(n.id)}" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Mark Read</button>` : ''}
                     `;
                     fragment.appendChild(item);
                 });

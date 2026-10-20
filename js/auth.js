@@ -17,8 +17,10 @@ try {
     }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
-    // Validate project ID to prevent ezManage cross-contamination
-    if (isAutolux && env.FIREBASE_AUTH_DOMAIN !== 'autolux.realunstoppable.store') {
+    // Validate auth domain to prevent ezManage cross-contamination while supporting autolux.store & autolux.realunstoppable.store
+    const validAutoluxDomains = ['autolux.realunstoppable.store', 'autolux.store'];
+    const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux'));
+    if (isAutolux && !isDomainAutolux) {
         throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
     }
 
@@ -60,7 +62,129 @@ try {
     }
 }
 
-export { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged };
+// Performance Caching for User Documents to eliminate redundant Firestore queries
+const userDocMemoryCache = new Map();
+const inFlightUserDocPromises = new Map();
+const USER_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function serializeUserData(data) {
+    if (!data) return null;
+    const copy = { ...data };
+    if (copy.signupDate && typeof copy.signupDate.toDate === 'function') {
+        copy.signupDate = { _isTimestamp: true, seconds: copy.signupDate.seconds, nanoseconds: copy.signupDate.nanoseconds || 0 };
+    }
+    return JSON.stringify(copy);
+}
+
+function deserializeUserData(jsonStr) {
+    if (!jsonStr) return null;
+    const obj = JSON.parse(jsonStr);
+    if (obj && obj.signupDate && obj.signupDate._isTimestamp) {
+        const { seconds, nanoseconds } = obj.signupDate;
+        obj.signupDate = {
+            seconds,
+            nanoseconds,
+            toDate: () => new Date(seconds * 1000 + (nanoseconds || 0) / 1000000)
+        };
+    }
+    return obj;
+}
+
+/**
+ * Safely retrieves cached user doc from sessionStorage.
+ * @param {string} uid - User ID
+ * @returns {Object|null}
+ */
+function getCachedUserDocFromSession(uid) {
+    if (typeof window === 'undefined' || !window.sessionStorage) return null;
+    try {
+        const raw = sessionStorage.getItem(`autolux_user_doc_${uid}`);
+        if (!raw) return null;
+        const entry = JSON.parse(raw);
+        if (entry && entry.data && (Date.now() - (entry.timestamp || 0) < USER_CACHE_TTL_MS)) {
+            return deserializeUserData(JSON.stringify(entry.data));
+        }
+    } catch (e) {
+        // Handle SecurityError / QuotaExceededError per .Jules/bolt.md
+    }
+    return null;
+}
+
+/**
+ * Safely stores cached user doc in sessionStorage.
+ * @param {string} uid - User ID
+ * @param {Object} data - Document data to cache
+ */
+function setCachedUserDocInSession(uid, data) {
+    if (typeof window === 'undefined' || !window.sessionStorage || !data) return;
+    try {
+        const serialized = serializeUserData(data);
+        if (serialized) {
+            sessionStorage.setItem(`autolux_user_doc_${uid}`, JSON.stringify({
+                data: JSON.parse(serialized),
+                timestamp: Date.now()
+            }));
+        }
+    } catch (e) {
+        // Handle SecurityError / QuotaExceededError per .Jules/bolt.md
+    }
+}
+
+/**
+ * Clears the user document cache from memory and sessionStorage.
+ * @param {string} [uid] - Specific user UID to clear, or clears all if omitted.
+ */
+export function clearUserDocumentCache(uid) {
+    if (uid) {
+        userDocMemoryCache.delete(uid);
+        inFlightUserDocPromises.delete(uid);
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+            try {
+                sessionStorage.removeItem(`autolux_user_doc_${uid}`);
+            } catch (e) {}
+        }
+    } else {
+        userDocMemoryCache.clear();
+        inFlightUserDocPromises.clear();
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+            try {
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                    const key = sessionStorage.key(i);
+                    if (key && key.startsWith('autolux_user_doc_')) {
+                        sessionStorage.removeItem(key);
+                    }
+                }
+            } catch (e) {}
+        }
+    }
+}
+
+/**
+ * Safe signOut wrapper that purges cached user document data.
+ * @param {Object} [authInstance=auth] - Firebase auth instance.
+ * @returns {Promise<void>}
+ */
+export async function safeSignOut(authInstance = auth) {
+    clearUserDocumentCache();
+    if (authInstance) {
+        return await signOut(authInstance);
+    }
+}
+
+// Auto-purge cached user document when authentication state becomes null
+try {
+    if (auth && typeof onAuthStateChanged === 'function') {
+        onAuthStateChanged(auth, (currentUser) => {
+            if (!currentUser) {
+                clearUserDocumentCache();
+            }
+        });
+    }
+} catch (e) {
+    // Non-fatal if auth listener cannot be attached in mock/test setup
+}
+
+export { createUserWithEmailAndPassword, signInWithEmailAndPassword, safeSignOut as signOut, updateProfile, onAuthStateChanged };
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -78,49 +202,132 @@ export function debounce(func, wait) {
 /**
  * Ensures the user has a document in the 'users' collection.
  * Creates a default document with empty vehicles and appointments arrays if one does not exist.
+ * Employs in-memory and sessionStorage caching along with in-flight deduplication for maximum speed.
  * @param {Object} user - The Firebase Auth user object.
+ * @param {Object} [options] - Options object.
+ * @param {boolean} [options.forceRefresh=false] - If true, bypasses the cache and forces a fresh query.
  * @returns {Promise<Object>} - Returns the user data.
  */
-export async function ensureUserDocument(user) {
+export async function ensureUserDocument(user, options = {}) {
     if (!db || !user) return null;
 
-    try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
+    const uid = user.uid;
+    const forceRefresh = Boolean(options && options.forceRefresh);
 
-        if (userDoc.exists()) {
-            let data = userDoc.data();
-            if (!data.referralCode) {
+    if (!forceRefresh) {
+        // 1. Check in-memory cache
+        const memEntry = userDocMemoryCache.get(uid);
+        if (memEntry && (Date.now() - memEntry.timestamp < USER_CACHE_TTL_MS)) {
+            return memEntry.data;
+        }
+
+        // 2. Return in-flight promise if a request for this uid is currently running
+        if (inFlightUserDocPromises.has(uid)) {
+            return inFlightUserDocPromises.get(uid);
+        }
+
+        // 3. Check sessionStorage cache
+        const sessionData = getCachedUserDocFromSession(uid);
+        if (sessionData && sessionData.referralCode) {
+            userDocMemoryCache.set(uid, { data: sessionData, timestamp: Date.now() });
+            return sessionData;
+        }
+    }
+
+    const fetchPromise = (async () => {
+        try {
+            const userDocRef = doc(db, "users", uid);
+            const userDoc = await getDoc(userDocRef);
+
+            let data;
+            if (userDoc && typeof userDoc.exists === 'function' && userDoc.exists()) {
+                data = userDoc.data();
+                const updates = {};
+                if (!data.referralCode) {
+                    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    updates.referralCode = referralCode;
+                    updates.referralCredits = 0;
+                    data.referralCode = referralCode;
+                    data.referralCredits = 0;
+                }
+                // Ensure user has received the 100 points sign up bonus
+                if (data.loyaltyPoints === undefined || data.loyaltyPoints === 0 || !data.bonusAwarded) {
+                    updates.loyaltyPoints = 100;
+                    updates.bonusAwarded = true;
+                    data.loyaltyPoints = 100;
+                    data.bonusAwarded = true;
+
+                    try {
+                        await addDoc(collection(db, "notifications"), {
+                            userId: uid,
+                            title: "100 Points Sign Up Bonus Transferred",
+                            message: "Welcome to AutoLux! A 100 points sign up bonus has been transferred to your account.",
+                            type: "bonus",
+                            amount: 100,
+                            read: false,
+                            createdAt: serverTimestamp()
+                        });
+                    } catch (notifErr) {
+                        console.warn("Could not record sign up bonus notification:", notifErr);
+                    }
+                }
+                if (Object.keys(updates).length > 0) {
+                    await setDoc(userDocRef, updates, { merge: true });
+                }
+            } else {
                 const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-                await setDoc(userDocRef, { referralCode: referralCode, referralCredits: 0 }, { merge: true });
-                data.referralCode = referralCode;
-                data.referralCredits = 0;
+                const newUserData = {
+                    uid: uid,
+                    email: user.email,
+                    name: user.displayName || "Anonymous User",
+                    username: user.displayName || "Anonymous User",
+                    isAdmin: false,
+                    isBanned: false,
+                    membershipLevel: 'free',
+                    signupDate: serverTimestamp(),
+                    vehicles: [],
+                    appointments: [],
+                    contactInfo: {},
+                    loyaltyPoints: 100,
+                    bonusAwarded: true,
+                    referralCode: referralCode,
+                    referralCredits: 0
+                };
+                await setDoc(userDocRef, newUserData);
+
+                try {
+                    await addDoc(collection(db, "notifications"), {
+                        userId: uid,
+                        title: "100 Points Sign Up Bonus Transferred",
+                        message: "Welcome to AutoLux! A 100 points sign up bonus has been transferred to your account.",
+                        type: "bonus",
+                        amount: 100,
+                        read: false,
+                        createdAt: serverTimestamp()
+                    });
+                } catch (notifErr) {
+                    console.warn("Could not record sign up bonus notification:", notifErr);
+                }
+
+                data = newUserData;
+            }
+
+            if (data) {
+                userDocMemoryCache.set(uid, { data, timestamp: Date.now() });
+                setCachedUserDocInSession(uid, data);
             }
             return data;
-        } else {
-            const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const newUserData = {
-                uid: user.uid,
-                email: user.email,
-                name: user.displayName || "Anonymous User",
-                username: user.displayName || "Anonymous User",
-                isAdmin: false,
-                isBanned: false,
-                membershipLevel: 'free',
-                signupDate: serverTimestamp(),
-                vehicles: [],
-                appointments: [],
-                contactInfo: {},
-                loyaltyPoints: 0
-            };
-            await setDoc(userDocRef, newUserData);
-            return newUserData;
+        } catch (error) {
+            console.error("Error ensuring user document - Code:", error.code || 'UNKNOWN_ERROR');
+            console.error("Error ensuring user document:", { message: error.message, details: error });
+            return null;
+        } finally {
+            inFlightUserDocPromises.delete(uid);
         }
-    } catch (error) {
-        console.error("Error ensuring user document - Code:", error.code || 'UNKNOWN_ERROR');
-        console.error("Error ensuring user document:", { message: error.message, details: error });
-        return null;
-    }
+    })();
+
+    inFlightUserDocPromises.set(uid, fetchPromise);
+    return fetchPromise;
 }
 
 /**
@@ -172,7 +379,7 @@ export async function getUserRedirectPath(user, userData = null, currentPathname
     const baseName = filename.replace(/\.html$/, '');
 
     if (!user) {
-        const publicBases = ['', 'index', 'sign in beta', 'sign-in-beta', 'donate'];
+        const publicBases = ['', 'index', 'sign in beta', 'sign-in-beta', 'donate', 'rewards'];
         const isPublic = publicBases.includes(baseName) || cleanPath === '' || cleanPath === '/';
 
         if (!isPublic) {
