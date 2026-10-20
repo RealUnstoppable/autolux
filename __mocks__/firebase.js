@@ -33,6 +33,6 @@ export const serverTimestamp = jest.fn();
 export const query = jest.fn();
 export const where = jest.fn();
 export const orderBy = jest.fn();
-export const getDocs = jest.fn();
+export const getDocs = jest.fn(async () => ({ empty: true, docs: [], forEach: () => {} }));
 export const getFunctions = jest.fn(() => ({}));
 export const httpsCallable = jest.fn(() => jest.fn(async () => ({ data: { success: true, message: 'Reward redeemed successfully!' } })));

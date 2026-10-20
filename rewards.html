@@ -320,6 +320,16 @@
                     pointsFootnote.textContent = currentUserPoints >= 100
                         ? "You have enough points to redeem a Basic Wash Package right now!"
                         : "Earn points with every detailing booking to unlock more perks.";
+
+                    const unBanner = document.getElementById('un-linked-rewards-banner');
+                    const unBalVal = document.getElementById('un-linked-balance-val');
+                    if (unBanner && userData.unLinked) {
+                        unBanner.style.display = 'block';
+                        if (unBalVal) {
+                            const bal = userData.totalUnBalance !== undefined ? userData.totalUnBalance : currentUserPoints;
+                            unBalVal.textContent = `${Number(bal).toLocaleString()} pts`;
+                        }
+                    }
                 } else {
                     currentUserPoints = 100;
                     pointsDisplay.textContent = "100";

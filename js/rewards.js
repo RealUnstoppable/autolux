@@ -145,20 +145,22 @@ export async function getUserTransfers(user, userData = null) {
             const notifRef = collection(db, "notifications");
             const q = query(notifRef, where("userId", "==", user.uid));
             const snap = await getDocs(q);
-            snap.forEach(docSnap => {
-                const data = docSnap.data();
-                if (data.type === 'bonus' || (data.title && data.title.toLowerCase().includes('bonus')) || data.amount) {
-                    transfers.push({
-                        id: docSnap.id,
-                        title: data.title || "Points Transfer",
-                        message: data.message || "100 points sign up bonus transferred to your account.",
-                        amount: data.amount || 100,
-                        type: data.type || "bonus",
-                        createdAt: data.createdAt,
-                        status: "Completed"
-                    });
-                }
-            });
+            if (snap && typeof snap.forEach === 'function') {
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.type === 'bonus' || (data.title && data.title.toLowerCase().includes('bonus')) || data.amount) {
+                        transfers.push({
+                            id: docSnap.id,
+                            title: data.title || "Points Transfer",
+                            message: data.message || "100 points sign up bonus transferred to your account.",
+                            amount: data.amount || 100,
+                            type: data.type || "bonus",
+                            createdAt: data.createdAt,
+                            status: "Completed"
+                        });
+                    }
+                });
+            }
         }
     } catch (err) {
         console.warn("Could not fetch transfer notifications:", err);

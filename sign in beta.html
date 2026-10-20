@@ -18,13 +18,24 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="geo.region" content="US-GA">
-    <meta name="geo.placename" content="Buford, GA">
     <meta name="description" content="Sign in or create an account for Unstoppable Detailing Services.">
     <title>Sign In | Unstoppable Detailing Services</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Performance Preconnections & Module Preloading for Rapid Authentication -->
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+    <link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+    <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js">
+    <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js">
+    <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js">
+    <link rel="modulepreload" href="./js/auth.js">
+    <link rel="prefetch" href="account.html">
+    <link rel="prefetch" href="admin.html">
     <style>
         a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
@@ -225,7 +236,6 @@
             color: var(--text-main);
         }
     </style>
-    <script src="env.js?v=2"></script>
 </head>
 <body>
     <div class="auth-card">
@@ -280,6 +290,20 @@
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const authMsg = document.getElementById('auth-msg');
+
+        // Predictive prefetching of post-authentication destination views
+        const prefetchDestinations = () => {
+            ['account.html', 'admin.html'].forEach(page => {
+                if (!document.querySelector(`link[rel="prefetch"][href="${page}"]`)) {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = page;
+                    document.head.appendChild(link);
+                }
+            });
+        };
+        emailInput.addEventListener('focus', prefetchDestinations, { once: true });
+        passwordInput.addEventListener('focus', prefetchDestinations, { once: true });
 
         // Check if user is already signed in
         async function initSignInPage() {
@@ -386,16 +410,15 @@
                     }
                 }
 
+                // Immediate redirect for maximum responsiveness, avoiding artificial delay
+                safeRedirect(targetUrl);
+                // Failsafe in case window.location.replace is hindered
                 setTimeout(() => {
-                    safeRedirect(targetUrl);
-                    // Failsafe in case window.location.replace is hindered
-                    setTimeout(() => {
-                        const currentPath = decodeURIComponent(window.location.pathname).toLowerCase();
-                        if (currentPath.includes('sign in beta') || currentPath.includes('sign-in-beta')) {
-                            window.location.href = targetUrl;
-                        }
-                    }, 500);
-                }, 300);
+                    const currentPath = decodeURIComponent(window.location.pathname).toLowerCase();
+                    if (currentPath.includes('sign in beta') || currentPath.includes('sign-in-beta')) {
+                        window.location.href = targetUrl;
+                    }
+                }, 400);
 
             } catch (error) {
                 console.error("Auth Error:", error);
