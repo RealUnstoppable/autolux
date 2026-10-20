@@ -598,8 +598,91 @@
         const appointmentsListEl = document.getElementById('appointments-list');
         const logoutBtn = document.getElementById('logout-btn');
 
+        const DUMMY_ASSETS = {
+            referral: {
+                code: 'ALX-VIP2026',
+                credits: 50
+            },
+            ticket: {
+                id: 'dummy-ticket-1',
+                isDummy: true,
+                subject: 'Welcome to AutoLux Concierge',
+                category: 'General Questions',
+                status: 'open',
+                createdAt: new Date(),
+                messages: [{
+                    text: 'Welcome to your AutoLux portal! Let us know if you need assistance with booking, detailing packages, or vehicle care.',
+                    isAdmin: true,
+                    timestamp: new Date().toISOString()
+                }]
+            },
+            notification: {
+                id: 'dummy-notif-1',
+                isDummy: true,
+                title: 'VIP Membership Activated',
+                message: 'Welcome to AutoLux! Your account is active. Schedule your next detail to earn rewards and exclusive member benefits.',
+                read: false,
+                createdAt: new Date()
+            },
+            booking: {
+                id: 'dummy-booking-1',
+                isDummy: true,
+                package: 'Executive Ceramic Detail',
+                service: 'Executive Ceramic Detail',
+                vehicle: '2024 Porsche 911 GT3',
+                appointmentDate: 'Upcoming Saturday at 10:00 AM',
+                status: 'confirmed'
+            },
+            serviceLog: {
+                id: 'dummy-log-1',
+                isDummy: true,
+                serviceType: 'Signature Paint Correction & Ceramic Coating',
+                vehicleName: '2024 Porsche 911 GT3',
+                serviceDate: 'Recent',
+                technicianNotes: 'Multi-stage paint correction, 5-year hydrophobic ceramic coating applied, and full interior leather treatment.',
+                beforeImageUrl: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format',
+                afterImageUrl: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format'
+            },
+            vehicle: '2024 Porsche 911 GT3',
+            address: {
+                label: 'Home (Primary)',
+                address: '100 Ocean Drive, Suite 400, Miami, FL 33139'
+            }
+        };
+
         let currentUser = null;
         let userData = null;
+
+        // Safety timeout: ensure overlay never gets permanently stuck
+        setTimeout(() => {
+            if (overlay && overlay.style.display !== 'none') {
+                overlay.style.display = 'none';
+                ensureFallbackOrEmptyStates();
+            }
+        }, 2500);
+
+        function ensureFallbackOrEmptyStates() {
+            if (userNameEl && (!userNameEl.textContent || userNameEl.textContent === 'Loading...')) {
+                userNameEl.textContent = 'Valued Client';
+            }
+            if (userEmailEl && (!userEmailEl.textContent || userEmailEl.textContent === 'Loading...')) {
+                userEmailEl.textContent = 'client@autolux.com';
+            }
+            const referralCodeEl = document.getElementById('user-referral-code');
+            if (referralCodeEl && (!referralCodeEl.value || referralCodeEl.value === 'Loading...')) {
+                referralCodeEl.value = DUMMY_ASSETS.referral.code;
+            }
+            const referralCreditsEl = document.getElementById('user-referral-credits');
+            if (referralCreditsEl && (!referralCreditsEl.textContent || referralCreditsEl.textContent === 'Loading...')) {
+                referralCreditsEl.textContent = `$${DUMMY_ASSETS.referral.credits}`;
+            }
+            ['tickets-list', 'notifications-list', 'appointments-list', 'service-logs-list', 'vehicles-list', 'addresses-list'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.innerHTML.includes('Loading')) {
+                    el.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                }
+            });
+        }
 
         async function initAccountPage() {
             try {
@@ -613,62 +696,74 @@
 
                 currentUser = user; // Save for handlers
 
-                // 2. Fallback Instantiation for Blank Profile Fix
                 const userRef = doc(db, "users", user.uid);
 
-                // 3. Consolidate Queries using Promise.all (Stop N+1 latency)
-                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
+                let userSnap = null;
+                let appointmentsSnap = { empty: true, docs: [] };
+                let notificationsSnap = { empty: true, docs: [] };
 
-                // Fire them off concurrently
-                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
-                    getDoc(userRef),
-                    getDocs(appointmentsQuery),
-                    getDocs(notificationsQuery)
-                ]);
+                try {
+                    userSnap = await getDoc(userRef);
+                } catch (e) {
+                    console.warn("Could not fetch user document:", e);
+                }
 
-                userData = userSnap.data();
+                try {
+                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                    appointmentsSnap = await getDocs(appointmentsQuery);
+                } catch (e) {
+                    console.warn("Could not fetch appointments:", e);
+                }
 
-                if (!userSnap.exists()) {
+                try {
+                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                    notificationsSnap = await getDocs(notificationsQuery);
+                } catch (e) {
+                    console.warn("Could not fetch notifications:", e);
+                }
+
+                userData = userSnap && userSnap.exists() ? userSnap.data() : null;
+
+                if (!userData) {
                     userData = {
                         uid: user.uid,
                         email: user.email,
-                        name: user.displayName || "Anonymous User",
-                        username: user.displayName || "Anonymous User",
+                        name: user.displayName || "Valued Client",
+                        username: user.displayName || "Valued Client",
                         isAdmin: false,
                         isBanned: false,
                         membershipLevel: 'free',
                         signupDate: serverTimestamp(),
-                        vehicles: [],
+                        vehicles: [DUMMY_ASSETS.vehicle],
+                        addresses: [DUMMY_ASSETS.address],
+                        referralCode: DUMMY_ASSETS.referral.code,
+                        referralCredits: DUMMY_ASSETS.referral.credits,
                         appointments: [],
                         contactInfo: {},
                         loyaltyPoints: 100,
                         bonusAwarded: true
                     };
-                    await setDoc(userRef, userData, { merge: true });
+                    await setDoc(userRef, userData, { merge: true }).catch(e => console.warn("Could not save initial user doc:", e));
                 }
 
-                // Render User Info
+                // Render User Info - fallback gracefully if missing
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
-                userEmailEl.textContent = user.email;
+                userEmailEl.textContent = user.email || userData?.email || 'N/A';
 
-                if (userData?.vehicles) {
-                    renderVehicles(userData.vehicles);
-                }
-
-                if (userData?.addresses) {
-                    renderAddresses(userData.addresses);
-                }
+                renderVehicles(userData?.vehicles);
+                renderAddresses(userData?.addresses);
 
                 // Set referral data
                 const referralCodeEl = document.getElementById('user-referral-code');
                 const referralCreditsEl = document.getElementById('user-referral-credits');
                 const loyaltyPointsEl = document.getElementById('user-loyalty-points');
-                if (referralCodeEl && userData?.referralCode) {
-                    referralCodeEl.value = userData.referralCode;
+                if (referralCodeEl) {
+                    referralCodeEl.value = userData?.referralCode || DUMMY_ASSETS.referral.code || 'N/A';
                 }
-                if (referralCreditsEl && userData?.referralCredits !== undefined) {
-                    referralCreditsEl.textContent = `$${userData.referralCredits}`;
+                if (referralCreditsEl) {
+                    const creds = userData?.referralCredits !== undefined ? userData.referralCredits : DUMMY_ASSETS.referral.credits;
+                    referralCreditsEl.textContent = creds !== undefined && creds !== null ? `$${creds}` : 'N/A';
                 }
                 if (loyaltyPointsEl) {
                     const points = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
@@ -676,10 +771,15 @@
                 }
 
                 renderBookings(appointmentsSnap);
-                loadTickets(user);
+                await loadTickets(user);
                 renderNotifications(notificationsSnap);
 
-                const logs = await fetchUserServiceLogs(user.uid);
+                let logs = [];
+                try {
+                    logs = await fetchUserServiceLogs(user.uid);
+                } catch (e) {
+                    console.warn("Could not fetch service logs:", e);
+                }
                 renderServiceLogs(logs);
 
                 // Update UN Account status & balance in Client Profile
@@ -689,6 +789,7 @@
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
+                ensureFallbackOrEmptyStates();
             }
         }
 

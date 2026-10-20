@@ -410,6 +410,10 @@
                     }
 
                 } else {
+                    const refParam = urlParams.get('ref') || urlParams.get('referral');
+                    if (refParam) {
+                        safeSetSessionStorage('pendingReferralCode', refParam.trim().toUpperCase());
+                    }
                     safeSetSessionStorage('redirectAfterLogin', 'booking.html');
                     msgEl.style.color = "var(--gold)";
                     msgEl.innerHTML = 'You must be signed in to book an appointment. <a href="sign in beta.html" style="color: var(--accent);">Sign In Here</a>';
@@ -424,6 +428,86 @@
         }
         initBookingPage();
 
+        // Referral Code Validation Helper
+        async function validateAndApplyReferralCode(code) {
+            const referralMsg = document.getElementById('referral-msg');
+            const referralInput = document.getElementById('referral-code');
+            const applyBtn = document.getElementById('apply-referral-btn');
+            const cleanCode = (code !== undefined ? code : referralInput.value).trim().toUpperCase();
+
+            if (!cleanCode) {
+                if (referralMsg) referralMsg.textContent = '';
+                return true;
+            }
+
+            if (applyBtn) {
+                applyBtn.disabled = true;
+                applyBtn.textContent = 'Checking...';
+            }
+
+            try {
+                const referrer = await validateReferralCode(cleanCode);
+                if (applyBtn) {
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply';
+                }
+
+                if (!referrer) {
+                    if (referralMsg) {
+                        referralMsg.style.color = "var(--error)";
+                        referralMsg.textContent = "Invalid referral code.";
+                    }
+                    return false;
+                } else if (currentUser && (referrer.uid === currentUser.uid || referrer.id === currentUser.uid || referrer.userId === currentUser.uid)) {
+                    if (referralMsg) {
+                        referralMsg.style.color = "var(--error)";
+                        referralMsg.textContent = "You cannot use your own referral code.";
+                    }
+                    return false;
+                } else {
+                    if (referralMsg) {
+                        referralMsg.style.color = "#16A34A";
+                        referralMsg.textContent = "Referral code applied successfully! Premium wash perk included.";
+                    }
+                    return true;
+                }
+            } catch (err) {
+                if (applyBtn) {
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply';
+                }
+                console.error("Error validating referral code:", err);
+                if (referralMsg) {
+                    referralMsg.style.color = "var(--error)";
+                    referralMsg.textContent = "Error validating referral code.";
+                }
+                return false;
+            }
+        }
+
+        const applyReferralBtn = document.getElementById('apply-referral-btn');
+        if (applyReferralBtn) {
+            applyReferralBtn.addEventListener('click', () => {
+                const referralInput = document.getElementById('referral-code');
+                validateAndApplyReferralCode(referralInput.value);
+            });
+        }
+
+        const referralInputEl = document.getElementById('referral-code');
+        if (referralInputEl) {
+            referralInputEl.addEventListener('change', () => {
+                validateAndApplyReferralCode(referralInputEl.value);
+            });
+
+            // Auto-fill from query param or pending session storage
+            const initialRef = urlParams.get('ref') || urlParams.get('referral') || safeGetSessionStorage('pendingReferralCode');
+            if (initialRef) {
+                referralInputEl.value = initialRef.trim().toUpperCase();
+                safeSetSessionStorage('pendingReferralCode', ''); // Consume it
+                validateAndApplyReferralCode(referralInputEl.value);
+            }
+        }
+
         bookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
@@ -433,7 +517,7 @@
             const appointmentDate = document.getElementById('date').value;
             const address = document.getElementById('address').value.trim();
             const notes = document.getElementById('notes').value.trim();
-            const referralCode = document.getElementById('referral-code').value.trim();
+            const referralCode = document.getElementById('referral-code').value.trim().toUpperCase();
             const referralMsg = document.getElementById('referral-msg');
 
             if (referralMsg) referralMsg.textContent = '';
@@ -450,30 +534,12 @@
             msgEl.textContent = '';
 
             if (referralCode) {
-                const referrer = await validateReferralCode(referralCode);
-                if (!referrer) {
-                    if (referralMsg) {
-                        referralMsg.style.color = "var(--error)";
-                        referralMsg.textContent = "Invalid referral code.";
-                    }
+                const isValid = await validateAndApplyReferralCode(referralCode);
+                if (!isValid) {
                     submitBtn.disabled = false;
                     submitBtn.removeAttribute('aria-busy');
                     submitBtn.textContent = 'Submit Booking Request';
                     return;
-                } else if (referrer.uid === currentUser.uid) {
-                    if (referralMsg) {
-                        referralMsg.style.color = "var(--error)";
-                        referralMsg.textContent = "You cannot use your own referral code.";
-                    }
-                    submitBtn.disabled = false;
-                    submitBtn.removeAttribute('aria-busy');
-                    submitBtn.textContent = 'Submit Booking Request';
-                    return;
-                } else {
-                    if (referralMsg) {
-                        referralMsg.style.color = "#16A34A";
-                        referralMsg.textContent = "Referral code applied successfully!";
-                    }
                 }
             }
 
