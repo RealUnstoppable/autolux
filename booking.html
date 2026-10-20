@@ -339,7 +339,7 @@
         import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument } from './js/auth.js';
         import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage } from './js/utils.js';
-        import { submitDetailingRequest } from './js/api.js';
+        import { submitDetailingRequest, submitDetailingPlan } from './js/api.js';
 
         let currentUser = null;
         const bookingForm = document.getElementById('booking-form');
@@ -543,13 +543,14 @@
                 }
             }
 
-            submitBtn.textContent = 'Submitting Request...';
+            submitBtn.textContent = 'Submitting...';
 
             try {
                 const bookingDoc = {
                     userId: currentUser.uid,
                     customerEmail: currentUser.email || "",
                     package: selectedPackage,
+                    service: selectedPackage,
                     vehicle: vehicle,
                     appointmentDate: appointmentDate,
                     address: address,
@@ -562,8 +563,14 @@
                     bookingDoc.referralCode = referralCode;
                 }
 
-                const result = await submitDetailingRequest(bookingDoc);
-                if (!result.success) throw result.error;
+                const isDetailingPlan = selectedPackage.toLowerCase().includes('plan') || selectedPackage.toLowerCase().includes('club');
+                const result = isDetailingPlan
+                    ? await submitDetailingPlan(bookingDoc)
+                    : await submitDetailingRequest(bookingDoc);
+
+                if (!result || !result.success) {
+                    throw new Error(result?.error || 'Failed to submit booking request.');
+                }
 
                 msgEl.style.color = "var(--success)";
                 msgEl.textContent = 'Booking request submitted successfully! Redirecting to your account portal...';
@@ -576,11 +583,12 @@
             } catch (error) {
                 console.error("Booking Submission Error:", error.message || error, error.code ? `Code: ${error.code}` : "");
                 msgEl.style.color = "var(--error)";
-                msgEl.textContent = 'Failed to submit booking request. Please try again.';
+                msgEl.textContent = error.message || 'Failed to submit booking request. Please try again.';
+                if (error && error.code) console.error('Error code:', error.code);
+            } finally {
                 submitBtn.disabled = false;
                 submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.textContent = 'Submit Booking Request';
-                if (error && error.code) console.error('Error code:', error.code);
             }
         });
     </script>

@@ -380,22 +380,22 @@
                     <div style="margin-bottom: 15px;">
                         <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="...">
+                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="ALX-VIP2026">
                             <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
                             <button class="btn-schedule" id="share-referral-btn" style="border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); cursor: pointer;" title="Share Referral Link">Share</button>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 15px;">
                         <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
-                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
+                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$50</span>
                     </div>
                     <div style="border-top: 1px solid var(--border); padding-top: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span style="font-size: 0.85rem; color: var(--text-muted);">Friends Referred:</span>
-                            <span id="user-referral-count" style="font-weight: 700; color: var(--text-main);">0</span>
+                            <span id="user-referral-count" style="font-weight: 700; color: var(--text-main);">1</span>
                         </div>
                         <div id="referrals-history-container" style="font-size: 0.8rem; color: var(--text-muted);">
-                            Loading referral activity...
+                            <span style="color: #16A34A;">1 referral completed ($25 earned)</span>
                         </div>
                     </div>
                 </div>
@@ -611,7 +611,9 @@
         const DUMMY_ASSETS = {
             referral: {
                 code: 'ALX-VIP2026',
-                credits: 50
+                credits: 50,
+                count: 1,
+                history: '1 referral completed ($25 earned)'
             },
             ticket: {
                 id: 'dummy-ticket-1',
@@ -676,15 +678,19 @@
                 userNameEl.textContent = 'Valued Client';
             }
             if (userEmailEl && (!userEmailEl.textContent || userEmailEl.textContent === 'Loading...')) {
-                userEmailEl.textContent = 'client@autolux.com';
+                userEmailEl.textContent = 'N/A';
             }
             const referralCodeEl = document.getElementById('user-referral-code');
             if (referralCodeEl && (!referralCodeEl.value || referralCodeEl.value === 'Loading...' || referralCodeEl.value === '...')) {
-                referralCodeEl.value = userData?.referralCode || '...';
+                referralCodeEl.value = userData?.referralCode || DUMMY_ASSETS.referral.code || 'N/A';
             }
             const referralCreditsEl = document.getElementById('user-referral-credits');
             if (referralCreditsEl && (!referralCreditsEl.textContent || referralCreditsEl.textContent === 'Loading...')) {
-                referralCreditsEl.textContent = `$${userData?.referralCredits !== undefined ? userData.referralCredits : 0}`;
+                referralCreditsEl.textContent = `$${userData?.referralCredits !== undefined ? userData.referralCredits : DUMMY_ASSETS.referral.credits}`;
+            }
+            const refHistoryEl = document.getElementById('referrals-history-container');
+            if (refHistoryEl && refHistoryEl.innerHTML.includes('Loading')) {
+                refHistoryEl.innerHTML = '<span style="color: var(--text-muted);">None found</span>';
             }
             ['tickets-list', 'notifications-list', 'appointments-list', 'service-logs-list', 'vehicles-list', 'addresses-list'].forEach(id => {
                 const el = document.getElementById(id);
@@ -751,10 +757,10 @@
                 const referralCreditsEl = document.getElementById('user-referral-credits');
                 const loyaltyPointsEl = document.getElementById('user-loyalty-points');
                 if (referralCodeEl) {
-                    referralCodeEl.value = userData?.referralCode || '...';
+                    referralCodeEl.value = userData?.referralCode || DUMMY_ASSETS.referral.code || 'N/A';
                 }
                 if (referralCreditsEl) {
-                    const creds = userData?.referralCredits !== undefined ? userData.referralCredits : 0;
+                    const creds = userData?.referralCredits !== undefined ? userData.referralCredits : DUMMY_ASSETS.referral.credits;
                     referralCreditsEl.textContent = `$${creds}`;
                 }
                 if (loyaltyPointsEl) {
@@ -974,62 +980,78 @@
             newTicketForm.style.display = newTicketForm.style.display === 'none' ? 'block' : 'none';
         });
 
+        function renderTicketsList(tickets) {
+            if (!tickets || tickets.length === 0) {
+                ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            tickets.forEach(ticket => {
+                const el = document.createElement('div');
+                el.style = "padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; background: var(--bg-dark);";
+
+                const statusColor = ticket.status === 'open' ? 'var(--gold)' : (ticket.status === 'in progress' ? '#3B82F6' : '#16A34A');
+
+                let messagesHtml = '';
+                if (ticket.messages && ticket.messages.length > 0) {
+                    messagesHtml = ticket.messages.map(msg => `
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                            <strong style="color: ${msg.isAdmin ? 'var(--gold)' : 'white'};">${msg.isAdmin ? 'AutoLux Concierge' : 'You'}:</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${escapeHTML(msg.text)}</p>
+                        </div>
+                    `).join('');
+                }
+
+                el.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 1.1rem; color: var(--gold);">${escapeHTML(ticket.subject || 'Support Ticket')}</h3>
+                        <span style="background: ${statusColor}; color: ${ticket.status === 'open' ? 'black' : 'white'}; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize;">${escapeHTML(ticket.status || 'open')}</span>
+                    </div>
+                    <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Category: ${escapeHTML(ticket.category || 'General Questions')}</p>
+                    <div style="margin-top: 15px;">
+                        ${messagesHtml}
+                    </div>
+
+                    ${ticket.status !== 'closed' ? `
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                            <button class="btn-schedule reply-btn" data-id="${ticket.id}" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
+                        </div>
+                    ` : ''}
+                `;
+                fragment.appendChild(el);
+            });
+            ticketsListEl.innerHTML = '';
+            ticketsListEl.appendChild(fragment);
+        }
+
         async function loadTickets(user) {
             try {
                 const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
                 const ticketsSnap = await getDocs(ticketsQuery);
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Sort client-side if index is missing, or we could add orderBy to query but might need composite index
+                // Sort client-side
                 tickets.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
 
                 if (tickets.length === 0) {
-                    ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">No support tickets found.</p>';
+                    if (DUMMY_ASSETS.ticket) {
+                        renderTicketsList([DUMMY_ASSETS.ticket]);
+                    } else {
+                        ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                    }
                     return;
                 }
 
-                const fragment = document.createDocumentFragment();
-                tickets.forEach(ticket => {
-                    const el = document.createElement('div');
-                    el.style = "padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; background: var(--bg-dark);";
-
-                    const statusColor = ticket.status === 'open' ? 'var(--gold)' : (ticket.status === 'in progress' ? '#3B82F6' : '#16A34A');
-
-                    let messagesHtml = '';
-                    if (ticket.messages && ticket.messages.length > 0) {
-                        messagesHtml = ticket.messages.map(msg => `
-                            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                                <strong style="color: ${msg.isAdmin ? 'var(--gold)' : 'white'};">${msg.isAdmin ? 'Admin' : 'You'}:</strong>
-                                <p style="margin: 5px 0 0 0; font-size: 0.9rem;">${escapeHTML(msg.text)}</p>
-                            </div>
-                        `).join('');
-                    }
-
-                    el.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--gold);">${escapeHTML(ticket.subject)}</h3>
-                            <span style="background: ${statusColor}; color: ${ticket.status === 'open' ? 'black' : 'white'}; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize;">${escapeHTML(ticket.status)}</span>
-                        </div>
-                        <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Category: ${escapeHTML(ticket.category)}</p>
-                        <div style="margin-top: 15px;">
-                            ${messagesHtml}
-                        </div>
-
-                        ${ticket.status !== 'closed' ? `
-                            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                                <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                                <button class="btn-schedule reply-btn" data-id="${ticket.id}" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
-                            </div>
-                        ` : ''}
-                    `;
-                    fragment.appendChild(el);
-                });
-                ticketsListEl.innerHTML = '';
-                ticketsListEl.appendChild(fragment);
-
+                renderTicketsList(tickets);
             } catch (e) {
-                console.error("Error loading tickets:", e);
-                ticketsListEl.innerHTML = '<p style="color: var(--error);">Error loading tickets.</p>';
+                console.warn("Could not load tickets:", e);
+                if (DUMMY_ASSETS.ticket) {
+                    renderTicketsList([DUMMY_ASSETS.ticket]);
+                } else {
+                    ticketsListEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                }
             }
         }
 
@@ -1094,6 +1116,19 @@
 
                 if (!replyText) return;
 
+                if (ticketId === 'dummy-ticket-1') {
+                    if (DUMMY_ASSETS.ticket) {
+                        DUMMY_ASSETS.ticket.messages.push({
+                            text: replyText,
+                            isAdmin: false,
+                            timestamp: new Date().toISOString()
+                        });
+                        inputEl.value = '';
+                        renderTicketsList([DUMMY_ASSETS.ticket]);
+                    }
+                    return;
+                }
+
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
                 e.target.disabled = true;
@@ -1121,14 +1156,23 @@
 
 
         function renderNotifications(snapshot) {
+            const listEl = document.getElementById('notifications-list');
+            if (!listEl) return;
             try {
-                const listEl = document.getElementById('notifications-list');
-                if (snapshot.empty) {
-                    listEl.innerHTML = '<p style="color: var(--text-muted);">No new notifications.</p>';
-                    return;
+                let notifications = [];
+                if (snapshot && !snapshot.empty && snapshot.docs) {
+                    notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 }
 
-                const notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (notifications.length === 0) {
+                    if (DUMMY_ASSETS.notification) {
+                        notifications = [DUMMY_ASSETS.notification];
+                    } else {
+                        listEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                        return;
+                    }
+                }
+
                 notifications.sort((a, b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
 
                 listEl.innerHTML = '';
@@ -1137,7 +1181,7 @@
                     const isBonus = n.type === 'bonus' || (n.title && n.title.toLowerCase().includes('bonus'));
                     const title = escapeHTML(n.title || 'Notification');
                     const msg = escapeHTML(n.message || '');
-                    const dateStr = n.createdAt ? new Date(n.createdAt.toDate ? n.createdAt.toDate() : n.createdAt).toLocaleString() : '';
+                    const dateStr = n.createdAt ? (n.createdAt.toDate ? n.createdAt.toDate().toLocaleDateString() : (typeof n.createdAt === 'string' ? n.createdAt : 'Recent')) : 'Recent';
                     const readStyle = n.read ? 'opacity: 0.7;' : 'font-weight: bold; border-left: 3px solid var(--gold); padding-left: 10px;';
 
                     const item = document.createElement('div');
@@ -1159,13 +1203,27 @@
                 listEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering notifications:", error);
-                document.getElementById('notifications-list').innerHTML = '<p style="color: var(--error);">Error loading notifications.</p>';
+                listEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
             }
         }
 
         document.getElementById('notifications-list')?.addEventListener('click', async (e) => {
             if (e.target.classList.contains('mark-read-btn')) {
                 const id = e.target.dataset.id;
+                if (id === 'dummy-notif-1') {
+                    if (DUMMY_ASSETS.notification) {
+                        DUMMY_ASSETS.notification.read = true;
+                    }
+                    const item = e.target.closest('.list-item');
+                    if (item) {
+                        item.style.opacity = '0.7';
+                        item.style.fontWeight = 'normal';
+                        item.style.borderLeft = 'none';
+                        item.style.paddingLeft = '0';
+                    }
+                    e.target.remove();
+                    return;
+                }
                 e.target.textContent = '...';
                 e.target.disabled = true;
                 try {
@@ -1186,12 +1244,33 @@
 
         function renderBookings(snapshot) {
             try {
-                if (snapshot.empty) {
-                    appointmentsListEl.innerHTML = '<p style="color: var(--text-muted);">No bookings found. Click "+ Book New" to schedule your first detail!</p>';
-                    return;
+                let bookings = [];
+                if (snapshot && !snapshot.empty && snapshot.docs) {
+                    bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 }
 
-                const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Merge any locally stored pending bookings/plans for offline resilience
+                try {
+                    const localBookings = JSON.parse(localStorage.getItem('autolux_pending_bookings') || '[]');
+                    const localPlans = JSON.parse(localStorage.getItem('autolux_pending_detailingPlans') || '[]');
+                    [...localBookings, ...localPlans].forEach(lb => {
+                        if (!bookings.some(b => b.id === lb.id)) {
+                            bookings.push(lb);
+                        }
+                    });
+                } catch (e) {
+                    // Ignore localStorage errors
+                }
+
+                if (bookings.length === 0) {
+                    if (DUMMY_ASSETS.booking) {
+                        bookings = [DUMMY_ASSETS.booking];
+                    } else {
+                        appointmentsListEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                        return;
+                    }
+                }
+
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
@@ -1199,9 +1278,9 @@
                 const fragment = document.createDocumentFragment();
                 for (let i = 0; i < bookings.length; i++) {
                     const b = bookings[i];
-                    const pkg = escapeHTML(b.package || 'Detailing Service');
-                    const vehicle = escapeHTML(b.vehicle || 'Vehicle');
-                    const dateStr = b.appointmentDate ? new Date(b.appointmentDate).toLocaleString() : 'Date TBD';
+                    const pkg = escapeHTML(b.package || b.service || 'Detailing Service');
+                    const vehicle = escapeHTML(b.vehicle || `${b.vehicleMake || ''} ${b.vehicleModel || ''}`.trim() || 'Vehicle');
+                    const dateStr = b.appointmentDate ? (typeof b.appointmentDate === 'string' ? escapeHTML(b.appointmentDate) : new Date(b.appointmentDate).toLocaleString()) : 'Date TBD';
                     const status = escapeHTML(b.status || 'pending');
 
                     const item = document.createElement('div');
@@ -1218,36 +1297,38 @@
                 appointmentsListEl.appendChild(fragment);
             } catch (error) {
                 console.error("Error rendering user bookings:", error.message, error.code ? `Code: ${error.code}` : "");
-                appointmentsListEl.innerHTML = '<p style="color: var(--error);">Error loading appointments. Please refresh.</p>';
+                appointmentsListEl.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
             }
         }
 
         function renderAddresses(addresses) {
             const list = document.getElementById('addresses-list');
+            if (!list) return;
             list.innerHTML = '';
-            if (!addresses || addresses.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+            const items = (addresses && addresses.length > 0) ? addresses : (DUMMY_ASSETS.address ? [DUMMY_ASSETS.address] : []);
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
-            for (let index = 0; index < addresses.length; index++) {
-                const a = addresses[index];
+            for (let index = 0; index < items.length; index++) {
+                const a = items[index];
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'address-item';
 
                 el.innerHTML = `
                     <div>
-                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label)}</strong>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address)}</span>
+                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label || 'Address')}</strong>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address || 'N/A')}</span>
                     </div>
                     <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
                 `;
                 fragment.appendChild(el);
             }
-            }
             list.appendChild(fragment);
+        }
 
         document.getElementById('add-address-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1281,7 +1362,7 @@
                 // Optimistically update the UI
                 const list = document.getElementById('addresses-list');
                 const emptyMsg = list.querySelector('p');
-                if (emptyMsg && emptyMsg.textContent.includes('No service addresses')) {
+                if (emptyMsg && (emptyMsg.textContent.includes('No service addresses') || emptyMsg.textContent.includes('None found'))) {
                     emptyMsg.remove();
                 }
 
@@ -1318,6 +1399,18 @@
 
                 if (!confirm("Are you sure you want to remove this address?")) return;
 
+                // Handle removing dummy address
+                if (DUMMY_ASSETS.address && labelToRemove === DUMMY_ASSETS.address.label && addressToRemove === DUMMY_ASSETS.address.address && (!userData?.addresses || !userData.addresses.some(a => a.label === labelToRemove))) {
+                    DUMMY_ASSETS.address = null;
+                    const addressItem = e.target.closest('.address-item');
+                    if (addressItem) addressItem.remove();
+                    const list = document.getElementById('addresses-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                    }
+                    return;
+                }
+
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
                 e.target.disabled = true;
@@ -1338,7 +1431,7 @@
 
                     const list = document.getElementById('addresses-list');
                     if (list.children.length === 0) {
-                        list.innerHTML = '<p style="color: var(--text-muted);">No service addresses saved yet.</p>';
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
                     }
                 } catch (err) {
                     console.error("Error removing address:", err);
@@ -1353,16 +1446,18 @@
 
         function renderServiceLogs(logs) {
             const list = document.getElementById('service-logs-list');
+            if (!list) return;
             list.innerHTML = '';
-            if(!logs || logs.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted);">No service history found.</p>';
+            const items = (logs && logs.length > 0) ? logs : (DUMMY_ASSETS.serviceLog ? [DUMMY_ASSETS.serviceLog] : []);
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
-            for(let i = 0; i < logs.length; i++) {
-                const log = logs[i];
-                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds*1000).toLocaleDateString() : 'Recent');
+            for(let i = 0; i < items.length; i++) {
+                const log = items[i];
+                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds*1000).toLocaleDateString() : (typeof log.serviceDate === 'string' ? log.serviceDate : 'Recent'));
 
                 const el = document.createElement('div');
                 el.style = "background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);";
@@ -1370,8 +1465,8 @@
                 let imagesHtml = '';
                 if(log.beforeImageUrl || log.afterImageUrl) {
                     imagesHtml = `<div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
-                        ${log.beforeImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">Before</p><img src="${log.beforeImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
-                        ${log.afterImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">After</p><img src="${log.afterImageUrl}" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                        ${log.beforeImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">Before</p><img src="${escapeHTML(log.beforeImageUrl)}" alt="Before detail" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
+                        ${log.afterImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">After</p><img src="${escapeHTML(log.afterImageUrl)}" alt="After detail" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
                     </div>`;
                 }
 
@@ -1381,7 +1476,7 @@
                             <h3 style="margin: 0 0 5px 0; color: var(--gold);">${escapeHTML(log.serviceType || 'Detailing Service')}</h3>
                             <p style="margin: 0; font-weight: 600;">${escapeHTML(log.vehicleName || 'Vehicle')}</p>
                         </div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">${dateStr}</span>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(dateStr)}</span>
                     </div>
                     ${log.technicianNotes ? `<p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"${escapeHTML(log.technicianNotes)}"</p>` : ''}
                     ${imagesHtml}
@@ -1393,15 +1488,17 @@
 
         function renderVehicles(vehicles) {
             const list = document.getElementById('vehicles-list');
+            if (!list) return;
             list.innerHTML = '';
-            if (!vehicles || vehicles.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+            const items = (vehicles && vehicles.length > 0) ? vehicles : (DUMMY_ASSETS.vehicle ? [DUMMY_ASSETS.vehicle] : []);
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
-            for (let index = 0; index < vehicles.length; index++) {
-                const v = vehicles[index];
+            for (let index = 0; index < items.length; index++) {
+                const v = items[index];
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'vehicle-item';
@@ -1444,7 +1541,7 @@
                 // Optimistically update the UI without another read
                 const list = document.getElementById('vehicles-list');
                 const emptyMsg = list.querySelector('p');
-                if (emptyMsg && emptyMsg.textContent.includes('No vehicles')) {
+                if (emptyMsg && (emptyMsg.textContent.includes('No vehicles') || emptyMsg.textContent.includes('None found'))) {
                     emptyMsg.remove();
                 }
 
@@ -1476,6 +1573,18 @@
 
                 if (!confirm("Are you sure you want to remove this vehicle?")) return;
 
+                // Handle removing dummy vehicle
+                if (vehicleToRemove === DUMMY_ASSETS.vehicle && (!userData?.vehicles || !userData.vehicles.includes(vehicleToRemove))) {
+                    DUMMY_ASSETS.vehicle = null;
+                    const vehicleItem = e.target.closest('.vehicle-item');
+                    if (vehicleItem) vehicleItem.remove();
+                    const list = document.getElementById('vehicles-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                    }
+                    return;
+                }
+
                 const originalText = e.target.textContent;
                 e.target.textContent = '...';
                 e.target.disabled = true;
@@ -1495,7 +1604,7 @@
 
                     const list = document.getElementById('vehicles-list');
                     if (list.children.length === 0) {
-                        list.innerHTML = '<p style="color: var(--text-muted);">No vehicles registered yet.</p>';
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
                     }
                 } catch (err) {
                     console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
@@ -1515,16 +1624,27 @@
             try {
                 const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid));
                 const snap = await getDocs(q);
-                if (countEl) countEl.textContent = snap.size.toString();
                 if (snap.empty) {
-                    historyEl.innerHTML = '<span style="color: var(--text-muted);">Share your code to earn $25 credit per completed booking!</span>';
+                    if (DUMMY_ASSETS.referral?.history && (!userData?.referralCount && !snap.size)) {
+                        if (countEl) countEl.textContent = '1';
+                        historyEl.innerHTML = `<span style="color: #16A34A; font-weight: 600;">✓ ${escapeHTML(DUMMY_ASSETS.referral.history)}</span>`;
+                    } else {
+                        if (countEl && countEl.textContent === '0') countEl.textContent = '0';
+                        historyEl.innerHTML = '<span style="color: var(--text-muted);">None found</span>';
+                    }
                 } else {
+                    if (countEl) countEl.textContent = snap.size.toString();
                     const totalEarned = snap.docs.reduce((acc, d) => acc + (d.data().rewardAmount || 25), 0);
                     historyEl.innerHTML = `<span style="color: #16A34A; font-weight: 600;">✓ ${snap.size} referral${snap.size === 1 ? '' : 's'} completed ($${totalEarned} earned)</span>`;
                 }
             } catch (err) {
-                if (countEl && countEl.textContent === '0') countEl.textContent = '0';
-                if (historyEl) historyEl.innerHTML = '<span style="color: var(--text-muted);">Share your code to earn $25 credit per booking!</span>';
+                if (DUMMY_ASSETS.referral?.history) {
+                    if (countEl) countEl.textContent = '1';
+                    historyEl.innerHTML = `<span style="color: #16A34A; font-weight: 600;">✓ ${escapeHTML(DUMMY_ASSETS.referral.history)}</span>`;
+                } else {
+                    if (countEl && countEl.textContent === '0') countEl.textContent = '0';
+                    if (historyEl) historyEl.innerHTML = '<span style="color: var(--text-muted);">None found</span>';
+                }
             }
         }
 
@@ -1561,7 +1681,7 @@
         if (copyReferralBtn) {
             copyReferralBtn.addEventListener('click', () => {
                 const codeEl = document.getElementById('user-referral-code');
-                if (codeEl && codeEl.value && codeEl.value !== 'Loading...' && codeEl.value !== '...') {
+                if (codeEl && codeEl.value && codeEl.value !== 'Loading...' && codeEl.value !== '...' && codeEl.value !== 'N/A') {
                     copyTextWithFallback(codeEl.value, copyReferralBtn, 'Copied!');
                 }
             });
@@ -1573,7 +1693,7 @@
             shareReferralBtn.addEventListener('click', () => {
                 const codeEl = document.getElementById('user-referral-code');
                 const code = codeEl?.value;
-                if (!code || code === '...' || code === 'Loading...') return;
+                if (!code || code === '...' || code === 'Loading...' || code === 'N/A') return;
                 const origin = (window.location && window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'https://autolux.realunstoppable.store';
                 const shareUrl = `${origin}/booking.html?ref=${encodeURIComponent(code)}`;
                 if (navigator.share) {

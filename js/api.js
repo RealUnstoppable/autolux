@@ -27,12 +27,12 @@ async function handleApiRequest(coreFunction, payload, type) {
 }
 
 export async function submitDetailingRequest(bookingData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
+    const currentUser = auth?.currentUser;
+    const userId = currentUser ? currentUser.uid : bookingData?.userId;
+    if (!userId) {
         console.error("Cannot submit detailing request: User is not authenticated.");
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
-    const userId = currentUser.uid;
     const payload = { ...bookingData, userId };
     if (bookingData.referralCode) {
         payload.referralCode = bookingData.referralCode.trim().toUpperCase();
@@ -45,10 +45,11 @@ export async function submitQuoteRequest(quoteData) {
 }
 
 export async function submitDetailingPlan(planData) {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
+    const currentUser = auth?.currentUser;
+    const userId = currentUser ? currentUser.uid : planData?.userId;
+    if (!userId) {
         console.error("Cannot submit detailing plan: User is not authenticated.");
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
-    return handleApiRequest(submitDetailingPlanCore, [currentUser.uid, planData], "DetailingPlan");
+    return handleApiRequest(submitDetailingPlanCore, [userId, planData], "DetailingPlan");
 }

@@ -272,7 +272,7 @@
     </footer>
 
     <script type="module">
-        import { submitQuoteRequest } from '/js/api.js';
+        import { submitQuoteRequest } from './js/api.js';
 
         const form = document.getElementById('quote-form');
         const submitBtn = document.getElementById('submit-btn');
@@ -294,19 +294,25 @@
             submitBtn.textContent = 'Submitting...';
             msgEl.textContent = '';
 
-            const result = await submitQuoteRequest(quoteData);
+            try {
+                const result = await submitQuoteRequest(quoteData);
 
-            if (result && result.success) {
-                msgEl.style.color = "var(--success)";
-                msgEl.textContent = "Quote request submitted successfully! We will contact you soon.";
-                form.reset();
-            } else {
+                if (result && result.success) {
+                    msgEl.style.color = "var(--success)";
+                    msgEl.textContent = "Quote request submitted successfully! We will contact you soon.";
+                    form.reset();
+                } else {
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = (result && result.error) || "Failed to submit quote request. Please try again later.";
+                }
+            } catch (err) {
+                console.error("Quote submission error:", err);
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Failed to submit quote request. Please try again later.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Request Quote';
             }
-
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Request Quote';
         });
     </script>
 </body>
