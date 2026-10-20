@@ -572,11 +572,10 @@
 
                     let isAdmin = false;
                     try {
-                        const userDoc = await getDoc(doc(db, "users", user.uid));
-                        if (userDoc.exists()) {
-                            const data = userDoc.data();
-                            currentUserName = data.name || data.username || "Anonymous User";
-                            isAdmin = Boolean(data.isAdmin);
+                        const userData = await ensureUserDocument(user);
+                        if (userData) {
+                            currentUserName = userData.name || userData.username || "Anonymous User";
+                            isAdmin = Boolean(userData.isAdmin);
                         }
                     } catch (error) {
                         console.error("Could not fetch user profile:", { code: error.code, message: error.message, details: error });
