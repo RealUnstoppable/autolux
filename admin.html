@@ -1122,22 +1122,46 @@
                         }
 
                         // Process referral if exists
-                        if (bookingData && bookingData.referralCode) {
+                        if (bookingData && bookingData.referralCode && !bookingData.referralProcessed) {
                             try {
-                                const q = query(collection(db, "users"), where("referralCode", "==", bookingData.referralCode));
-                                const userSnap = await getDocs(q);
-                                if (!userSnap.empty) {
-                                    const referrerId = userSnap.docs[0].id;
+                                const cleanCode = bookingData.referralCode.trim().toUpperCase();
+                                let referrerId = null;
+
+                                // Check referral_codes lookup first
+                                const refCodeSnap = await getDoc(doc(db, "referral_codes", cleanCode));
+                                if (refCodeSnap && typeof refCodeSnap.exists === 'function' && refCodeSnap.exists()) {
+                                    referrerId = refCodeSnap.data().userId;
+                                } else {
+                                    // Fallback to querying users collection
+                                    const q = query(collection(db, "users"), where("referralCode", "==", cleanCode));
+                                    const userSnap = await getDocs(q);
+                                    if (!userSnap.empty) {
+                                        referrerId = userSnap.docs[0].id;
+                                    }
+                                }
+
+                                if (referrerId && referrerId !== bookingData.userId) {
                                     await updateDoc(doc(db, "users", referrerId), {
                                         referralCredits: increment(25)
                                     });
                                     await addDoc(collection(db, "referrals"), {
                                         referrerId: referrerId,
-                                        refereeId: bookingData.userId,
+                                        refereeId: bookingData.userId || null,
                                         bookingId: id,
+                                        referralCode: cleanCode,
+                                        rewardAmount: 25,
                                         status: 'completed',
                                         createdAt: serverTimestamp()
                                     });
+                                    await addDoc(collection(db, "notifications"), {
+                                        userId: referrerId,
+                                        title: "Referral Reward Earned! 🎁",
+                                        message: `Your referral code (${cleanCode}) was used for a completed booking! $25 in credits has been added to your account.`,
+                                        type: 'reward',
+                                        read: false,
+                                        createdAt: serverTimestamp()
+                                    });
+                                    await updateDoc(bookingRef, { referralProcessed: true });
                                     console.log("Applied $25 referral credit to user: " + referrerId);
                                 }
                             } catch (e) {

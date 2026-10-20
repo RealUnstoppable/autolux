@@ -587,7 +587,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
@@ -1180,6 +1180,7 @@
                 const userRef = doc(db, "users", currentUser.uid);
 
                 await updateDoc(userRef, { addresses: arrayUnion(newAddressObj) });
+                clearUserDocumentCache(currentUser.uid);
 
                 // Optimistically update the UI
                 const list = document.getElementById('addresses-list');
@@ -1231,6 +1232,7 @@
                     const userRef = doc(db, "users", currentUser.uid);
 
                     await updateDoc(userRef, { addresses: arrayRemove(addressObjToRemove) });
+                    clearUserDocumentCache(currentUser.uid);
 
                     // Optimistically update UI
                     const addressItem = e.target.closest('.address-item');
@@ -1341,6 +1343,7 @@
                 // PERFORMANCE OPTIMIZATION: Avoid N+1 query by using arrayUnion
                 // This eliminates the need to fetch the document first just to update the array
                 await updateDoc(userRef, { vehicles: arrayUnion(val) });
+                clearUserDocumentCache(currentUser.uid);
 
                 // Optimistically update the UI without another read
                 const list = document.getElementById('vehicles-list');
@@ -1386,6 +1389,7 @@
 
                     // PERFORMANCE OPTIMIZATION: Avoid read-modify-write pattern by using arrayRemove
                     await updateDoc(userRef, { vehicles: arrayRemove(vehicleToRemove) });
+                    clearUserDocumentCache(currentUser.uid);
 
                     // Optimistically update UI
                     const vehicleItem = e.target.closest('.vehicle-item');

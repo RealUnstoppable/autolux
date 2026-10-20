@@ -312,7 +312,10 @@
 
                 <div class="input-group">
                     <label for="referral-code">Referral Code <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
-                    <input type="text" id="referral-code" aria-label="Referral Code" placeholder="e.g. A1B2C3" style="text-transform: uppercase;">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="referral-code" aria-label="Referral Code" placeholder="e.g. A1B2C3" style="text-transform: uppercase; flex-grow: 1;">
+                        <button type="button" id="apply-referral-btn" class="btn-schedule" style="white-space: nowrap; padding: 10px 18px; border: 1px solid var(--border); background: var(--bg-card); color: var(--gold); border-radius: 6px; font-weight: 600; cursor: pointer;">Apply</button>
+                    </div>
                     <p id="referral-msg" style="font-size: 0.85rem; margin-top: 5px; font-weight: 600;" aria-live="polite"></p>
                 </div>
 
