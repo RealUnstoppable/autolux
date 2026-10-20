@@ -345,8 +345,8 @@
                 <div class="card">
                     <h2>Client Profile</h2>
                     <div class="user-info">
-                        <p><strong>Name:</strong> <span id="user-name">Loading...</span></p>
-                        <p><strong>Email:</strong> <span id="user-email">Loading...</span></p>
+                        <p><strong>Name:</strong> <span id="user-name">Valued Client</span></p>
+                        <p><strong>Email:</strong> <span id="user-email">client@autolux.com</span></p>
                         <p><strong>Account Status:</strong> <span id="user-status" class="status-badge approved">Active</span></p>
                         <p id="un-account-row" style="display: none;"><strong>UN Account:</strong> <span id="un-status-badge" class="status-badge approved">Linked</span></p>
                         <p id="un-email-row" style="display: none;"><strong>UN Email:</strong> <span id="un-email-display" style="color: var(--text-muted); font-size: 0.85rem; word-break: break-all;"></span></p>
@@ -380,13 +380,13 @@
                     <div style="margin-bottom: 15px;">
                         <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="Loading...">
+                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="ALX-VIP2026">
                             <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3);">
                         <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
-                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
+                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$50</span>
                     </div>
                 </div>
 
@@ -415,7 +415,23 @@
                         <button id="new-ticket-btn" class="btn-schedule">+ New Ticket</button>
                     </div>
                     <div id="tickets-list">
-                        <p style="color: var(--text-muted);">Loading tickets...</p>
+                        <div style="padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; background: var(--bg-dark);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: var(--gold);">Welcome to AutoLux Concierge</h3>
+                                <span style="background: var(--gold); color: black; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize;">Open</span>
+                            </div>
+                            <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--text-muted);">Category: General Questions</p>
+                            <div style="margin-top: 15px;">
+                                <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                                    <strong style="color: var(--gold);">AutoLux Concierge:</strong>
+                                    <p style="margin: 5px 0 0 0; font-size: 0.9rem;">Welcome to your AutoLux portal! Let us know if you need assistance with booking, detailing packages, or vehicle care.</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                                <button class="btn-schedule reply-btn" data-id="dummy-ticket-1" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- New Ticket Form (Hidden) -->
@@ -438,7 +454,14 @@
                         <h2 style="margin: 0; border: none; padding: 0;">Alerts & Notifications</h2>
                     </div>
                     <div id="notifications-list">
-                        <p style="color: var(--text-muted);">Loading notifications...</p>
+                        <div class="list-item" style="font-weight: bold; border-left: 3px solid var(--gold); padding-left: 10px;">
+                            <div style="flex-grow: 1;">
+                                <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">VIP Membership Activated</p>
+                                <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">Welcome to AutoLux! Your account is active. Schedule your next detail to earn rewards and exclusive member benefits.</small>
+                                <small style="color: var(--text-muted); font-size: 0.75rem;">Recent</small>
+                            </div>
+                            <button class="btn-sm btn-action mark-read-btn" data-id="dummy-notif-1" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Mark Read</button>
+                        </div>
                     </div>
                 </div>
 
@@ -448,21 +471,49 @@
                         <a href="booking.html" class="btn-schedule">+ Book New</a>
                     </div>
                     <div id="appointments-list">
-                        <p style="color: var(--text-muted);">Loading your bookings...</p>
+                        <div class="list-item">
+                            <div>
+                                <p>Executive Ceramic Detail</p>
+                                <small>2024 Porsche 911 GT3 &bull; Saturday at 10:00 AM</small>
+                            </div>
+                            <span class="status-badge confirmed">confirmed</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card" id="service-gallery-card" style="margin-bottom: 20px;">
                     <h2>Service History & Gallery</h2>
                     <div id="service-logs-list" style="display: grid; gap: 20px;">
-                        <p style="color: var(--text-muted);">Loading service history...</p>
+                        <div style="background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <h3 style="margin: 0 0 5px 0; color: var(--gold);">Signature Paint Correction &amp; Ceramic Coating</h3>
+                                    <p style="margin: 0; font-weight: 600;">2024 Porsche 911 GT3</p>
+                                </div>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">Recent</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"Multi-stage paint correction, 5-year hydrophobic ceramic coating applied, and full interior leather treatment."</p>
+                            <div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
+                                <div style="flex: 1; min-width: 150px;">
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 5px 0;">Before</p>
+                                    <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&amp;w=600&amp;auto=format" alt="Before detail" style="width: 100%; border-radius: 4px; border: 1px solid var(--border);">
+                                </div>
+                                <div style="flex: 1; min-width: 150px;">
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 5px 0;">After</p>
+                                    <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&amp;w=600&amp;auto=format" alt="After detail" style="width: 100%; border-radius: 4px; border: 1px solid var(--border);">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card">
                     <h2>My Registered Vehicles</h2>
                     <div id="vehicles-list">
-                        <p style="color: var(--text-muted);">No vehicles registered yet.</p>
+                        <div class="vehicle-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
+                            <span>2024 Porsche 911 GT3</span>
+                            <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="2024 Porsche 911 GT3">Remove</button>
+                        </div>
                     </div>
                     <form id="add-vehicle-form" style="margin-top: 15px; display: flex; gap: 10px;">
                         <input type="text" id="new-vehicle" aria-label="New vehicle details" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
@@ -474,7 +525,13 @@
                 <div class="card">
                     <h2>My Service Addresses</h2>
                     <div id="addresses-list">
-                        <p style="color: var(--text-muted);">No service addresses saved yet.</p>
+                        <div class="address-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
+                            <div>
+                                <strong style="color: var(--gold); display: block; font-size: 0.9rem;">Home (Primary)</strong>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">100 Ocean Drive, Suite 400, Miami, FL 33139</span>
+                            </div>
+                            <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="Home (Primary)" data-address="100 Ocean Drive, Suite 400, Miami, FL 33139">Remove</button>
+                        </div>
                     </div>
                     <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
                         <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">

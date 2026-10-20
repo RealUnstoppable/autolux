@@ -23,6 +23,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Performance Preconnections & Resource Preloads -->
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+    <link rel="modulepreload" href="./js/auth.js">
     <style>
         a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent, #2563EB); outline-offset: 2px; }
         :root {
@@ -327,7 +333,7 @@
     </footer>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, validateReferralCode } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument } from './js/auth.js';
         import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage } from './js/utils.js';
         import { submitDetailingRequest } from './js/api.js';
@@ -372,10 +378,8 @@
 
                     // Fetch user's saved addresses
                     try {
-                        const userDoc = await getDoc(doc(db, 'users', user.uid));
-                        if (userDoc.exists()) {
-                            const userData = userDoc.data();
-                            if (userData.addresses && userData.addresses.length > 0) {
+                        const userData = await ensureUserDocument(user);
+                        if (userData && userData.addresses && userData.addresses.length > 0) {
                                 const container = document.getElementById('saved-addresses-container');
                                 const addressInput = document.getElementById('address');
                                 container.style.display = 'flex';
