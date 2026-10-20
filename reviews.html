@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="geo.region" content="US-GA">
-    <meta name="geo.placename" content="Buford, GA">
     <script>
         window.ENV = {
             FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
@@ -20,204 +18,264 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
-    <title>Customer Reviews | AutoLux Detailing</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Customer Reviews & Feedback | AUTOLUX Detailing</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        
-        :root {
-            --bg-main: #0a0a0a;
-            --bg-dark: #111111;
-            --bg-card: #1a1a1a;
-            --accent: #d4af37;
-            --gold: #d4af37;
-            --text-main: #f5f5f5;
-            --text-muted: #a0a0a0;
-            --border: #333333;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* Nav */
-        header {
-            position: fixed; top: 0; left: 0; right: 0;
-            background: rgba(10,10,10,0.9);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px;
-        }
-        .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-main); text-decoration: none; }
-        .logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 30px; align-items: center; }
-        .nav-links a { color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--accent); }
-
-                /* Unified Button Styles */
-        .auth-btn, .btn-primary, .btn-submit, button[type="submit"], .btn-white {
-            background: #FFFFFF !important;
-            color: #000000 !important;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-weight: 700 !important;
-            border: none !important;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
+        .reviews-page {
+            padding: clamp(40px, 6vw, 80px) 20px;
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            flex-grow: 1;
+            width: 100%;
             box-sizing: border-box;
-            cursor: pointer;
-            font-size: 1rem;
         }
 
-        .auth-btn::before, .btn-primary::before, .btn-submit::before, button[type="submit"]::before, .btn-white::before {
-            content: '';
-            position: absolute;
-            top: 100%; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%);
-            z-index: -1;
-            transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: inherit;
-        }
-
-        .auth-btn:hover, .btn-primary:hover, .btn-submit:hover, button[type="submit"]:hover, .btn-white:hover {
-            color: #000000 !important;
-        }
-
-        .auth-btn:hover::before, .btn-primary:hover::before, .btn-submit:hover::before, button[type="submit"]:hover::before, .btn-white:hover::before {
-            top: 0;
-        }
-
-        .auth-btn:active, .btn-primary:active, .btn-submit:active, button[type="submit"]:active, .btn-white:active {
-            box-shadow: 0 0 0 2px rgba(212, 175, 55, 1), 0 0 10px 4px rgba(212, 175, 55, 0.6), 0 0 25px 8px rgba(212, 175, 55, 0.2) !important;
-            transform: scale(0.96);
-        }
-
-        /* Gold Buttons (Reverse Animation) */
-        .btn-gold {
-            background: linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%) !important;
-            color: #000000 !important;
-        }
-
-        .btn-gold::before {
-            background: #FFFFFF !important;
-        }
-
-        .btn-gold:hover {
-            box-shadow: none;
-        }
-
-        .btn-gold:active {
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 10px 4px rgba(255, 255, 255, 0.6), 0 0 25px 8px rgba(255, 255, 255, 0.2) !important;
-            transform: scale(0.96);
-        }
-
-        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 40px; color: var(--gold); }
-        
-        .filters {
+        .filter-bar {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 40px;
+            flex-wrap: wrap;
         }
 
         .filter-btn {
-            background: var(--bg-card);
-            color: var(--text-main);
+            background: #141418;
+            color: var(--text-muted);
             border: 1px solid var(--border);
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all var(--transition-fast);
         }
 
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--gold);
-            color: black;
+        .filter-btn:hover {
             border-color: var(--gold);
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: var(--gold-gradient);
+            color: #000000;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
         }
 
         .reviews-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
         }
 
         .review-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: var(--radius-md);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
         }
 
-        .review-card .stars { color: var(--gold); margin-bottom: 15px; font-size: 1.2rem; }
-        .review-card p { color: var(--text-muted); font-style: italic; margin-bottom: 15px; }
-        .review-card .author { font-weight: bold; color: var(--text-main); }
-        .review-card .date { font-size: 0.8rem; color: #666; margin-top: 5px; }
+        .review-card:hover {
+            border-color: var(--border-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--gold-glow-subtle);
+        }
 
-        footer {
-            background: var(--bg-dark);
-            text-align: center;
-            padding: 40px 20px;
+        .review-card .stars {
+            color: var(--gold);
+            font-size: 1.25rem;
+            margin-bottom: 14px;
+            letter-spacing: 2px;
+        }
+
+        .review-card .comment {
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .review-footer {
             border-top: 1px solid var(--border);
-            margin-top: 60px;
+            padding-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .review-author {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 0.92rem;
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--text-subtle);
         }
     </style>
-    <script src="env.js?v=2"></script>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="logo">AUTO<span>LUX</span></a>
-        <nav class="nav-links">
-            <a href="index.html#services">Services</a>
-            <a href="index.html#portfolio">Work</a>
-            <a href="booking.html" class="auth-btn">Book Now</a>
-        </nav>
-    </header>
 
-    <div class="container">
-        <h1>All Customer Reviews</h1>
+    <!-- Unified Global Persistent Navigation -->
+    <nav class="site-navbar" id="global-navbar" aria-label="Main Navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">
+                <span class="logo-text">AUTOLUX</span>
+                <svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" aria-label="Checker Flag" aria-hidden="true">
+                    <rect width="24" height="18" fill="#FFFFFF" rx="2"/>
+                    <rect x="0" y="0" width="6" height="4.5" fill="#000000"/>
+                    <rect x="12" y="0" width="6" height="4.5" fill="#000000"/>
+                    <rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="0" y="9" width="6" height="4.5" fill="#000000"/>
+                    <rect x="12" y="9" width="6" height="4.5" fill="#000000"/>
+                    <rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/>
+                </svg>
+            </a>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="nav-links" id="nav-links">
+                <a href="index.html" class="nav-link" data-route="home">Home</a>
+                <a href="index.html#process" class="nav-link" data-route="process">Process</a>
+                <a href="index.html#pricing" class="nav-link" data-route="pricing">Pricing</a>
+                <a href="index.html#gallery" class="nav-link" data-route="gallery">Gallery</a>
+                <a href="reviews.html" class="nav-link active" data-route="reviews">Reviews</a>
+                <a href="rewards.html" class="nav-link" data-route="rewards">Rewards</a>
+                <a href="quote.html" class="nav-link" data-route="quote">Custom Quote</a>
+                <div class="nav-actions">
+                    <a href="booking.html" class="nav-cta btn-gold" data-route="booking">Book Now</a>
+                    <a href="sign in beta.html" class="auth-btn nav-auth-link" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="reviews-page">
+        <div class="section-heading-wrapper">
+            <span class="section-eyebrow">Verified Experiences</span>
+            <h1>All Client Reviews</h1>
+            <p class="section-subtitle">Real experiences and feedback from luxury automobile owners in Buford, GA and beyond.</p>
+        </div>
         
-        <div class="filters">
+        <div class="filter-bar">
             <button class="filter-btn active" data-sort="newest">Newest First</button>
             <button class="filter-btn" data-sort="highest">Highest Rated</button>
         </div>
 
         <div class="reviews-grid" id="reviews-grid">
-            <div style="text-align:center; width:100%; grid-column: 1/-1; color: var(--text-muted);">Loading reviews...</div>
+            <div style="text-align: center; width: 100%; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Loading reviews...</div>
         </div>
-    </div>
+    </main>
 
-    <footer>
-        <p>&copy; 2026 AutoLux Detailing. All rights reserved.</p>
+    <!-- Global Persistent Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">
+                    <span class="logo-text">AUTOLUX</span>
+                    <svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" aria-label="Checker Flag" aria-hidden="true">
+                        <rect width="24" height="18" fill="#FFFFFF" rx="2"/>
+                        <rect x="0" y="0" width="6" height="4.5" fill="#000000"/>
+                        <rect x="12" y="0" width="6" height="4.5" fill="#000000"/>
+                        <rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="0" y="9" width="6" height="4.5" fill="#000000"/>
+                        <rect x="12" y="9" width="6" height="4.5" fill="#000000"/>
+                        <rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/>
+                    </svg>
+                </a>
+                <p>Buford's premier luxury mobile detailing studio. We bring the showroom back to your driveway with precision craftsmanship, pH-neutral safe foam, and ceramic protection.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#process">Our Process</a></li>
+                    <li><a href="index.html#pricing">Packages & Pricing</a></li>
+                    <li><a href="index.html#gallery">Recent Gallery</a></li>
+                    <li><a href="reviews.html">Client Reviews</a></li>
+                    <li><a href="rewards.html">Loyalty Rewards</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="booking.html?package=sedan">Luxury Sedan Detail</a></li>
+                    <li><a href="booking.html?package=suv">Luxury SUV Package</a></li>
+                    <li><a href="booking.html?package=truck">Heavy-Duty Truck</a></li>
+                    <li><a href="booking.html?package=van">Executive Sprinter Van</a></li>
+                    <li><a href="booking.html?package=club">Detailing Club Plan</a></li>
+                    <li><a href="quote.html">Custom Fleet / PPF Quote</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Concierge</h4>
+                <div class="footer-contact-item">
+                    <span>📞</span>
+                    <a href="tel:+15551234567">(555) 123-4567</a>
+                </div>
+                <div class="footer-contact-item">
+                    <span>✉️</span>
+                    <a href="mailto:booking@autolux.com">booking@autolux.com</a>
+                </div>
+                <div class="footer-contact-item">
+                    <span>📍</span>
+                    <span>Buford, GA & 30-Mile Vicinity</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2026 Unstoppable Detailing Services / AUTOLUX. All rights reserved. Buford, GA.</div>
+            <div class="footer-social-links">
+                <a href="#" aria-label="Instagram">Instagram</a>
+                <span>&bull;</span>
+                <a href="#" aria-label="Facebook">Facebook</a>
+                <span>&bull;</span>
+                <a href="#" aria-label="YouTube">YouTube</a>
+            </div>
+        </div>
     </footer>
 
+    <!-- Logic Script -->
     <script type="module">
-        import { db } from '../js/auth.js';
+        import { db } from './js/auth.js';
         import { collection, query, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { safeGetSessionStorage, safeSetSessionStorage } from '../js/utils.js';
+        import { safeGetSessionStorage, safeSetSessionStorage, escapeHTML } from './js/utils.js';
+        import { initNavbar } from './js/navbar.js';
 
         const grid = document.getElementById('reviews-grid');
         const filterBtns = document.querySelectorAll('.filter-btn');
         let allReviews = [];
 
         async function loadReviews() {
-            // ⚡ Bolt Optimization: Use sessionStorage to cache static reviews data to save DB reads
             try {
                 const cachedAllReviews = safeGetSessionStorage('autolux_all_reviews');
                 if (cachedAllReviews) {
@@ -234,10 +292,8 @@
                 const snapshot = await getDocs(q);
                 
                 let dbReviews = snapshot.docs.map(doc => doc.data());
-                // Stringify timestamps for caching
                 dbReviews = dbReviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
                 
-                // Add the generational reviews that were hidden on the main page
                 const genReviews = [
                     { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date().toISOString() },
                     { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date().toISOString() },
@@ -256,22 +312,20 @@
                 renderReviews(allReviews);
             } catch (error) {
                 console.error("Error loading reviews:", error.message || error, error.code ? `(Code: ${error.code})` : "");
-                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error);">Failed to load reviews.</div>';
-                if (error && error.code) console.error('Error code:', error.code);
+                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error); padding: 40px 0;">Failed to load reviews. Please try again later.</div>';
             }
         }
 
         function renderReviews(reviewsToRender) {
             grid.innerHTML = '';
             if (reviewsToRender.length === 0) {
-                grid.innerHTML = '<div style="text-align:center; width:100%;">No reviews yet.</div>';
+                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--text-muted); padding: 40px 0;">No reviews yet.</div>';
                 return;
             }
 
             const fragment = document.createDocumentFragment();
 
             reviewsToRender.forEach(r => {
-                // Sanitize and clamp rating to prevent String.repeat() RangeError DoS
                 const ratingValue = Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5));
                 const stars = '★'.repeat(ratingValue) + '☆'.repeat(5 - ratingValue);
                 let date = 'Recent';
@@ -283,29 +337,20 @@
                     }
                 }
                 const el = document.createElement('div');
-                el.className = 'review-card';
+                el.className = 'review-card luxury-card';
                 el.innerHTML = `
-                    <div class="stars">${stars}</div>
-                    <p>"${escapeHTML(r.comment)}"</p>
-                    <div class="author">- ${escapeHTML(r.userName || 'Anonymous')}</div>
-                    <div class="date">${date}</div>
+                    <div>
+                        <div class="stars" aria-label="${ratingValue} out of 5 stars">${stars}</div>
+                        <div class="comment">"${escapeHTML(r.comment)}"</div>
+                    </div>
+                    <div class="review-footer">
+                        <span class="review-author">✦ ${escapeHTML(r.userName || 'Verified Client')}</span>
+                        <span class="review-date">${escapeHTML(date)}</span>
+                    </div>
                 `;
                 fragment.appendChild(el);
             });
             grid.appendChild(fragment);
-        }
-
-        function escapeHTML(str) {
-            if (!str) return "";
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag])
-            );
         }
 
         filterBtns.forEach(btn => {
@@ -320,8 +365,8 @@
                     sorted.sort((a, b) => b.rating - a.rating);
                 } else {
                     sorted.sort((a, b) => {
-                        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date();
-                        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date();
+                        const dateA = new Date(a.createdAt || 0);
+                        const dateB = new Date(b.createdAt || 0);
                         return dateB - dateA;
                     });
                 }
