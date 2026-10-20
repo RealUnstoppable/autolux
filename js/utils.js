@@ -37,7 +37,15 @@ export async function submitGenericRequest(collectionName, baseData, additionalD
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error(`Firebase connection error in ${collectionName}. Code:`, error.code || 'UNKNOWN_ERROR');
-        console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else if (error.code === 'unavailable') {
+            console.error("Network unavailable or Firebase dropped connection:", error.message);
+        } else {
+            console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
         return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }

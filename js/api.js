@@ -19,6 +19,8 @@ async function handleApiRequest(coreFunction, payload, type) {
             console.error("App Check or CORS issue detected:", error.message);
         } else if (error.code === 'auth/invalid-api-key') {
             console.error("Invalid API key detected:", error.message);
+        } else if (error.code === 'unavailable') {
+            console.error("Network unavailable or Firebase dropped connection:", error.message);
         } else {
             console.error(`Error adding ${type.toLowerCase()} document:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         }
