@@ -55,6 +55,8 @@ try {
         console.error("App Check or CORS issue detected:", error.message);
     } else if (error.code === 'auth/invalid-api-key') {
         console.error("Invalid API key detected:", error.message);
+    } else if (error.code === 'unavailable') {
+        console.error("Network unavailable or Firebase dropped connection:", error.message);
     } else {
         console.error("Firebase connection error:", { message: error.message, details: error });
     }
