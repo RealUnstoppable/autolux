@@ -119,4 +119,20 @@ describe('Referral System Logic', () => {
             expect(userData.referralCredits).toBe(50);
         });
     });
+
+    describe('booking submission with referralCode', () => {
+        it('normalizes and attaches uppercase referralCode to bookings payload', async () => {
+            const { submitDetailingRequest } = await import('../js/api.js');
+            const result = await submitDetailingRequest({
+                package: 'Luxury Sedan - $150',
+                vehicle: '2024 Tesla Model S',
+                appointmentDate: '2026-10-25T10:00',
+                address: '123 Test Road',
+                referralCode: '  friend99  '
+            });
+
+            expect(result.success).toBe(true);
+            expect(result.id).toBe('mock-doc-id');
+        });
+    });
 });
