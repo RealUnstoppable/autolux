@@ -380,13 +380,23 @@
                     <div style="margin-bottom: 15px;">
                         <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: var(--text-muted);">Your Referral Code:</p>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="ALX-VIP2026">
+                            <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="...">
                             <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
+                            <button class="btn-schedule" id="share-referral-btn" style="border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); cursor: pointer;" title="Share Referral Link">Share</button>
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 15px;">
                         <span style="font-weight: 600; color: var(--gold);">Earned Credits:</span>
-                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$50</span>
+                        <span id="user-referral-credits" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">$0</span>
+                    </div>
+                    <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Friends Referred:</span>
+                            <span id="user-referral-count" style="font-weight: 700; color: var(--text-main);">0</span>
+                        </div>
+                        <div id="referrals-history-container" style="font-size: 0.8rem; color: var(--text-muted);">
+                            Loading referral activity...
+                        </div>
                     </div>
                 </div>
 
@@ -587,7 +597,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
@@ -669,12 +679,12 @@
                 userEmailEl.textContent = 'client@autolux.com';
             }
             const referralCodeEl = document.getElementById('user-referral-code');
-            if (referralCodeEl && (!referralCodeEl.value || referralCodeEl.value === 'Loading...')) {
-                referralCodeEl.value = DUMMY_ASSETS.referral.code;
+            if (referralCodeEl && (!referralCodeEl.value || referralCodeEl.value === 'Loading...' || referralCodeEl.value === '...')) {
+                referralCodeEl.value = userData?.referralCode || '...';
             }
             const referralCreditsEl = document.getElementById('user-referral-credits');
             if (referralCreditsEl && (!referralCreditsEl.textContent || referralCreditsEl.textContent === 'Loading...')) {
-                referralCreditsEl.textContent = `$${DUMMY_ASSETS.referral.credits}`;
+                referralCreditsEl.textContent = `$${userData?.referralCredits !== undefined ? userData.referralCredits : 0}`;
             }
             ['tickets-list', 'notifications-list', 'appointments-list', 'service-logs-list', 'vehicles-list', 'addresses-list'].forEach(id => {
                 const el = document.getElementById(id);
@@ -725,26 +735,8 @@
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
 
-                if (!userData) {
-                    userData = {
-                        uid: user.uid,
-                        email: user.email,
-                        name: user.displayName || "Valued Client",
-                        username: user.displayName || "Valued Client",
-                        isAdmin: false,
-                        isBanned: false,
-                        membershipLevel: 'free',
-                        signupDate: serverTimestamp(),
-                        vehicles: [DUMMY_ASSETS.vehicle],
-                        addresses: [DUMMY_ASSETS.address],
-                        referralCode: DUMMY_ASSETS.referral.code,
-                        referralCredits: DUMMY_ASSETS.referral.credits,
-                        appointments: [],
-                        contactInfo: {},
-                        loyaltyPoints: 100,
-                        bonusAwarded: true
-                    };
-                    await setDoc(userRef, userData, { merge: true }).catch(e => console.warn("Could not save initial user doc:", e));
+                if (!userData || !userData.referralCode) {
+                    userData = await ensureUserDocument(user, { forceRefresh: true });
                 }
 
                 // Render User Info - fallback gracefully if missing
@@ -759,16 +751,19 @@
                 const referralCreditsEl = document.getElementById('user-referral-credits');
                 const loyaltyPointsEl = document.getElementById('user-loyalty-points');
                 if (referralCodeEl) {
-                    referralCodeEl.value = userData?.referralCode || DUMMY_ASSETS.referral.code || 'N/A';
+                    referralCodeEl.value = userData?.referralCode || '...';
                 }
                 if (referralCreditsEl) {
-                    const creds = userData?.referralCredits !== undefined ? userData.referralCredits : DUMMY_ASSETS.referral.credits;
-                    referralCreditsEl.textContent = creds !== undefined && creds !== null ? `$${creds}` : 'N/A';
+                    const creds = userData?.referralCredits !== undefined ? userData.referralCredits : 0;
+                    referralCreditsEl.textContent = `$${creds}`;
                 }
                 if (loyaltyPointsEl) {
                     const points = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
                     loyaltyPointsEl.textContent = `${points.toLocaleString()} pts`;
                 }
+
+                // Load user referral activity history
+                loadReferralsHistory(user);
 
                 renderBookings(appointmentsSnap);
                 await loadTickets(user);
@@ -1513,19 +1508,84 @@
             }
         });
 
+        async function loadReferralsHistory(user) {
+            const countEl = document.getElementById('user-referral-count');
+            const historyEl = document.getElementById('referrals-history-container');
+            if (!user || !historyEl) return;
+            try {
+                const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid));
+                const snap = await getDocs(q);
+                if (countEl) countEl.textContent = snap.size.toString();
+                if (snap.empty) {
+                    historyEl.innerHTML = '<span style="color: var(--text-muted);">Share your code to earn $25 credit per completed booking!</span>';
+                } else {
+                    const totalEarned = snap.docs.reduce((acc, d) => acc + (d.data().rewardAmount || 25), 0);
+                    historyEl.innerHTML = `<span style="color: #16A34A; font-weight: 600;">✓ ${snap.size} referral${snap.size === 1 ? '' : 's'} completed ($${totalEarned} earned)</span>`;
+                }
+            } catch (err) {
+                if (countEl && countEl.textContent === '0') countEl.textContent = '0';
+                if (historyEl) historyEl.innerHTML = '<span style="color: var(--text-muted);">Share your code to earn $25 credit per booking!</span>';
+            }
+        }
+
+        function copyTextWithFallback(text, buttonEl, successText = 'Copied!') {
+            const originalText = buttonEl.textContent;
+            function onSuccess() {
+                buttonEl.textContent = successText;
+                setTimeout(() => { buttonEl.textContent = originalText; }, 2000);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
+            } else {
+                fallback();
+            }
+            function fallback() {
+                try {
+                    const temp = document.createElement('textarea');
+                    temp.value = text;
+                    temp.style.position = 'fixed';
+                    temp.style.opacity = '0';
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+                    onSuccess();
+                } catch (e) {
+                    console.error('Fallback copy failed:', e);
+                }
+            }
+        }
+
         // Copy referral code to clipboard
         const copyReferralBtn = document.getElementById('copy-referral-btn');
         if (copyReferralBtn) {
             copyReferralBtn.addEventListener('click', () => {
                 const codeEl = document.getElementById('user-referral-code');
-                if (codeEl && codeEl.value !== 'Loading...') {
-                    navigator.clipboard.writeText(codeEl.value).then(() => {
-                        const originalText = copyReferralBtn.textContent;
-                        copyReferralBtn.textContent = 'Copied!';
-                        setTimeout(() => { copyReferralBtn.textContent = originalText; }, 2000);
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
+                if (codeEl && codeEl.value && codeEl.value !== 'Loading...' && codeEl.value !== '...') {
+                    copyTextWithFallback(codeEl.value, copyReferralBtn, 'Copied!');
+                }
+            });
+        }
+
+        // Share referral code link
+        const shareReferralBtn = document.getElementById('share-referral-btn');
+        if (shareReferralBtn) {
+            shareReferralBtn.addEventListener('click', () => {
+                const codeEl = document.getElementById('user-referral-code');
+                const code = codeEl?.value;
+                if (!code || code === '...' || code === 'Loading...') return;
+                const origin = (window.location && window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'https://autolux.realunstoppable.store';
+                const shareUrl = `${origin}/booking.html?ref=${encodeURIComponent(code)}`;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'AutoLux Luxury Detailing - Free Premium Wash',
+                        text: `Use my referral code ${code} for a complimentary premium wash on your detailing service!`,
+                        url: shareUrl
+                    }).catch(() => {
+                        copyTextWithFallback(shareUrl, shareReferralBtn, 'Link Copied!');
                     });
+                } else {
+                    copyTextWithFallback(shareUrl, shareReferralBtn, 'Link Copied!');
                 }
             });
         }
