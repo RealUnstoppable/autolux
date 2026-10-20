@@ -151,3 +151,33 @@ export async function submitNewsletterCore(email) {
         return { success: false, error: "Failed to subscribe.", code: error.code || 'UNKNOWN_ERROR' };
     }
 }
+
+/**
+ * Generic internal function to fetch documents with a fallback for missing indexes.
+ */
+export async function fetchUserDocsWithFallback(collectionName, userId, orderByField, getDocsFn, queryFn, collectionFn, dbInstance, whereFn, orderByFn) {
+    try {
+        const q = queryFn(
+            collectionFn(dbInstance, collectionName),
+            whereFn("userId", "==", userId),
+            orderByFn(orderByField, "desc")
+        );
+        const snapshot = await getDocsFn(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error(`Error fetching ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error.code === 'failed-precondition' || error.message.includes('index')) {
+            console.warn(`Missing index for ${collectionName}. Returning unsorted list.`);
+            try {
+                const qFallback = queryFn(collectionFn(dbInstance, collectionName), whereFn("userId", "==", userId));
+                const snap = await getDocsFn(qFallback);
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                return docs.sort((a, b) => (b[orderByField]?.seconds || 0) - (a[orderByField]?.seconds || 0));
+            } catch (fallbackError) {
+                console.error(`Error fetching ${collectionName} fallback:`, { code: fallbackError.code || 'UNKNOWN_ERROR', message: fallbackError.message, details: fallbackError });
+                return [];
+            }
+        }
+        return [];
+    }
+}

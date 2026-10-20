@@ -444,10 +444,11 @@
                 const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
 
                 // Fire them off concurrently
-                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
+                const [userSnap, appointmentsSnap, notificationsSnap, logs] = await Promise.all([
                     getDoc(userRef),
                     getDocs(appointmentsQuery),
-                    getDocs(notificationsQuery)
+                    getDocs(notificationsQuery),
+                    fetchUserServiceLogs(user.uid)
                 ]);
 
                 let userData = userSnap.data();
@@ -494,8 +495,6 @@
                 renderBookings(appointmentsSnap);
                 loadTickets(user);
                 renderNotifications(notificationsSnap);
-
-                const logs = await fetchUserServiceLogs(user.uid);
                 renderServiceLogs(logs);
 
                 overlay.style.display = 'none';

@@ -1,4 +1,6 @@
 import { db } from './auth.js';
+import { fetchUserDocsWithFallback } from "./utils.js";
+
 import { collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -43,40 +45,9 @@ export async function redeemReward(rewardId, cost, title) {
  * Get user's redeemed rewards
  */
 export async function getUserRewards() {
-    try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) return [];
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return [];
 
-        const userRewardsRef = collection(db, "user_rewards");
-        const q = query(userRewardsRef, where("userId", "==", user.uid), orderBy("redeemedAt", "desc"));
-        const snapshot = await getDocs(q);
-
-        const rewards = [];
-        snapshot.forEach((doc) => {
-            rewards.push({ id: doc.id, ...doc.data() });
-        });
-        return rewards;
-    } catch (error) {
-        console.error("Error fetching user rewards:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
-        // Fallback for missing index during development
-        if (error.code === 'failed-precondition' || error.message.includes('index')) {
-            console.warn("Missing index for user_rewards. Returning unsorted list.");
-            try {
-                const userRewardsRef = collection(db, "user_rewards");
-                const q = query(userRewardsRef, where("userId", "==", user.uid));
-                const snapshot = await getDocs(q);
-
-                const rewards = [];
-                snapshot.forEach((doc) => {
-                    rewards.push({ id: doc.id, ...doc.data() });
-                });
-                return rewards.sort((a,b) => (b.redeemedAt?.seconds || 0) - (a.redeemedAt?.seconds || 0));
-            } catch (fallbackError) {
-                console.error("Error fetching user rewards fallback:", { code: fallbackError.code || 'UNKNOWN_ERROR', message: fallbackError.message, details: fallbackError });
-                return [];
-            }
-        }
-        return [];
-    }
+    return await fetchUserDocsWithFallback("user_rewards", user.uid, "redeemedAt", getDocs, query, collection, db, where, orderBy);
 }
