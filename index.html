@@ -244,15 +244,71 @@
             display: inline-block;
         }
 
+        .membership-price-tag {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 6px;
+            margin: 16px 0 20px 0;
+        }
+
+        .membership-price-val {
+            font-size: clamp(2.4rem, 4vw, 3.2rem);
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .membership-price-period {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .membership-perks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            max-width: 820px;
+            margin: 24px auto 32px auto;
+            text-align: left;
+        }
+
+        .membership-perk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .membership-perk-item span.icon {
+            color: var(--gold);
+            font-size: 1.1rem;
+            line-height: 1.2;
+        }
+
+        .membership-cta-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
         .membership h3 {
             color: var(--text-main);
             font-size: clamp(1.6rem, 3vw, 2.2rem);
-            margin-bottom: 14px;
+            margin-bottom: 8px;
         }
 
         .membership p {
             max-width: 680px;
-            margin: 0 auto 28px auto;
+            margin: 0 auto 20px auto;
             font-size: 1rem;
         }
 
@@ -631,10 +687,45 @@
 
         <!-- Membership Subscription Card -->
         <div class="membership">
-            <span class="membership-badge">VIP Maintenance Program</span>
-            <h3>AutoLux Detailing Plan</h3>
-            <p>Keep your vehicle pristine year-round. Subscribe for a monthly maintenance wash and receive a <strong>15% discount</strong> on all services for the year, plus priority booking.</p>
-            <a href="booking.html?package=club" class="btn-primary btn-gold" style="padding: 14px 36px; font-size: 1.05rem;">Join the Club</a>
+            <span class="membership-badge">VIP Concierge Program</span>
+            <h3>The AutoLux Detailing Club</h3>
+            <p>Keep your exotic or luxury vehicle in showroom condition year-round. Enjoy a monthly comprehensive mobile detail, guaranteed priority scheduling, and exclusive member savings.</p>
+            
+            <div class="membership-price-tag">
+                <span class="membership-price-val">$129</span>
+                <span class="membership-price-period">/ month</span>
+            </div>
+
+            <div class="membership-perks-grid">
+                <div class="membership-perk-item">
+                    <span class="icon">✦</span>
+                    <div><strong>Monthly Concierge Detail:</strong> Multi-stage safe foam bath, iron decontamination, and ceramic spray topper.</div>
+                </div>
+                <div class="membership-perk-item">
+                    <span class="icon">✦</span>
+                    <div><strong>15% Member Discount:</strong> Applied automatically to all paint corrections, ceramic coatings & specialty services.</div>
+                </div>
+                <div class="membership-perk-item">
+                    <span class="icon">✦</span>
+                    <div><strong>Priority Scheduling:</strong> Guaranteed fast appointments and weekend slots reserved exclusively for members.</div>
+                </div>
+                <div class="membership-perk-item">
+                    <span class="icon">✦</span>
+                    <div><strong>UN Points & Rewards:</strong> Earn 200 monthly points synchronized with your <em>realunstoppable.store</em> account.</div>
+                </div>
+            </div>
+
+            <div class="membership-cta-group">
+                <a href="booking.html?package=club" class="btn-primary btn-gold" style="padding: 14px 34px; font-size: 1.05rem;">Join the Club ($129/mo)</a>
+                <a href="https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1" target="_blank" rel="noopener noreferrer" class="btn-outline" style="padding: 14px 26px; font-size: 1.02rem; display: inline-flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Buy via Unstoppable Store
+                </a>
+            </div>
+
+            <div style="margin-top: 18px; font-size: 0.9rem; color: var(--text-muted);">
+                Looking for an annual VIP pass? <a href="booking.html?package=club-annual" style="color: var(--gold); text-decoration: underline; font-weight: 600;">Annual Pass ($1,290/yr) - 2 Months Free</a>
+            </div>
         </div>
     </section>
 
@@ -821,7 +912,7 @@
                     <li><a href="booking.html?package=suv">Luxury SUV Package</a></li>
                     <li><a href="booking.html?package=truck">Heavy-Duty Truck</a></li>
                     <li><a href="booking.html?package=van">Executive Sprinter Van</a></li>
-                    <li><a href="booking.html?package=club">Detailing Club Plan</a></li>
+                    <li><a href="booking.html?package=club">Detailing Club Plan ($129/mo)</a></li>
                     <li><a href="quote.html">Custom Fleet / PPF Quote</a></li>
                 </ul>
             </div>

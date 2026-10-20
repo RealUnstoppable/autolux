@@ -93,7 +93,7 @@ export function getFooterHTML() {
                     <li><a href="booking.html?package=suv">Luxury SUV Package</a></li>
                     <li><a href="booking.html?package=truck">Heavy-Duty Truck</a></li>
                     <li><a href="booking.html?package=van">Executive Sprinter Van</a></li>
-                    <li><a href="booking.html?package=club">Detaling Club Plan</a></li>
+                    <li><a href="booking.html?package=club">Detailing Club Plan ($129/mo)</a></li>
                     <li><a href="quote.html">Custom Fleet / PPF Quote</a></li>
                 </ul>
             </div>

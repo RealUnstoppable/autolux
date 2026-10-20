@@ -167,8 +167,24 @@
                         <option value="Luxury SUV - $250">Luxury SUV ($250)</option>
                         <option value="Premium Truck - $280">Premium Truck ($280)</option>
                         <option value="Sprinter Van - $400">Sprinter Van ($400)</option>
-                        <option value="AutoLux Detailing Club Plan - $99/mo">★ AutoLux Detailing Club Plan ($99/mo)</option>
+                        <option value="AutoLux Detailing Club Plan - $129/mo">★ AutoLux Detailing Club Plan ($129/mo - 15% Off All Services)</option>
+                        <option value="AutoLux Detailing Club Annual - $1,290/yr">★ AutoLux Detailing Club Annual ($1,290/yr - 2 Months Free)</option>
                     </select>
+                </div>
+
+                <!-- VIP Club Perks Banner (shown when a Club plan is selected) -->
+                <div id="club-perks-banner" style="display: none; background: rgba(212, 175, 55, 0.08); border: 1px solid var(--gold); border-radius: var(--radius-md); padding: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="flex: 1; min-width: 240px;">
+                            <span style="color: var(--gold); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">VIP Club Membership Selected</span>
+                            <h4 id="club-banner-title" style="margin: 4px 0; color: white; font-size: 1.12rem;">AutoLux Detailing Club Plan &bull; $129/mo</h4>
+                            <p id="club-banner-desc" style="margin: 0; font-size: 0.86rem; color: var(--text-muted); line-height: 1.4;">Includes monthly maintenance detail, 15% discount on all extra services, priority booking &amp; 200 UN loyalty points.</p>
+                        </div>
+                        <a id="club-store-checkout-link" href="https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1" target="_blank" rel="noopener noreferrer" class="btn-outline" style="font-size: 0.85rem; padding: 8px 16px; border-color: var(--gold); color: var(--gold); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            Pay on Unstoppable Store &rarr;
+                        </a>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -251,7 +267,7 @@
                     <li><a href="booking.html?package=suv">Luxury SUV Package</a></li>
                     <li><a href="booking.html?package=truck">Heavy-Duty Truck</a></li>
                     <li><a href="booking.html?package=van">Executive Sprinter Van</a></li>
-                    <li><a href="booking.html?package=club">Detailing Club Plan</a></li>
+                    <li><a href="booking.html?package=club">Detailing Club Plan ($129/mo)</a></li>
                     <li><a href="quote.html">Custom Fleet / PPF Quote</a></li>
                 </ul>
             </div>
@@ -305,8 +321,10 @@
         const pkgParam = urlParams.get('package');
         if (pkgParam) {
             const p = pkgParam.toLowerCase();
-            if (p === 'club' || p === 'membership') {
-                packageSelect.value = "AutoLux Detailing Club Plan - $99/mo";
+            if (p === 'club' || p === 'membership' || p === 'monthly') {
+                packageSelect.value = "AutoLux Detailing Club Plan - $129/mo";
+            } else if (p === 'club-annual' || p === 'annual') {
+                packageSelect.value = "AutoLux Detailing Club Annual - $1,290/yr";
             } else if (p === 'sedan') {
                 packageSelect.value = "Luxury Sedan - $150";
             } else if (p === 'suv') {
@@ -317,6 +335,32 @@
                 packageSelect.value = "Sprinter Van - $400";
             }
         }
+
+        // Manage VIP Club Perks Banner dynamically
+        function updateClubBanner() {
+            const val = packageSelect.value || '';
+            const banner = document.getElementById('club-perks-banner');
+            const title = document.getElementById('club-banner-title');
+            const desc = document.getElementById('club-banner-desc');
+            const link = document.getElementById('club-store-checkout-link');
+            if (!banner) return;
+
+            if (val.includes('$129/mo') || (val.toLowerCase().includes('plan') && !val.includes('1,290'))) {
+                banner.style.display = 'block';
+                if (title) title.textContent = 'AutoLux Detailing Club Plan • $129/mo';
+                if (desc) desc.textContent = 'Includes monthly maintenance detail, 15% discount on all extra services, priority booking & 200 UN loyalty points.';
+                if (link) link.href = 'https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1';
+            } else if (val.includes('$1,290/yr') || val.toLowerCase().includes('annual')) {
+                banner.style.display = 'block';
+                if (title) title.textContent = 'AutoLux Detailing Club Annual • $1,290/yr (Save $258)';
+                if (desc) desc.textContent = 'Full 12 months of VIP maintenance washes with 2 months free, 15% service discount, priority booking & 1,200 UN loyalty points.';
+                if (link) link.href = 'https://realunstoppable.store/checkout.html?productId=autolux-club-annual&quantity=1';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+        packageSelect.addEventListener('change', updateClubBanner);
+        updateClubBanner();
 
         // Set min date to today
         const dateInput = document.getElementById('date');

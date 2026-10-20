@@ -40,6 +40,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Products Collection (Publicly readable catalog, Admin writable)
+    match /products/{productId} {
+      allow read: if true; // Any site or shopper can view products
+      allow write: if isAdmin(); // Direct client writes restricted; Cloud Functions bypass rules
+    }
+
     // Bookings Collection (Autolux Service Business Logic)
     match /bookings/{bookingId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);

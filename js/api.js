@@ -53,3 +53,40 @@ export async function submitDetailingPlan(planData) {
     }
     return handleApiRequest(submitDetailingPlanCore, [userId, planData], "DetailingPlan");
 }
+
+export const AUTOLUX_CLUB_PRODUCTS = {
+    monthly: {
+        id: "autolux-detailing-club",
+        name: "AutoLux Detailing Club Plan - $129/mo",
+        price: 129,
+        interval: "monthly",
+        description: "Monthly maintenance detail with 15% discount on all services and priority scheduling.",
+        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1"
+    },
+    annual: {
+        id: "autolux-club-annual",
+        name: "AutoLux Detailing Club Annual - $1,290/yr",
+        price: 1290,
+        interval: "annual",
+        description: "Annual VIP membership (12 washes with 2 months free) and 15% discount on all services.",
+        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-club-annual&quantity=1"
+    }
+};
+
+export function getUnstoppableCheckoutUrl(productId = "autolux-detailing-club", quantity = 1) {
+    return `https://realunstoppable.store/checkout.html?productId=${encodeURIComponent(productId)}&quantity=${quantity}`;
+}
+
+export async function joinAutoLuxClub(subscriptionData) {
+    const isAnnual = subscriptionData?.planType === 'annual' || (subscriptionData?.package && subscriptionData.package.includes('Annual'));
+    const selected = isAnnual ? AUTOLUX_CLUB_PRODUCTS.annual : AUTOLUX_CLUB_PRODUCTS.monthly;
+    const payload = {
+        ...subscriptionData,
+        package: selected.name,
+        service: selected.name,
+        planType: selected.interval,
+        price: selected.price,
+        storeCheckoutUrl: selected.checkoutUrl
+    };
+    return submitDetailingPlan(payload);
+}
