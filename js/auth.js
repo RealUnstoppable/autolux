@@ -243,13 +243,31 @@ export async function ensureUserDocument(user, options = {}) {
             if (userDoc && typeof userDoc.exists === 'function' && userDoc.exists()) {
                 data = userDoc.data();
                 const updates = {};
-                if (!data.referralCode) {
-                    const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                let referralCode = data.referralCode;
+                if (!referralCode) {
+                    referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                     updates.referralCode = referralCode;
-                    updates.referralCredits = 0;
                     data.referralCode = referralCode;
+                }
+                if (data.referralCredits === undefined) {
+                    updates.referralCredits = 0;
                     data.referralCredits = 0;
                 }
+
+                // Sync referral code mapping to referral_codes lookup collection
+                if (data.referralCode) {
+                    try {
+                        const refCodeRef = doc(db, "referral_codes", data.referralCode);
+                        await setDoc(refCodeRef, {
+                            code: data.referralCode,
+                            userId: uid,
+                            createdAt: data.signupDate || serverTimestamp()
+                        }, { merge: true });
+                    } catch (refCodeErr) {
+                        console.warn("Could not sync referral code mapping:", refCodeErr);
+                    }
+                }
+
                 // Ensure user has received the 100 points sign up bonus
                 if (data.loyaltyPoints === undefined || data.loyaltyPoints === 0 || !data.bonusAwarded) {
                     updates.loyaltyPoints = 100;
@@ -294,6 +312,18 @@ export async function ensureUserDocument(user, options = {}) {
                     referralCredits: 0
                 };
                 await setDoc(userDocRef, newUserData);
+
+                // Register code mapping for fast lookup and validation
+                try {
+                    const refCodeRef = doc(db, "referral_codes", referralCode);
+                    await setDoc(refCodeRef, {
+                        code: referralCode,
+                        userId: uid,
+                        createdAt: serverTimestamp()
+                    });
+                } catch (refCodeErr) {
+                    console.warn("Could not register referral code mapping:", refCodeErr);
+                }
 
                 try {
                     await addDoc(collection(db, "notifications"), {
@@ -458,11 +488,30 @@ export function safeRedirect(targetUrl) {
  */
 export async function validateReferralCode(code) {
     if (!code || typeof code !== 'string') return null;
+    const cleanCode = code.trim().toUpperCase();
+    if (!cleanCode) return null;
+
     try {
-        const q = query(collection(db, "users"), where("referralCode", "==", code.trim().toUpperCase()));
+        // 1. Direct document lookup in referral_codes collection
+        const refDocRef = doc(db, "referral_codes", cleanCode);
+        const refDocSnap = await getDoc(refDocRef);
+        if (refDocSnap && typeof refDocSnap.exists === 'function' && refDocSnap.exists()) {
+            const data = refDocSnap.data();
+            return {
+                id: data.userId,
+                uid: data.userId,
+                userId: data.userId,
+                referralCode: cleanCode,
+                ...data
+            };
+        }
+
+        // 2. Fallback: Query users collection where referralCode == cleanCode
+        const q = query(collection(db, "users"), where("referralCode", "==", cleanCode));
         const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-            return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+        if (snapshot && !snapshot.empty) {
+            const docSnap = snapshot.docs[0];
+            return { id: docSnap.id, uid: docSnap.id, userId: docSnap.id, ...docSnap.data() };
         }
         return null;
     } catch (e) {
