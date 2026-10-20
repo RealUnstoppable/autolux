@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## $(date +%Y-%m-%d) - [CRITICAL] Remove Hardcoded API Keys from HTML
+**Vulnerability:** The application had hardcoded Firebase configuration values, including the `FIREBASE_API_KEY`, directly injected into the `<head>` of multiple HTML files via `<script>window.ENV = {...}</script>`.
+**Learning:** Hardcoding secrets or configuration blocks directly into version-controlled HTML files is a security risk, even if they are intended to be client-side. It can inadvertently leak credentials or environment structures. The application was already correctly referencing an external `env.js` file immediately after the hardcoded block.
+**Prevention:** Rely entirely on externalized, dynamically generated, or untracked environment configuration files (like `env.js`) to inject the `window.ENV` object, keeping secrets out of the raw HTML source code.
