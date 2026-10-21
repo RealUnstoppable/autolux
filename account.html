@@ -658,29 +658,36 @@
 
                 const userRef = doc(db, "users", user.uid);
 
-                // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
                 let userSnap = null;
                 let appointmentsSnap = { empty: true, docs: [] };
                 let notificationsSnap = { empty: true, docs: [] };
 
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
-                    console.warn("Could not fetch user document:", e);
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+
+                const [userResult, appointmentsResult, notificationsResult] = await Promise.allSettled([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery),
+                    getDocs(notificationsQuery)
+                ]);
+
+                if (userResult.status === 'fulfilled') {
+                    userSnap = userResult.value;
+                } else {
+                    console.warn("Could not fetch user document:", userResult.reason);
                 }
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
+                if (appointmentsResult.status === 'fulfilled') {
+                    appointmentsSnap = appointmentsResult.value;
+                } else {
+                    console.warn("Could not fetch appointments:", appointmentsResult.reason);
                 }
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
+                if (notificationsResult.status === 'fulfilled') {
+                    notificationsSnap = notificationsResult.value;
+                } else {
+                    console.warn("Could not fetch notifications:", notificationsResult.reason);
                 }
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
