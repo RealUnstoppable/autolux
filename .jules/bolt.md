@@ -32,3 +32,7 @@
 ## 2026-05-24 - [Avoid `innerHTML = ''` empty state clearing for state management]
 **Learning:** Using `element.innerHTML = ''` to clear an empty state message before appending new items causes the browser to destroy and recreate any other elements in the list (if they exist) and triggers a full DOM layout recalculation/re-render, which is an anti-pattern for granular UI updates.
 **Action:** Instead of blowing away the container with `innerHTML = ''`, explicitly query and `.remove()` the empty state message element to preserve existing list items and prevent layout thrashing.
+
+## 2023-10-21 - [Parallelizing DB Queries in account.html]
+**Learning:** Found sequential independent database queries causing N+1 waterfall latency on page load. Using `Promise.allSettled` is preferred over `Promise.all` when queries are independent and one failure shouldn't crash the whole page rendering process, keeping error boundaries robust.
+**Action:** Always inspect initialization functions in HTML files (like `initAuth`) for sequential `await` calls that can be safely batched concurrently to improve time-to-interactive.
