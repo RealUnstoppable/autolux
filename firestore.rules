@@ -16,7 +16,16 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
-      allow update: if isAdmin() || (isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin));
+      allow update: if isAdmin() || (isOwner(userId) &&
+        (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin) &&
+        (!('isBanned' in request.resource.data) || request.resource.data.isBanned == resource.data.isBanned) &&
+        (!('loyaltyPoints' in request.resource.data) || request.resource.data.loyaltyPoints == resource.data.loyaltyPoints) &&
+        (!('bonusAwarded' in request.resource.data) || request.resource.data.bonusAwarded == resource.data.bonusAwarded) &&
+        (!('referralCredits' in request.resource.data) || request.resource.data.referralCredits == resource.data.referralCredits) &&
+        (!('membershipLevel' in request.resource.data) || request.resource.data.membershipLevel == resource.data.membershipLevel) &&
+        (!('totalUnBalance' in request.resource.data) || request.resource.data.totalUnBalance == resource.data.totalUnBalance) &&
+        (!('unPointsAdded' in request.resource.data) || request.resource.data.unPointsAdded == resource.data.unPointsAdded)
+      );
       allow delete: if isAdmin();
     }
 
