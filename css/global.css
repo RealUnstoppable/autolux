@@ -997,3 +997,34 @@ textarea:focus {
 .footer-social-links a:hover {
     color: var(--gold);
 }
+
+/* Disabled State Styles */
+button:disabled,
+input[type="submit"]:disabled,
+.btn-primary:disabled,
+.btn-submit:disabled,
+.btn-white:disabled,
+.btn-gold:disabled,
+.btn-outline:disabled,
+.auth-btn:disabled,
+.nav-cta:disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    background-color: var(--border) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: none !important;
+
+}
+
+button:disabled::before,
+input[type="submit"]:disabled::before,
+.btn-primary:disabled::before,
+.btn-submit:disabled::before,
+.btn-white:disabled::before,
+.btn-gold:disabled::before,
+.btn-outline:disabled::before,
+.auth-btn:disabled::before,
+.nav-cta:disabled::before {
+    display: none !important;
+}
