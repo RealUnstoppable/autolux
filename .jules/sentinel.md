@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2026-10-22 - [Mass Assignment in User Profile Documents]
+**Vulnerability:** The users collection in firestore.rules permitted users to mass-assign protected fields during document creation and updates, allowing unprivileged users to overwrite sensitive fields such as isBanned, loyaltyPoints, totalUnBalance, and referralCredits.
+**Learning:** Checking for the absence or unaltered state of a single privileged field (e.g., isAdmin) is insufficient. Users can inject any other mutable fields during a standard create/update request if strict schema validation is missing.
+**Prevention:** In firestore.rules, explicitly prevent privilege escalation and IDOR by requiring that all sensitive fields remain unchanged if included in the request payload (e.g., (!('loyaltyPoints' in request.resource.data) || request.resource.data.loyaltyPoints == resource.data.loyaltyPoints)).
