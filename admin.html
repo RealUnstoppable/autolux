@@ -1610,15 +1610,36 @@
                 btn.disabled = true;
                 btn.textContent = "Adding...";
                 try {
-                    await addDoc(collection(db, "faqs"), {
+                    const newFaqRef = await addDoc(collection(db, "faqs"), {
                         question: question,
                         answer: answer,
                         createdAt: serverTimestamp()
                     });
+
                     msgEl.style.color = "#16A34A";
                     msgEl.textContent = "FAQ added successfully!";
                     e.target.reset();
-                    setTimeout(() => location.reload(), 1000);
+
+                    // Optimistic UI update
+                    const faqsListBody = document.getElementById('faqs-list-body');
+                    if (faqsListBody) {
+                        const noDataRow = faqsListBody.querySelector('td[colspan]');
+                        if (noDataRow) {
+                            faqsListBody.innerHTML = '';
+                        }
+                        const newRowHTML = `
+                            <tr>
+                                <td>${escapeHTML(newFaqRef.id)}</td>
+                                <td>${escapeHTML(question)}</td>
+                                <td>${escapeHTML(answer)}</td>
+                                <td>Just now</td>
+                                <td>
+                                    <button class="btn-sm btn-delete action-btn" data-type="faq" data-action="delete" data-id="${escapeHTML(newFaqRef.id)}">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+                        faqsListBody.insertAdjacentHTML('beforeend', newRowHTML);
+                    }
                 } catch(error) {
                     console.error("Error adding FAQ", error);
                     if (error.code) console.error("Error code:", error.code);
@@ -1640,22 +1661,27 @@
                 if(!btn || btn.dataset.type !== 'faq') return;
                 const action = btn.dataset.action;
                 const id = btn.dataset.id;
+                const row = btn.closest('tr');
                 if (action === 'delete') {
-                    window.deleteFaq(id);
+                    window.deleteFaq(id, row);
                 }
             });
         }
 
-        window.deleteFaq = async (id) => {
+        window.deleteFaq = async (id, rowElement) => {
             if(confirm("Are you sure you want to delete this FAQ?")) {
                 try {
                     await deleteDoc(doc(db, "faqs", id));
                     alert("FAQ deleted.");
-                    location.reload();
+
+                    // Optimistic UI update
+                    if (rowElement) {
+                        rowElement.remove();
+                    }
                 } catch (error) {
                     console.error("Error deleting FAQ:", { code: error.code, message: error.message, details: error });
                     alert("Failed to delete FAQ.");
-                    if (e && e.code) console.error('Error code:', e.code);
+                    if (typeof e !== 'undefined' && e && e.code) console.error('Error code:', e.code);
                 }
             }
         };
