@@ -44,3 +44,6 @@
 ## 2024-10-31 - [Add ARIA labels to form inputs in account page]
 **Learning:** Found multiple `<input>` elements in `account.html` (e.g., referral code, new vehicle, new address) without associated `<label>` elements or `aria-label` attributes, which makes them inaccessible to screen readers.
 **Action:** Always ensure that every `<input>` has either a corresponding `<label>` (using `for` / `id` pairing) or an explicit `aria-label` attribute if a visual label is omitted by design.
+## 2026-10-22 - Adding Global Disabled States for Form Controls
+**Learning:** In the AUTOLUX CSS architecture, applying `pointer-events: none` to `:disabled` states unintentionally blocks the `cursor: not-allowed` style from rendering because the element stops receiving hover events.
+**Action:** When designing `:disabled` styles to indicate unavailability, rely on `cursor`, `opacity`, and background/color changes without `pointer-events: none` to ensure the user receives the appropriate cursor feedback.
