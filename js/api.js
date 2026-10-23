@@ -27,17 +27,22 @@ async function handleApiRequest(coreFunction, payload, type) {
 }
 
 export async function submitDetailingRequest(bookingData) {
-    const currentUser = auth?.currentUser;
-    const userId = currentUser ? currentUser.uid : bookingData?.userId;
-    if (!userId) {
-        console.error("Cannot submit detailing request: User is not authenticated.");
-        return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
+    try {
+        const currentUser = auth?.currentUser;
+        const userId = currentUser ? currentUser.uid : bookingData?.userId;
+        if (!userId) {
+            console.error("Cannot submit detailing request: User is not authenticated.");
+            return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
+        }
+        const payload = { ...bookingData, userId };
+        if (bookingData.referralCode) {
+            payload.referralCode = bookingData.referralCode.trim().toUpperCase();
+        }
+        return await handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
+    } catch (error) {
+        console.error("Firebase connection error during detailing request - Code:", error.code || 'UNKNOWN_ERROR');
+        return { success: false, error: "Connection lost. Please check your network and try again.", code: error.code || 'UNKNOWN_ERROR' };
     }
-    const payload = { ...bookingData, userId };
-    if (bookingData.referralCode) {
-        payload.referralCode = bookingData.referralCode.trim().toUpperCase();
-    }
-    return handleApiRequest(submitToFirestore, ["bookings", payload], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
