@@ -1618,7 +1618,12 @@
                     msgEl.style.color = "#16A34A";
                     msgEl.textContent = "FAQ added successfully!";
                     e.target.reset();
-                    setTimeout(() => location.reload(), 1000);
+
+                    // Refresh data without reloading
+                    const faqsSnapshot = await getDocs(collection(db, "faqs"));
+                    const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderFaqsTable(faqs);
+
                 } catch(error) {
                     console.error("Error adding FAQ", error);
                     if (error.code) console.error("Error code:", error.code);
@@ -1651,7 +1656,12 @@
                 try {
                     await deleteDoc(doc(db, "faqs", id));
                     alert("FAQ deleted.");
-                    location.reload();
+
+                    // Refresh data without reloading
+                    const faqsSnapshot = await getDocs(collection(db, "faqs"));
+                    const faqs = faqsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderFaqsTable(faqs);
+
                 } catch (error) {
                     console.error("Error deleting FAQ:", { code: error.code, message: error.message, details: error });
                     alert("Failed to delete FAQ.");

@@ -4,6 +4,18 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
+async function runUserTransaction(db, uid, transactionLogic) {
+    const userRef = db.collection("users").doc(uid);
+    return await db.runTransaction(async (t) => {
+        const userDoc = await t.get(userRef);
+        if (!userDoc.exists) {
+            throw new HttpsError("not-found", "User profile not found.");
+        }
+        return await transactionLogic(t, userRef, userDoc.data());
+    });
+}
+
+
 exports.redeemReward = onCall(async (request) => {
     // 1. Check Auth
     if (!request.auth) {
@@ -23,14 +35,8 @@ exports.redeemReward = onCall(async (request) => {
 
     try {
         // 3. Run Transaction
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
-
-            const currentPoints = userDoc.data().loyaltyPoints || 0;
+        const result = await runUserTransaction(db, uid, async (t, userRef, userData) => {
+            const currentPoints = userData.loyaltyPoints || 0;
 
             if (currentPoints < cost) {
                 throw new HttpsError("failed-precondition", "Insufficient points to redeem this reward.");
@@ -77,14 +83,7 @@ exports.linkUnAccount = onCall(async (request) => {
     const userRef = db.collection("users").doc(uid);
 
     try {
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
-
-            const userData = userDoc.data();
+        const result = await runUserTransaction(db, uid, async (t, userRef, userData) => {
             const currentPoints = userData.loyaltyPoints || 0;
             const existingUnBalance = userData.totalUnBalance || userData.unAccountBalance || 0;
             const newTotalBalance = existingUnBalance + currentPoints;
@@ -167,7 +166,7 @@ exports.createProduct = onRequest({ invoker: "public", cors: true }, async (req,
         await productRef.set(productData, { merge: true });
         return res.status(200).json({ success: true, productId: id, product: productData });
     } catch (error) {
-        console.error("Error creating product:", error);
+        console.error("Error creating product:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return res.status(500).json({ error: error.message });
     }
 });
@@ -191,12 +190,7 @@ exports.subscribeToClub = onCall(async (request) => {
     const orderRef = db.collection("orders").doc();
 
     try {
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
-            const userData = userDoc.data();
+        const result = await runUserTransaction(db, uid, async (t, userRef, userData) => {
             const currentPoints = userData.loyaltyPoints || 0;
             const clubBonusPoints = isAnnual ? 1200 : 200;
             const updatedPoints = currentPoints + clubBonusPoints;

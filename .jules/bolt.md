@@ -32,3 +32,6 @@
 ## 2026-05-24 - [Avoid `innerHTML = ''` empty state clearing for state management]
 **Learning:** Using `element.innerHTML = ''` to clear an empty state message before appending new items causes the browser to destroy and recreate any other elements in the list (if they exist) and triggers a full DOM layout recalculation/re-render, which is an anti-pattern for granular UI updates.
 **Action:** Instead of blowing away the container with `innerHTML = ''`, explicitly query and `.remove()` the empty state message element to preserve existing list items and prevent layout thrashing.
+## 2026-10-23 - Refactored Firebase Transactions & Improved State Flow
+**Learning:** By abstracting repetitive transaction logic (user verification and retrieval) into a dedicated helper function, we adhere to DRY principles while maintaining readability. On the frontend, eliminating `location.reload()` in favor of localized DOM updates paired with targeted data re-fetching significantly improves user perceived performance.
+**Action:** Created `runUserTransaction` helper in `functions/index.js` for Auth-dependent transactions, updated API calls in `js/api.js` to correctly `await` asynchronous execution, and replaced full page reloads in `admin.html` FAQ management with dynamic data rendering.
