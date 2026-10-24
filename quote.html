@@ -259,6 +259,7 @@
             };
 
             submitBtn.disabled = true;
+            submitBtn.setAttribute('aria-busy', 'true');
             submitBtn.textContent = 'Submitting...';
             msgEl.textContent = '';
 
@@ -279,6 +280,7 @@
                 msgEl.textContent = "Failed to submit quote request. Please try again later.";
             } finally {
                 submitBtn.disabled = false;
+                submitBtn.setAttribute('aria-busy', 'false');
                 submitBtn.textContent = 'Request Quote';
             }
         });

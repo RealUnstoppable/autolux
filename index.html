@@ -1223,6 +1223,7 @@
                 }
 
                 btn.disabled = true;
+                btn.setAttribute('aria-busy', 'true');
                 btn.textContent = "Submitting...";
                 msgEl.textContent = "";
 
@@ -1248,6 +1249,7 @@
                     msgEl.textContent = "Error submitting review. Try again later.";
                 } finally {
                     btn.disabled = false;
+                    btn.setAttribute('aria-busy', 'false');
                     btn.textContent = "Submit Review";
                 }
             });
@@ -1276,6 +1278,7 @@
                 }
                 
                 btn.disabled = true;
+                btn.setAttribute('aria-busy', 'true');
                 btn.textContent = "Subscribing...";
                 msg.textContent = "";
 
@@ -1293,6 +1296,7 @@
                     msg.textContent = "Error subscribing. Please try again.";
                 } finally {
                     btn.disabled = false;
+                    btn.setAttribute('aria-busy', 'false');
                     btn.textContent = "Subscribe";
                 }
             });
@@ -1344,6 +1348,7 @@
                 }
 
                 btn.disabled = true;
+                btn.setAttribute('aria-busy', 'true');
                 btn.textContent = "Sending...";
                 msgEl.textContent = "";
 
@@ -1369,6 +1374,7 @@
                     msgEl.textContent = "Error sending message. Please try again later.";
                 } finally {
                     btn.disabled = false;
+                    btn.setAttribute('aria-busy', 'false');
                     btn.textContent = "Send Message";
                 }
             });
