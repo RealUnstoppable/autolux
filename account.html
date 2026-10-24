@@ -659,29 +659,29 @@
                 const userRef = doc(db, "users", user.uid);
 
                 // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
-                let userSnap = null;
-                let appointmentsSnap = { empty: true, docs: [] };
-                let notificationsSnap = { empty: true, docs: [] };
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
 
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
-                    console.warn("Could not fetch user document:", e);
-                }
+                const [userRes, appointmentsRes, notificationsRes, ticketsRes, logsRes] = await Promise.allSettled([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery),
+                    getDocs(notificationsQuery),
+                    getDocs(ticketsQuery),
+                    fetchUserServiceLogs(user.uid)
+                ]);
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
-                }
+                const userSnap = userRes.status === 'fulfilled' ? userRes.value : null;
+                const appointmentsSnap = appointmentsRes.status === 'fulfilled' ? appointmentsRes.value : { empty: true, docs: [] };
+                const notificationsSnap = notificationsRes.status === 'fulfilled' ? notificationsRes.value : { empty: true, docs: [] };
+                const ticketsSnap = ticketsRes.status === 'fulfilled' ? ticketsRes.value : { empty: true, docs: [] };
+                const logs = logsRes.status === 'fulfilled' ? logsRes.value : [];
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
-                }
+                if (userRes.status === 'rejected') console.warn("Could not fetch user document:", userRes.reason);
+                if (appointmentsRes.status === 'rejected') console.warn("Could not fetch appointments:", appointmentsRes.reason);
+                if (notificationsRes.status === 'rejected') console.warn("Could not fetch notifications:", notificationsRes.reason);
+                if (ticketsRes.status === 'rejected') console.warn("Could not fetch tickets:", ticketsRes.reason);
+                if (logsRes.status === 'rejected') console.warn("Could not fetch service logs:", logsRes.reason);
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
 
@@ -716,15 +716,8 @@
                 loadReferralsHistory(user);
 
                 renderBookings(appointmentsSnap);
-                await loadTickets(user);
+                await loadTickets(user, ticketsSnap);
                 renderNotifications(notificationsSnap);
-
-                let logs = [];
-                try {
-                    logs = await fetchUserServiceLogs(user.uid);
-                } catch (e) {
-                    console.warn("Could not fetch service logs:", e);
-                }
                 renderServiceLogs(logs);
 
                 // Update UN Account status & balance in Client Profile
@@ -970,10 +963,13 @@
             ticketsListEl.appendChild(fragment);
         }
 
-        async function loadTickets(user) {
+        async function loadTickets(user, preloadedSnap = null) {
             try {
-                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
-                const ticketsSnap = await getDocs(ticketsQuery);
+                let ticketsSnap = preloadedSnap;
+                if (!ticketsSnap) {
+                    const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                    ticketsSnap = await getDocs(ticketsQuery);
+                }
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
                 // Sort client-side
