@@ -997,3 +997,7 @@ textarea:focus {
 .footer-social-links a:hover {
     color: var(--gold);
 }
+button:disabled, input:disabled, textarea:disabled, select:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
