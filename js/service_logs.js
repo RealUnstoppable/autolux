@@ -28,10 +28,15 @@ export async function fetchUserServiceLogs(userId) {
         // Fallback for missing index
         if (error.code === 'failed-precondition' || error.message.includes('index')) {
             console.warn("Missing index. Returning unsorted logs.");
-            const qFallback = query(collection(db, "service_logs"), where("userId", "==", userId));
-            const snap = await getDocs(qFallback);
-            const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            return logs.sort((a,b) => (b.serviceDate?.seconds || 0) - (a.serviceDate?.seconds || 0));
+            try {
+                const qFallback = query(collection(db, "service_logs"), where("userId", "==", userId));
+                const snap = await getDocs(qFallback);
+                const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                return logs.sort((a,b) => (b.serviceDate?.seconds || 0) - (a.serviceDate?.seconds || 0));
+            } catch (fallbackError) {
+                console.error("Error fetching service logs fallback:", { code: fallbackError.code || 'UNKNOWN_ERROR', message: fallbackError.message, details: fallbackError });
+                return [];
+            }
         }
         return [];
     }
