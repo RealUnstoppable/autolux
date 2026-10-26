@@ -41,3 +41,8 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+
+## 2026-11-20 - [IDOR in User Profile Creation]
+**Vulnerability:** The `/users/{userId}` `allow create` rule in `firestore.rules` only checked if `isAdmin` was false, ignoring other highly sensitive fields like `isBanned`, `totalUnBalance`, `referralCredits`, and `loyaltyPoints`.
+**Learning:** If document creation occurs client-side, attackers can craft custom payloads setting high point balances or bypassing bans during account creation if those fields aren't explicitly locked to safe default values.
+**Prevention:** Always ensure that `allow create` rules explicitly validate that restricted fields are either omitted or strictly set to their safe default values (e.g., `0` or `false`).
