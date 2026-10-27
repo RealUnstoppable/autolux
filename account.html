@@ -382,7 +382,7 @@
                                 </div>
                             </div>
                             <div style="margin-top: 15px; display: flex; gap: 10px;">
-                                <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                                <input type="text" class="reply-input" aria-label="Reply message" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
                                 <button class="btn-schedule reply-btn" data-id="dummy-ticket-1" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
                             </div>
                         </div>
@@ -391,13 +391,13 @@
                     <!-- New Ticket Form (Hidden) -->
                     <div id="new-ticket-form" style="display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
                         <h3>Create New Ticket</h3>
-                        <input type="text" id="ticket-subject" placeholder="Subject" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
-                        <select id="ticket-category" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
+                        <input type="text" id="ticket-subject" aria-label="Ticket subject" placeholder="Subject" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
+                        <select id="ticket-category" aria-label="Ticket category" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
                             <option value="Booking Issue">Booking Issue</option>
                             <option value="Billing">Billing</option>
                             <option value="General">General Questions</option>
                         </select>
-                        <textarea id="ticket-message" placeholder="Message" rows="4" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;"></textarea>
+                        <textarea id="ticket-message" aria-label="Ticket message" placeholder="Message" rows="4" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;"></textarea>
                         <button id="submit-ticket-btn" class="btn-primary" style="width: 100%;">Submit Ticket</button>
                         <div id="ticket-msg" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
                     </div>
@@ -959,7 +959,7 @@
 
                     ${ticket.status !== 'closed' ? `
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <input type="text" class="reply-input" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                            <input type="text" class="reply-input" aria-label="Reply message" placeholder="Type a reply..." style="flex-grow: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 6px;">
                             <button class="btn-schedule reply-btn" data-id="${ticket.id}" style="border: none; cursor: pointer; padding: 8px 16px;">Reply</button>
                         </div>
                     ` : ''}
