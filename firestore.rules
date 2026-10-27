@@ -15,8 +15,18 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
-      allow update: if isAdmin() || (isOwner(userId) && (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin));
+      allow create: if isOwner(userId) &&
+                    (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false) &&
+                    (!('isBanned' in request.resource.data) || request.resource.data.isBanned == false) &&
+                    (!('totalUnBalance' in request.resource.data) || request.resource.data.totalUnBalance == 0) &&
+                    (!('referralCredits' in request.resource.data) || request.resource.data.referralCredits == 0) &&
+                    (!('loyaltyPoints' in request.resource.data) || request.resource.data.loyaltyPoints <= 100);
+      allow update: if isAdmin() || (isOwner(userId) &&
+                    (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == resource.data.isAdmin) &&
+                    (!('isBanned' in request.resource.data) || request.resource.data.isBanned == resource.data.isBanned) &&
+                    (!('totalUnBalance' in request.resource.data) || request.resource.data.totalUnBalance == resource.data.totalUnBalance) &&
+                    (!('referralCredits' in request.resource.data) || request.resource.data.referralCredits == resource.data.referralCredits) &&
+                    (!('loyaltyPoints' in request.resource.data) || request.resource.data.loyaltyPoints == resource.data.loyaltyPoints));
       allow delete: if isAdmin();
     }
 
