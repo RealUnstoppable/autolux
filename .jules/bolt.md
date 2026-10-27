@@ -32,3 +32,7 @@
 ## 2026-05-24 - [Avoid `innerHTML = ''` empty state clearing for state management]
 **Learning:** Using `element.innerHTML = ''` to clear an empty state message before appending new items causes the browser to destroy and recreate any other elements in the list (if they exist) and triggers a full DOM layout recalculation/re-render, which is an anti-pattern for granular UI updates.
 **Action:** Instead of blowing away the container with `innerHTML = ''`, explicitly query and `.remove()` the empty state message element to preserve existing list items and prevent layout thrashing.
+
+## 2026-06-03 - [Parallelizing independent DB reads in account]
+**Learning:** Placing multiple `await` keywords sequentially for independent network requests in the user account portal causes the main thread to wait for each request to finish before starting the next one, creating unnecessary delays in rendering the dashboard.
+**Action:** When making multiple independent Firebase reads, start the requests concurrently by executing the queries (creating Promises) and storing them in variables, then `await` those variables when the data is actually needed, catching errors immediately to prevent unhandled rejections.
