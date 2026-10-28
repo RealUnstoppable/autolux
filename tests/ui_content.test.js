@@ -59,4 +59,39 @@ describe('UI Content & Transaction Flow Verification', () => {
         expect(content).toContain('STORE_API_KEY');
         expect(content).toContain('autolux-detailing-club');
     });
+
+    test('Favicon assets exist and are linked across all main HTML pages', () => {
+        const requiredAssets = [
+            'favicon.ico',
+            'favicon.png',
+            'favicon-32x32.png',
+            'favicon-16x16.png',
+            'favicon-48x48.png',
+            'apple-touch-icon.png',
+            'site.webmanifest'
+        ];
+
+        for (const asset of requiredAssets) {
+            expect(fs.existsSync(path.join(process.cwd(), asset))).toBe(true);
+        }
+
+        const pages = [
+            'index.html',
+            'booking.html',
+            'account.html',
+            'admin.html',
+            'quote.html',
+            'reviews.html',
+            'rewards.html',
+            'sign in beta.html',
+            'donate.html'
+        ];
+
+        for (const page of pages) {
+            const html = fs.readFileSync(path.join(process.cwd(), page), 'utf8');
+            expect(html).toContain('rel="icon"');
+            expect(html).toContain('href="favicon.ico"');
+            expect(html).toContain('href="favicon-32x32.png"');
+        }
+    });
 });
