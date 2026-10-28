@@ -43,7 +43,7 @@ describe('AutoLux Club Pricing & Profit Margin Verification', () => {
 
     test('syncProductToStore dryRun returns valid payload matching Unstoppable Store schema', async () => {
         const monthly = AUTOLUX_PRODUCTS[0];
-        const result = await syncProductToStore(monthly, { dryRun: true });
+        const result = await syncProductToStore(monthly, { dryRun: true, apiKey: 'test-key' });
 
         expect(result.success).toBe(true);
         expect(result.dryRun).toBe(true);

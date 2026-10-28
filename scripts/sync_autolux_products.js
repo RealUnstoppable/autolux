@@ -60,7 +60,8 @@ export function validateProfitMargin(product) {
  */
 export async function syncProductToStore(product, options = {}) {
     const apiUrl = options.apiUrl || process.env.UNSTOPPABLE_STORE_API_URL || "https://us-central1-dts-hub-website.cloudfunctions.net/createProduct";
-    const apiKey = options.apiKey || process.env.STORE_API_KEY || "unstoppable-store-secret-key";
+    const apiKey = options.apiKey || process.env.STORE_API_KEY;
+    if (!apiKey) { throw new Error("Missing required STORE_API_KEY environment variable. Failing securely."); }
 
     const validation = validateProfitMargin(product);
     if (!validation.isValid) {
