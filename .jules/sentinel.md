@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2025-05-24 - [CRITICAL] Remove Hardcoded Store API Key
+**Vulnerability:** The application had a hardcoded API key ("unstoppable-store-secret-key") in `scripts/sync_autolux_products.js` used as a fallback if the environment variable `STORE_API_KEY` was missing.
+**Learning:** Hardcoding API keys or secrets in source code, even as fallback values, is a critical security vulnerability. It can expose sensitive credentials to unauthorized parties, leading to unauthorized access, data breaches, and other security incidents.
+**Prevention:** Never hardcode secrets in source code. Always use environment variables for configuration and fail securely if required secrets are missing.
