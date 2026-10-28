@@ -659,29 +659,28 @@
                 const userRef = doc(db, "users", user.uid);
 
                 // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
-                let userSnap = null;
-                let appointmentsSnap = { empty: true, docs: [] };
-                let notificationsSnap = { empty: true, docs: [] };
-
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
+                const userPromise = getDoc(userRef).catch(e => {
                     console.warn("Could not fetch user document:", e);
-                }
+                    return null;
+                });
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const appointmentsPromise = getDocs(appointmentsQuery).catch(e => {
                     console.warn("Could not fetch appointments:", e);
-                }
+                    return { empty: true, docs: [] };
+                });
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+                const notificationsPromise = getDocs(notificationsQuery).catch(e => {
                     console.warn("Could not fetch notifications:", e);
-                }
+                    return { empty: true, docs: [] };
+                });
+
+                const [userSnap, appointmentsSnap, notificationsSnap] = await Promise.all([
+                    userPromise,
+                    appointmentsPromise,
+                    notificationsPromise
+                ]);
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
 
