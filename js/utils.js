@@ -33,27 +33,18 @@ export async function submitGenericRequest(collectionName, baseData, additionalD
             delete payload.isAdmin;
         }
 
-        // Add timeout to prevent hanging indefinitely when network/Firestore is unreachable
-        const timeoutPromise = new Promise((_, reject) => {
-            const timeoutId = setTimeout(() => {
-                const err = new Error(`Request to ${collectionName} timed out`);
-                err.code = 'deadline-exceeded';
-                reject(err);
-            }, 6000);
-            // Allow process to exit cleanly in node environments if needed
-            if (timeoutId && typeof timeoutId.unref === 'function') {
-                timeoutId.unref();
-            }
-        });
-
-        const docRef = await Promise.race([
-            addDoc(collection(db, collectionName), payload),
-            timeoutPromise
-        ]);
+        // Submit the request without an artificial timeout that drops the connection
+        const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error(`Firebase connection error in ${collectionName}. Code:`, error.code || 'UNKNOWN_ERROR');
-        console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error(`Failed to submit request to ${collectionName}:`, { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
 
         // If explicitly requested to throw error in test or mock error-user, fail as expected by unit tests
         if (baseData && (baseData.throwError || baseData.userId === 'error-user')) {
