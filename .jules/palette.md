@@ -44,3 +44,6 @@
 ## 2024-10-31 - [Add ARIA labels to form inputs in account page]
 **Learning:** Found multiple `<input>` elements in `account.html` (e.g., referral code, new vehicle, new address) without associated `<label>` elements or `aria-label` attributes, which makes them inaccessible to screen readers.
 **Action:** Always ensure that every `<input>` has either a corresponding `<label>` (using `for` / `id` pairing) or an explicit `aria-label` attribute if a visual label is omitted by design.
+## 2024-11-21 - Styling Disabled UI Elements
+**Learning:** Adding a 'not-allowed' cursor to disabled buttons and interactive elements provides clear visual feedback that an action is currently unavailable.
+**Action:** When a button or input can be temporarily disabled, make sure it has CSS that sets `cursor: not-allowed` (and typically `opacity: 0.6` or similar) to improve the user experience.
