@@ -52,9 +52,10 @@ try {
 
     console.log(`Firebase initialized successfully for ${firebaseConfig.authDomain}`);
 } catch (error) {
+    // Robust error logging to identify App Check, CORS, or Invalid API Key issues during init
     console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
     if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
-        console.error("App Check or CORS issue detected:", error.message);
+        console.error("App Check or CORS issue detected. Ensure autolux.realunstoppable.store is properly authorized:", error.message);
     } else if (error.code === 'auth/invalid-api-key') {
         console.error("Invalid API key detected:", error.message);
     } else {
