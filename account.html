@@ -678,73 +678,160 @@
 
                 const userRef = doc(db, "users", user.uid);
 
-                // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
-                let userSnap = null;
-                let appointmentsSnap = { empty: true, docs: [] };
-                let notificationsSnap = { empty: true, docs: [] };
 
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
-                    console.warn("Could not fetch user document:", e);
-                }
+                // ⚡ Bolt: Execute independent queries concurrently to prevent N+1 waterfall latency
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
-                }
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
-                }
+                const queries = [
+
+
+                    getDoc(userRef),
+
+
+                    getDocs(query(collection(db, "bookings"), where("userId", "==", user.uid))),
+
+
+                    getDocs(query(collection(db, "notifications"), where("userId", "==", user.uid))),
+
+
+                    getDocs(query(collection(db, "support_tickets"), where("userId", "==", user.uid))),
+
+
+                    getDocs(query(collection(db, "referrals"), where("referrerId", "==", user.uid))),
+
+
+                    fetchUserServiceLogs(user.uid)
+
+
+                ];
+
+
+                const results = await Promise.allSettled(queries);
+
+
+                let userSnap = results[0].status === 'fulfilled' ? results[0].value : null;
+
+
+                let appointmentsSnap = results[1].status === 'fulfilled' ? results[1].value : { empty: true, docs: [] };
+
+
+                let notificationsSnap = results[2].status === 'fulfilled' ? results[2].value : { empty: true, docs: [] };
+
+
+                let ticketsSnap = results[3].status === 'fulfilled' ? results[3].value : null;
+
+
+                let referralsSnap = results[4].status === 'fulfilled' ? results[4].value : null;
+
+
+                let logs = results[5].status === 'fulfilled' ? results[5].value : [];
+
+
+                if (results[0].status === 'rejected') console.warn("Could not fetch user document:", results[0].reason);
+
+
+                if (results[1].status === 'rejected') console.warn("Could not fetch appointments:", results[1].reason);
+
+
+                if (results[2].status === 'rejected') console.warn("Could not fetch notifications:", results[2].reason);
+
+
+                if (results[3].status === 'rejected') console.warn("Could not fetch tickets:", results[3].reason);
+
+
+                if (results[4].status === 'rejected') console.warn("Could not fetch referrals:", results[4].reason);
+
+
+                if (results[5].status === 'rejected') console.warn("Could not fetch service logs:", results[5].reason);
+
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
 
+
                 if (!userData || !userData.referralCode) {
+
+
                     userData = await ensureUserDocument(user, { forceRefresh: true });
+
+
                 }
+
 
                 // Render User Info - fallback gracefully if missing
+
+
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
+
+
                 userEmailEl.textContent = user.email || userData?.email || 'N/A';
 
+
                 renderVehicles(userData?.vehicles);
+
+
                 renderAddresses(userData?.addresses);
 
+
                 // Set referral data
+
+
                 const referralCodeEl = document.getElementById('user-referral-code');
+
+
                 const referralCreditsEl = document.getElementById('user-referral-credits');
+
+
                 const loyaltyPointsEl = document.getElementById('user-loyalty-points');
+
+
                 if (referralCodeEl) {
+
+
                     referralCodeEl.value = userData?.referralCode || DUMMY_ASSETS.referral.code || 'N/A';
+
+
                 }
+
+
                 if (referralCreditsEl) {
+
+
                     const creds = userData?.referralCredits !== undefined ? userData.referralCredits : DUMMY_ASSETS.referral.credits;
+
+
                     referralCreditsEl.textContent = `$${creds}`;
+
+
                 }
+
+
                 if (loyaltyPointsEl) {
+
+
                     const points = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
+
+
                     loyaltyPointsEl.textContent = `${points.toLocaleString()} pts`;
+
+
                 }
+
 
                 // Load user referral activity history
-                loadReferralsHistory(user);
+
+
+                loadReferralsHistory(user, referralsSnap);
+
 
                 renderBookings(appointmentsSnap);
-                await loadTickets(user);
+
+
+                await loadTickets(user, ticketsSnap);
+
+
                 renderNotifications(notificationsSnap);
 
-                let logs = [];
-                try {
-                    logs = await fetchUserServiceLogs(user.uid);
-                } catch (e) {
-                    console.warn("Could not fetch service logs:", e);
-                }
+
                 renderServiceLogs(logs);
 
                 // Update UN Account status & balance in Client Profile
@@ -990,11 +1077,14 @@
             ticketsListEl.appendChild(fragment);
         }
 
-        async function loadTickets(user) {
+        async function loadTickets(user, prefetchSnap = null) {
             try {
-                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
-                const ticketsSnap = await getDocs(ticketsQuery);
-                const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                let ticketsSnap = prefetchSnap;
+                if (!ticketsSnap) {
+                    const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                    ticketsSnap = await getDocs(ticketsQuery);
+                }
+                const tickets = ticketsSnap.docs ? ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) : [];
 
                 // Sort client-side
                 tickets.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
@@ -1581,13 +1671,16 @@
             }
         });
 
-        async function loadReferralsHistory(user) {
+        async function loadReferralsHistory(user, prefetchSnap = null) {
             const countEl = document.getElementById('user-referral-count');
             const historyEl = document.getElementById('referrals-history-container');
             if (!user || !historyEl) return;
             try {
-                const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid));
-                const snap = await getDocs(q);
+                let snap = prefetchSnap;
+                if (!snap) {
+                    const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid));
+                    snap = await getDocs(q);
+                }
                 if (snap.empty) {
                     if (DUMMY_ASSETS.referral?.history && (!userData?.referralCount && !snap.size)) {
                         if (countEl) countEl.textContent = '1';
