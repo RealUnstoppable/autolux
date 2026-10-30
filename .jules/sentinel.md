@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2026-11-20 - [Privilege Escalation via Mass Assignment in Profiles]
+**Vulnerability:** A broken access control / privilege escalation vulnerability existed in `firestore.rules` because users could specify sensitive fields (like `isBanned`, `loyaltyPoints`, `totalUnBalance`, and `referralCredits`) during the creation or update of their own profile document.
+**Learning:** Users can send arbitrary data to collections where they have write permissions. Firebase rules must explicitly block users from mutating protected fields directly via API calls.
+**Prevention:** In Firestore rules, always enforce validation on protected properties during `create` and `update` by checking `request.resource.data` to prevent mass assignment on critical fields.
