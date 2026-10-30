@@ -172,13 +172,73 @@
                     <label for="package">Select Service Package <span aria-hidden="true" style="color: var(--error);">*</span></label>
                     <select id="package" required>
                         <option value="">-- Choose a Package --</option>
-                        <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
-                        <option value="Luxury SUV - $250">Luxury SUV ($250)</option>
-                        <option value="Premium Truck - $280">Premium Truck ($280)</option>
-                        <option value="Sprinter Van - $400">Sprinter Van ($400)</option>
-                        <option value="AutoLux Detailing Club Plan - $129/mo">★ AutoLux Detailing Club Plan ($129/mo - 15% Off All Services)</option>
-                        <option value="AutoLux Detailing Club Annual - $1,290/yr">★ AutoLux Detailing Club Annual ($1,290/yr - 2 Months Free)</option>
+                        <optgroup label="Core Vehicle Packages">
+                            <option value="Luxury Sedan - $150">Luxury Sedan ($150)</option>
+                            <option value="Luxury SUV - $250">Luxury SUV ($250)</option>
+                            <option value="Premium Truck - $280">Premium Truck ($280)</option>
+                            <option value="Sprinter Van - $400">Sprinter Van ($400)</option>
+                        </optgroup>
+                        <optgroup label="Specialized Corrections & Coatings">
+                            <option value="Multi-Stage Paint Correction - $500">Multi-Stage Paint Correction ($500)</option>
+                            <option value="Ceramic Coating (3 to 7 Year Warranty) - $850">Ceramic Coating 3-7 Yr ($850)</option>
+                            <option value="Complete Interior Detail & Restoration - $175">Complete Interior Restoration ($175)</option>
+                            <option value="Signature Exterior Concierge Detail - $125">Signature Exterior Concierge ($125)</option>
+                        </optgroup>
+                        <optgroup label="VIP Detailing Club Subscriptions">
+                            <option value="AutoLux Detailing Club Plan - $129/mo">★ AutoLux Detailing Club Plan ($129/mo - 15% Off All Services)</option>
+                            <option value="AutoLux Detailing Club Annual - $1,290/yr">★ AutoLux Detailing Club Annual ($1,290/yr - 2 Months Free)</option>
+                        </optgroup>
                     </select>
+                </div>
+
+                <!-- Luxury Detailing Add-On Services -->
+                <div class="input-group" id="addons-section" style="margin-top: 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px;">
+                    <label style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; color: var(--gold-light); font-size: 0.95rem;">Customize with Luxury Add-Ons</span>
+                        <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 400;">Optional Upgrades</span>
+                    </label>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" class="addon-checkbox" data-key="addon_engine_bay" data-price="75" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                            <span>Engine Bay Detail (+$75)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" class="addon-checkbox" data-key="addon_headlight_restoration" data-price="95" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                            <span>Headlight Ceramic Restoration (+$95)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" class="addon-checkbox" data-key="addon_ozone_odor" data-price="60" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                            <span>Ozone Odor Elimination (+$60)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" class="addon-checkbox" data-key="addon_glass_coating" data-price="80" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                            <span>Glass Ceramic Rain Shield (+$80)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" class="addon-checkbox" data-key="addon_leather_shield" data-price="150" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                            <span>Leather Shield Ceramic (+$150)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Investment Summary Box -->
+                <div id="investment-summary-box" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(10, 10, 14, 0.6) 100%); border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.88rem; color: var(--text-muted);">Base Detailing Package:</span>
+                        <span id="summary-base-price" style="font-weight: 600; color: var(--text-main);">$150.00</span>
+                    </div>
+                    <div id="summary-addons-row" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.88rem; color: var(--text-muted);">Selected Add-Ons:</span>
+                        <span id="summary-addons-price" style="font-weight: 600; color: var(--text-main);">+$0.00</span>
+                    </div>
+                    <div id="summary-discount-row" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 6px; color: #16A34A;">
+                        <span style="font-size: 0.88rem; font-weight: 600;">VIP Club Member Discount (15%):</span>
+                        <span id="summary-discount-price" style="font-weight: 700;">-$0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(212, 175, 55, 0.25); padding-top: 10px; margin-top: 6px;">
+                        <span style="font-size: 1rem; font-weight: 700; color: white;">Total Investment:</span>
+                        <span id="summary-total-price" style="font-size: 1.35rem; font-weight: 900; color: var(--gold);">$150.00</span>
+                    </div>
                 </div>
 
                 <!-- VIP Club Perks Banner (shown when a Club plan is selected) -->
@@ -228,7 +288,23 @@
                     <textarea id="notes" aria-label="Special requests or notes" rows="3" placeholder="Tell us about specific swirl marks, pet hair, ceramic requests, or gate codes..."></textarea>
                 </div>
 
-                <button type="submit" class="btn-primary btn-gold" id="submit-btn" style="width: 100%; padding: 14px; font-size: 1.05rem;">Submit Booking Request</button>
+                <!-- Dual Luxury Booking Actions -->
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                    <button type="button" class="btn-primary btn-gold" id="stripe-checkout-btn" style="width: 100%; padding: 16px; font-size: 1.08rem; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4); font-weight: 800;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        <span>⚡ Instant Checkout (Apple Pay / Google Pay / Card)</span>
+                    </button>
+
+                    <button type="submit" class="btn-outline" id="submit-btn" style="width: 100%; padding: 12px; font-size: 0.95rem; border-color: var(--border); color: var(--text-muted); cursor: pointer;">
+                        Request Appointment (Pay On-Site / Invoice)
+                    </button>
+                </div>
+
+                <!-- Stripe Luxury Security Assurance -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span>256-Bit SSL Encrypted &bull; Official Stripe Integration &bull; Instant Confirmation</span>
+                </div>
             </form>
 
             <div id="msg" aria-live="polite"></div>
@@ -315,13 +391,15 @@
         import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument } from './js/auth.js';
         import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
-        import { submitDetailingRequest, submitDetailingPlan } from './js/api.js';
+        import { submitDetailingRequest, submitDetailingPlan, AUTOLUX_STRIPE_PACKAGES } from './js/api.js';
         import { initNavbar } from './js/navbar.js';
 
         let currentUser = null;
+        let currentUserData = null;
         const bookingForm = document.getElementById('booking-form');
         const overlay = document.getElementById('loading-overlay');
         const submitBtn = document.getElementById('submit-btn');
+        const stripeCheckoutBtn = document.getElementById('stripe-checkout-btn');
         const msgEl = document.getElementById('msg');
         const packageSelect = document.getElementById('package');
 
@@ -340,10 +418,77 @@
                 packageSelect.value = "Luxury SUV - $250";
             } else if (p === 'truck') {
                 packageSelect.value = "Premium Truck - $280";
-            } else if (p === 'van') {
+            } else if (p === 'van' || p === 'sprinter') {
                 packageSelect.value = "Sprinter Van - $400";
+            } else if (p === 'paint_correction' || p === 'paint-correction' || p === 'correction') {
+                packageSelect.value = "Multi-Stage Paint Correction - $500";
+            } else if (p === 'ceramic' || p === 'ceramic_coating' || p === 'ceramic-coating') {
+                packageSelect.value = "Ceramic Coating (3 to 7 Year Warranty) - $850";
+            } else if (p === 'interior') {
+                packageSelect.value = "Complete Interior Detail & Restoration - $175";
+            } else if (p === 'exterior') {
+                packageSelect.value = "Signature Exterior Concierge Detail - $125";
             }
         }
+
+        // Price mapping for live investment summary
+        const PACKAGE_PRICE_MAP = {
+            "Luxury Sedan - $150": { price: 150, key: "luxury_sedan" },
+            "Luxury SUV - $250": { price: 250, key: "luxury_suv" },
+            "Premium Truck - $280": { price: 280, key: "premium_truck" },
+            "Sprinter Van - $400": { price: 400, key: "sprinter_van" },
+            "Multi-Stage Paint Correction - $500": { price: 500, key: "paint_correction" },
+            "Ceramic Coating (3 to 7 Year Warranty) - $850": { price: 850, key: "ceramic_coating" },
+            "Complete Interior Detail & Restoration - $175": { price: 175, key: "interior_detail" },
+            "Signature Exterior Concierge Detail - $125": { price: 125, key: "exterior_detail" },
+            "AutoLux Detailing Club Plan - $129/mo": { price: 129, key: "club_monthly", isClub: true },
+            "AutoLux Detailing Club Annual - $1,290/yr": { price: 1290, key: "club_annual", isClub: true }
+        };
+
+        function updateInvestmentSummary() {
+            const val = packageSelect.value || '';
+            const pkgInfo = PACKAGE_PRICE_MAP[val] || { price: 0, key: 'luxury_sedan' };
+            const basePrice = pkgInfo.price;
+
+            let addOnsTotal = 0;
+            const checkedBoxes = document.querySelectorAll('.addon-checkbox:checked');
+            checkedBoxes.forEach(cb => {
+                addOnsTotal += Number(cb.getAttribute('data-price')) || 0;
+            });
+
+            const isClubMember = (currentUserData && currentUserData.membershipLevel === 'club') || pkgInfo.isClub;
+            const discount = (isClubMember && !pkgInfo.isClub) ? Math.round(basePrice * 0.15) : 0;
+            const finalTotal = Math.max(0, basePrice + addOnsTotal - discount);
+
+            const baseEl = document.getElementById('summary-base-price');
+            const addonsRow = document.getElementById('summary-addons-row');
+            const addonsEl = document.getElementById('summary-addons-price');
+            const discountRow = document.getElementById('summary-discount-row');
+            const discountEl = document.getElementById('summary-discount-price');
+            const totalEl = document.getElementById('summary-total-price');
+
+            if (baseEl) baseEl.textContent = `$${basePrice.toFixed(2)}`;
+            if (addonsRow && addonsEl) {
+                if (addOnsTotal > 0) {
+                    addonsRow.style.display = 'flex';
+                    addonsEl.textContent = `+$${addOnsTotal.toFixed(2)}`;
+                } else {
+                    addonsRow.style.display = 'none';
+                }
+            }
+            if (discountRow && discountEl) {
+                if (discount > 0) {
+                    discountRow.style.display = 'flex';
+                    discountEl.textContent = `-$${discount.toFixed(2)}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
+            if (totalEl) totalEl.textContent = `$${finalTotal.toFixed(2)}`;
+        }
+
+        packageSelect.addEventListener('change', updateInvestmentSummary);
+        document.querySelectorAll('.addon-checkbox').forEach(cb => cb.addEventListener('change', updateInvestmentSummary));
 
         // Manage VIP Club Perks Banner dynamically
         function updateClubBanner() {
@@ -510,6 +655,103 @@
                 safeSetSessionStorage('pendingReferralCode', ''); // Consume it
                 validateAndApplyReferralCode(referralInputEl.value);
             }
+        }
+
+        if (stripeCheckoutBtn) {
+            stripeCheckoutBtn.addEventListener('click', async () => {
+                if (!currentUser) {
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Please sign in to proceed with checkout.";
+                    return;
+                }
+
+                const selectedPackage = packageSelect.value;
+                const vehicle = document.getElementById('vehicle').value.trim();
+                const appointmentDate = document.getElementById('date').value;
+                const address = document.getElementById('address').value.trim();
+                const notes = document.getElementById('notes').value.trim();
+                const referralCode = document.getElementById('referral-code').value.trim().toUpperCase();
+                const referralMsg = document.getElementById('referral-msg');
+
+                if (referralMsg) referralMsg.textContent = '';
+
+                if (!selectedPackage || !vehicle || !appointmentDate || !address) {
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Please fill in all required fields (Package, Vehicle, Date & Address) before proceeding to checkout.";
+                    return;
+                }
+
+                stripeCheckoutBtn.disabled = true;
+                stripeCheckoutBtn.setAttribute('aria-busy', 'true');
+                stripeCheckoutBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;display:inline-block;margin-right:8px;vertical-align:middle;"></div> Redirecting to Secure Stripe Checkout...';
+                msgEl.textContent = '';
+
+                if (referralCode) {
+                    const isValid = await validateAndApplyReferralCode(referralCode);
+                    if (!isValid) {
+                        stripeCheckoutBtn.disabled = false;
+                        stripeCheckoutBtn.removeAttribute('aria-busy');
+                        stripeCheckoutBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> <span>⚡ Instant Checkout (Apple Pay / Google Pay / Card)</span>';
+                        return;
+                    }
+                }
+
+                try {
+                    const pkgInfo = PACKAGE_PRICE_MAP[selectedPackage] || { key: 'luxury_sedan', price: 150 };
+                    const stripePkg = AUTOLUX_STRIPE_PACKAGES[pkgInfo.key];
+
+                    // Gather checked add-ons
+                    const selectedAddOns = [];
+                    document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                        selectedAddOns.push(cb.getAttribute('data-key'));
+                    });
+
+                    const bookingDoc = {
+                        userId: currentUser.uid,
+                        customerEmail: currentUser.email || "",
+                        package: selectedPackage,
+                        service: selectedPackage,
+                        packageKey: pkgInfo.key,
+                        vehicle: vehicle,
+                        appointmentDate: appointmentDate,
+                        address: address,
+                        notes: notes,
+                        status: 'pending',
+                        paymentStatus: 'pending_payment',
+                        paymentMethod: 'stripe_checkout',
+                        stripePriceId: stripePkg?.stripePriceId || "",
+                        createdAt: serverTimestamp()
+                    };
+
+                    if (referralCode) {
+                        bookingDoc.referralCode = referralCode;
+                    }
+
+                    const isDetailingPlan = selectedPackage.toLowerCase().includes('plan') || selectedPackage.toLowerCase().includes('club');
+                    if (isDetailingPlan) {
+                        await submitDetailingPlan(bookingDoc);
+                    } else {
+                        await submitDetailingRequest(bookingDoc);
+                    }
+
+                    // Direct Stripe Checkout URL
+                    const checkoutTargetUrl = stripePkg?.paymentLinkUrl || (isDetailingPlan ? "https://buy.stripe.com/aFa6oG0I07BRf3R3T79AA0f" : "https://buy.stripe.com/fZu28q3Ucf4jcVJgFT9AA02");
+                    msgEl.style.color = "var(--gold)";
+                    msgEl.textContent = 'Redirecting to Apple Pay / Google Pay / Card checkout...';
+
+                    setTimeout(() => {
+                        window.location.href = checkoutTargetUrl;
+                    }, 500);
+
+                } catch (err) {
+                    console.error("Stripe Checkout Initiation Error:", err);
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Could not initialize Stripe checkout. You may still submit to pay on-site.";
+                    stripeCheckoutBtn.disabled = false;
+                    stripeCheckoutBtn.removeAttribute('aria-busy');
+                    stripeCheckoutBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> <span>⚡ Instant Checkout (Apple Pay / Google Pay / Card)</span>';
+                }
+            });
         }
 
         bookingForm.addEventListener('submit', async (e) => {

@@ -1,6 +1,9 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { submitDetailingRequestCore, submitQuoteRequestCore, submitDetailingPlanCore, submitToFirestore } from './utils.js';
 import { db, auth } from './auth.js';
+import { STRIPE_CONFIG, AUTOLUX_STRIPE_PACKAGES, getPackageStripeUrl } from './stripe_config.js';
+
+export { STRIPE_CONFIG, AUTOLUX_STRIPE_PACKAGES, getPackageStripeUrl };
 
 
 async function handleApiRequest(coreFunction, payload, type) {
@@ -61,7 +64,10 @@ export const AUTOLUX_CLUB_PRODUCTS = {
         price: 129,
         interval: "monthly",
         description: "Monthly maintenance detail with 15% discount on all services and priority scheduling.",
-        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1"
+        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1",
+        stripePriceId: "price_1UW1GbBmfNp1AIykToTpNWlk",
+        stripeProductId: "prod_VX5RZVGcArmq8q",
+        stripeCheckoutUrl: "https://buy.stripe.com/aFa6oG0I07BRf3R3T79AA0f"
     },
     annual: {
         id: "autolux-club-annual",
@@ -69,9 +75,16 @@ export const AUTOLUX_CLUB_PRODUCTS = {
         price: 1290,
         interval: "annual",
         description: "Annual VIP membership (12 washes with 2 months free) and 15% discount on all services.",
-        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-club-annual&quantity=1"
+        checkoutUrl: "https://realunstoppable.store/checkout.html?productId=autolux-club-annual&quantity=1",
+        stripePriceId: "price_1UW1GcBmfNp1AIykgVK0U0eF",
+        stripeProductId: "prod_VX5RBMy6NMwlHC",
+        stripeCheckoutUrl: "https://buy.stripe.com/5kQaEW4Yg09p6xldtH9AA0g"
     }
 };
+
+export function getPackageStripeCheckoutUrl(packageKey) {
+    return getPackageStripeUrl(packageKey) || null;
+}
 
 export function getUnstoppableCheckoutUrl(productId = "autolux-detailing-club", quantity = 1) {
     return `https://realunstoppable.store/checkout.html?productId=${encodeURIComponent(productId)}&quantity=${quantity}`;

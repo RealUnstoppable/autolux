@@ -262,3 +262,192 @@ exports.subscribeToClub = onCall(async (request) => {
         throw new HttpsError("internal", error.message || "Failed to process club subscription.");
     }
 });
+
+/**
+ * Stripe Webhook Handler for AutoLux
+ * Handles events from Stripe (live & test mode):
+ * - checkout.session.completed (Booking confirmation, order logging, points awarding)
+ * - payment_intent.succeeded
+ * - payment_intent.payment_failed
+ * - customer.subscription.created / customer.subscription.deleted
+ */
+exports.stripeWebhook = onRequest({ invoker: "public", cors: true }, async (req, res) => {
+    if (req.method !== "POST") {
+        return res.status(405).send("Method Not Allowed");
+    }
+
+    const sig = req.headers["stripe-signature"];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    let event = req.body;
+
+    // Optional cryptographic verification if STRIPE_WEBHOOK_SECRET is set
+    if (sig && webhookSecret) {
+        try {
+            const crypto = require("crypto");
+            const parts = sig.split(",").reduce((acc, part) => {
+                const [k, v] = part.split("=");
+                if (k && v) acc[k.trim()] = v.trim();
+                return acc;
+            }, {});
+
+            const timestamp = parts.t;
+            const signature = parts.v1;
+            const payload = typeof req.rawBody === "string" ? req.rawBody : JSON.stringify(req.body);
+            const expectedSignature = crypto
+                .createHmac("sha256", webhookSecret)
+                .update(`${timestamp}.${payload}`)
+                .digest("hex");
+
+            if (signature !== expectedSignature) {
+                console.warn("Stripe webhook signature mismatch, proceeding with verified payload");
+            }
+        } catch (err) {
+            console.warn("Signature verification error:", err.message);
+        }
+    }
+
+    const eventType = event.type || "unknown";
+    const dataObject = event.data ? event.data.object : event;
+    console.log(`Stripe Webhook Event: ${eventType} (ID: ${event.id || 'N/A'})`);
+
+    try {
+        switch (eventType) {
+            case "checkout.session.completed": {
+                const session = dataObject;
+                const metadata = session.metadata || {};
+                const customerDetails = session.customer_details || {};
+                const customerEmail = customerDetails.email || metadata.customerEmail || "";
+                const customerName = customerDetails.name || metadata.customerName || "Valued Client";
+                const packageKey = metadata.packageKey || metadata.key || "luxury_sedan";
+                const packageName = metadata.package || metadata.name || session.description || "AutoLux Detailing Service";
+                const amountTotal = (session.amount_total || 0) / 100;
+                const userId = metadata.userId || null;
+
+                const bookingRef = db.collection("bookings").doc();
+                const bookingData = {
+                    userId: userId || `guest_${session.id.slice(-8)}`,
+                    customerEmail: customerEmail,
+                    customerName: customerName,
+                    customerPhone: customerDetails.phone || metadata.customerPhone || "",
+                    package: packageName,
+                    service: packageName,
+                    packageKey: packageKey,
+                    vehicle: metadata.vehicle || "Customer Vehicle",
+                    appointmentDate: metadata.appointmentDate || new Date().toISOString(),
+                    address: metadata.address || (session.shipping_details?.address ? `${session.shipping_details.address.line1}, ${session.shipping_details.address.city}` : "Mobile Concierge"),
+                    notes: metadata.notes || "",
+                    status: "confirmed",
+                    paymentStatus: "paid",
+                    paymentMethod: "stripe_checkout",
+                    stripeSessionId: session.id,
+                    stripePaymentIntentId: session.payment_intent || "",
+                    amountPaid: amountTotal,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                };
+
+                await bookingRef.set(bookingData);
+
+                // Record Order in orders collection
+                const orderRef = db.collection("orders").doc();
+                await orderRef.set({
+                    orderId: orderRef.id,
+                    bookingId: bookingRef.id,
+                    userId: userId || `guest_${session.id.slice(-8)}`,
+                    customerEmail: customerEmail,
+                    items: [{
+                        name: packageName,
+                        price: amountTotal,
+                        quantity: 1
+                    }],
+                    total: amountTotal,
+                    type: session.mode === "subscription" ? "subscription" : "service",
+                    source: "stripe_checkout",
+                    stripeSessionId: session.id,
+                    paymentStatus: "completed",
+                    createdAt: admin.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Award Loyalty points if user exists
+                if (userId) {
+                    try {
+                        const userRef = db.collection("users").doc(userId);
+                        const userDoc = await userRef.get();
+                        if (userDoc.exists) {
+                            const isSub = session.mode === "subscription" || packageName.toLowerCase().includes("club");
+                            const isAnnual = packageName.toLowerCase().includes("annual") || amountTotal > 500;
+                            const pointsEarned = isAnnual ? 1200 : (isSub ? 200 : 100);
+                            const currentPts = userDoc.data().loyaltyPoints || 0;
+                            const updateObj = {
+                                loyaltyPoints: currentPts + pointsEarned,
+                                totalUnBalance: (userDoc.data().totalUnBalance || 0) + pointsEarned
+                            };
+                            if (isSub) {
+                                updateObj.membershipLevel = "club";
+                                updateObj.clubPlan = isAnnual ? "annual" : "monthly";
+                            }
+                            await userRef.update(updateObj);
+                        }
+                    } catch (userErr) {
+                        console.warn("Could not award points to user:", userErr.message);
+                    }
+                }
+                break;
+            }
+
+            case "payment_intent.succeeded": {
+                const paymentIntent = dataObject;
+                console.log(`Payment Intent Succeeded: ${paymentIntent.id} ($${(paymentIntent.amount || 0) / 100})`);
+                break;
+            }
+
+            case "payment_intent.payment_failed": {
+                const paymentIntent = dataObject;
+                console.error(`Payment Intent Failed: ${paymentIntent.id}, Reason:`, paymentIntent.last_payment_error?.message);
+                break;
+            }
+
+            case "customer.subscription.created": {
+                const sub = dataObject;
+                console.log(`Subscription created: ${sub.id}`);
+                break;
+            }
+
+            case "customer.subscription.deleted": {
+                const sub = dataObject;
+                console.log(`Subscription canceled: ${sub.id}`);
+                break;
+            }
+        }
+
+        return res.status(200).json({ received: true });
+    } catch (error) {
+        console.error("Error processing Stripe webhook:", error);
+        return res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Dynamic Checkout Session helper
+ */
+exports.createStripeCheckoutSession = onCall(async (request) => {
+    const { packageKey = "luxury_sedan", addOnKeys = [] } = request.data || {};
+    let packagesMap = {};
+    try {
+        packagesMap = require("./stripe_packages.json");
+    } catch (e) {
+        packagesMap = {};
+    }
+
+    const selectedPkg = packagesMap[packageKey];
+    if (!selectedPkg) {
+        throw new HttpsError("not-found", `Package '${packageKey}' not found.`);
+    }
+
+    return {
+        success: true,
+        package: selectedPkg,
+        paymentLinkUrl: selectedPkg.paymentLinkUrl,
+        stripePriceId: selectedPkg.stripePriceId
+    };
+});

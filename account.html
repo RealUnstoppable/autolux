@@ -281,6 +281,17 @@
     </nav>
 
     <div class="container">
+        <!-- Stripe Payment Confirmation Celebration Banner -->
+        <div id="stripe-success-banner" style="display: none; background: linear-gradient(135deg, rgba(22, 163, 74, 0.15) 0%, rgba(212, 175, 55, 0.15) 100%); border: 1px solid var(--gold); border-radius: var(--radius-md); padding: 18px 24px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="background: var(--gold); color: black; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; flex-shrink: 0;">✓</div>
+                <div>
+                    <h3 style="margin: 0 0 4px 0; color: white; font-size: 1.15rem;">Payment Confirmed & Priority Scheduled!</h3>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4;">Thank you for your business. Your luxury automotive detailing appointment has been locked into our master concierge schedule.</p>
+                </div>
+            </div>
+        </div>
+
         <div class="grid">
             <!-- Sidebar / Profile Info -->
             <div>
@@ -1661,6 +1672,16 @@
                     copyTextWithFallback(shareUrl, shareReferralBtn, 'Link Copied!');
                 }
             });
+        }
+
+        // Check for Stripe Checkout Success redirection
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('booking_success') === 'true' || urlParams.get('session_id')) {
+            const successBanner = document.getElementById('stripe-success-banner');
+            if (successBanner) {
+                successBanner.style.display = 'block';
+                successBanner.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         logoutBtn.addEventListener('click', async () => {
