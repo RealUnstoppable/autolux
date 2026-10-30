@@ -68,6 +68,7 @@ describe('UI Content & Transaction Flow Verification', () => {
             'favicon-16x16.png',
             'favicon-48x48.png',
             'apple-touch-icon.png',
+            'favicon.svg',
             'site.webmanifest'
         ];
 
@@ -92,6 +93,7 @@ describe('UI Content & Transaction Flow Verification', () => {
             expect(html).toContain('rel="icon"');
             expect(html).toContain('href="favicon.ico"');
             expect(html).toContain('href="favicon-32x32.png"');
+            expect(html).toContain('href="favicon.svg"');
         }
     });
 });
