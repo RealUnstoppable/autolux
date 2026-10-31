@@ -486,7 +486,7 @@
                     <div id="vehicles-list">
                         <div class="vehicle-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
                             <span>2024 Porsche 911 GT3</span>
-                            <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="2024 Porsche 911 GT3">Remove</button>
+                            <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="2024 Porsche 911 GT3" aria-label="Remove vehicle 2024 Porsche 911 GT3">Remove</button>
                         </div>
                     </div>
                     <form id="add-vehicle-form" style="margin-top: 15px; display: flex; gap: 10px;">
@@ -504,7 +504,7 @@
                                 <strong style="color: var(--gold); display: block; font-size: 0.9rem;">Home (Primary)</strong>
                                 <span style="font-size: 0.85rem; color: var(--text-muted);">100 Ocean Drive, Suite 400, Miami, FL 33139</span>
                             </div>
-                            <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="Home (Primary)" data-address="100 Ocean Drive, Suite 400, Miami, FL 33139">Remove</button>
+                            <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="Home (Primary)" data-address="100 Ocean Drive, Suite 400, Miami, FL 33139" aria-label="Remove address Home (Primary)">Remove</button>
                         </div>
                     </div>
                     <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
@@ -1287,7 +1287,7 @@
                         <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label || 'Address')}</strong>
                         <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address || 'N/A')}</span>
                     </div>
-                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}" aria-label="Remove address ${escapeHTML(a.label)}">Remove</button>
                 `;
                 fragment.appendChild(el);
             }
@@ -1338,7 +1338,7 @@
                         <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(label)}</strong>
                         <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(address)}</span>
                     </div>
-                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}">Remove</button>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}" aria-label="Remove address ${escapeHTML(label)}">Remove</button>
                 `;
                 list.appendChild(el);
 
@@ -1469,7 +1469,7 @@
 
                 el.innerHTML = `
                     <span>${escapeHTML(v)}</span>
-                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}" aria-label="Remove vehicle ${escapeHTML(v)}">Remove</button>
                 `;
                 fragment.appendChild(el);
             }
@@ -1514,7 +1514,7 @@
                 el.className = 'vehicle-item';
                 el.innerHTML = `
                     <span>${escapeHTML(val)}</span>
-                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(val)}">Remove</button>
+                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(val)}" aria-label="Remove vehicle ${escapeHTML(val)}">Remove</button>
                 `;
                 list.appendChild(el);
 
