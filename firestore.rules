@@ -29,8 +29,8 @@ service cloud.firestore {
     // Customer Interactions Collection
     match /customer_interactions/{interactionId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow create: if isOwner(request.resource.data.userId) && request.resource.data.keys().hasOnly(['userId', 'interactionType', 'notes', 'timestamp', 'status']);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && request.resource.data.keys().hasOnly(['userId', 'interactionType', 'notes', 'timestamp', 'status']));
       allow delete: if isAdmin();
     }
 
@@ -126,8 +126,9 @@ service cloud.firestore {
 
     // Carts collection
     match /carts/{cartId} {
-      allow create: if isAuthenticated() && request.auth.uid == cartId;
-      allow read, update, delete: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow create: if isAuthenticated() && request.auth.uid == cartId && request.resource.data.keys().hasOnly(['items', 'updatedAt']);
+      allow read, delete: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId);
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == cartId && request.resource.data.keys().hasOnly(['items', 'updatedAt']));
     }
 
     // Orders collection

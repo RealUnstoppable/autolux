@@ -33,23 +33,8 @@ export async function submitGenericRequest(collectionName, baseData, additionalD
             delete payload.isAdmin;
         }
 
-        // Add timeout to prevent hanging indefinitely when network/Firestore is unreachable
-        const timeoutPromise = new Promise((_, reject) => {
-            const timeoutId = setTimeout(() => {
-                const err = new Error(`Request to ${collectionName} timed out`);
-                err.code = 'deadline-exceeded';
-                reject(err);
-            }, 6000);
-            // Allow process to exit cleanly in node environments if needed
-            if (timeoutId && typeof timeoutId.unref === 'function') {
-                timeoutId.unref();
-            }
-        });
-
-        const docRef = await Promise.race([
-            addDoc(collection(db, collectionName), payload),
-            timeoutPromise
-        ]);
+        // Let the Firebase SDK handle connection resilience natively
+        const docRef = await addDoc(collection(db, collectionName), payload);
         return { success: true, docId: docRef.id };
     } catch (error) {
         console.error(`Firebase connection error in ${collectionName}. Code:`, error.code || 'UNKNOWN_ERROR');
