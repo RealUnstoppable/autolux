@@ -683,24 +683,32 @@
                 let appointmentsSnap = { empty: true, docs: [] };
                 let notificationsSnap = { empty: true, docs: [] };
 
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
-                    console.warn("Could not fetch user document:", e);
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+
+                // ⚡ Bolt Optimization: Parallelize independent database reads to reduce waterfall latency
+                const [userRes, appointmentsRes, notificationsRes] = await Promise.allSettled([
+                    getDoc(userRef),
+                    getDocs(appointmentsQuery),
+                    getDocs(notificationsQuery)
+                ]);
+
+                if (userRes.status === 'fulfilled') {
+                    userSnap = userRes.value;
+                } else {
+                    console.warn("Could not fetch user document:", userRes.reason);
                 }
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
+                if (appointmentsRes.status === 'fulfilled') {
+                    appointmentsSnap = appointmentsRes.value;
+                } else {
+                    console.warn("Could not fetch appointments:", appointmentsRes.reason);
                 }
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
+                if (notificationsRes.status === 'fulfilled') {
+                    notificationsSnap = notificationsRes.value;
+                } else {
+                    console.warn("Could not fetch notifications:", notificationsRes.reason);
                 }
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
