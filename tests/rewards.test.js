@@ -90,8 +90,7 @@ describe('rewards.js and firestore rules', () => {
         const htmlPath = path.resolve(process.cwd(), 'rewards.html');
         const htmlContent = fs.readFileSync(htmlPath, 'utf8');
 
-        expect(htmlContent).toContain('window.ENV');
-        expect(htmlContent).toContain('FIREBASE_API_KEY');
+        expect(htmlContent).toContain('env.js');
         expect(htmlContent).toContain('100 Points Sign Up Bonus Transferred');
     });
 });
