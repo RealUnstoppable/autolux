@@ -41,3 +41,8 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+
+## 2024-05-24 - [Firebase Timeout Handling]
+**Vulnerability:** The `submitGenericRequest` function implemented an artificial 6-second timeout using `Promise.race`, causing legitimate connection attempts on slower networks to be forcefully rejected.
+**Learning:** Implementing manual timeouts on top of the Firebase SDK's built-in resilient connection handling and offline queuing can lead to "loss of connectivity" issues where the application appears completely unresponsive to writes.
+**Prevention:** Rely on the Firebase SDK's native offline and retry mechanisms for database writes. Avoid wrapping Firebase operations in manual `Promise.race` timeouts without proper fallback processing.
