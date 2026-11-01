@@ -678,29 +678,42 @@
 
                 const userRef = doc(db, "users", user.uid);
 
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
+
+                const userPromise = getDoc(userRef);
+                const appointmentsPromise = getDocs(appointmentsQuery);
+                const notificationsPromise = getDocs(notificationsQuery);
+                const logsPromise = fetchUserServiceLogs(user.uid);
+
+                // We catch errors immediately to avoid unhandled rejection warnings in the console
+                userPromise.catch(e => console.warn("Could not fetch user document:", e));
+                appointmentsPromise.catch(e => console.warn("Could not fetch appointments:", e));
+                notificationsPromise.catch(e => console.warn("Could not fetch notifications:", e));
+                logsPromise.catch(e => console.warn("Could not fetch service logs:", e));
+
                 // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
                 let userSnap = null;
                 let appointmentsSnap = { empty: true, docs: [] };
                 let notificationsSnap = { empty: true, docs: [] };
 
                 try {
-                    userSnap = await getDoc(userRef);
+                    userSnap = await userPromise;
                 } catch (e) {
-                    console.warn("Could not fetch user document:", e);
+                    // Handled above
                 }
 
                 try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
+                    appointmentsSnap = await appointmentsPromise;
                 } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
+                    // Handled above
                 }
 
                 try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
+                    notificationsSnap = await notificationsPromise;
                 } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
+                    // Handled above
                 }
 
                 userData = userSnap && userSnap.exists() ? userSnap.data() : null;
@@ -741,9 +754,9 @@
 
                 let logs = [];
                 try {
-                    logs = await fetchUserServiceLogs(user.uid);
+                    logs = await logsPromise;
                 } catch (e) {
-                    console.warn("Could not fetch service logs:", e);
+                    // Handled above
                 }
                 renderServiceLogs(logs);
 
