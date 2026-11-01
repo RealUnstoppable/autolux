@@ -502,12 +502,17 @@
                     });
                 }
 
-                const userData = await ensureUserDocument(user);
+                // ⚡ Bolt: Start independent DB queries concurrently to improve page load speed
+                const ensureUserPromise = ensureUserDocument(user);
+                const rewardsPromise = loadRewardsGrid(true);
+                const myRewardsPromise = loadMyRewards();
+
+                const userData = await ensureUserPromise;
 
                 await Promise.all([
                     loadUserPoints(user.uid, userData),
-                    loadRewardsGrid(true),
-                    loadMyRewards(),
+                    rewardsPromise,
+                    myRewardsPromise,
                     loadTransfers(user, userData)
                 ]);
             } catch (err) {
