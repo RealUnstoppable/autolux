@@ -18,7 +18,7 @@ try {
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
     // Validate auth domain to prevent ezManage cross-contamination while supporting autolux.store & autolux.realunstoppable.store
-    const validAutoluxDomains = ['autolux.realunstoppable.store', 'autolux.store'];
+    const validAutoluxDomains = ['autolux.realunstoppable.store', 'autolux.store', 'autolux-detailing.firebaseapp.com'];
     const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux'));
     if (isAutolux && !isDomainAutolux) {
         throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");

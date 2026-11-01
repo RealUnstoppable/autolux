@@ -40,11 +40,11 @@ export async function submitDetailingRequest(bookingData) {
     if (bookingData.referralCode) {
         payload.referralCode = bookingData.referralCode.trim().toUpperCase();
     }
-    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
+    return await handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
 }
 
 export async function submitQuoteRequest(quoteData) {
-    return handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
+    return await handleApiRequest(submitQuoteRequestCore, [quoteData], "Quote");
 }
 
 export async function submitDetailingPlan(planData) {
@@ -54,7 +54,7 @@ export async function submitDetailingPlan(planData) {
         console.error("Cannot submit detailing plan: User is not authenticated.");
         return { success: false, error: "User must be authenticated", message: "An error occurred while submitting your request. Please try again later." };
     }
-    return handleApiRequest(submitDetailingPlanCore, [userId, planData], "DetailingPlan");
+    return await handleApiRequest(submitDetailingPlanCore, [userId, planData], "DetailingPlan");
 }
 
 export const AUTOLUX_CLUB_PRODUCTS = {
