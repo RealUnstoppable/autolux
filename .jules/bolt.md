@@ -32,3 +32,6 @@
 ## 2026-05-24 - [Avoid `innerHTML = ''` empty state clearing for state management]
 **Learning:** Using `element.innerHTML = ''` to clear an empty state message before appending new items causes the browser to destroy and recreate any other elements in the list (if they exist) and triggers a full DOM layout recalculation/re-render, which is an anti-pattern for granular UI updates.
 **Action:** Instead of blowing away the container with `innerHTML = ''`, explicitly query and `.remove()` the empty state message element to preserve existing list items and prevent layout thrashing.
+## 2025-02-08 - Hoist Independent Queries in Account Page
+**Learning:** Sequential Firebase queries (N+1 waterfall) during page initialization block UI rendering and increase perceived latency.
+**Action:** Hoisted independent queries (`getDoc(userRef)`, `getDocs(appointmentsQuery)`, `getDocs(notificationsQuery)`) and grouped them using `Promise.allSettled` to prevent waterfall latency and ensure resilient loading.
