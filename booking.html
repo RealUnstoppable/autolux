@@ -434,6 +434,20 @@
             }
         }
 
+        const vehicleParam = urlParams.get('vehicle');
+        if (vehicleParam) {
+            const vehicleInput = document.getElementById('vehicle');
+            if (vehicleInput) vehicleInput.value = decodeURIComponent(vehicleParam);
+        }
+
+        const dateParam = urlParams.get('date');
+        if (dateParam) {
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                dateInput.value = dateParam.includes('T') ? dateParam : `${dateParam}T10:00`;
+            }
+        }
+
         // Price mapping for live investment summary
         const PACKAGE_PRICE_MAP = {
             "Luxury Sedan - $150": { price: 150, key: "luxury_sedan" },

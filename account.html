@@ -18,10 +18,8 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="geo.region" content="US-GA">
-    <meta name="geo.placename" content="Buford, GA">
-    <meta name="description" content="Client Portal for AUTOLUX Detailing Studio clients.">
-    <title>Client Portal | AUTOLUX Detailing Studio</title>
+    <meta name="description" content="The Garage Client Dashboard for AUTOLUX Detailing Studio. Track vehicle maintenance cycles, view recent clean media, and manage luxury appointments.">
+    <title>The Garage | AUTOLUX Detailing Studio</title>
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -38,6 +36,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
+
     <!-- Performance Preconnections & Module Preloading for Authentication and Database -->
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
@@ -47,32 +46,35 @@
     <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js">
     <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js">
     <link rel="modulepreload" href="./js/auth.js">
+    <link rel="modulepreload" href="./js/vehicle_images.js">
+    <link rel="modulepreload" href="./js/maintenance_calendar.js">
+
     <style>
         .container {
-            max-width: 1200px;
-            margin: 40px auto;
+            max-width: 1280px;
+            margin: 32px auto;
             padding: 0 20px;
             box-sizing: border-box;
         }
 
-        .grid {
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 32px;
+            grid-template-columns: 340px 1fr;
+            gap: 28px;
         }
 
-        @media (max-width: 960px) {
-            .grid { grid-template-columns: 1fr; }
+        @media (max-width: 980px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
 
         .card {
             background: var(--bg-card);
-            padding: 28px;
+            padding: 24px 26px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
             margin-bottom: 24px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
 
         .card h2 {
@@ -81,7 +83,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 12px;
             color: var(--gold);
@@ -90,7 +92,7 @@
         .user-info p {
             margin: 10px 0;
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
         .user-info strong {
@@ -231,7 +233,6 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
-    <script src="env.js?v=2"></script>
 </head>
 <body>
 
@@ -295,7 +296,32 @@
             </div>
         </div>
 
-        <div class="grid">
+        <!-- The Garage Hero Banner -->
+        <div class="garage-hero">
+            <div class="garage-hero-content">
+                <div>
+                    <span class="section-eyebrow">Client Showroom</span>
+                    <h1 class="garage-hero-title">The Garage</h1>
+                    <p class="garage-hero-subtitle">Personalized automotive concierge dashboard for scheduled care, ceramic maintenance, and verified service media.</p>
+                </div>
+                <div class="garage-hero-stats">
+                    <div class="garage-stat-badge">
+                        <span class="garage-stat-val" id="hero-streak-val">Active</span>
+                        <span class="garage-stat-label">Protection Streak</span>
+                    </div>
+                    <div class="garage-stat-badge">
+                        <span class="garage-stat-val" id="hero-health-val">96%</span>
+                        <span class="garage-stat-label">Clear Coat Index</span>
+                    </div>
+                    <div class="garage-stat-badge">
+                        <span class="garage-stat-val" id="hero-points-val">100</span>
+                        <span class="garage-stat-label">Loyalty UN Pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
             <!-- Sidebar / Profile Info -->
             <div>
                 <div class="card">
@@ -380,12 +406,254 @@
                         🎁 100 points sign up bonus active. Redeem for free washes & discounts.
                     </p>
                 </div>
+
+                <div class="card">
+                    <h2>My Service Addresses</h2>
+                    <div id="addresses-list">
+                        <div class="address-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
+                            <div>
+                                <strong style="color: var(--gold); display: block; font-size: 0.9rem;">Home (Primary)</strong>
+                                <span style="font-size: 0.85rem; color: var(--text-muted);">100 Ocean Drive, Suite 400, Miami, FL 33139</span>
+                            </div>
+                            <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="Home (Primary)" data-address="100 Ocean Drive, Suite 400, Miami, FL 33139">Remove</button>
+                        </div>
+                    </div>
+                    <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <input type="text" id="new-address-val" aria-label="New full address" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <button type="submit" class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
+                        <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
+                    </form>
+                </div>
             </div>
 
-            <!-- Main Content Area -->
+            <!-- Main Content Area: The Garage Experience -->
             <div>
-                <!-- Notifications Panel -->
+                <!-- Flo-Inspired Automotive Maintenance Calendar -->
+                <div class="maintenance-calendar-card" id="maintenance-calendar-section">
+                    <div class="calendar-header">
+                        <div class="calendar-title-group">
+                            <span class="section-eyebrow" style="font-size: 0.72rem; padding: 2px 10px; margin-bottom: 6px;">Flo Cycle Tracker</span>
+                            <h2 style="font-size: 1.35rem; color: var(--gold); margin: 0;">Automotive Maintenance Calendar</h2>
+                            <p class="section-subtitle" style="text-align: left; font-size: 0.85rem; margin: 4px 0 0 0;">Visual schedule tracking historical washes, upcoming bookings, and predictive clean windows.</p>
+                        </div>
 
+                        <div class="calendar-nav-controls">
+                            <button class="calendar-nav-btn" id="cal-prev-btn" aria-label="Previous Month">&larr;</button>
+                            <span class="calendar-month-label" id="cal-month-title">November 2026</span>
+                            <button class="calendar-nav-btn" id="cal-next-btn" aria-label="Next Month">&rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- Protection Score Bar (Flo health ring inspired) -->
+                    <div style="background: rgba(10, 10, 14, 0.7); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--gold); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.95rem; color: var(--gold); box-shadow: 0 0 12px var(--gold-glow-subtle);" id="cal-protection-score">
+                                94%
+                            </div>
+                            <div>
+                                <strong style="color: var(--text-main); font-size: 0.98rem; display: block;" id="cal-protection-title">Paint Protection Optimal</strong>
+                                <span style="color: var(--text-muted); font-size: 0.8rem;" id="cal-protection-sub">Hydrophobic SiO2 layer shielding clear coat &bull; Wash cycle on schedule</span>
+                            </div>
+                        </div>
+                        <div class="calendar-legend">
+                            <div class="legend-item"><span class="legend-dot hist"></span> Detailed Past</div>
+                            <div class="legend-item"><span class="legend-dot upcom"></span> Scheduled</div>
+                            <div class="legend-item"><span class="legend-dot recom"></span> Wash Window</div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Grid Header & Days -->
+                    <div class="calendar-grid" id="calendar-grid">
+                        <div class="calendar-weekday">Sun</div>
+                        <div class="calendar-weekday">Mon</div>
+                        <div class="calendar-weekday">Tue</div>
+                        <div class="calendar-weekday">Wed</div>
+                        <div class="calendar-weekday">Thu</div>
+                        <div class="calendar-weekday">Fri</div>
+                        <div class="calendar-weekday">Sat</div>
+                    </div>
+
+                    <!-- Interactive Day Inspector Card -->
+                    <div class="calendar-day-inspector" id="calendar-day-inspector">
+                        <div class="inspector-info">
+                            <span style="font-size: 0.75rem; color: var(--gold); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;" id="insp-date-badge">Select a Date</span>
+                            <h4 id="insp-title" style="margin: 4px 0; color: white;">Recommended Wash Window</h4>
+                            <p id="insp-desc">Click any calendar date to inspect historical service logs, check booked appointments, or reserve a predicted wash window.</p>
+                        </div>
+                        <div id="insp-action-container">
+                            <a href="booking.html" class="btn-schedule" id="insp-action-btn">Schedule Mobile Detail</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Showroom Garage: Registered Vehicles -->
+                <div class="card" id="garage-vehicles-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">My Registered Vehicles</h2>
+                        <a href="#add-vehicle-form" class="btn-schedule" style="padding: 6px 12px; font-size: 0.82rem;">+ Add Vehicle</a>
+                    </div>
+
+                    <div id="vehicles-list" class="vehicle-grid">
+                        <div class="vehicle-card vehicle-item">
+                            <div class="vehicle-image-wrapper">
+                                <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&amp;fit=crop&amp;w=900&amp;q=80" alt="2024 Porsche 911 GT3" class="vehicle-image" loading="lazy" width="600" height="338">
+                                <span class="vehicle-category-badge">Exotic Track Weapon</span>
+                            </div>
+                            <div class="vehicle-card-body">
+                                <div>
+                                    <h3 class="vehicle-card-title">2024 Porsche 911 GT3</h3>
+                                    <div class="vehicle-protection-bar">
+                                        <div class="vehicle-protection-labels">
+                                            <span>Paint Protection</span>
+                                            <span style="color: var(--gold); font-weight: 700;">96% Optimal</span>
+                                        </div>
+                                        <div class="vehicle-meter-track">
+                                            <div class="vehicle-meter-fill" style="width: 96%;"></div>
+                                        </div>
+                                    </div>
+                                    <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 12px 0;">
+                                        Recommended: <strong style="color: var(--text-main);">Ceramic Coating + Paint Correction</strong> every 14 days
+                                    </p>
+                                </div>
+                                <div class="vehicle-card-actions">
+                                    <a href="booking.html?package=sedan&amp;vehicle=2024%20Porsche%20911%20GT3" class="btn-schedule" style="flex: 1; padding: 10px; font-size: 0.82rem;">⚡ Book Detail</a>
+                                    <button class="remove-vehicle-btn" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem;" data-vehicle="2024 Porsche 911 GT3">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Vehicle Form with Quick Suggestions -->
+                    <div class="vehicle-add-box" style="margin-top: 24px;">
+                        <span style="font-size: 0.82rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Add Vehicle to Garage</span>
+                        <form id="add-vehicle-form" style="margin-top: 10px; display: flex; gap: 10px;">
+                            <input type="text" id="new-vehicle" aria-label="New vehicle details" placeholder="e.g. 2024 Porsche 911 GT3, BMW M4, Mercedes G63" style="flex-grow: 1; padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                            <button type="submit" class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer; padding: 10px 20px;">Add Vehicle</button>
+                        </form>
+                        <div class="vehicle-suggest-chips">
+                            <span class="suggest-chip" data-name="2024 Porsche 911 GT3">+ 2024 Porsche 911 GT3</span>
+                            <span class="suggest-chip" data-name="Mercedes-AMG G63">+ Mercedes-AMG G63</span>
+                            <span class="suggest-chip" data-name="BMW M4 Competition">+ BMW M4 Competition</span>
+                            <span class="suggest-chip" data-name="Tesla Model S Plaid">+ Tesla Model S Plaid</span>
+                            <span class="suggest-chip" data-name="Range Rover SV">+ Range Rover SV</span>
+                        </div>
+                        <div id="vehicle-msg" aria-live="polite" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
+                    </div>
+                </div>
+
+                <!-- Service Media Showcase ("Most Recent Clean") -->
+                <div class="card" id="service-gallery-card" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">Service History &amp; Gallery</h2>
+                        <span style="font-size: 0.78rem; background: rgba(212, 175, 55, 0.15); color: var(--gold); padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700;">Most Recent Clean</span>
+                    </div>
+
+                    <div id="service-logs-list" style="display: grid; gap: 20px;">
+                        <div style="background: var(--bg-dark); padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <span style="font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Showroom Inspection Report</span>
+                                    <h3 style="margin: 4px 0 6px 0; color: var(--gold); font-size: 1.2rem;">Signature Paint Correction &amp; Ceramic Coating</h3>
+                                    <p style="margin: 0; font-weight: 700; color: var(--text-main);">2024 Porsche 911 GT3</p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">Recent</span>
+                                    <span style="color: #16A34A; font-size: 0.8rem; font-weight: 700;">✦ 5-Year Warranty Active</span>
+                                </div>
+                            </div>
+
+                            <p style="font-size: 0.92rem; color: var(--text-muted); margin: 14px 0; line-height: 1.5; font-style: italic;">
+                                "Multi-stage paint correction, 5-year hydrophobic ceramic coating applied, and full interior leather treatment. Dual-action machine compounded using Rupes DA with Meguiar's M205 &amp; Gtechniq Crystal Serum Light."
+                            </p>
+
+                            <!-- Inspection Metrics -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0;">
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Gloss Level</span>
+                                    <span style="font-size: 1.1rem; font-weight: 800; color: var(--gold);">98.6 GU</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Swirl Removal</span>
+                                    <span style="font-size: 1.1rem; font-weight: 800; color: #16A34A;">96% Removed</span>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Hydrophobic Angle</span>
+                                    <span style="font-size: 1.1rem; font-weight: 800; color: #38BDF8;">112° Beading</span>
+                                </div>
+                            </div>
+
+                            <!-- Embedded Media: Video Reel & Before/After Gallery -->
+                            <div class="media-showcase-container">
+                                <!-- Mobile Detailing 4K Reel Player -->
+                                <div class="media-video-box">
+                                    <span class="media-video-badge">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                        4K Studio Reel
+                                    </span>
+                                    <video class="media-video-player" playsinline loop muted autoplay poster="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&amp;fit=crop&amp;w=900&amp;q=80">
+                                        <source src="https://assets.mixkit.co/videos/preview/mixkit-car-wash-in-a-detail-shop-40114-large.mp4" type="video/mp4">
+                                        Your browser does not support HTML5 video.
+                                    </video>
+                                </div>
+
+                                <!-- Before & After Split Image Frame -->
+                                <div class="before-after-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--gold);">Before &amp; After Inspection</span>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">High-Res Side-by-Side</span>
+                                    </div>
+                                    <div class="ba-viewer-frame">
+                                        <div class="ba-image-pane">
+                                            <span class="ba-image-label">Before</span>
+                                            <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&amp;w=600&amp;auto=format" alt="Before detail" loading="lazy" width="300" height="225">
+                                        </div>
+                                        <div class="ba-image-pane">
+                                            <span class="ba-image-label">After</span>
+                                            <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&amp;w=600&amp;auto=format" alt="After detail" loading="lazy" width="300" height="225">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Appointments Section -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">My Appointments</h2>
+                        <a href="booking.html" class="btn-schedule">+ Book New</a>
+                    </div>
+                    <div id="appointments-list">
+                        <div class="list-item">
+                            <div>
+                                <p>Executive Ceramic Detail</p>
+                                <small>2024 Porsche 911 GT3 &bull; Saturday at 10:00 AM</small>
+                            </div>
+                            <span class="status-badge confirmed">confirmed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Notifications -->
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
+                        <h2 style="margin: 0; border: none; padding: 0;">Alerts &amp; Notifications</h2>
+                    </div>
+                    <div id="notifications-list">
+                        <div class="list-item" style="font-weight: bold; border-left: 3px solid var(--gold); padding-left: 10px;">
+                            <div style="flex-grow: 1;">
+                                <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">VIP Membership Activated</p>
+                                <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">Welcome to AutoLux! Your account is active. Schedule your next detail to earn rewards and exclusive member benefits.</small>
+                                <small style="color: var(--text-muted); font-size: 0.75rem;">Recent</small>
+                            </div>
+                            <button class="btn-sm btn-action mark-read-btn" data-id="dummy-notif-1" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Mark Read</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Tickets Panel -->
                 <div class="card" id="support-tickets-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
                         <h2 style="margin: 0; border: none; padding: 0;">Support Tickets</h2>
@@ -418,104 +686,12 @@
                         <select id="ticket-category" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;">
                             <option value="Booking Issue">Booking Issue</option>
                             <option value="Billing">Billing</option>
-                            <option value="General">General Questions</option>
+                            <option value="General Questions">General Questions</option>
                         </select>
                         <textarea id="ticket-message" placeholder="Message" rows="4" style="width: 100%; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box;"></textarea>
                         <button id="submit-ticket-btn" class="btn-primary" style="width: 100%;">Submit Ticket</button>
                         <div id="ticket-msg" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
                     </div>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-                        <h2 style="margin: 0; border: none; padding: 0;">Alerts & Notifications</h2>
-                    </div>
-                    <div id="notifications-list">
-                        <div class="list-item" style="font-weight: bold; border-left: 3px solid var(--gold); padding-left: 10px;">
-                            <div style="flex-grow: 1;">
-                                <p style="margin: 0 0 4px 0; font-size: 1rem; color: var(--gold);">VIP Membership Activated</p>
-                                <small style="display: block; color: var(--text-muted); margin-bottom: 4px;">Welcome to AutoLux! Your account is active. Schedule your next detail to earn rewards and exclusive member benefits.</small>
-                                <small style="color: var(--text-muted); font-size: 0.75rem;">Recent</small>
-                            </div>
-                            <button class="btn-sm btn-action mark-read-btn" data-id="dummy-notif-1" style="border: 1px solid var(--border); background: var(--bg-dark); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Mark Read</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px;">
-                        <h2 style="margin: 0; border: none; padding: 0;">My Appointments</h2>
-                        <a href="booking.html" class="btn-schedule">+ Book New</a>
-                    </div>
-                    <div id="appointments-list">
-                        <div class="list-item">
-                            <div>
-                                <p>Executive Ceramic Detail</p>
-                                <small>2024 Porsche 911 GT3 &bull; Saturday at 10:00 AM</small>
-                            </div>
-                            <span class="status-badge confirmed">confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" id="service-gallery-card" style="margin-bottom: 20px;">
-                    <h2>Service History & Gallery</h2>
-                    <div id="service-logs-list" style="display: grid; gap: 20px;">
-                        <div style="background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <div>
-                                    <h3 style="margin: 0 0 5px 0; color: var(--gold);">Signature Paint Correction &amp; Ceramic Coating</h3>
-                                    <p style="margin: 0; font-weight: 600;">2024 Porsche 911 GT3</p>
-                                </div>
-                                <span style="font-size: 0.85rem; color: var(--text-muted);">Recent</span>
-                            </div>
-                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"Multi-stage paint correction, 5-year hydrophobic ceramic coating applied, and full interior leather treatment."</p>
-                            <div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
-                                <div style="flex: 1; min-width: 150px;">
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 5px 0;">Before</p>
-                                    <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&amp;w=600&amp;auto=format" alt="Before detail" style="width: 100%; border-radius: 4px; border: 1px solid var(--border);">
-                                </div>
-                                <div style="flex: 1; min-width: 150px;">
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 5px 0;">After</p>
-                                    <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&amp;w=600&amp;auto=format" alt="After detail" style="width: 100%; border-radius: 4px; border: 1px solid var(--border);">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>My Registered Vehicles</h2>
-                    <div id="vehicles-list">
-                        <div class="vehicle-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
-                            <span>2024 Porsche 911 GT3</span>
-                            <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="2024 Porsche 911 GT3">Remove</button>
-                        </div>
-                    </div>
-                    <form id="add-vehicle-form" style="margin-top: 15px; display: flex; gap: 10px;">
-                        <input type="text" id="new-vehicle" aria-label="New vehicle details" placeholder="e.g. 2021 Porsche 911" style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <button type="submit" class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer;">Add</button>
-                    </form>
-                    <div id="vehicle-msg" aria-live="polite" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;"></div>
-                </div>
-
-                <div class="card">
-                    <h2>My Service Addresses</h2>
-                    <div id="addresses-list">
-                        <div class="address-item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;">
-                            <div>
-                                <strong style="color: var(--gold); display: block; font-size: 0.9rem;">Home (Primary)</strong>
-                                <span style="font-size: 0.85rem; color: var(--text-muted);">100 Ocean Drive, Suite 400, Miami, FL 33139</span>
-                            </div>
-                            <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="Home (Primary)" data-address="100 Ocean Drive, Suite 400, Miami, FL 33139">Remove</button>
-                        </div>
-                    </div>
-                    <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <input type="text" id="new-address-val" aria-label="New full address" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
-                        <button type="submit" class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
-                        <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -556,7 +732,7 @@
                 </div>
 
                 <button type="submit" id="confirm-un-link-btn" class="auth-btn btn-gold" style="width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem;">
-                    Confirm & Link UN Account
+                    Confirm &amp; Link UN Account
                 </button>
                 <div id="un-modal-msg" aria-live="polite" style="margin-top: 12px; font-size: 0.85rem; font-weight: 600; text-align: center;"></div>
             </form>
@@ -565,9 +741,11 @@
 
     <script type="module">
         import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument } from './js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
+        import { matchVehicle } from './js/vehicle_images.js';
+        import { generateMonthData, calculateProtectionScore } from './js/maintenance_calendar.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
@@ -631,6 +809,10 @@
 
         let currentUser = null;
         let userData = null;
+        let activeCalYear = 2026;
+        let activeCalMonth = 10; // November (0-based)
+        let loadedServiceLogs = [];
+        let loadedAppointments = [];
 
         // Safety timeout: ensure overlay never gets permanently stuck
         setTimeout(() => {
@@ -672,16 +854,14 @@
                 const user = await getAuthStatePromise();
 
                 if (!user) {
-                    // Not authenticated, redirect to login
                     safeRedirect('sign in beta.html');
                     return;
                 }
 
-                currentUser = user; // Save for handlers
+                currentUser = user;
 
                 const userRef = doc(db, "users", user.uid);
 
-                // Independent, resilient queries so a failure in one collection doesn't freeze the whole page
                 let userSnap = null;
                 let appointmentsSnap = { empty: true, docs: [] };
                 let notificationsSnap = { empty: true, docs: [] };
@@ -733,11 +913,11 @@
                 if (loyaltyPointsEl) {
                     const points = userData?.loyaltyPoints !== undefined ? userData.loyaltyPoints : 100;
                     loyaltyPointsEl.textContent = `${points.toLocaleString()} pts`;
+                    const heroPts = document.getElementById('hero-points-val');
+                    if (heroPts) heroPts.textContent = points.toLocaleString();
                 }
 
-                // Load user referral activity history
                 loadReferralsHistory(user);
-
                 renderBookings(appointmentsSnap);
                 await loadTickets(user);
                 renderNotifications(notificationsSnap);
@@ -748,7 +928,11 @@
                 } catch (e) {
                     console.warn("Could not fetch service logs:", e);
                 }
+                loadedServiceLogs = logs;
                 renderServiceLogs(logs);
+
+                // Initialize Flo-inspired Maintenance Calendar
+                initMaintenanceCalendar(logs, appointmentsSnap);
 
                 // Update UN Account status & balance in Client Profile
                 updateClientProfileUnUi(userData);
@@ -761,6 +945,459 @@
             }
         }
 
+        // ==========================================
+        // FLO-INSPIRED MAINTENANCE CALENDAR LOGIC
+        // ==========================================
+        function initMaintenanceCalendar(serviceLogs = [], appointmentsSnap = null) {
+            const now = new Date();
+            activeCalYear = now.getFullYear();
+            activeCalMonth = now.getMonth();
+
+            const histEvents = [];
+            const upcomEvents = [];
+
+            // Add service logs
+            const allLogs = (serviceLogs && serviceLogs.length > 0) ? serviceLogs : [DUMMY_ASSETS.serviceLog];
+            allLogs.forEach(l => {
+                let dateVal = l.serviceDate?.toDate ? l.serviceDate.toDate() : (l.serviceDate?.seconds ? new Date(l.serviceDate.seconds * 1000) : (typeof l.serviceDate === 'string' && l.serviceDate !== 'Recent' ? new Date(l.serviceDate) : new Date(activeCalYear, activeCalMonth, 5)));
+                histEvents.push({
+                    date: dateVal.toISOString(),
+                    service: l.serviceType || 'Signature Ceramic Coating',
+                    vehicle: l.vehicleName || '2024 Porsche 911 GT3',
+                    notes: l.technicianNotes || '5-year hydrophobic ceramic coating applied.'
+                });
+            });
+
+            // Add upcoming appointments
+            let appts = [];
+            if (appointmentsSnap && !appointmentsSnap.empty && appointmentsSnap.docs) {
+                appts = appointmentsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            }
+            if (appts.length === 0 && DUMMY_ASSETS.booking) {
+                appts = [DUMMY_ASSETS.booking];
+            }
+            appts.forEach(b => {
+                let dateVal = b.appointmentDate ? (typeof b.appointmentDate === 'string' && !b.appointmentDate.includes('Upcoming') ? new Date(b.appointmentDate) : new Date(activeCalYear, activeCalMonth, 21, 10, 0)) : new Date(activeCalYear, activeCalMonth, 21, 10, 0);
+                upcomEvents.push({
+                    date: dateVal.toISOString(),
+                    service: b.package || b.service || 'Executive Ceramic Detail',
+                    vehicle: b.vehicle || '2024 Porsche 911 GT3',
+                    time: '10:00 AM'
+                });
+            });
+
+            loadedAppointments = upcomEvents;
+
+            // Calculate Flo Protection Health Score
+            const latestHistDate = histEvents[0]?.date || new Date(activeCalYear, activeCalMonth, 5).toISOString();
+            const health = calculateProtectionScore(latestHistDate);
+
+            const scoreEl = document.getElementById('cal-protection-score');
+            const titleEl = document.getElementById('cal-protection-title');
+            const subEl = document.getElementById('cal-protection-sub');
+            const heroHealth = document.getElementById('hero-health-val');
+
+            if (scoreEl) scoreEl.textContent = `${health.score}%`;
+            if (heroHealth) heroHealth.textContent = `${health.score}%`;
+            if (titleEl) titleEl.textContent = health.status;
+            if (subEl) subEl.textContent = `${health.recommendedAction} • Coat Health ${health.coatHealth}`;
+
+            renderCalendarMonth(activeCalYear, activeCalMonth, histEvents, upcomEvents);
+
+            // Hook calendar navigation controls
+            const prevBtn = document.getElementById('cal-prev-btn');
+            const nextBtn = document.getElementById('cal-next-btn');
+
+            if (prevBtn) {
+                prevBtn.onclick = () => {
+                    activeCalMonth--;
+                    if (activeCalMonth < 0) {
+                        activeCalMonth = 11;
+                        activeCalYear--;
+                    }
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEvents, upcomEvents);
+                };
+            }
+
+            if (nextBtn) {
+                nextBtn.onclick = () => {
+                    activeCalMonth++;
+                    if (activeCalMonth > 11) {
+                        activeCalMonth = 0;
+                        activeCalYear++;
+                    }
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEvents, upcomEvents);
+                };
+            }
+        }
+
+        function renderCalendarMonth(year, month, histEvents, upcomEvents) {
+            const titleEl = document.getElementById('cal-month-title');
+            const gridEl = document.getElementById('calendar-grid');
+            if (!gridEl) return;
+
+            const monthData = generateMonthData(year, month, {
+                historicalEvents: histEvents,
+                upcomingEvents: upcomEvents,
+                washIntervalDays: 14
+            });
+
+            if (titleEl) titleEl.textContent = monthData.monthName;
+
+            // Retain weekday header
+            gridEl.innerHTML = `
+                <div class="calendar-weekday">Sun</div>
+                <div class="calendar-weekday">Mon</div>
+                <div class="calendar-weekday">Tue</div>
+                <div class="calendar-weekday">Wed</div>
+                <div class="calendar-weekday">Thu</div>
+                <div class="calendar-weekday">Fri</div>
+                <div class="calendar-weekday">Sat</div>
+            `;
+
+            const fragment = document.createDocumentFragment();
+
+            monthData.days.forEach(day => {
+                const cell = document.createElement('div');
+                cell.className = `calendar-day-cell ${day.isCurrentMonth ? '' : 'other-month'} ${day.isToday ? 'is-today' : ''}`;
+                cell.setAttribute('data-date', day.dateKey);
+
+                let dotClass = '';
+                if (day.event) {
+                    if (day.event.type === 'historical') {
+                        cell.classList.add('has-historical');
+                        dotClass = 'hist';
+                    } else if (day.event.type === 'upcoming') {
+                        cell.classList.add('has-upcoming');
+                        dotClass = 'upcom';
+                    } else if (day.event.type === 'recommended') {
+                        cell.classList.add('has-recommended');
+                        dotClass = 'recom';
+                    }
+                }
+
+                cell.innerHTML = `
+                    <span class="calendar-day-num">${day.dayNumber}</span>
+                    <span class="day-status-indicator ${dotClass}"></span>
+                `;
+
+                cell.addEventListener('click', () => {
+                    document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('is-selected'));
+                    cell.classList.add('is-selected');
+                    inspectCalendarDay(day);
+                });
+
+                fragment.appendChild(cell);
+            });
+
+            gridEl.appendChild(fragment);
+
+            // Default inspector to upcoming or first recommended
+            const targetDay = monthData.days.find(d => d.event && d.event.type === 'upcoming') ||
+                             monthData.days.find(d => d.event && d.event.type === 'historical') ||
+                             monthData.days.find(d => d.isToday) ||
+                             monthData.days[15];
+            if (targetDay) inspectCalendarDay(targetDay);
+        }
+
+        function inspectCalendarDay(day) {
+            const badgeEl = document.getElementById('insp-date-badge');
+            const titleEl = document.getElementById('insp-title');
+            const descEl = document.getElementById('insp-desc');
+            const actionContainer = document.getElementById('insp-action-container');
+
+            const formattedDate = new Date(day.dateKey + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+
+            if (day.event) {
+                if (day.event.type === 'historical') {
+                    if (badgeEl) {
+                        badgeEl.textContent = `Completed Detailing • ${formattedDate}`;
+                        badgeEl.style.color = '#16A34A';
+                    }
+                    if (titleEl) titleEl.textContent = day.event.service;
+                    if (descEl) descEl.textContent = `Vehicle: ${day.event.vehicle}. Technician Notes: "${day.event.notes}"`;
+                    if (actionContainer) {
+                        actionContainer.innerHTML = `<a href="#service-gallery-card" class="btn-outline" style="padding: 8px 14px; font-size: 0.85rem; border-color: #16A34A; color: #16A34A;">View Media Showcase &rarr;</a>`;
+                    }
+                } else if (day.event.type === 'upcoming') {
+                    if (badgeEl) {
+                        badgeEl.textContent = `Confirmed Priority Booking • ${formattedDate}`;
+                        badgeEl.style.color = 'var(--gold)';
+                    }
+                    if (titleEl) titleEl.textContent = `${day.event.service} (${day.event.time || '10:00 AM'})`;
+                    if (descEl) descEl.textContent = `Vehicle: ${day.event.vehicle}. Mobile concierge unit scheduled to arrive at your primary address.`;
+                    if (actionContainer) {
+                        actionContainer.innerHTML = `<a href="booking.html" class="btn-schedule" style="padding: 8px 16px; font-size: 0.85rem;">Manage Appointment</a>`;
+                    }
+                } else if (day.event.type === 'recommended') {
+                    if (badgeEl) {
+                        badgeEl.textContent = `Optimal Wash Window • ${formattedDate}`;
+                        badgeEl.style.color = '#38BDF8';
+                    }
+                    if (titleEl) titleEl.textContent = 'Recommended Maintenance Foam Wash';
+                    if (descEl) descEl.textContent = 'Predicted bi-weekly interval to rinse environmental fallout and refresh hydrophobic ceramic gloss.';
+                    if (actionContainer) {
+                        actionContainer.innerHTML = `<a href="booking.html?package=club&date=${day.dateKey}" class="btn-schedule" style="padding: 8px 16px; font-size: 0.85rem; background: var(--gold-gradient);">⚡ Book for This Date</a>`;
+                    }
+                }
+            } else {
+                if (badgeEl) {
+                    badgeEl.textContent = formattedDate;
+                    badgeEl.style.color = 'var(--text-muted)';
+                }
+                if (titleEl) titleEl.textContent = 'Concierge Appointment Open';
+                if (descEl) descEl.textContent = 'No service scheduled for this date. Mobile detailing slots are available for booking.';
+                if (actionContainer) {
+                    actionContainer.innerHTML = `<a href="booking.html?date=${day.dateKey}" class="btn-schedule" style="padding: 8px 16px; font-size: 0.85rem;">Reserve This Date</a>`;
+                }
+            }
+        }
+
+        // ==========================================
+        // DYNAMIC VEHICLE SHOWCASE ("THE GARAGE")
+        // ==========================================
+        function renderVehicles(vehicles) {
+            const list = document.getElementById('vehicles-list');
+            if (!list) return;
+            list.innerHTML = '';
+            const items = (vehicles && vehicles.length > 0) ? vehicles : (DUMMY_ASSETS.vehicle ? [DUMMY_ASSETS.vehicle] : []);
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            for (let index = 0; index < items.length; index++) {
+                const v = items[index];
+                const match = matchVehicle(v);
+
+                const el = document.createElement('div');
+                el.className = 'vehicle-card vehicle-item';
+                el.innerHTML = `
+                    <div class="vehicle-image-wrapper">
+                        <img src="${escapeHTML(match.imageUrl)}" alt="${escapeHTML(v)}" class="vehicle-image" loading="lazy" width="600" height="338" onerror="this.src='https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=800&q=80'">
+                        <span class="vehicle-category-badge">${escapeHTML(match.category)}</span>
+                    </div>
+                    <div class="vehicle-card-body">
+                        <div>
+                            <h3 class="vehicle-card-title">${escapeHTML(v)}</h3>
+                            <div class="vehicle-protection-bar">
+                                <div class="vehicle-protection-labels">
+                                    <span>Paint Protection</span>
+                                    <span style="color: var(--gold); font-weight: 700;">94% Optimal</span>
+                                </div>
+                                <div class="vehicle-meter-track">
+                                    <div class="vehicle-meter-fill" style="width: 94%;"></div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 12px 0;">
+                                Recommended: <strong style="color: var(--text-main);">${escapeHTML(match.recommendedService)}</strong> every ${match.recommendedWashInterval} days
+                            </p>
+                        </div>
+                        <div class="vehicle-card-actions">
+                            <a href="booking.html?package=sedan&vehicle=${encodeURIComponent(v)}" class="btn-schedule" style="flex: 1; padding: 10px; font-size: 0.82rem;">⚡ Book Detail</a>
+                            <button class="remove-vehicle-btn" style="background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
+                        </div>
+                    </div>
+                `;
+                fragment.appendChild(el);
+            }
+            list.appendChild(fragment);
+        }
+
+        // Quick Suggestion Chips for adding vehicles
+        document.querySelectorAll('.suggest-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const name = chip.getAttribute('data-name');
+                const input = document.getElementById('new-vehicle');
+                if (input && name) {
+                    input.value = name;
+                    input.focus();
+                }
+            });
+        });
+
+        document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            const input = document.getElementById('new-vehicle');
+            const val = input.value.trim();
+            const msgEl = document.getElementById('vehicle-msg');
+            msgEl.textContent = '';
+            if (!val) {
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Please provide a vehicle description.";
+                return;
+            }
+
+            const btn = document.getElementById('add-vehicle-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Adding...';
+            btn.disabled = true;
+
+            try {
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, { vehicles: arrayUnion(val) });
+                clearUserDocumentCache(currentUser.uid);
+
+                if (!userData) userData = {};
+                if (!userData.vehicles) userData.vehicles = [];
+                userData.vehicles.push(val);
+
+                renderVehicles(userData.vehicles);
+                input.value = '';
+                msgEl.style.color = '#16A34A';
+                msgEl.textContent = `✓ ${val} added to your garage!`;
+                setTimeout(() => { msgEl.textContent = ''; }, 4000);
+            } catch (err) {
+                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
+                msgEl.style.color = "var(--error)";
+                msgEl.textContent = "Failed to add vehicle.";
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('vehicles-list').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('remove-vehicle-btn')) {
+                if (!currentUser) return;
+                const vehicleToRemove = e.target.dataset.vehicle;
+                if (!vehicleToRemove) return;
+
+                if (!confirm("Are you sure you want to remove this vehicle?")) return;
+
+                if (vehicleToRemove === DUMMY_ASSETS.vehicle && (!userData?.vehicles || !userData.vehicles.includes(vehicleToRemove))) {
+                    DUMMY_ASSETS.vehicle = null;
+                    const vehicleItem = e.target.closest('.vehicle-item');
+                    if (vehicleItem) vehicleItem.remove();
+                    const list = document.getElementById('vehicles-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                    }
+                    return;
+                }
+
+                const originalText = e.target.textContent;
+                e.target.textContent = '...';
+                e.target.disabled = true;
+
+                try {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userRef, { vehicles: arrayRemove(vehicleToRemove) });
+                    clearUserDocumentCache(currentUser.uid);
+
+                    if (userData && userData.vehicles) {
+                        userData.vehicles = userData.vehicles.filter(v => v !== vehicleToRemove);
+                    }
+
+                    const vehicleItem = e.target.closest('.vehicle-item');
+                    if (vehicleItem) vehicleItem.remove();
+
+                    const list = document.getElementById('vehicles-list');
+                    if (list.children.length === 0) {
+                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                    }
+                } catch (err) {
+                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
+                    const msgEl = document.getElementById('vehicle-msg');
+                    msgEl.style.color = "var(--error)";
+                    msgEl.textContent = "Failed to remove vehicle.";
+                    e.target.textContent = originalText;
+                    e.target.disabled = false;
+                }
+            }
+        });
+
+        // ==========================================
+        // SERVICE MEDIA SHOWCASE ("MOST RECENT CLEAN")
+        // ==========================================
+        function renderServiceLogs(logs) {
+            const list = document.getElementById('service-logs-list');
+            if (!list) return;
+            list.innerHTML = '';
+            const items = (logs && logs.length > 0) ? logs : (DUMMY_ASSETS.serviceLog ? [DUMMY_ASSETS.serviceLog] : []);
+            if (items.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
+                return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < items.length; i++) {
+                const log = items[i];
+                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds * 1000).toLocaleDateString() : (typeof log.serviceDate === 'string' ? log.serviceDate : 'Recent'));
+
+                const el = document.createElement('div');
+                el.style = "background: var(--bg-dark); padding: 22px; border-radius: var(--radius-md); border: 1px solid var(--border);";
+
+                let beforeImg = log.beforeImageUrl || 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format';
+                let afterImg = log.afterImageUrl || 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format';
+
+                el.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Showroom Inspection Report</span>
+                            <h3 style="margin: 4px 0 6px 0; color: var(--gold); font-size: 1.2rem;">${escapeHTML(log.serviceType || 'Signature Paint Correction & Ceramic Coating')}</h3>
+                            <p style="margin: 0; font-weight: 700; color: var(--text-main);">${escapeHTML(log.vehicleName || '2024 Porsche 911 GT3')}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">${escapeHTML(dateStr)}</span>
+                            <span style="color: #16A34A; font-size: 0.8rem; font-weight: 700;">✦ Verified Showroom Finish</span>
+                        </div>
+                    </div>
+
+                    ${log.technicianNotes ? `<p style="font-size: 0.92rem; color: var(--text-muted); margin: 14px 0; line-height: 1.5; font-style: italic;">"${escapeHTML(log.technicianNotes)}"</p>` : ''}
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0;">
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Gloss Level</span>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: var(--gold);">98.6 GU</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Swirl Removal</span>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: #16A34A;">96% Removed</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); display: block; text-transform: uppercase;">Hydrophobic Angle</span>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: #38BDF8;">112° Beading</span>
+                        </div>
+                    </div>
+
+                    <div class="media-showcase-container">
+                        <div class="media-video-box">
+                            <span class="media-video-badge">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                4K Studio Reel
+                            </span>
+                            <video class="media-video-player" playsinline loop muted autoplay poster="${escapeHTML(afterImg)}">
+                                <source src="https://assets.mixkit.co/videos/preview/mixkit-car-wash-in-a-detail-shop-40114-large.mp4" type="video/mp4">
+                                Your browser does not support HTML5 video.
+                            </video>
+                        </div>
+                        <div class="before-after-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; font-weight: 700; color: var(--gold);">Before &amp; After Inspection</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">High-Res Side-by-Side</span>
+                            </div>
+                            <div class="ba-viewer-frame">
+                                <div class="ba-image-pane">
+                                    <span class="ba-image-label">Before</span>
+                                    <img src="${escapeHTML(beforeImg)}" alt="Before detail" loading="lazy" width="300" height="225">
+                                </div>
+                                <div class="ba-image-pane">
+                                    <span class="ba-image-label">After</span>
+                                    <img src="${escapeHTML(afterImg)}" alt="After detail" loading="lazy" width="300" height="225">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                fragment.appendChild(el);
+            }
+            list.appendChild(fragment);
+        }
+
+        // UN Account Linking UI
         function updateClientProfileUnUi(data) {
             const unAccountRow = document.getElementById('un-account-row');
             const unEmailRow = document.getElementById('un-email-row');
@@ -782,28 +1419,16 @@
                     const bal = data.totalUnBalance !== undefined ? data.totalUnBalance : (data.loyaltyPoints || 0);
                     if (unBalanceDisplay) unBalanceDisplay.textContent = `${Number(bal).toLocaleString()} pts`;
                 }
-                if (linkUnBtnText) {
-                    linkUnBtnText.textContent = 'Linked with UN (realunstoppable.store account)';
-                }
-                if (linkUnBtn) {
-                    linkUnBtn.setAttribute('aria-label', `Linked with UN account ${data.unAccountEmail || ''}. Click to manage or sync points.`);
-                }
-                if (unLinkHint) {
-                    unLinkHint.textContent = '(Accounts linked. Total UN balance reflects your AutoLux loyalty points and realunstoppable.store balance.)';
-                }
+                if (linkUnBtnText) linkUnBtnText.textContent = 'Linked with UN (realunstoppable.store account)';
+                if (linkUnBtn) linkUnBtn.setAttribute('aria-label', `Linked with UN account ${data.unAccountEmail || ''}. Click to manage.`);
+                if (unLinkHint) unLinkHint.textContent = '(Accounts linked. Total UN balance reflects your AutoLux loyalty points and realunstoppable.store balance.)';
             } else {
                 if (unAccountRow) unAccountRow.style.display = 'none';
                 if (unEmailRow) unEmailRow.style.display = 'none';
                 if (unBalanceRow) unBalanceRow.style.display = 'none';
-                if (linkUnBtnText) {
-                    linkUnBtnText.textContent = 'Link with UN (realunstoppable.store account)';
-                }
-                if (linkUnBtn) {
-                    linkUnBtn.setAttribute('aria-label', 'Link with UN realunstoppable.store account to add points to your total UN balance');
-                }
-                if (unLinkHint) {
-                    unLinkHint.textContent = '(This will add your current points to your total UN account balance, and link both accounts and information.)';
-                }
+                if (linkUnBtnText) linkUnBtnText.textContent = 'Link with UN (realunstoppable.store account)';
+                if (linkUnBtn) linkUnBtn.setAttribute('aria-label', 'Link with UN realunstoppable.store account to add points');
+                if (unLinkHint) unLinkHint.textContent = '(This will add your current points to your total UN account balance, and link both accounts and information.)';
             }
         }
 
@@ -829,17 +1454,12 @@
             if (modalUnPoints) modalUnPoints.textContent = `${currentPoints.toLocaleString()} pts`;
             if (modalUnExisting) modalUnExisting.textContent = `${existingUnBalance.toLocaleString()} pts`;
             if (modalUnTotal) modalUnTotal.textContent = `${projectedTotal.toLocaleString()} pts`;
-
-            if (unEmailInput) {
-                unEmailInput.value = userData?.unAccountEmail || currentUser.email || '';
-            }
-
+            if (unEmailInput) unEmailInput.value = userData?.unAccountEmail || currentUser.email || '';
             if (unModalMsg) unModalMsg.textContent = '';
             if (confirmUnLinkBtn) {
                 confirmUnLinkBtn.disabled = false;
                 confirmUnLinkBtn.textContent = userData?.unLinked ? 'Sync Points & Update UN Account' : 'Confirm & Link UN Account';
             }
-
             if (unLinkModal) {
                 unLinkModal.style.display = 'flex';
                 unEmailInput?.focus();
@@ -847,9 +1467,7 @@
         }
 
         function closeUnModal() {
-            if (unLinkModal) {
-                unLinkModal.style.display = 'none';
-            }
+            if (unLinkModal) unLinkModal.style.display = 'none';
             if (unModalMsg) unModalMsg.textContent = '';
         }
 
@@ -857,15 +1475,11 @@
         unModalCloseBtn?.addEventListener('click', closeUnModal);
 
         unLinkModal?.addEventListener('click', (e) => {
-            if (e.target === unLinkModal) {
-                closeUnModal();
-            }
+            if (e.target === unLinkModal) closeUnModal();
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && unLinkModal?.style.display === 'flex') {
-                closeUnModal();
-            }
+            if (e.key === 'Escape' && unLinkModal?.style.display === 'flex') closeUnModal();
         });
 
         unLinkForm?.addEventListener('submit', async (e) => {
@@ -907,7 +1521,6 @@
 
                 unModalMsg.style.color = '#16A34A';
                 unModalMsg.textContent = linkResult.message;
-
                 updateClientProfileUnUi(userData);
 
                 if (unLinkMsg) {
@@ -916,9 +1529,7 @@
                     setTimeout(() => { if (unLinkMsg) unLinkMsg.textContent = ''; }, 6000);
                 }
 
-                setTimeout(() => {
-                    closeUnModal();
-                }, 1400);
+                setTimeout(() => { closeUnModal(); }, 1400);
             } else {
                 unModalMsg.style.color = 'var(--error)';
                 unModalMsg.textContent = linkResult.error || 'Failed to link UN account. Please try again.';
@@ -929,13 +1540,11 @@
 
         initAccountPage();
 
-        // Ensure state reacts to session changes after initial load
         onAuthStateChanged(auth, (user) => {
-             if (!user && currentUser) {
-                 safeRedirect('sign in beta.html');
-             }
+            if (!user && currentUser) {
+                safeRedirect('sign in beta.html');
+            }
         });
-
 
         // Support Tickets Logic
         const ticketsListEl = document.getElementById('tickets-list');
@@ -999,7 +1608,6 @@
                 const ticketsSnap = await getDocs(ticketsQuery);
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Sort client-side
                 tickets.sort((a,b) => new Date(b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt || 0)) - new Date(a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt || 0)));
 
                 if (tickets.length === 0) {
@@ -1038,7 +1646,6 @@
             submitTicketBtn.textContent = "Submitting...";
 
             try {
-                // Prevent Mass Assignment by spreading user payload first
                 const payload = {
                     userId: currentUser.uid,
                     subject: subject,
@@ -1056,7 +1663,6 @@
 
                 msgEl.style.color = "#16A34A";
                 msgEl.textContent = "Ticket created successfully!";
-
                 document.getElementById('ticket-subject').value = '';
                 document.getElementById('ticket-message').value = '';
                 setTimeout(() => {
@@ -1064,7 +1670,6 @@
                     msgEl.textContent = '';
                     loadTickets(currentUser);
                 }, 1500);
-
             } catch (error) {
                 console.error("Error creating ticket:", error);
                 msgEl.style.color = "var(--error)";
@@ -1109,7 +1714,6 @@
                             timestamp: new Date().toISOString()
                         })
                     });
-
                     inputEl.value = '';
                     loadTickets(currentUser);
                 } catch (error) {
@@ -1120,7 +1724,6 @@
                 }
             }
         });
-
 
         function renderNotifications(snapshot) {
             const listEl = document.getElementById('notifications-list');
@@ -1216,7 +1819,6 @@
                     bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 }
 
-                // Merge any locally stored pending bookings/plans for offline resilience
                 try {
                     const localBookings = JSON.parse(localStorage.getItem('autolux_pending_bookings') || '[]');
                     const localPlans = JSON.parse(localStorage.getItem('autolux_pending_detailingPlans') || '[]');
@@ -1241,7 +1843,6 @@
                 bookings.sort((a, b) => new Date(b.appointmentDate || 0) - new Date(a.appointmentDate || 0));
 
                 appointmentsListEl.innerHTML = '';
-                // ⚡ Bolt Optimization: Batch DOM updates using DocumentFragment to prevent layout thrashing
                 const fragment = document.createDocumentFragment();
                 for (let i = 0; i < bookings.length; i++) {
                     const b = bookings[i];
@@ -1322,11 +1923,9 @@
 
             try {
                 const userRef = doc(db, "users", currentUser.uid);
-
                 await updateDoc(userRef, { addresses: arrayUnion(newAddressObj) });
                 clearUserDocumentCache(currentUser.uid);
 
-                // Optimistically update the UI
                 const list = document.getElementById('addresses-list');
                 const emptyMsg = list.querySelector('p');
                 if (emptyMsg && (emptyMsg.textContent.includes('No service addresses') || emptyMsg.textContent.includes('None found'))) {
@@ -1366,7 +1965,6 @@
 
                 if (!confirm("Are you sure you want to remove this address?")) return;
 
-                // Handle removing dummy address
                 if (DUMMY_ASSETS.address && labelToRemove === DUMMY_ASSETS.address.label && addressToRemove === DUMMY_ASSETS.address.address && (!userData?.addresses || !userData.addresses.some(a => a.label === labelToRemove))) {
                     DUMMY_ASSETS.address = null;
                     const addressItem = e.target.closest('.address-item');
@@ -1386,15 +1984,11 @@
 
                 try {
                     const userRef = doc(db, "users", currentUser.uid);
-
                     await updateDoc(userRef, { addresses: arrayRemove(addressObjToRemove) });
                     clearUserDocumentCache(currentUser.uid);
 
-                    // Optimistically update UI
                     const addressItem = e.target.closest('.address-item');
-                    if (addressItem) {
-                        addressItem.remove();
-                    }
+                    if (addressItem) addressItem.remove();
 
                     const list = document.getElementById('addresses-list');
                     if (list.children.length === 0) {
@@ -1405,179 +1999,6 @@
                     const msgEl = document.getElementById('address-msg');
                     msgEl.style.color = "var(--error)";
                     msgEl.textContent = "Failed to remove address.";
-                    e.target.textContent = originalText;
-                    e.target.disabled = false;
-                }
-            }
-        });
-
-        function renderServiceLogs(logs) {
-            const list = document.getElementById('service-logs-list');
-            if (!list) return;
-            list.innerHTML = '';
-            const items = (logs && logs.length > 0) ? logs : (DUMMY_ASSETS.serviceLog ? [DUMMY_ASSETS.serviceLog] : []);
-            if (items.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
-                return;
-            }
-
-            const fragment = document.createDocumentFragment();
-            for(let i = 0; i < items.length; i++) {
-                const log = items[i];
-                const dateStr = log.serviceDate?.toDate ? log.serviceDate.toDate().toLocaleDateString() : (log.serviceDate?.seconds ? new Date(log.serviceDate.seconds*1000).toLocaleDateString() : (typeof log.serviceDate === 'string' ? log.serviceDate : 'Recent'));
-
-                const el = document.createElement('div');
-                el.style = "background: var(--bg-dark); padding: 15px; border-radius: 8px; border: 1px solid var(--border);";
-
-                let imagesHtml = '';
-                if(log.beforeImageUrl || log.afterImageUrl) {
-                    imagesHtml = `<div style="display: flex; gap: 10px; margin-top: 15px; overflow-x: auto;">
-                        ${log.beforeImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">Before</p><img src="${escapeHTML(log.beforeImageUrl)}" alt="Before detail" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
-                        ${log.afterImageUrl ? `<div style="flex: 1; min-width: 150px;"><p style="font-size:0.8rem; color:var(--text-muted); margin:0 0 5px 0;">After</p><img src="${escapeHTML(log.afterImageUrl)}" alt="After detail" style="width:100%; border-radius:4px; border:1px solid var(--border);"></div>` : ''}
-                    </div>`;
-                }
-
-                el.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <h3 style="margin: 0 0 5px 0; color: var(--gold);">${escapeHTML(log.serviceType || 'Detailing Service')}</h3>
-                            <p style="margin: 0; font-weight: 600;">${escapeHTML(log.vehicleName || 'Vehicle')}</p>
-                        </div>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(dateStr)}</span>
-                    </div>
-                    ${log.technicianNotes ? `<p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">"${escapeHTML(log.technicianNotes)}"</p>` : ''}
-                    ${imagesHtml}
-                `;
-                fragment.appendChild(el);
-            }
-            list.appendChild(fragment);
-        }
-
-        function renderVehicles(vehicles) {
-            const list = document.getElementById('vehicles-list');
-            if (!list) return;
-            list.innerHTML = '';
-            const items = (vehicles && vehicles.length > 0) ? vehicles : (DUMMY_ASSETS.vehicle ? [DUMMY_ASSETS.vehicle] : []);
-            if (items.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
-                return;
-            }
-
-            const fragment = document.createDocumentFragment();
-            for (let index = 0; index < items.length; index++) {
-                const v = items[index];
-                const el = document.createElement('div');
-                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
-                el.className = 'vehicle-item';
-
-                el.innerHTML = `
-                    <span>${escapeHTML(v)}</span>
-                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(v)}">Remove</button>
-                `;
-                fragment.appendChild(el);
-            }
-            list.appendChild(fragment);
-        }
-
-        document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) return;
-            const input = document.getElementById('new-vehicle');
-            const val = input.value.trim();
-            const msgEl = document.getElementById('vehicle-msg');
-            msgEl.textContent = '';
-            if (!val) {
-                msgEl.style.color = "var(--error)";
-                msgEl.textContent = "Please provide a vehicle description.";
-                return;
-            }
-
-            const btn = document.getElementById('add-vehicle-btn');
-            const originalText = btn.textContent;
-            btn.textContent = 'Adding...';
-            btn.disabled = true;
-
-            try {
-                const userRef = doc(db, "users", currentUser.uid);
-
-                // PERFORMANCE OPTIMIZATION: Avoid N+1 query by using arrayUnion
-                // This eliminates the need to fetch the document first just to update the array
-                await updateDoc(userRef, { vehicles: arrayUnion(val) });
-                clearUserDocumentCache(currentUser.uid);
-
-                // Optimistically update the UI without another read
-                const list = document.getElementById('vehicles-list');
-                const emptyMsg = list.querySelector('p');
-                if (emptyMsg && (emptyMsg.textContent.includes('No vehicles') || emptyMsg.textContent.includes('None found'))) {
-                    emptyMsg.remove();
-                }
-
-                const el = document.createElement('div');
-                el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
-                el.className = 'vehicle-item';
-                el.innerHTML = `
-                    <span>${escapeHTML(val)}</span>
-                    <button class="remove-vehicle-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-vehicle="${escapeHTML(val)}">Remove</button>
-                `;
-                list.appendChild(el);
-
-                input.value = '';
-            } catch (err) {
-                console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
-                msgEl.style.color = "var(--error)";
-                msgEl.textContent = "Failed to add vehicle.";
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        });
-
-        document.getElementById('vehicles-list').addEventListener('click', async (e) => {
-            if (e.target.classList.contains('remove-vehicle-btn')) {
-                if (!currentUser) return;
-                const vehicleToRemove = e.target.dataset.vehicle;
-                if (!vehicleToRemove) return;
-
-                if (!confirm("Are you sure you want to remove this vehicle?")) return;
-
-                // Handle removing dummy vehicle
-                if (vehicleToRemove === DUMMY_ASSETS.vehicle && (!userData?.vehicles || !userData.vehicles.includes(vehicleToRemove))) {
-                    DUMMY_ASSETS.vehicle = null;
-                    const vehicleItem = e.target.closest('.vehicle-item');
-                    if (vehicleItem) vehicleItem.remove();
-                    const list = document.getElementById('vehicles-list');
-                    if (list.children.length === 0) {
-                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
-                    }
-                    return;
-                }
-
-                const originalText = e.target.textContent;
-                e.target.textContent = '...';
-                e.target.disabled = true;
-
-                try {
-                    const userRef = doc(db, "users", currentUser.uid);
-
-                    // PERFORMANCE OPTIMIZATION: Avoid read-modify-write pattern by using arrayRemove
-                    await updateDoc(userRef, { vehicles: arrayRemove(vehicleToRemove) });
-                    clearUserDocumentCache(currentUser.uid);
-
-                    // Optimistically update UI
-                    const vehicleItem = e.target.closest('.vehicle-item');
-                    if (vehicleItem) {
-                        vehicleItem.remove();
-                    }
-
-                    const list = document.getElementById('vehicles-list');
-                    if (list.children.length === 0) {
-                        list.innerHTML = '<p style="color: var(--text-muted);">None found</p>';
-                    }
-                } catch (err) {
-                    console.error("Error removing vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");
-                    const msgEl = document.getElementById('vehicle-msg');
-                    msgEl.style.color = "var(--error)";
-                    msgEl.textContent = "Failed to remove vehicle.";
                     e.target.textContent = originalText;
                     e.target.disabled = false;
                 }
@@ -1643,7 +2064,6 @@
             }
         }
 
-        // Copy referral code to clipboard
         const copyReferralBtn = document.getElementById('copy-referral-btn');
         if (copyReferralBtn) {
             copyReferralBtn.addEventListener('click', () => {
@@ -1654,7 +2074,6 @@
             });
         }
 
-        // Share referral code link
         const shareReferralBtn = document.getElementById('share-referral-btn');
         if (shareReferralBtn) {
             shareReferralBtn.addEventListener('click', () => {
@@ -1677,7 +2096,6 @@
             });
         }
 
-        // Check for Stripe Checkout Success redirection
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('booking_success') === 'true' || urlParams.get('session_id')) {
             const successBanner = document.getElementById('stripe-success-banner');
@@ -1724,7 +2142,7 @@
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="index.html#process">Our Process</a></li>
-                    <li><a href="index.html#pricing">Packages & Pricing</a></li>
+                    <li><a href="index.html#pricing">Packages &amp; Pricing</a></li>
                     <li><a href="index.html#gallery">Recent Gallery</a></li>
                     <li><a href="reviews.html">Client Reviews</a></li>
                     <li><a href="rewards.html">Loyalty Rewards</a></li>
@@ -1755,7 +2173,7 @@
                 </div>
                 <div class="footer-contact-item">
                     <span>📍</span>
-                    <span>Buford, GA & Surrounding 30-Mile Area</span>
+                    <span>Buford, GA &amp; Surrounding 30-Mile Area</span>
                 </div>
                 <div style="margin-top: 15px;">
                     <a href="donate.html" class="nav-link" style="padding: 6px 0; color: var(--gold); display: inline-flex; align-items: center; gap: 6px;">
