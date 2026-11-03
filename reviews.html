@@ -4,12 +4,12 @@
     <script>
         window.ENV = {
             FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-            FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store",
-            FIREBASE_PROJECT_ID: "autolux-detailing",
-            FIREBASE_STORAGE_BUCKET: "autolux-detailing.appspot.com",
-            FIREBASE_MESSAGING_SENDER_ID: "123456789",
-            FIREBASE_APP_ID: "1:123456789:web:abcdef123456",
-            FIREBASE_MEASUREMENT_ID: "G-1234567"
+            FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com",
+            FIREBASE_PROJECT_ID: "dts-hub-website",
+            FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app",
+            FIREBASE_MESSAGING_SENDER_ID: "48345990988",
+            FIREBASE_APP_ID: "1:48345990988:web:e3662c9b508168546471e9",
+            FIREBASE_MEASUREMENT_ID: "G-ZN3YJPHVGX"
         };
     </script>
     <script src="env.js?v=2"></script>
@@ -294,6 +294,7 @@
         const paginationStatus = document.getElementById('pagination-status');
 
         const PAGE_SIZE = 6;
+        const REVIEWS_SESSION_CACHE_KEY = 'autolux_reviews_static_payload';
         let lastVisibleDoc = null;
         let allReviews = [];
         let hasMoreInDb = true;
@@ -315,7 +316,25 @@
                 lastVisibleDoc = null;
                 allReviews = [];
                 hasMoreInDb = true;
-                grid.innerHTML = '<div style="text-align: center; width: 100%; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Loading reviews...</div>';
+
+                // Check sessionStorage cache for instant render
+                const cached = safeGetSessionStorage(REVIEWS_SESSION_CACHE_KEY);
+                if (cached) {
+                    try {
+                        const parsed = JSON.parse(cached);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            allReviews = parsed;
+                            renderCurrentReviews();
+                            updatePaginationControls();
+                        }
+                    } catch (e) {
+                        console.warn("Could not parse cached reviews payload:", e);
+                    }
+                }
+
+                if (allReviews.length === 0) {
+                    grid.innerHTML = '<div style="text-align: center; width: 100%; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Loading reviews...</div>';
+                }
             } else if (loadMoreBtn) {
                 loadMoreBtn.disabled = true;
                 loadMoreBtn.textContent = 'Loading More Reviews...';
@@ -360,6 +379,11 @@
                 } else if (!hasMoreInDb && !allReviews.some(r => r.userName?.includes('Gen Z'))) {
                     // Append supplementary verified experiences at the end of DB items
                     allReviews = [...allReviews, ...genReviews];
+                }
+
+                // Cache static review payload in sessionStorage for instantaneous re-render
+                if (isInitial && allReviews.length > 0) {
+                    safeSetSessionStorage(REVIEWS_SESSION_CACHE_KEY, JSON.stringify(allReviews));
                 }
 
                 renderCurrentReviews();

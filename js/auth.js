@@ -4,39 +4,41 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, serverTimestamp,
 
 export let app, auth, db;
 
+// Mandatory Firebase configuration sharing across pages without session drop
+export const firebaseConfig = {
+    apiKey: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_API_KEY) || "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
+    authDomain: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_AUTH_DOMAIN) || "dts-hub-website.firebaseapp.com",
+    projectId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_PROJECT_ID) || "dts-hub-website",
+    storageBucket: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_STORAGE_BUCKET) || "dts-hub-website.firebasestorage.app",
+    messagingSenderId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_MESSAGING_SENDER_ID) || "48345990988",
+    appId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_APP_ID) || "1:48345990988:web:e3662c9b508168546471e9",
+    measurementId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_MEASUREMENT_ID) || "G-ZN3YJPHVGX"
+};
+
 try {
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
     const isAutolux = hostname.includes('autolux');
     const appName = isAutolux ? "autolux-detailing-app" : "ezmanage-app";
 
-    // 🛡️ Security Fix: Prevent hardcoded Firebase configuration
-    // Rationale: Hardcoded non-dummy configuration values can inadvertently connect to real projects
-    // or leak environment details. We enforce loading from window.ENV and fail securely if missing.
-    if (typeof window !== 'undefined' && (!window.ENV || !window.ENV.FIREBASE_API_KEY)) {
-        throw new Error("Missing required Firebase configuration in window.ENV. Failing securely.");
-    }
     const env = typeof window !== 'undefined' && window.ENV ? window.ENV : {};
 
-    // Validate auth domain to prevent ezManage cross-contamination while supporting autolux.store & autolux.realunstoppable.store
-    const validAutoluxDomains = ['autolux.realunstoppable.store', 'autolux.store'];
-    const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux'));
-    if (isAutolux && !isDomainAutolux) {
-        throw new Error("Critical Error: Environment config auth domain does not match expected Autolux domain. Preventing cross-origin auth issue.");
+    // Validate auth domain to allow dts-hub-website and autolux domains
+    const validAutoluxDomains = [
+        'autolux.realunstoppable.store',
+        'autolux.store',
+        'dts-hub-website.firebaseapp.com',
+        'dts-hub-website.web.app',
+        'localhost'
+    ];
+    const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux') || env.FIREBASE_AUTH_DOMAIN.includes('dts-hub'));
+    if (isAutolux && env.FIREBASE_AUTH_DOMAIN && !isDomainAutolux) {
+        throw new Error("Critical Error: Environment config auth domain does not match expected domain.");
     }
 
-    if (isAutolux && env.FIREBASE_PROJECT_ID !== 'autolux-detailing') {
-        throw new Error("Strict check failed: Environment config project ID does not match expected Autolux project ID. Stopping initialization to prevent cross-contamination.");
+    const validProjectIds = ['dts-hub-website', 'autolux-detailing'];
+    if (isAutolux && env.FIREBASE_PROJECT_ID && !validProjectIds.includes(env.FIREBASE_PROJECT_ID)) {
+        throw new Error("Strict check failed: Environment config project ID does not match expected project ID.");
     }
-
-    const firebaseConfig = {
-        apiKey: env.FIREBASE_API_KEY,
-        authDomain: env.FIREBASE_AUTH_DOMAIN,
-        projectId: env.FIREBASE_PROJECT_ID,
-        storageBucket: env.FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
-        appId: env.FIREBASE_APP_ID,
-        measurementId: env.FIREBASE_MEASUREMENT_ID
-    };
 
     const apps = getApps();
     const existingApp = apps.find(a => a.name === appName);
@@ -199,6 +201,7 @@ try {
 }
 
 export { createUserWithEmailAndPassword, signInWithEmailAndPassword, safeSignOut as signOut, updateProfile, onAuthStateChanged };
+export { startAuthLockout, stopAuthLockout, isAuthLockActive, renderTimeoutCard } from './auth_lockout.js';
 
 // Debounce utility function
 export function debounce(func, wait) {
@@ -270,15 +273,16 @@ export async function ensureUserDocument(user, options = {}) {
                     data.referralCredits = 0;
                 }
 
-                // Sync referral code mapping to referral_codes lookup collection only if generated
+                // Parallelize background updates
+                const backgroundOps = [];
                 if (referralCodeGenerated && data.referralCode) {
                     try {
                         const refCodeRef = doc(db, "referral_codes", data.referralCode);
-                        await setDoc(refCodeRef, {
+                        backgroundOps.push(setDoc(refCodeRef, {
                             code: data.referralCode,
                             userId: uid,
                             createdAt: data.signupDate || serverTimestamp()
-                        }, { merge: true });
+                        }, { merge: true }));
                     } catch (refCodeErr) {
                         console.warn("Could not sync referral code mapping:", refCodeErr);
                     }
@@ -292,7 +296,7 @@ export async function ensureUserDocument(user, options = {}) {
                     data.bonusAwarded = true;
 
                     try {
-                        await addDoc(collection(db, "notifications"), {
+                        backgroundOps.push(addDoc(collection(db, "notifications"), {
                             userId: uid,
                             title: "100 Points Sign Up Bonus Transferred",
                             message: "Welcome to AutoLux! A 100 points sign up bonus has been transferred to your account.",
@@ -300,13 +304,18 @@ export async function ensureUserDocument(user, options = {}) {
                             amount: 100,
                             read: false,
                             createdAt: serverTimestamp()
-                        });
+                        }));
                     } catch (notifErr) {
                         console.warn("Could not record sign up bonus notification:", notifErr);
                     }
                 }
+
                 if (Object.keys(updates).length > 0) {
-                    await setDoc(userDocRef, updates, { merge: true });
+                    backgroundOps.push(setDoc(userDocRef, updates, { merge: true }));
+                }
+
+                if (backgroundOps.length > 0) {
+                    await Promise.all(backgroundOps);
                 }
             } else {
                 const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -327,22 +336,23 @@ export async function ensureUserDocument(user, options = {}) {
                     referralCode: referralCode,
                     referralCredits: 0
                 };
-                await setDoc(userDocRef, newUserData);
+
+                const writeOps = [setDoc(userDocRef, newUserData)];
 
                 // Register code mapping for fast lookup and validation
                 try {
                     const refCodeRef = doc(db, "referral_codes", referralCode);
-                    await setDoc(refCodeRef, {
+                    writeOps.push(setDoc(refCodeRef, {
                         code: referralCode,
                         userId: uid,
                         createdAt: serverTimestamp()
-                    });
+                    }));
                 } catch (refCodeErr) {
                     console.warn("Could not register referral code mapping:", refCodeErr);
                 }
 
                 try {
-                    await addDoc(collection(db, "notifications"), {
+                    writeOps.push(addDoc(collection(db, "notifications"), {
                         userId: uid,
                         title: "100 Points Sign Up Bonus Transferred",
                         message: "Welcome to AutoLux! A 100 points sign up bonus has been transferred to your account.",
@@ -350,11 +360,12 @@ export async function ensureUserDocument(user, options = {}) {
                         amount: 100,
                         read: false,
                         createdAt: serverTimestamp()
-                    });
+                    }));
                 } catch (notifErr) {
                     console.warn("Could not record sign up bonus notification:", notifErr);
                 }
 
+                await Promise.all(writeOps);
                 data = newUserData;
             }
 

@@ -4,12 +4,12 @@
     <script>
         window.ENV = {
             FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-            FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store",
-            FIREBASE_PROJECT_ID: "autolux-detailing",
-            FIREBASE_STORAGE_BUCKET: "autolux-detailing.appspot.com",
-            FIREBASE_MESSAGING_SENDER_ID: "123456789",
-            FIREBASE_APP_ID: "1:123456789:web:abcdef123456",
-            FIREBASE_MEASUREMENT_ID: "G-1234567"
+            FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com",
+            FIREBASE_PROJECT_ID: "dts-hub-website",
+            FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app",
+            FIREBASE_MESSAGING_SENDER_ID: "48345990988",
+            FIREBASE_APP_ID: "1:48345990988:web:e3662c9b508168546471e9",
+            FIREBASE_MEASUREMENT_ID: "G-ZN3YJPHVGX"
         };
     </script>
     <script src="env.js?v=2"></script>
@@ -391,7 +391,7 @@
 
     <!-- Logic Script -->
     <script type="module">
-        import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument, startAuthLockout, stopAuthLockout } from './js/auth.js';
         import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
         import { submitDetailingRequest, submitDetailingPlan, AUTOLUX_STRIPE_PACKAGES } from './js/api.js';
@@ -540,9 +540,11 @@
         dateInput.min = now.toISOString().slice(0, 16);
 
         async function initBookingPage() {
+            startAuthLockout({ container: overlay });
             try {
                 const user = await getAuthStatePromise();
                 overlay.style.display = 'none';
+                stopAuthLockout();
                 if (user) {
                     currentUser = user;
                     bookingForm.style.display = 'block';
@@ -588,6 +590,7 @@
                     }, 1500);
                 }
             } catch(e) {
+                stopAuthLockout();
                 console.error('Error initializing booking page', e);
                 if (e && e.code) console.error('Error code:', e.code);
             }

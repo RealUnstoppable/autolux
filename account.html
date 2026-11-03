@@ -6,12 +6,12 @@
     <script>
         window.ENV = {
             FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-            FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store",
-            FIREBASE_PROJECT_ID: "autolux-detailing",
-            FIREBASE_STORAGE_BUCKET: "autolux-detailing.appspot.com",
-            FIREBASE_MESSAGING_SENDER_ID: "123456789",
-            FIREBASE_APP_ID: "1:123456789:web:abcdef123456",
-            FIREBASE_MEASUREMENT_ID: "G-1234567"
+            FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com",
+            FIREBASE_PROJECT_ID: "dts-hub-website",
+            FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app",
+            FIREBASE_MESSAGING_SENDER_ID: "48345990988",
+            FIREBASE_APP_ID: "1:48345990988:web:e3662c9b508168546471e9",
+            FIREBASE_MEASUREMENT_ID: "G-ZN3YJPHVGX"
         };
     </script>
     <script src="env.js?v=2"></script>
@@ -740,7 +740,7 @@
     </div>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument, getCachedUserDoc } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument, getCachedUserDoc, startAuthLockout, stopAuthLockout } from './js/auth.js';
         import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
@@ -850,10 +850,12 @@
         }
 
         async function initAccountPage() {
+            startAuthLockout({ container: overlay });
             try {
                 const user = await getAuthStatePromise();
 
                 if (!user) {
+                    stopAuthLockout();
                     safeRedirect('sign in beta.html');
                     return;
                 }
@@ -896,42 +898,33 @@
 
                 // Reveal dashboard UI immediately without waiting for secondary collections
                 overlay.style.display = 'none';
+                stopAuthLockout();
 
-                // Fetch relational data with optimized queries & limits to reduce payload sizes
-                let appointmentsSnap = { empty: true, docs: [] };
-                let notificationsSnap = { empty: true, docs: [] };
+                // Fetch relational data with optimized queries & limits via non-blocking parallel Promise.all
+                const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid), limit(5));
+                const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid), limit(5));
 
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid), limit(5));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
-                }
+                const [appointmentsRes, notificationsRes, ticketsRes, serviceLogsRes] = await Promise.allSettled([
+                    getDocs(appointmentsQuery),
+                    getDocs(notificationsQuery),
+                    loadTickets(user),
+                    fetchUserServiceLogs(user.uid)
+                ]);
 
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid), limit(5));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
-                }
+                const appointmentsSnap = appointmentsRes.status === 'fulfilled' ? appointmentsRes.value : { empty: true, docs: [] };
+                const notificationsSnap = notificationsRes.status === 'fulfilled' ? notificationsRes.value : { empty: true, docs: [] };
+                const logs = serviceLogsRes.status === 'fulfilled' ? serviceLogsRes.value : [];
 
                 loadReferralsHistory(user);
                 renderBookings(appointmentsSnap);
-                await loadTickets(user);
                 renderNotifications(notificationsSnap);
-
-                let logs = [];
-                try {
-                    logs = await fetchUserServiceLogs(user.uid);
-                } catch (e) {
-                    console.warn("Could not fetch service logs:", e);
-                }
                 loadedServiceLogs = logs;
                 renderServiceLogs(logs);
 
                 // Initialize Flo-inspired Maintenance Calendar
                 initMaintenanceCalendar(logs, appointmentsSnap);
             } catch (error) {
+                stopAuthLockout();
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
                 ensureFallbackOrEmptyStates();
