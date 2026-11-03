@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, addDoc, serverTimestamp, setDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp, setDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 export function escapeHTML(str) {
     if (str == null) return '';
@@ -258,6 +258,36 @@ export async function linkUnAccount(firestoreDb, userId, { unAccountEmail, curre
         const targetDb = firestoreDb || db;
         if (!targetDb) throw new Error("Firestore instance not initialized");
         const userRef = doc(targetDb, "users", userId);
+
+        // Pre-Merge Safeguard: Capture preMergeData backup snapshot before merge
+        let preMergeData = {};
+        try {
+            if (typeof getDoc === 'function') {
+                const userSnap = await getDoc(userRef);
+                if (userSnap && typeof userSnap.exists === 'function' && userSnap.exists()) {
+                    preMergeData = userSnap.data() || {};
+                }
+            }
+        } catch (readErr) {
+            console.warn("Could not read pre-merge user snapshot:", readErr);
+        }
+
+        // Store backup snapshot in accountMerges/{userId}
+        try {
+            const mergeRef = doc(targetDb, "accountMerges", userId);
+            await setDoc(mergeRef, {
+                uid: userId,
+                canSupportUndo: true,
+                preMergeData: preMergeData,
+                unAccountEmail: sanitizedEmail,
+                pointsTransferred: pointsToAdd,
+                mergedAt: serverTimestamp(),
+                status: 'merged'
+            }, { merge: true });
+        } catch (snapErr) {
+            console.warn("Could not save accountMerges backup snapshot:", snapErr);
+        }
+
         await updateDoc(userRef, payload);
 
         return {
@@ -270,5 +300,70 @@ export async function linkUnAccount(firestoreDb, userId, { unAccountEmail, curre
     } catch (error) {
         console.error("Error linking UN account:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return { success: false, error: "Failed to link UN account. Please try again later.", code: error.code || 'UNKNOWN_ERROR' };
+    }
+}
+
+/**
+ * Support / Admin safeguard function to cleanly undo an account merge.
+ * Restores original user data from accountMerges/{userId} snapshot.
+ *
+ * @param {object} firestoreDb - Firestore instance.
+ * @param {string} userId - User's Firebase UID.
+ * @returns {Promise<object>} Result of the un-merge operation.
+ */
+export async function supportUndoAccountMerge(firestoreDb, userId) {
+    if (!userId) {
+        return { success: false, error: "userId is required to undo account merge." };
+    }
+
+    try {
+        const targetDb = firestoreDb || db;
+        if (!targetDb) throw new Error("Firestore instance not initialized");
+
+        const mergeRef = doc(targetDb, "accountMerges", userId);
+        const mergeSnap = await getDoc(mergeRef);
+
+        if (!mergeSnap || !mergeSnap.exists || !mergeSnap.exists()) {
+            return { success: false, error: "No merge record found for this account." };
+        }
+
+        const mergeData = mergeSnap.data();
+        if (!mergeData.canSupportUndo) {
+            return { success: false, error: "This merge cannot be undone or has already been restored." };
+        }
+
+        const userRef = doc(targetDb, "users", userId);
+        const preData = mergeData.preMergeData || {};
+
+        // Revert merge fields on user document
+        const revertPayload = {
+            unLinked: false,
+            unAccountEmail: null,
+            unAccountId: null,
+            unPointsAdded: 0,
+            linkedInformation: null
+        };
+
+        if (preData.loyaltyPoints !== undefined) {
+            revertPayload.loyaltyPoints = preData.loyaltyPoints;
+        }
+
+        await updateDoc(userRef, revertPayload);
+
+        // Mark undo complete in accountMerges
+        await updateDoc(mergeRef, {
+            canSupportUndo: false,
+            status: 'undone',
+            undoneAt: serverTimestamp()
+        });
+
+        return {
+            success: true,
+            restoredPoints: preData.loyaltyPoints !== undefined ? preData.loyaltyPoints : null,
+            message: "Account merge undone successfully. Original profile restored."
+        };
+    } catch (err) {
+        console.error("Error undoing account merge:", err);
+        return { success: false, error: err.message || "Failed to undo merge." };
     }
 }

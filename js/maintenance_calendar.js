@@ -70,9 +70,105 @@ export function calculateProtectionScore(lastDetailDate, serviceType = 'Ceramic 
 }
 
 /**
- * Generates calendar month data structure with tagged days
+ * Calculates AI-Predicted Next Detail Date based on user wash intervals and parking environment.
+ * Outside vehicles experience accelerated fallout bonding and UV breakdown requiring shorter intervals.
+ *
+ * @param {Object} options
+ * @param {string|Date} [options.lastDetailDate]
+ * @param {string} [options.parkingEnvironment='Garage Kept']
+ * @param {number} [options.washIntervalDays=14]
+ * @returns {Object}
  */
-export function generateMonthData(year, month, { historicalEvents = [], upcomingEvents = [], washIntervalDays = 14 } = {}) {
+export function calculateAiPredictedDetailDate({
+    lastDetailDate = new Date(),
+    parkingEnvironment = 'Garage Kept',
+    washIntervalDays = 14
+} = {}) {
+    const lastDate = new Date(lastDetailDate);
+    const validLast = isNaN(lastDate.getTime()) ? new Date() : lastDate;
+    const baseInterval = Number(washIntervalDays) || 14;
+
+    const isOutside = (parkingEnvironment || '').toLowerCase().includes('outside');
+    // Outside parking reduces cycle by ~30% due to rain, pollen, and UV degradation
+    const adjustedInterval = isOutside ? Math.max(7, Math.round(baseInterval * 0.72)) : baseInterval;
+
+    const predicted = new Date(validLast);
+    predicted.setDate(predicted.getDate() + adjustedInterval);
+
+    const predictedKey = predicted.toISOString().split('T')[0];
+
+    return {
+        predictedDateKey: predictedKey,
+        predictedDateStr: predicted.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
+        intervalDays: adjustedInterval,
+        parkingEnvironment: isOutside ? 'Parked Outside' : 'Garage Kept',
+        environmentalImpact: isOutside
+            ? 'Sun exposure, pollen fallout, and acid rain accelerate clear coat oxidation.'
+            : 'Controlled garage humidity & shade maintain hydrophobic ceramic coating longer.',
+        colorCode: '#38BDF8', // Electric Blue / Purple Pulse
+        colorClass: 'day-electric-pulse'
+    };
+}
+
+/**
+ * Generates an empathetic retention notification when a vehicle is overdue for car care (21-30+ days)
+ *
+ * @param {Object} options
+ * @param {string|Date} [options.lastDetailDate]
+ * @param {string} [options.vehicleName='Your Luxury Vehicle']
+ * @returns {Object}
+ */
+export function getRetentionSpaNotification({
+    lastDetailDate = null,
+    vehicleName = 'Your Vehicle'
+} = {}) {
+    if (!lastDetailDate) {
+        return {
+            shouldNotify: true,
+            daysSince: 28,
+            vehicleName,
+            message: `✨ Your ${vehicleName} is craving a spa day! It's been 28 days since its last detail—schedule today to protect your finish.`,
+            ctaUrl: 'booking.html?package=sedan&reason=retention_spa',
+            urgency: 'high'
+        };
+    }
+
+    const last = new Date(lastDetailDate);
+    const now = new Date();
+    const diffTime = Math.abs(now - last);
+    const daysSince = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (daysSince >= 21) {
+        return {
+            shouldNotify: true,
+            daysSince,
+            vehicleName,
+            message: `✨ Your ${vehicleName} is craving a spa day! It's been ${daysSince} days since its last detail—schedule today to protect your finish.`,
+            ctaUrl: 'booking.html?package=sedan&reason=retention_spa',
+            urgency: daysSince >= 35 ? 'critical' : (daysSince >= 28 ? 'high' : 'medium')
+        };
+    }
+
+    return {
+        shouldNotify: false,
+        daysSince,
+        vehicleName
+    };
+}
+
+/**
+ * Generates calendar month data structure with tagged days
+ * Flo-style color coding:
+ * - Metallic Gold (#D4AF37): Completed historical details (click opens Service Media Gallery)
+ * - Emerald Green (#10B981): Upcoming scheduled or recurring membership washes
+ * - Electric Blue / Purple Pulse (#38BDF8): AI-Predicted Next Detail Days
+ */
+export function generateMonthData(year, month, {
+    historicalEvents = [],
+    upcomingEvents = [],
+    washIntervalDays = 14,
+    parkingEnvironment = 'Garage Kept'
+} = {}) {
     const firstDay = new Date(year, month, 1).getDay(); // 0 is Sunday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
@@ -80,7 +176,7 @@ export function generateMonthData(year, month, { historicalEvents = [], upcoming
     // Map events by 'YYYY-MM-DD'
     const eventMap = new Map();
 
-    // Historical detailing dates
+    // 1. Historical detailing dates (METALLIC GOLD)
     historicalEvents.forEach(evt => {
         const d = new Date(evt.date);
         if (!isNaN(d.getTime())) {
@@ -91,14 +187,25 @@ export function generateMonthData(year, month, { historicalEvents = [], upcoming
                 service: evt.service || 'Signature Detail',
                 vehicle: evt.vehicle || 'Vehicle',
                 notes: evt.notes || 'Full vehicle decontamination and ceramic gloss enhancement.',
-                badge: '✦ Detailed',
-                badgeColor: '#16A34A',
+                badge: '✦ Detailed (Past)',
+                badgeColor: '#D4AF37', // Metallic Gold
+                themeClass: 'day-gold',
+                dotClass: 'hist',
+                hasMediaGallery: true,
+                media: {
+                    beforeImageUrl: evt.beforeImageUrl || 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format',
+                    afterImageUrl: evt.afterImageUrl || 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format',
+                    videoUrl: evt.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-car-wash-in-a-detail-shop-40114-large.mp4',
+                    glossLevel: evt.glossLevel || '98.6 GU',
+                    swirlRemoval: evt.swirlRemoval || '96%',
+                    hydrophobicAngle: evt.hydrophobicAngle || '112°'
+                },
                 dateStr: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
             });
         }
     });
 
-    // Upcoming appointments
+    // 2. Upcoming appointments (EMERALD GREEN)
     upcomingEvents.forEach(evt => {
         const d = new Date(evt.date);
         if (!isNaN(d.getTime())) {
@@ -110,13 +217,15 @@ export function generateMonthData(year, month, { historicalEvents = [], upcoming
                 vehicle: evt.vehicle || 'Vehicle',
                 time: evt.time || '10:00 AM',
                 badge: '⚡ Scheduled',
-                badgeColor: '#D4AF37',
+                badgeColor: '#10B981', // Emerald Green
+                themeClass: 'day-emerald',
+                dotClass: 'upcom',
                 dateStr: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
             });
         }
     });
 
-    // Calculate predictive recommended washes based on last historical event or today
+    // 3. AI-Predicted Next Detail Days (ELECTRIC BLUE / PURPLE PULSE)
     let referenceDate = new Date();
     if (historicalEvents.length > 0) {
         const latestHist = new Date(Math.max(...historicalEvents.map(e => new Date(e.date).getTime())));
@@ -125,19 +234,27 @@ export function generateMonthData(year, month, { historicalEvents = [], upcoming
         }
     }
 
-    // Project forward 3 cycles of recommended washes
+    const aiPlan = calculateAiPredictedDetailDate({
+        lastDetailDate: referenceDate,
+        parkingEnvironment,
+        washIntervalDays
+    });
+
+    // Project forward cycles of recommended washes using adjusted interval
     for (let cycle = 1; cycle <= 4; cycle++) {
         const projected = new Date(referenceDate);
-        projected.setDate(projected.getDate() + (washIntervalDays * cycle));
+        projected.setDate(projected.getDate() + (aiPlan.intervalDays * cycle));
         const key = projected.toISOString().split('T')[0];
         if (!eventMap.has(key)) {
             eventMap.set(key, {
                 type: 'recommended',
-                label: 'Recommended Maintenance Wash',
-                service: 'Bi-Weekly Maintenance Foam Wash',
+                label: 'AI-Predicted Wash Window',
+                service: 'Recommended Maintenance Foam Wash',
                 badge: '○ Recommended Wash',
-                badgeColor: '#38BDF8',
-                notes: 'Ideal interval to remove brake dust & road film before clear coat bonding.',
+                badgeColor: '#38BDF8', // Electric Blue Pulse
+                themeClass: 'day-electric-pulse',
+                dotClass: 'recom',
+                notes: `AI-computed for ${aiPlan.parkingEnvironment}: ${aiPlan.environmentalImpact}`,
                 dateStr: projected.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
                 bookUrl: `booking.html?package=club&date=${key}`
             });
@@ -193,6 +310,7 @@ export function generateMonthData(year, month, { historicalEvents = [], upcoming
         month,
         monthName: new Date(year, month, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
         days,
-        eventMap
+        eventMap,
+        aiPlan
     };
 }

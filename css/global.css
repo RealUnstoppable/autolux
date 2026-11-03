@@ -1416,19 +1416,20 @@ textarea:focus {
 }
 
 .calendar-day-cell.has-historical .day-status-indicator {
-    background: #16A34A;
-    box-shadow: 0 0 6px #16A34A;
+    background: var(--gold);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.75);
 }
 
 .calendar-day-cell.has-upcoming .day-status-indicator {
-    background: var(--gold);
-    box-shadow: 0 0 6px var(--gold);
-    animation: pulse 2s infinite;
+    background: #10B981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.75);
+    animation: pulse 2.2s infinite;
 }
 
 .calendar-day-cell.has-recommended .day-status-indicator {
     background: #38BDF8;
-    box-shadow: 0 0 6px #38BDF8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.75), 0 0 12px rgba(168, 85, 247, 0.5);
+    animation: pulse 1.8s infinite;
 }
 
 @keyframes pulse {

@@ -273,6 +273,53 @@
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Mobile-First Concierge Chips & High-Friction Controls */
+        .chip-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .chip-btn:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--text-main);
+        }
+
+        .chip-btn.selected {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.16);
+            color: var(--gold);
+            font-weight: 700;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.25);
+        }
+
+        .merge-friction-box {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -368,6 +415,27 @@
             </div>
         </div>
 
+        <!-- Empathetic Retention Spa Banner (Shown when vehicle is past 21-30 days without detail) -->
+        <div id="retention-spa-banner" style="display: none; background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(168, 85, 247, 0.12) 100%); border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);">
+                        ✨
+                    </div>
+                    <div>
+                        <strong style="color: #ffd700; font-size: 1.05rem; display: block; margin-bottom: 2px;" id="retention-spa-title">Time for a Spa Day!</strong>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.45;" id="retention-spa-message">
+                            ✨ Your vehicle is craving a spa day! It's been 28 days since its last detail—schedule today to protect your finish.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <a href="booking.html?package=sedan&reason=retention_spa" class="btn-schedule" id="retention-spa-cta" style="padding: 10px 18px; font-size: 0.88rem; white-space: nowrap;">⚡ Schedule Spa Day &amp; Save Finish</a>
+                    <button type="button" id="dismiss-retention-btn" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.82rem;">Dismiss</button>
+                </div>
+            </div>
+        </div>
+
         <div class="dashboard-grid">
             <!-- Sidebar / Profile Info -->
             <div>
@@ -382,6 +450,10 @@
                         <p id="un-balance-row" style="display: none;"><strong>Total UN Balance:</strong> <span id="un-balance-display" style="color: var(--gold); font-weight: 700;">0 pts</span></p>
                     </div>
                     <div id="un-link-action-container" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-size: 0.72rem; color: #f59e0b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">⚠️ Permanent Account Integration</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">High Friction</span>
+                        </div>
                         <button id="link-un-btn" class="auth-btn btn-gold" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                             <span id="link-un-btn-text">Link with UN (realunstoppable.store account)</span>
@@ -440,7 +512,7 @@
                         <div style="display: flex; gap: 10px;">
                             <input type="text" id="user-referral-code" aria-label="Your Referral Code" readonly style="flex-grow: 1; padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: var(--gold); border-radius: 6px; font-weight: bold; text-align: center;" value="ALX-VIP2026">
                             <button class="btn-schedule" id="copy-referral-btn" style="border: none; cursor: pointer;">Copy</button>
-                            <button class="btn-schedule" id="share-referral-btn" style="border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-main); cursor: pointer;" title="Share Referral Link">Share</button>
+                            <button class="btn-schedule" id="share-referral-btn" style="border: 1px solid var(--border-gold); background: rgba(212, 175, 55, 0.18); color: var(--gold); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Share Referral Link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>Share</button>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(212, 175, 55, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 15px;">
@@ -484,7 +556,17 @@
                         </div>
                     </div>
                     <form id="add-address-form" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
+                        <div>
+                            <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Location Icon Glyph:</label>
+                            <div class="chip-group" id="address-glyph-chips" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+                                <button type="button" class="chip-btn selected" data-glyph="🏠" data-label="Home">🏠 Home</button>
+                                <button type="button" class="chip-btn" data-glyph="🏢" data-label="Office">🏢 Office</button>
+                                <button type="button" class="chip-btn" data-glyph="💼" data-label="Work">💼 Work</button>
+                                <button type="button" class="chip-btn" data-glyph="🔧" data-label="Shop">🔧 Shop</button>
+                            </div>
+                            <input type="hidden" id="selected-address-glyph" value="🏠">
+                        </div>
+                        <input type="text" id="new-address-label" aria-label="New address label" placeholder="Label (e.g. Home, Office)" value="Home" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <input type="text" id="new-address-val" aria-label="New full address" placeholder="Full Address" required autocomplete="street-address" style="padding: 10px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                         <button type="submit" class="btn-schedule" id="add-address-btn" style="border: none; cursor: pointer; align-self: flex-start; padding: 8px 16px;">Add Address</button>
                         <div id="address-msg" aria-live="polite" style="margin-top: 5px; font-size: 0.85rem; font-weight: 600;"></div>
@@ -510,6 +592,18 @@
                         </div>
                     </div>
 
+                    <!-- Recurring Care Schedule Toggle -->
+                    <div class="calendar-schedule-toggle" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; color: var(--gold); font-weight: 700;">🔄 Recurring Care Schedule:</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);" id="current-schedule-label">Bi-Weekly (Every 14 Days)</span>
+                        </div>
+                        <div style="display: flex; gap: 6px;" id="schedule-toggle-group">
+                            <button type="button" class="chip-btn selected" id="toggle-biweekly" data-interval="14">Bi-Weekly</button>
+                            <button type="button" class="chip-btn" id="toggle-monthly" data-interval="30">Monthly</button>
+                        </div>
+                    </div>
+
                     <!-- Protection Score Bar (Flo health ring inspired) -->
                     <div style="background: rgba(10, 10, 14, 0.7); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                         <div style="display: flex; align-items: center; gap: 14px;">
@@ -522,9 +616,9 @@
                             </div>
                         </div>
                         <div class="calendar-legend">
-                            <div class="legend-item"><span class="legend-dot hist"></span> Detailed Past</div>
-                            <div class="legend-item"><span class="legend-dot upcom"></span> Scheduled</div>
-                            <div class="legend-item"><span class="legend-dot recom"></span> Wash Window</div>
+                            <div class="legend-item"><span class="legend-dot hist" style="background: var(--gold); box-shadow: 0 0 8px rgba(212, 175, 55, 0.75);"></span> Detailed Past (Click for Media)</div>
+                            <div class="legend-item"><span class="legend-dot upcom" style="background: #10B981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.75);"></span> Scheduled Wash</div>
+                            <div class="legend-item"><span class="legend-dot recom" style="background: #38BDF8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.75);"></span> AI Wash Window</div>
                         </div>
                     </div>
 
@@ -589,9 +683,26 @@
                         </div>
                     </div>
 
-                    <!-- Add Vehicle Form with Quick Suggestions -->
+                    <!-- Add Vehicle Form with Quick Suggestions & Live Visualizer -->
                     <div class="vehicle-add-box" style="margin-top: 24px;">
                         <span style="font-size: 0.82rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Add Vehicle to Garage</span>
+
+                        <!-- Dynamic Live Vehicle Visualizer Preview -->
+                        <div id="vehicle-visualizer-preview" style="background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; margin-top: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                            <div style="width: 140px; height: 85px; border-radius: var(--radius-sm); overflow: hidden; position: relative; background: #000; flex-shrink: 0; border: 1px solid var(--border);">
+                                <img id="viz-car-image" src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" alt="Live Vehicle Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                <span id="viz-color-swatch" style="position: absolute; bottom: 4px; right: 4px; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.8); background: #d4af37;" title="Color tint preview"></span>
+                            </div>
+                            <div style="flex: 1; min-width: 180px;">
+                                <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 4px;">
+                                    <span id="viz-category-badge" class="vehicle-category-badge" style="position: static; font-size: 0.7rem; padding: 2px 8px;">Exotic Track Weapon</span>
+                                    <span id="viz-color-badge" style="font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; background: rgba(212, 175, 55, 0.15); color: var(--gold); border: 1px solid var(--border-gold); font-weight: 600;">Gold Metallic</span>
+                                </div>
+                                <h4 id="viz-title" style="margin: 0 0 2px 0; font-size: 0.95rem; color: var(--text-main);">2024 Porsche 911 GT3</h4>
+                                <span id="viz-recommended" style="font-size: 0.78rem; color: var(--text-muted);">Recommended: Ceramic Coating + Paint Correction every 14 days</span>
+                            </div>
+                        </div>
+
                         <form id="add-vehicle-form" style="margin-top: 10px; display: flex; gap: 10px;">
                             <input type="text" id="new-vehicle" aria-label="New vehicle details" placeholder="e.g. 2024 Porsche 911 GT3, BMW M4, Mercedes G63" style="flex-grow: 1; padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border); color: white; border-radius: 6px;">
                             <button type="submit" class="btn-schedule" id="add-vehicle-btn" style="border: none; cursor: pointer; padding: 10px 20px;">Add Vehicle</button>
@@ -762,6 +873,60 @@
         </div>
     </div>
 
+    <!-- Service Media Showcase Modal (Flo-style Detail Inspection Viewer) -->
+    <div class="modal-overlay" id="service-media-modal" role="dialog" aria-modal="true" aria-labelledby="media-modal-title" style="display: none;">
+        <div class="modal-card" style="max-width: 680px; width: 92%;">
+            <button class="modal-close" id="media-modal-close-btn" aria-label="Close modal">&times;</button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span class="section-eyebrow" style="font-size: 0.72rem; padding: 2px 10px;" id="media-modal-eyebrow">Service Inspection Reel</span>
+                <span style="color: #16A34A; font-size: 0.78rem; font-weight: 700;">✦ Verified Showroom Finish</span>
+            </div>
+            <h2 id="media-modal-title" style="color: var(--gold); margin-top: 0; margin-bottom: 4px; font-size: 1.35rem;">Signature Ceramic Coating</h2>
+            <p id="media-modal-vehicle" style="color: var(--text-main); font-weight: 700; margin: 0 0 14px 0; font-size: 0.95rem;">2024 Porsche 911 GT3 &bull; Nov 5, 2026</p>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                <strong style="color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Technician Notes:</strong>
+                <p id="media-modal-notes" style="margin: 0; font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.45;">
+                    "Multi-stage machine compounding and 5-year hydrophobic ceramic layer applied with infrared curing."
+                </p>
+            </div>
+
+            <!-- Inspection Metrics Grid -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px;">
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 0.68rem; color: var(--text-muted); display: block; text-transform: uppercase;">Gloss Level</span>
+                    <span id="media-modal-gloss" style="font-size: 1.05rem; font-weight: 800; color: var(--gold);">98.6 GU</span>
+                </div>
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 0.68rem; color: var(--text-muted); display: block; text-transform: uppercase;">Swirl Removal</span>
+                    <span id="media-modal-swirl" style="font-size: 1.05rem; font-weight: 800; color: #16A34A;">96% Removed</span>
+                </div>
+                <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 0.68rem; color: var(--text-muted); display: block; text-transform: uppercase;">Hydrophobic</span>
+                    <span id="media-modal-hydro" style="font-size: 1.05rem; font-weight: 800; color: #38BDF8;">112° Beading</span>
+                </div>
+            </div>
+
+            <!-- Side-by-Side Before/After in Modal -->
+            <div style="display: grid; grid-template-columns: 1fr; gap: 14px;">
+                <div class="ba-viewer-frame">
+                    <div class="ba-image-pane">
+                        <span class="ba-image-label">Before</span>
+                        <img id="media-modal-before-img" src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format" alt="Before detail" loading="lazy">
+                    </div>
+                    <div class="ba-image-pane">
+                        <span class="ba-image-label">After</span>
+                        <img id="media-modal-after-img" src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format" alt="After detail" loading="lazy">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+                <button type="button" class="btn-schedule" id="media-modal-ok-btn" style="padding: 8px 18px; font-size: 0.88rem;">Close Inspection</button>
+            </div>
+        </div>
+    </div>
+
     <!-- UN Account Linking Modal -->
     <div class="modal-overlay" id="un-link-modal" role="dialog" aria-modal="true" aria-labelledby="un-modal-title">
         <div class="modal-card">
@@ -770,9 +935,26 @@
                 <span>realunstoppable.store</span>
             </div>
             <h2 id="un-modal-title" style="color: var(--gold); margin-top: 0; margin-bottom: 8px; font-size: 1.4rem;">Link with UN Account</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.5;">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; line-height: 1.5;">
                 Link your AutoLux profile with your <strong>realunstoppable.store</strong> account. This will synchronize your account information and add your current AutoLux loyalty points to your total UN account balance.
             </p>
+
+            <!-- Permanent Merge High-Friction Warning Guard -->
+            <div class="merge-friction-box">
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="font-size: 1.2rem; color: #EF4444;" aria-hidden="true">⚠️</span>
+                    <div>
+                        <strong style="color: #EF4444; font-size: 0.88rem; display: block; margin-bottom: 3px;">PERMANENT ACCOUNT MERGE WARNING</strong>
+                        <p style="font-size: 0.8rem; color: #FCA5A5; margin: 0 0 10px 0; line-height: 1.4;">
+                            Merging your AutoLux profile with <strong>realunstoppable.store</strong> permanently integrates your loyalty points, order history, and preferences. <strong>This action cannot be undone by the user in this portal.</strong> If accidental, contact concierge support with your UID for assisted restore.
+                        </p>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #F3F4F6; cursor: pointer; user-select: none;">
+                            <input type="checkbox" id="un-confirm-permanent-check" style="accent-color: #EF4444; width: 16px; height: 16px; cursor: pointer;">
+                            <span>I understand this account integration is permanent.</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
             <div style="background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
@@ -810,7 +992,7 @@
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
         import { matchVehicle } from './js/vehicle_images.js';
-        import { generateMonthData, calculateProtectionScore } from './js/maintenance_calendar.js';
+        import { generateMonthData, calculateProtectionScore, calculateAiPredictedDetailDate, getRetentionSpaNotification } from './js/maintenance_calendar.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
@@ -868,7 +1050,8 @@
             vehicle: '2024 Porsche 911 GT3',
             address: {
                 label: 'Home (Primary)',
-                address: '100 Ocean Drive, Suite 400, Miami, FL 33139'
+                address: '100 Ocean Drive, Suite 400, Miami, FL 33139',
+                glyph: '🏠'
             }
         };
 
@@ -876,6 +1059,9 @@
         let userData = null;
         let activeCalYear = 2026;
         let activeCalMonth = 10; // November (0-based)
+        let activeWashIntervalDays = 14;
+        let histEventsCache = [];
+        let upcomEventsCache = [];
         let loadedServiceLogs = [];
         let loadedAppointments = [];
 
@@ -997,8 +1183,14 @@
                 loadedServiceLogs = logs;
                 renderServiceLogs(logs);
 
+                // Check empathetic retention spa alert
+                checkAndRenderRetentionNotification(userData, logs);
+
                 // Initialize Flo-inspired Maintenance Calendar
                 initMaintenanceCalendar(logs, appointmentsSnap);
+
+                // Initialize Live Vehicle Visualizer Preview
+                updateLiveVisualizer(document.getElementById('new-vehicle')?.value);
             } catch (error) {
                 stopAuthLockout();
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
@@ -1026,7 +1218,9 @@
                     date: dateVal.toISOString(),
                     service: l.serviceType || 'Signature Ceramic Coating',
                     vehicle: l.vehicleName || '2024 Porsche 911 GT3',
-                    notes: l.technicianNotes || '5-year hydrophobic ceramic coating applied.'
+                    notes: l.technicianNotes || '5-year hydrophobic ceramic coating applied.',
+                    beforeImageUrl: l.beforeImageUrl || DUMMY_ASSETS.serviceLog.beforeImageUrl,
+                    afterImageUrl: l.afterImageUrl || DUMMY_ASSETS.serviceLog.afterImageUrl
                 });
             });
 
@@ -1049,6 +1243,33 @@
             });
 
             loadedAppointments = upcomEvents;
+            histEventsCache = histEvents;
+            upcomEventsCache = upcomEvents;
+
+            // Hook Recurring Care Schedule Toggles
+            const toggleBiweekly = document.getElementById('toggle-biweekly');
+            const toggleMonthly = document.getElementById('toggle-monthly');
+            const currentSchedLabel = document.getElementById('current-schedule-label');
+
+            if (toggleBiweekly) {
+                toggleBiweekly.onclick = () => {
+                    activeWashIntervalDays = 14;
+                    toggleBiweekly.classList.add('selected');
+                    if (toggleMonthly) toggleMonthly.classList.remove('selected');
+                    if (currentSchedLabel) currentSchedLabel.textContent = 'Bi-Weekly (Every 14 Days)';
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEventsCache, upcomEventsCache);
+                };
+            }
+
+            if (toggleMonthly) {
+                toggleMonthly.onclick = () => {
+                    activeWashIntervalDays = 30;
+                    toggleMonthly.classList.add('selected');
+                    if (toggleBiweekly) toggleBiweekly.classList.remove('selected');
+                    if (currentSchedLabel) currentSchedLabel.textContent = 'Monthly (Every 30 Days)';
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEventsCache, upcomEventsCache);
+                };
+            }
 
             // Calculate Flo Protection Health Score
             const latestHistDate = histEvents[0]?.date || new Date(activeCalYear, activeCalMonth, 5).toISOString();
@@ -1077,7 +1298,7 @@
                         activeCalMonth = 11;
                         activeCalYear--;
                     }
-                    renderCalendarMonth(activeCalYear, activeCalMonth, histEvents, upcomEvents);
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEventsCache, upcomEventsCache);
                 };
             }
 
@@ -1088,7 +1309,7 @@
                         activeCalMonth = 0;
                         activeCalYear++;
                     }
-                    renderCalendarMonth(activeCalYear, activeCalMonth, histEvents, upcomEvents);
+                    renderCalendarMonth(activeCalYear, activeCalMonth, histEventsCache, upcomEventsCache);
                 };
             }
         }
@@ -1101,7 +1322,8 @@
             const monthData = generateMonthData(year, month, {
                 historicalEvents: histEvents,
                 upcomingEvents: upcomEvents,
-                washIntervalDays: 14
+                washIntervalDays: activeWashIntervalDays,
+                parkingEnvironment: userData?.parkingEnvironment || 'Garage Kept'
             });
 
             if (titleEl) titleEl.textContent = monthData.monthName;
@@ -1147,6 +1369,9 @@
                     document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('is-selected'));
                     cell.classList.add('is-selected');
                     inspectCalendarDay(day);
+                    if (day.event && day.event.type === 'historical') {
+                        openServiceMediaModal(day.event);
+                    }
                 });
 
                 fragment.appendChild(cell);
@@ -1174,17 +1399,23 @@
                 if (day.event.type === 'historical') {
                     if (badgeEl) {
                         badgeEl.textContent = `Completed Detailing • ${formattedDate}`;
-                        badgeEl.style.color = '#16A34A';
+                        badgeEl.style.color = 'var(--gold)';
                     }
                     if (titleEl) titleEl.textContent = day.event.service;
                     if (descEl) descEl.textContent = `Vehicle: ${day.event.vehicle}. Technician Notes: "${day.event.notes}"`;
                     if (actionContainer) {
-                        actionContainer.innerHTML = `<a href="#service-gallery-card" class="btn-outline" style="padding: 8px 14px; font-size: 0.85rem; border-color: #16A34A; color: #16A34A;">View Media Showcase &rarr;</a>`;
+                        actionContainer.innerHTML = `
+                            <button type="button" class="btn-schedule" id="insp-media-btn" style="padding: 8px 16px; font-size: 0.85rem; background: var(--gold-gradient); border: none; cursor: pointer;">View 4K Inspection Reel &rarr;</button>
+                            <a href="#service-gallery-card" class="btn-outline" style="padding: 8px 14px; font-size: 0.85rem; border-color: var(--gold); color: var(--gold); text-decoration: none;">View On Page</a>
+                        `;
+                        document.getElementById('insp-media-btn')?.addEventListener('click', () => {
+                            openServiceMediaModal(day.event);
+                        });
                     }
                 } else if (day.event.type === 'upcoming') {
                     if (badgeEl) {
                         badgeEl.textContent = `Confirmed Priority Booking • ${formattedDate}`;
-                        badgeEl.style.color = 'var(--gold)';
+                        badgeEl.style.color = '#10B981';
                     }
                     if (titleEl) titleEl.textContent = `${day.event.service} (${day.event.time || '10:00 AM'})`;
                     if (descEl) descEl.textContent = `Vehicle: ${day.event.vehicle}. Mobile concierge unit scheduled to arrive at your primary address.`;
@@ -1213,6 +1444,103 @@
                     actionContainer.innerHTML = `<a href="booking.html?date=${day.dateKey}" class="btn-schedule" style="padding: 8px 16px; font-size: 0.85rem;">Reserve This Date</a>`;
                 }
             }
+        }
+
+        // ==========================================
+        // SERVICE MEDIA GALLERY MODAL
+        // ==========================================
+        const serviceMediaModal = document.getElementById('service-media-modal');
+        const mediaModalCloseBtn = document.getElementById('media-modal-close-btn');
+        const mediaModalOkBtn = document.getElementById('media-modal-ok-btn');
+
+        function openServiceMediaModal(eventOrLog) {
+            if (!serviceMediaModal) return;
+            const titleEl = document.getElementById('media-modal-title');
+            const vehEl = document.getElementById('media-modal-vehicle');
+            const notesEl = document.getElementById('media-modal-notes');
+            const glossEl = document.getElementById('media-modal-gloss');
+            const swirlEl = document.getElementById('media-modal-swirl');
+            const hydroEl = document.getElementById('media-modal-hydro');
+            const beforeImg = document.getElementById('media-modal-before-img');
+            const afterImg = document.getElementById('media-modal-after-img');
+
+            const serviceTitle = eventOrLog.service || eventOrLog.serviceType || 'Signature Ceramic Coating';
+            const vehicle = eventOrLog.vehicle || eventOrLog.vehicleName || '2024 Porsche 911 GT3';
+            const dateStr = eventOrLog.dateStr || (eventOrLog.serviceDate?.toDate ? eventOrLog.serviceDate.toDate().toLocaleDateString() : (eventOrLog.date ? new Date(eventOrLog.date).toLocaleDateString() : 'Recent'));
+            const notes = eventOrLog.notes || eventOrLog.technicianNotes || 'Multi-stage machine compounding and 5-year hydrophobic ceramic layer applied with infrared curing.';
+
+            if (titleEl) titleEl.textContent = serviceTitle;
+            if (vehEl) vehEl.textContent = `${vehicle} • ${dateStr}`;
+            if (notesEl) notesEl.textContent = `"${notes}"`;
+
+            const media = eventOrLog.media || {};
+            if (glossEl) glossEl.textContent = media.glossLevel || '98.6 GU';
+            if (swirlEl) swirlEl.textContent = media.swirlRemoval || '96% Removed';
+            if (hydroEl) hydroEl.textContent = media.hydrophobicAngle || '112° Beading';
+
+            if (beforeImg) beforeImg.src = media.beforeImageUrl || eventOrLog.beforeImageUrl || 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=600&auto=format';
+            if (afterImg) afterImg.src = media.afterImageUrl || eventOrLog.afterImageUrl || 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600&auto=format';
+
+            serviceMediaModal.style.display = 'flex';
+        }
+
+        function closeServiceMediaModal() {
+            if (serviceMediaModal) serviceMediaModal.style.display = 'none';
+        }
+
+        mediaModalCloseBtn?.addEventListener('click', closeServiceMediaModal);
+        mediaModalOkBtn?.addEventListener('click', closeServiceMediaModal);
+        serviceMediaModal?.addEventListener('click', (e) => {
+            if (e.target === serviceMediaModal) closeServiceMediaModal();
+        });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && serviceMediaModal?.style.display === 'flex') closeServiceMediaModal();
+        });
+
+        // ==========================================
+        // EMPATHETIC RETENTION SPA BANNER
+        // ==========================================
+        function checkAndRenderRetentionNotification(userDoc, logs) {
+            const banner = document.getElementById('retention-spa-banner');
+            if (!banner) return;
+
+            if (sessionStorage.getItem('dismiss_retention_spa') === 'true') {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const primaryVehicle = (userDoc?.vehicles && userDoc.vehicles[0]) || DUMMY_ASSETS.vehicle || '2024 Porsche 911 GT3';
+            let lastDetailDate = null;
+            if (logs && logs.length > 0) {
+                const firstLog = logs[0];
+                lastDetailDate = firstLog.serviceDate?.toDate ? firstLog.serviceDate.toDate() : (firstLog.serviceDate?.seconds ? new Date(firstLog.serviceDate.seconds * 1000) : (typeof firstLog.serviceDate === 'string' && firstLog.serviceDate !== 'Recent' ? new Date(firstLog.serviceDate) : null));
+            }
+
+            if (!lastDetailDate) {
+                const d = new Date();
+                d.setDate(d.getDate() - 28);
+                lastDetailDate = d;
+            }
+
+            const retNotification = getRetentionSpaNotification({
+                lastDetailDate,
+                vehicleName: primaryVehicle
+            });
+
+            if (retNotification && retNotification.shouldNotify) {
+                const msgEl = document.getElementById('retention-spa-message');
+                const ctaEl = document.getElementById('retention-spa-cta');
+                if (msgEl) msgEl.textContent = retNotification.message;
+                if (ctaEl) ctaEl.href = `booking.html?package=sedan&vehicle=${encodeURIComponent(primaryVehicle)}&reason=retention_spa`;
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+
+            document.getElementById('dismiss-retention-btn')?.addEventListener('click', () => {
+                banner.style.display = 'none';
+                sessionStorage.setItem('dismiss_retention_spa', 'true');
+            });
         }
 
         // ==========================================
@@ -1267,6 +1595,57 @@
             list.appendChild(fragment);
         }
 
+        // Vehicle Visualizer live listener
+        const VEHICLE_COLORS = {
+            'black': { name: 'Gloss Black', hex: '#111111' },
+            'white': { name: 'Alpine White', hex: '#ffffff' },
+            'red': { name: 'Guards Red', hex: '#dc2626' },
+            'blue': { name: 'Metallic Blue', hex: '#2563eb' },
+            'silver': { name: 'Silver Metallic', hex: '#94a3b8' },
+            'grey': { name: 'Chalk Grey', hex: '#64748b' },
+            'gray': { name: 'Chalk Grey', hex: '#64748b' },
+            'green': { name: 'British Racing Green', hex: '#16a34a' },
+            'yellow': { name: 'Speed Yellow', hex: '#eab308' },
+            'gold': { name: 'Brushed Gold', hex: '#d4af37' },
+            'orange': { name: 'Lava Orange', hex: '#ea580c' },
+            'purple': { name: 'Viola Metallic', hex: '#9333ea' }
+        };
+
+        function updateLiveVisualizer(inputVal) {
+            const preview = document.getElementById('vehicle-visualizer-preview');
+            if (!preview) return;
+            const clean = (inputVal || '').trim();
+            const carImage = document.getElementById('viz-car-image');
+            const colorSwatch = document.getElementById('viz-color-swatch');
+            const catBadge = document.getElementById('viz-category-badge');
+            const colorBadge = document.getElementById('viz-color-badge');
+            const titleEl = document.getElementById('viz-title');
+            const recEl = document.getElementById('viz-recommended');
+
+            const matched = matchVehicle(clean || '2024 Porsche 911 GT3');
+
+            let detectedColor = { name: 'Metallic Finish', hex: '#d4af37' };
+            const lower = clean.toLowerCase();
+            for (const [key, val] of Object.entries(VEHICLE_COLORS)) {
+                if (lower.includes(key)) {
+                    detectedColor = val;
+                    break;
+                }
+            }
+
+            if (carImage) carImage.src = matched.imageUrl;
+            if (colorSwatch) colorSwatch.style.background = detectedColor.hex;
+            if (catBadge) catBadge.textContent = matched.category;
+            if (colorBadge) colorBadge.textContent = detectedColor.name;
+            if (titleEl) titleEl.textContent = clean || '2024 Porsche 911 GT3';
+            if (recEl) recEl.textContent = `Recommended: ${matched.recommendedService} every ${matched.recommendedWashInterval} days`;
+        }
+
+        const newVehicleInput = document.getElementById('new-vehicle');
+        newVehicleInput?.addEventListener('input', (e) => {
+            updateLiveVisualizer(e.target.value);
+        });
+
         // Quick Suggestion Chips for adding vehicles
         document.querySelectorAll('.suggest-chip').forEach(chip => {
             chip.addEventListener('click', () => {
@@ -1274,6 +1653,7 @@
                 const input = document.getElementById('new-vehicle');
                 if (input && name) {
                     input.value = name;
+                    updateLiveVisualizer(name);
                     input.focus();
                 }
             });
@@ -1510,8 +1890,15 @@
         const modalUnExisting = document.getElementById('modal-un-existing');
         const modalUnTotal = document.getElementById('modal-un-total');
         const confirmUnLinkBtn = document.getElementById('confirm-un-link-btn');
+        const unConfirmPermanentCheck = document.getElementById('un-confirm-permanent-check');
         const unModalMsg = document.getElementById('un-modal-msg');
         const unLinkMsg = document.getElementById('un-link-msg');
+
+        unConfirmPermanentCheck?.addEventListener('change', () => {
+            if (confirmUnLinkBtn) {
+                confirmUnLinkBtn.disabled = !unConfirmPermanentCheck.checked;
+            }
+        });
 
         function openUnModal() {
             if (!currentUser) return;
@@ -1524,8 +1911,11 @@
             if (modalUnTotal) modalUnTotal.textContent = `${projectedTotal.toLocaleString()} pts`;
             if (unEmailInput) unEmailInput.value = userData?.unAccountEmail || currentUser.email || '';
             if (unModalMsg) unModalMsg.textContent = '';
+            if (unConfirmPermanentCheck) {
+                unConfirmPermanentCheck.checked = false;
+            }
             if (confirmUnLinkBtn) {
-                confirmUnLinkBtn.disabled = false;
+                confirmUnLinkBtn.disabled = true; // High-friction guard: require confirmation checkbox
                 confirmUnLinkBtn.textContent = userData?.unLinked ? 'Sync Points & Update UN Account' : 'Confirm & Link UN Account';
             }
             if (unLinkModal) {
@@ -1537,6 +1927,7 @@
         function closeUnModal() {
             if (unLinkModal) unLinkModal.style.display = 'none';
             if (unModalMsg) unModalMsg.textContent = '';
+            if (unConfirmPermanentCheck) unConfirmPermanentCheck.checked = false;
         }
 
         linkUnBtn?.addEventListener('click', openUnModal);
@@ -1553,6 +1944,12 @@
         unLinkForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
+
+            if (unConfirmPermanentCheck && !unConfirmPermanentCheck.checked) {
+                unModalMsg.style.color = 'var(--error)';
+                unModalMsg.textContent = 'Please confirm that you understand this action is permanent.';
+                return;
+            }
 
             const targetEmail = unEmailInput.value.trim();
             if (!targetEmail || !targetEmail.includes('@')) {
@@ -1964,11 +2361,15 @@
                 const el = document.createElement('div');
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'address-item';
+                const glyph = a.glyph || '🏠';
 
                 el.innerHTML = `
-                    <div>
-                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label || 'Address')}</strong>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address || 'N/A')}</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.25rem; line-height: 1;" aria-hidden="true">${escapeHTML(glyph)}</span>
+                        <div>
+                            <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(a.label || 'Address')}</strong>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(a.address || 'N/A')}</span>
+                        </div>
                     </div>
                     <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(a.label)}" data-address="${escapeHTML(a.address)}">Remove</button>
                 `;
@@ -1976,6 +2377,26 @@
             }
             list.appendChild(fragment);
         }
+
+        // Wire Address Glyph Selection Chips
+        const addressGlyphChips = document.querySelectorAll('#address-glyph-chips .chip-btn');
+        const selectedAddressGlyphInput = document.getElementById('selected-address-glyph');
+        const newAddressLabelInput = document.getElementById('new-address-label');
+
+        addressGlyphChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                addressGlyphChips.forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                const glyph = chip.getAttribute('data-glyph') || '🏠';
+                const label = chip.getAttribute('data-label') || 'Home';
+                if (selectedAddressGlyphInput) selectedAddressGlyphInput.value = glyph;
+                if (newAddressLabelInput) {
+                    if (!newAddressLabelInput.value || ['Home', 'Office', 'Work', 'Shop'].includes(newAddressLabelInput.value.trim())) {
+                        newAddressLabelInput.value = label;
+                    }
+                }
+            });
+        });
 
         let isAddressSubmitting = false;
         document.getElementById('add-address-form').addEventListener('submit', async (e) => {
@@ -1986,6 +2407,7 @@
 
             const label = labelInput.value.trim();
             const address = addressInput.value.trim();
+            const glyph = selectedAddressGlyphInput?.value || '🏠';
             const msgEl = document.getElementById('address-msg');
             msgEl.textContent = '';
             if (!label || !address) {
@@ -2001,7 +2423,7 @@
             btn.classList.add('btn-loading');
             btn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Adding Address...</span>';
 
-            const newAddressObj = { label, address };
+            const newAddressObj = { label, address, glyph };
 
             try {
                 const userRef = doc(db, "users", currentUser.uid);
@@ -2018,10 +2440,16 @@
                 el.style = "display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center;";
                 el.className = 'address-item';
                 el.innerHTML = `
-                    <div>
-                        <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(label)}</strong>
-                        <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(address)}</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.25rem; line-height: 1;" aria-hidden="true">${escapeHTML(glyph)}</span>
+                        <div>
+                            <strong style="color: var(--gold); display: block; font-size: 0.9rem;">${escapeHTML(label)}</strong>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">${escapeHTML(address)}</span>
+                        </div>
                     </div>
+                    <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}">Remove</button>
+                `;
+                list.appendChild(el);
                     <button class="remove-address-btn" style="background: var(--error); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" data-label="${escapeHTML(label)}" data-address="${escapeHTML(address)}">Remove</button>
                 `;
                 list.appendChild(el);
