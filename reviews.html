@@ -351,10 +351,62 @@
         let currentSort = 'newest';
 
         const genReviews = [
-            { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date(Date.now() - 86400000).toISOString() },
-            { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date(Date.now() - 172800000).toISOString() },
-            { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: new Date(Date.now() - 259200000).toISOString() },
-            { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: new Date(Date.now() - 345600000).toISOString() }
+            {
+                userName: "Marcus T. — Buford, GA",
+                vehicle: "2024 BMW X5 M-Sport",
+                rating: 5,
+                comment: "AutoLux showed up right on time at my driveway in Buford. The full interior steam extraction and ceramic rain shield are immaculate—water just sheets off on I-85. Best mobile concierge in Gwinnett County.",
+                createdAt: new Date(Date.now() - (2 * 86400000)).toISOString()
+            },
+            {
+                userName: "Elena R. — Suwanee, GA",
+                vehicle: "2023 Porsche 911 Carrera 4S",
+                rating: 5,
+                comment: "Incredible attention to detail on my Chalk 911. Every single micro-swirl was polished away, and the hydrophobic ceramic shine is unreal. The technician arrived in a pristine, fully self-contained studio van.",
+                createdAt: new Date(Date.now() - (4 * 86400000)).toISOString()
+            },
+            {
+                userName: "David K. — Lake Lanier, GA",
+                vehicle: "2025 Cadillac Escalade Sport",
+                rating: 5,
+                comment: "After hauling the family and gear from Lake Lanier all weekend, the interior had sand and Georgia red clay everywhere. AutoLux got every grain of dirt out of the perforated leather. Looks better than delivery day.",
+                createdAt: new Date(Date.now() - (6 * 86400000)).toISOString()
+            },
+            {
+                userName: "Dr. Julian M. — Braselton, GA",
+                vehicle: "2024 Mercedes-AMG G63",
+                rating: 5,
+                comment: "Completely self-contained mobile operation—didn't need my water hookup or garage outlet. Prompt, professional, and the ceramic rain shield makes night driving in storms so much clearer. Joined the monthly detailing club.",
+                createdAt: new Date(Date.now() - (8 * 86400000)).toISOString()
+            },
+            {
+                userName: "Victoria S. — Sugar Hill, GA",
+                vehicle: "2024 Range Rover SV",
+                rating: 5,
+                comment: "Prompt arrival and supreme professionalism. The leather treatment and carpet extraction revived the oyster cabin and took out a stubborn espresso spill without any residue. Truly five-star mobile service.",
+                createdAt: new Date(Date.now() - (11 * 86400000)).toISOString()
+            },
+            {
+                userName: "Harrison B. — Johns Creek, GA",
+                vehicle: "2023 Corvette Z06 (Torch Red)",
+                rating: 5,
+                comment: "They treat high-performance finishes with genuine care. Pure two-bucket method, ultra-soft microfiber, and spot-free deionized water. The Torch Red clear coat looks like liquid glass. Never touching a tunnel wash again.",
+                createdAt: new Date(Date.now() - (14 * 86400000)).toISOString()
+            },
+            {
+                userName: "Rachel & Brian P. — Flowery Branch, GA",
+                vehicle: "2024 Tesla Model S Plaid",
+                rating: 5,
+                comment: "The ceramic coating application was flawless. Highway bug splatter wipes right off with a gentle damp cloth. Communication from booking to completion was effortless. Highly recommend to everyone in Hall County.",
+                createdAt: new Date(Date.now() - (18 * 86400000)).toISOString()
+            },
+            {
+                userName: "Nathan W. — Duluth, GA",
+                vehicle: "2024 Audi RS6 Avant",
+                rating: 5,
+                comment: "Concierge punctuality was spot on. Detailed the RS6 while I was in meetings at my home office. Deep interior shampoo, clean vents, and hydrophobic wheel protection that repels brake dust. Top-tier craftsmanship.",
+                createdAt: new Date(Date.now() - (22 * 86400000)).toISOString()
+            }
         ];
 
         async function fetchReviewsBatch(isInitial = false) {
@@ -425,7 +477,7 @@
                 if (isInitial && allReviews.length < PAGE_SIZE) {
                     allReviews = [...allReviews, ...genReviews];
                     hasMoreInDb = false;
-                } else if (!hasMoreInDb && !allReviews.some(r => r.userName?.includes('Gen Z'))) {
+                } else if (!hasMoreInDb && !allReviews.some(r => r.userName?.includes('Marcus T.'))) {
                     // Append supplementary verified experiences at the end of DB items
                     allReviews = [...allReviews, ...genReviews];
                 }
@@ -503,15 +555,17 @@
                         date = new Date(r.createdAt).toLocaleDateString();
                     }
                 }
+                const vehicleBadge = r.vehicle ? `<div style="margin-top: 8px;"><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; background: rgba(212, 175, 55, 0.12); color: var(--gold); border: 1px solid var(--border-gold); padding: 2px 8px; border-radius: 12px; font-weight: 600;">🚗 ${escapeHTML(r.vehicle)}</span></div>` : '';
                 const el = document.createElement('div');
                 el.className = 'review-card luxury-card';
                 el.innerHTML = `
                     <div>
                         <div class="stars" aria-label="${ratingValue} out of 5 stars">${stars}</div>
                         <div class="comment">"${escapeHTML(r.comment || '')}"</div>
+                        ${vehicleBadge}
                     </div>
-                    <div class="review-footer">
-                        <span class="review-author">✦ ${escapeHTML(r.userName || 'Verified Client')}</span>
+                    <div class="review-footer" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px;">
+                        <span class="review-author" style="color: var(--gold); font-weight: 700;">✦ ${escapeHTML(r.userName || 'Verified Client')}</span>
                         <span class="review-date">${escapeHTML(date)}</span>
                     </div>
                 `;

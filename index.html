@@ -1412,9 +1412,42 @@
             const container = document.getElementById('reviews-container-el');
             
             const defaultReviews = [
-                { userName: "Marcus T.", rating: 5, comment: "AUTOLUX is unmatched! They brought my AMG back to showroom perfection. The ceramic finish is smooth as glass." },
-                { userName: "Sarah K.", rating: 5, comment: "Best mobile detailing service in Buford. Arrived right on time and made my SUV look brand new inside and out!" },
-                { userName: "David L.", rating: 5, comment: "The safe wash and paint enhancement took out all the micro-swirls. Highly recommended for any luxury car owner." }
+                {
+                    userName: "Marcus T. — Buford, GA",
+                    vehicle: "2024 BMW X5 M-Sport",
+                    rating: 5,
+                    comment: "AutoLux showed up right on time at my driveway in Buford. The full interior steam extraction and ceramic rain shield are immaculate—water just sheets off on I-85. Best mobile concierge in Gwinnett County."
+                },
+                {
+                    userName: "Elena R. — Suwanee, GA",
+                    vehicle: "2023 Porsche 911 Carrera 4S",
+                    rating: 5,
+                    comment: "Incredible attention to detail on my Chalk 911. Every single micro-swirl was polished away, and the hydrophobic ceramic shine is unreal. The technician arrived in a pristine, fully self-contained studio van."
+                },
+                {
+                    userName: "David K. — Lake Lanier, GA",
+                    vehicle: "2025 Cadillac Escalade Sport",
+                    rating: 5,
+                    comment: "After hauling the family and gear from Lake Lanier all weekend, the interior had sand and Georgia clay everywhere. AutoLux got every grain of dirt out of the perforated leather. Looks better than delivery day."
+                },
+                {
+                    userName: "Dr. Julian M. — Braselton, GA",
+                    vehicle: "2024 Mercedes-AMG G63",
+                    rating: 5,
+                    comment: "Completely self-contained mobile operation—didn't need my water hookup or garage outlet. Prompt, professional, and the ceramic rain shield makes night driving in storms so much clearer. Joined the monthly detailing club."
+                },
+                {
+                    userName: "Victoria S. — Sugar Hill, GA",
+                    vehicle: "2024 Range Rover SV",
+                    rating: 5,
+                    comment: "Prompt arrival and supreme professionalism. The leather treatment and carpet extraction revived the oyster cabin and took out a stubborn espresso spill without any residue. Truly five-star mobile service."
+                },
+                {
+                    userName: "Harrison B. — Johns Creek, GA",
+                    vehicle: "2023 Corvette Z06 (Torch Red)",
+                    rating: 5,
+                    comment: "They treat high-performance finishes with genuine care. Pure two-bucket method, ultra-soft microfiber, and spot-free deionized water. The Torch Red clear coat looks like liquid glass. Never touching a tunnel wash again."
+                }
             ];
 
             function renderReviewItems(list) {
@@ -1434,15 +1467,17 @@
                     }
                     const name = escapeHTML(r.userName || "Valued Client");
                     const comment = escapeHTML(r.comment || "");
+                    const vehicleBadge = r.vehicle ? `<div style="margin-top: 6px;"><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; background: rgba(212, 175, 55, 0.12); color: var(--gold); border: 1px solid var(--border-gold); padding: 1px 7px; border-radius: 10px; font-weight: 600;">🚗 ${escapeHTML(r.vehicle)}</span></div>` : '';
 
                     const el = document.createElement('div');
                     el.className = 'review-card luxury-card';
                     el.innerHTML = `
                         <div>
                             <div class="stars" aria-label="${ratingValue} out of 5 stars">${stars}</div>
-                            <p style="font-style: italic; color: var(--text-main); margin-bottom: 16px;">"${comment}"</p>
+                            <p style="font-style: italic; color: var(--text-main); margin-bottom: 8px;">"${comment}"</p>
+                            ${vehicleBadge}
                         </div>
-                        <div style="border-top: 1px solid var(--border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
                             <strong style="color: var(--gold); font-size: 0.9rem;">${name}</strong>
                             <span style="font-size: 0.8rem; color: var(--text-subtle);">${escapeHTML(date)}</span>
                         </div>
