@@ -4,6 +4,8 @@
  * during authentication checks and login/signup transitions.
  */
 
+export const LOCKOUT_WATCHDOG_MS = 45000;
+
 let isAuthLocked = false;
 let watchdogTimer = null;
 let boundBeforeUnloadHandler = null;
