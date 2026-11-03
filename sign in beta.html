@@ -97,6 +97,11 @@
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px var(--gold-glow-subtle);
             box-sizing: border-box;
             text-align: center;
+            transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-card.signup-wizard-mode {
+            max-width: 580px;
         }
 
         .brand-header {
@@ -111,8 +116,309 @@
         .auth-card .subtitle {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             line-height: 1.5;
+        }
+
+        /* ----------------------------------------------------
+           Wizard Header & Progress Bar
+        ---------------------------------------------------- */
+        .wizard-header {
+            margin: 10px 0 24px 0;
+            text-align: left;
+        }
+
+        .wizard-progress-track {
+            background: rgba(255, 255, 255, 0.08);
+            height: 5px;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .wizard-progress-fill {
+            background: linear-gradient(90deg, #b8860b, #ffd700, #f5d77f);
+            height: 100%;
+            width: 33.33%;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .wizard-steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wizard-step-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .wizard-step-node .step-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.78rem;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .wizard-step-node.active {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .wizard-step-node.active .step-badge {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.18);
+            color: var(--gold);
+            box-shadow: 0 0 12px var(--gold-glow-subtle);
+        }
+
+        .wizard-step-node.completed {
+            color: var(--text-main);
+        }
+
+        .wizard-step-node.completed .step-badge {
+            border-color: var(--gold);
+            background: var(--gold);
+            color: #000000;
+        }
+
+        /* ----------------------------------------------------
+           Wizard Step Panels
+        ---------------------------------------------------- */
+        .wizard-step {
+            display: none;
+            text-align: left;
+            animation: fadeInStep 0.25s ease-out;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-heading {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 0 18px 0;
+            line-height: 1.45;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 520px) {
+            .form-row-2 {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 11px 13px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.92rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Chips for Glyphs & Environment */
+        .chip-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 12px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .chip-btn:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--text-main);
+        }
+
+        .chip-btn.selected {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.16);
+            color: var(--gold);
+            font-weight: 700;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.25);
+        }
+
+        /* VIN Decoder group */
+        .vin-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-decode-vin {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--border-gold);
+            color: var(--gold);
+            padding: 0 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-decode-vin:hover {
+            background: var(--gold-gradient);
+            color: #000000;
+            box-shadow: 0 0 12px var(--gold-glow-subtle);
+        }
+
+        .vin-status-badge {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            min-height: 18px;
+        }
+
+        /* Step Actions */
+        .wizard-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .btn-wizard-back {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-wizard-back:hover {
+            border-color: var(--border-gold);
+            color: var(--text-main);
+        }
+
+        .btn-wizard-next {
+            flex: 1;
+            padding: 13px;
+            font-size: 0.95rem;
+        }
+
+        .btn-skip-card {
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px solid var(--border-gold);
+            color: var(--gold);
+            padding: 13px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            font-size: 0.92rem;
+            font-family: inherit;
+            margin-bottom: 12px;
+        }
+
+        .btn-skip-card:hover {
+            background: rgba(212, 175, 55, 0.16);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .pci-badge {
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0;
+            text-align: left;
+            line-height: 1.4;
         }
 
         #auth-msg {
@@ -213,7 +519,7 @@
 
     <!-- Main Content -->
     <main class="auth-section">
-        <div class="auth-card luxury-card">
+        <div class="auth-card luxury-card" id="auth-card">
             <div class="brand-header">
                 <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">
                     <span class="logo-text">AUTOLUX</span>
@@ -235,23 +541,223 @@
             <h1 id="auth-title">Welcome Back</h1>
             <p class="subtitle" id="auth-subtitle">Sign in to access your client portal</p>
 
-            <form id="auth-form">
-                <div class="form-group" id="name-group" style="display: none;">
-                    <label for="name">Full Name <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="text" id="name" autocomplete="name" placeholder="John Doe">
+            <!-- Multi-Step Progress Indicator (Visible in Sign-Up Mode) -->
+            <div class="wizard-header" id="wizard-header" style="display: none;">
+                <div class="wizard-progress-track" id="wizard-progress-track">
+                    <div class="wizard-progress-fill" id="wizard-progress-fill" style="width: 33.33%;"></div>
+                </div>
+                <div class="wizard-steps-indicator">
+                    <div class="wizard-step-node active" id="wizard-node-1">
+                        <span class="step-badge" id="step-badge-1">1</span>
+                        <span class="step-text">Personal</span>
+                    </div>
+                    <div class="wizard-step-node" id="wizard-node-2">
+                        <span class="step-badge" id="step-badge-2">2</span>
+                        <span class="step-text">Vehicle</span>
+                    </div>
+                    <div class="wizard-step-node" id="wizard-node-3">
+                        <span class="step-badge" id="step-badge-3">3</span>
+                        <span class="step-text">Payment</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="auth-form" novalidate>
+                <!-- ==============================================
+                     1. FAST SIGN-IN PANEL (Default Mode)
+                =============================================== -->
+                <div id="signin-fields">
+                    <div class="form-group">
+                        <label for="email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-gold" id="submit-btn" style="width: 100%; padding: 14px; font-size: 1.05rem;">Sign In</button>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
-                </div>
+                <!-- ==============================================
+                     2. EXPANDED MULTI-STEP SIGN-UP WIZARD
+                =============================================== -->
+                <div id="signup-wizard-fields" style="display: none;">
+                    
+                    <!-- STEP 1: Personal & Account Info -->
+                    <div class="wizard-step active" id="wizard-step-1">
+                        <h2 class="step-heading">👤 Personal & Account Info</h2>
+                        <p class="step-desc">Enter your credentials and primary mobile detailing service location.</p>
 
-                <div class="form-group">
-                    <label for="password">Password <span aria-hidden="true" style="color: var(--error);">*</span></label>
-                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-                </div>
+                        <div class="form-group">
+                            <label for="signup-name">Full Name <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                            <input type="text" id="signup-name" autocomplete="name" placeholder="John Doe" required>
+                        </div>
 
-                <button type="submit" class="btn-primary btn-gold" id="submit-btn" style="width: 100%; padding: 14px; font-size: 1.05rem;">Sign In</button>
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="signup-email">Email Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="email" id="signup-email" autocomplete="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-password">Password (min 6) <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="password" id="signup-password" autocomplete="new-password" placeholder="••••••••" required minlength="6">
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="signup-phone">Phone Number <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="tel" id="signup-phone" autocomplete="tel" placeholder="(404) 555-0199" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-age">Age (Optional)</label>
+                                <input type="number" id="signup-age" min="16" max="110" placeholder="e.g. 35">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-gender">Gender (Optional)</label>
+                            <select id="signup-gender">
+                                <option value="">Select Gender (Optional)</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="non_binary">Non-binary</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address Type</label>
+                            <div class="chip-group" id="glyph-chip-group">
+                                <button type="button" class="chip-btn selected" data-glyph="🏠" data-label="Home">🏠 Home</button>
+                                <button type="button" class="chip-btn" data-glyph="🏢" data-label="Office">🏢 Office</button>
+                                <button type="button" class="chip-btn" data-glyph="🏢" data-label="Work">🏢 Work</button>
+                                <button type="button" class="chip-btn" data-glyph="🛠️" data-label="Shop">🛠️ Shop</button>
+                            </div>
+                            <input type="hidden" id="signup-glyph" value="🏠">
+                            <input type="hidden" id="signup-glyph-label" value="Home">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-address">Primary Service Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                            <input type="text" id="signup-address" autocomplete="street-address" placeholder="123 Luxury Way, Buford, GA 30518" required>
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button type="button" class="btn-primary btn-gold btn-wizard-next" id="step1-next-btn">Continue to Vehicle &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Your Vehicle ("Add to Garage") -->
+                    <div class="wizard-step" id="wizard-step-2">
+                        <h2 class="step-heading">🏎️ Add Vehicle to Garage</h2>
+                        <p class="step-desc">Personalized ceramic health scores, maintenance schedules, and tailored services.</p>
+
+                        <div class="form-group">
+                            <label for="signup-vin">VIN (Optional — Auto-Decodes Year/Make/Model)</label>
+                            <div class="vin-input-group">
+                                <input type="text" id="signup-vin" placeholder="17-Digit VIN (e.g. WP0AB2A91MS...)" maxlength="17" style="text-transform: uppercase;">
+                                <button type="button" class="btn-decode-vin" id="decode-vin-btn">⚡ Decode VIN</button>
+                            </div>
+                            <div class="vin-status-badge" id="vin-status"></div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="signup-year">Model Year <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="number" id="signup-year" placeholder="2024" min="1950" max="2030" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-make">Make <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="text" id="signup-make" placeholder="Porsche" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="signup-model">Model <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="text" id="signup-model" placeholder="911 GT3" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-color">Exterior Color <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                                <input type="text" id="signup-color" placeholder="Chalk / Metallic Black" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Parking Environment</label>
+                            <div class="chip-group" id="parking-chip-group">
+                                <button type="button" class="chip-btn selected" data-env="Garage Kept">🏎️ Garage Kept</button>
+                                <button type="button" class="chip-btn" data-env="Parked Outside">☀️ Parked Outside</button>
+                            </div>
+                            <input type="hidden" id="signup-parking" value="Garage Kept">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-tint">Window Tint</label>
+                            <select id="signup-tint">
+                                <option value="No Tint">No Tint</option>
+                                <option value="Light (50%)">Light (50%)</option>
+                                <option value="Medium (35%)" selected>Medium (35%)</option>
+                                <option value="Dark (20%)">Dark (20%)</option>
+                                <option value="Limo (5%)">Limo (5%)</option>
+                                <option value="Custom %">Custom %</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-mods">Modifications / Ceramic / PPF Notes (Optional)</label>
+                            <textarea id="signup-mods" rows="2" placeholder="e.g. Front clip PPF installed, 2-year ceramic coating on wheels, satin wrap..."></textarea>
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button type="button" class="btn-wizard-back" id="step2-back-btn">&larr; Back</button>
+                            <button type="button" class="btn-primary btn-gold btn-wizard-next" id="step2-next-btn">Continue to Payment &rarr;</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Payment Setup (Optional) -->
+                    <div class="wizard-step" id="wizard-step-3">
+                        <h2 class="step-heading">💳 Payment Setup (Optional)</h2>
+                        <p class="step-desc">Save a payment method for 1-click booking and Detailing Club subscriptions. You will <strong>NOT</strong> be charged today.</p>
+
+                        <div class="form-group">
+                            <label for="signup-card-number">Card Number</label>
+                            <input type="text" id="signup-card-number" placeholder="4242 •••• •••• 4242" maxlength="19" autocomplete="cc-number">
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="signup-card-expiry">Expiration</label>
+                                <input type="text" id="signup-card-expiry" placeholder="MM / YY" maxlength="5" autocomplete="cc-exp">
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-card-cvc">CVC</label>
+                                <input type="password" id="signup-card-cvc" placeholder="CVC" maxlength="4" autocomplete="cc-csc">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="signup-card-zip">Billing ZIP Code</label>
+                            <input type="text" id="signup-card-zip" placeholder="30518" maxlength="10" autocomplete="postal-code">
+                        </div>
+
+                        <div class="pci-badge">
+                            <span style="font-size: 1.2rem;">🔒</span>
+                            <span><strong>PCI-DSS Compliant Tokenization:</strong> Powered by Stripe Elements. Raw card numbers and CVCs are never stored in Firestore or your browser.</span>
+                        </div>
+
+                        <button type="button" class="btn-skip-card" id="skip-card-btn">Skip — I'll Add a Card Later</button>
+                        <button type="button" class="btn-primary btn-gold" id="signup-finish-btn" style="width: 100%; padding: 14px; font-size: 1.05rem;">⚡ Complete Sign-Up & Claim 100 Pts</button>
+
+                        <div class="wizard-actions" style="margin-top: 12px;">
+                            <button type="button" class="btn-wizard-back" id="step3-back-btn" style="width: 100%; text-align: center;">&larr; Back to Vehicle</button>
+                        </div>
+                    </div>
+
+                </div>
             </form>
 
             <div id="auth-msg" aria-live="polite"></div>
@@ -342,24 +848,103 @@
 
     <!-- Logic Script -->
     <script type="module">
-        import { auth, db, getUserRedirectPath, safeRedirect, ensureUserDocument, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, getAuthStatePromise, startAuthLockout, stopAuthLockout, renderTimeoutCard } from './js/auth.js';
+        import {
+            auth,
+            db,
+            getUserRedirectPath,
+            safeRedirect,
+            ensureUserDocument,
+            clearUserDocumentCache,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            updateProfile,
+            getAuthStatePromise,
+            startAuthLockout,
+            stopAuthLockout,
+            renderTimeoutCard
+        } from './js/auth.js';
+        import { doc, setDoc, addDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
         import { initNavbar } from './js/navbar.js';
         import { startLoadingBar, stopLoadingBar } from './js/loading_bar.js';
+        import {
+            decodeVinWithNhtsa,
+            validateStep1,
+            validateStep2,
+            tokenizePaymentMethod,
+            formatRegistrationUserData
+        } from './js/signup_wizard.js';
 
         let isSignUpMode = false;
+        let currentStep = 1;
 
+        const authCard = document.getElementById('auth-card');
         const form = document.getElementById('auth-form');
         const title = document.getElementById('auth-title');
         const subtitle = document.getElementById('auth-subtitle');
         const submitBtn = document.getElementById('submit-btn');
         const toggleBtn = document.getElementById('toggle-mode-btn');
         const toggleDesc = document.getElementById('toggle-desc');
-        const nameGroup = document.getElementById('name-group');
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
         const authMsg = document.getElementById('auth-msg');
 
+        // Containers
+        const signinFields = document.getElementById('signin-fields');
+        const signupWizardFields = document.getElementById('signup-wizard-fields');
+        const wizardHeader = document.getElementById('wizard-header');
+        const wizardProgressFill = document.getElementById('wizard-progress-fill');
+
+        // Sign In inputs
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Wizard Step 1 inputs
+        const step1 = document.getElementById('wizard-step-1');
+        const signupName = document.getElementById('signup-name');
+        const signupEmail = document.getElementById('signup-email');
+        const signupPassword = document.getElementById('signup-password');
+        const signupPhone = document.getElementById('signup-phone');
+        const signupAge = document.getElementById('signup-age');
+        const signupGender = document.getElementById('signup-gender');
+        const signupAddress = document.getElementById('signup-address');
+        const signupGlyph = document.getElementById('signup-glyph');
+        const signupGlyphLabel = document.getElementById('signup-glyph-label');
+        const glyphChipGroup = document.getElementById('glyph-chip-group');
+        const step1NextBtn = document.getElementById('step1-next-btn');
+
+        // Wizard Step 2 inputs
+        const step2 = document.getElementById('wizard-step-2');
+        const signupVin = document.getElementById('signup-vin');
+        const decodeVinBtn = document.getElementById('decode-vin-btn');
+        const vinStatus = document.getElementById('vin-status');
+        const signupYear = document.getElementById('signup-year');
+        const signupMake = document.getElementById('signup-make');
+        const signupModel = document.getElementById('signup-model');
+        const signupColor = document.getElementById('signup-color');
+        const parkingChipGroup = document.getElementById('parking-chip-group');
+        const signupParking = document.getElementById('signup-parking');
+        const signupTint = document.getElementById('signup-tint');
+        const signupMods = document.getElementById('signup-mods');
+        const step2BackBtn = document.getElementById('step2-back-btn');
+        const step2NextBtn = document.getElementById('step2-next-btn');
+
+        // Wizard Step 3 inputs
+        const step3 = document.getElementById('wizard-step-3');
+        const signupCardNumber = document.getElementById('signup-card-number');
+        const signupCardExpiry = document.getElementById('signup-card-expiry');
+        const signupCardCvc = document.getElementById('signup-card-cvc');
+        const signupCardZip = document.getElementById('signup-card-zip');
+        const skipCardBtn = document.getElementById('skip-card-btn');
+        const signupFinishBtn = document.getElementById('signup-finish-btn');
+        const step3BackBtn = document.getElementById('step3-back-btn');
+
+        // Step Nodes
+        const node1 = document.getElementById('wizard-node-1');
+        const node2 = document.getElementById('wizard-node-2');
+        const node3 = document.getElementById('wizard-node-3');
+        const badge1 = document.getElementById('step-badge-1');
+        const badge2 = document.getElementById('step-badge-2');
+        const badge3 = document.getElementById('step-badge-3');
+
+        // Prefetch destinations
         const prefetchDestinations = () => {
             ['account.html', 'admin.html'].forEach(page => {
                 if (!document.querySelector(`link[rel="prefetch"][href="${page}"]`)) {
@@ -372,11 +957,41 @@
         };
         emailInput.addEventListener('focus', prefetchDestinations, { once: true });
         passwordInput.addEventListener('focus', prefetchDestinations, { once: true });
+        signupEmail.addEventListener('focus', prefetchDestinations, { once: true });
+
+        // Auto-format phone input
+        signupPhone.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length > 10) val = val.substring(0, 10);
+            if (val.length > 6) {
+                e.target.value = `(${val.substring(0, 3)}) ${val.substring(3, 6)}-${val.substring(6)}`;
+            } else if (val.length > 3) {
+                e.target.value = `(${val.substring(0, 3)}) ${val.substring(3)}`;
+            } else if (val.length > 0) {
+                e.target.value = `(${val}`;
+            }
+        });
+
+        // Auto-format card number
+        signupCardNumber.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+            e.target.value = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+        });
+
+        // Auto-format card expiry MM/YY
+        signupCardExpiry.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+            if (val.length >= 2) {
+                e.target.value = `${val.substring(0, 2)}/${val.substring(2)}`;
+            } else {
+                e.target.value = val;
+            }
+        });
 
         // Check if user is already signed in
         async function initSignInPage() {
             startAuthLockout({
-                container: document.querySelector('.auth-card') || document.body
+                container: authCard || document.body
             });
             try {
                 const user = await getAuthStatePromise();
@@ -392,37 +1007,367 @@
             } finally {
                 stopAuthLockout();
             }
+
+            // Check URL query parameters for direct signup mode
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'signup' || urlParams.get('action') === 'register' || window.location.hash === '#signup') {
+                setMode(true);
+            }
         }
         initSignInPage();
 
-        toggleBtn.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
+        // Mode switcher
+        function setMode(signUp) {
+            isSignUpMode = signUp;
             authMsg.textContent = '';
             
             if (isSignUpMode) {
                 title.textContent = 'Create Account';
                 subtitle.textContent = 'Sign up to claim your 100 points welcome bonus & manage bookings';
-                submitBtn.textContent = 'Sign Up & Claim 100 Pts';
                 toggleDesc.textContent = 'Already have an account?';
                 toggleBtn.textContent = 'Sign In';
-                nameGroup.style.display = 'block';
-                nameInput.required = true;
+                signinFields.style.display = 'none';
+                signupWizardFields.style.display = 'block';
+                wizardHeader.style.display = 'block';
+                authCard.classList.add('signup-wizard-mode');
+                goToStep(1);
             } else {
                 title.textContent = 'Welcome Back';
                 subtitle.textContent = 'Sign in to access your client portal';
-                submitBtn.textContent = 'Sign In';
                 toggleDesc.textContent = "Don't have an account?";
                 toggleBtn.textContent = 'Sign Up';
-                nameGroup.style.display = 'none';
-                nameInput.required = false;
+                signinFields.style.display = 'block';
+                signupWizardFields.style.display = 'none';
+                wizardHeader.style.display = 'none';
+                authCard.classList.remove('signup-wizard-mode');
+            }
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            setMode(!isSignUpMode);
+        });
+
+        // Wizard Step Navigation
+        function goToStep(step) {
+            currentStep = step;
+            authMsg.textContent = '';
+
+            [step1, step2, step3].forEach(el => el.classList.remove('active'));
+            [node1, node2, node3].forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('completed');
+            });
+
+            if (step === 1) {
+                step1.classList.add('active');
+                node1.classList.add('active');
+                badge1.textContent = '1';
+                badge2.textContent = '2';
+                badge3.textContent = '3';
+                wizardProgressFill.style.width = '33.33%';
+            } else if (step === 2) {
+                step2.classList.add('active');
+                node1.classList.add('completed');
+                badge1.textContent = '✓';
+                node2.classList.add('active');
+                badge2.textContent = '2';
+                badge3.textContent = '3';
+                wizardProgressFill.style.width = '66.66%';
+            } else if (step === 3) {
+                step3.classList.add('active');
+                node1.classList.add('completed');
+                node2.classList.add('completed');
+                badge1.textContent = '✓';
+                badge2.textContent = '✓';
+                node3.classList.add('active');
+                badge3.textContent = '3';
+                wizardProgressFill.style.width = '100%';
+            }
+        }
+
+        // Chip selection: Address Glyph
+        glyphChipGroup.addEventListener('click', (e) => {
+            const btn = e.target.closest('.chip-btn');
+            if (!btn) return;
+            glyphChipGroup.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            signupGlyph.value = btn.dataset.glyph;
+            signupGlyphLabel.value = btn.dataset.label;
+        });
+
+        // Chip selection: Parking Environment
+        parkingChipGroup.addEventListener('click', (e) => {
+            const btn = e.target.closest('.chip-btn');
+            if (!btn) return;
+            parkingChipGroup.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            signupParking.value = btn.dataset.env;
+        });
+
+        // Step 1 -> Step 2 validation & transition
+        step1NextBtn.addEventListener('click', () => {
+            const personal = {
+                name: signupName.value.trim(),
+                email: signupEmail.value.trim(),
+                password: signupPassword.value,
+                phone: signupPhone.value.trim(),
+                address: signupAddress.value.trim()
+            };
+
+            const result = validateStep1(personal);
+            if (!result.isValid) {
+                const firstError = Object.values(result.errors)[0];
+                authMsg.style.color = "var(--error)";
+                authMsg.textContent = firstError;
+                return;
+            }
+
+            goToStep(2);
+        });
+
+        // Step 2: Decode VIN handler
+        async function handleVinDecode() {
+            const vin = signupVin.value.trim();
+            if (!vin) {
+                vinStatus.style.color = "var(--error)";
+                vinStatus.textContent = "Please enter a VIN to decode.";
+                return;
+            }
+
+            decodeVinBtn.disabled = true;
+            decodeVinBtn.textContent = 'Decoding...';
+            vinStatus.style.color = "var(--text-muted)";
+            vinStatus.textContent = "Connecting to NHTSA vehicle database...";
+
+            try {
+                const result = await decodeVinWithNhtsa(vin);
+                if (result.success) {
+                    if (result.year) signupYear.value = result.year;
+                    if (result.make) signupMake.value = result.make;
+                    if (result.model) signupModel.value = result.model;
+
+                    vinStatus.style.color = "var(--success)";
+                    vinStatus.textContent = `✓ Decoded: ${result.year || ''} ${result.make || ''} ${result.model || ''}`.trim();
+                } else {
+                    vinStatus.style.color = "var(--error)";
+                    vinStatus.textContent = result.error || "Could not decode VIN.";
+                }
+            } catch (err) {
+                vinStatus.style.color = "var(--error)";
+                vinStatus.textContent = "NHTSA lookup failed. Please enter Year/Make/Model manually.";
+            } finally {
+                decodeVinBtn.disabled = false;
+                decodeVinBtn.textContent = '⚡ Decode VIN';
+            }
+        }
+        decodeVinBtn.addEventListener('click', handleVinDecode);
+
+        signupVin.addEventListener('input', (e) => {
+            const clean = e.target.value.trim().toUpperCase();
+            if (clean.length === 17) {
+                handleVinDecode();
             }
         });
 
+        // Step 2 Navigation
+        step2BackBtn.addEventListener('click', () => goToStep(1));
+        step2NextBtn.addEventListener('click', () => {
+            const vehicle = {
+                year: signupYear.value.trim(),
+                make: signupMake.value.trim(),
+                model: signupModel.value.trim(),
+                color: signupColor.value.trim()
+            };
+
+            const result = validateStep2(vehicle);
+            if (!result.isValid) {
+                const firstError = Object.values(result.errors)[0];
+                authMsg.style.color = "var(--error)";
+                authMsg.textContent = firstError;
+                return;
+            }
+
+            goToStep(3);
+        });
+
+        // Step 3 Navigation
+        step3BackBtn.addEventListener('click', () => goToStep(2));
+
+        // Submit Sign-Up Execution
+        async function executeRegistration(paymentData, triggerBtn) {
+            authMsg.textContent = '';
+            const email = signupEmail.value.trim();
+            const password = signupPassword.value.trim();
+            const name = signupName.value.trim();
+
+            // Set loading state on button
+            triggerBtn.disabled = true;
+            triggerBtn.classList.add('btn-loading');
+            triggerBtn.innerHTML = `<span class="gold-spinner" aria-hidden="true"></span><span>Creating Account...</span>`;
+
+            // Also synchronize submitBtn loading state for watchdog/test hooks
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-loading');
+            submitBtn.innerHTML = `<span class="gold-spinner" aria-hidden="true"></span><span>Creating Account...</span>`;
+
+            startLoadingBar();
+            startAuthLockout({
+                submitBtn: triggerBtn,
+                container: authCard || document.body
+            });
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                if (name && user) {
+                    await updateProfile(user, { displayName: name });
+                }
+
+                const personalData = {
+                    name: name,
+                    email: email,
+                    phone: signupPhone.value.trim(),
+                    age: signupAge.value.trim(),
+                    gender: signupGender.value,
+                    address: signupAddress.value.trim(),
+                    addressGlyph: signupGlyph.value,
+                    addressLabel: signupGlyphLabel.value
+                };
+
+                const vehicleData = {
+                    year: signupYear.value.trim(),
+                    make: signupMake.value.trim(),
+                    model: signupModel.value.trim(),
+                    color: signupColor.value.trim(),
+                    vin: signupVin.value.trim(),
+                    parkingEnvironment: signupParking.value,
+                    windowTint: signupTint.value,
+                    modifications: signupMods.value.trim()
+                };
+
+                const userDocPayload = formatRegistrationUserData({
+                    uid: user.uid,
+                    email: user.email,
+                    personal: personalData,
+                    vehicle: vehicleData,
+                    payment: paymentData
+                });
+
+                // Parallel background writes to Firestore
+                const writes = [];
+                const userDocRef = doc(db, "users", user.uid);
+                writes.push(setDoc(userDocRef, {
+                    ...userDocPayload,
+                    signupDate: serverTimestamp()
+                }, { merge: true }));
+
+                if (userDocPayload.referralCode) {
+                    try {
+                        const refCodeRef = doc(db, "referral_codes", userDocPayload.referralCode);
+                        writes.push(setDoc(refCodeRef, {
+                            code: userDocPayload.referralCode,
+                            userId: user.uid,
+                            createdAt: serverTimestamp()
+                        }, { merge: true }));
+                    } catch (err) {
+                        console.warn("Could not sync referral code mapping:", err);
+                    }
+                }
+
+                // Add 100 points bonus notification
+                try {
+                    writes.push(addDoc(collection(db, "notifications"), {
+                        userId: user.uid,
+                        title: "100 Points Welcome Bonus Transferred",
+                        message: "Welcome to AutoLux! Your 100 points sign-up bonus has been credited to your account.",
+                        type: "bonus",
+                        amount: 100,
+                        read: false,
+                        createdAt: serverTimestamp()
+                    }));
+                } catch (err) {
+                    console.warn("Could not record bonus notification:", err);
+                }
+
+                await Promise.all(writes);
+                clearUserDocumentCache(user.uid);
+
+                authMsg.style.color = "var(--success)";
+                authMsg.textContent = "Success! 100 points welcome bonus transferred. Redirecting...";
+
+                safeRedirect('account.html');
+                setTimeout(() => {
+                    const currentPath = decodeURIComponent(window.location.pathname).toLowerCase();
+                    if (currentPath.includes('sign in beta') || currentPath.includes('sign-in-beta')) {
+                        window.location.href = 'account.html';
+                    }
+                }, 400);
+
+            } catch (error) {
+                stopAuthLockout();
+                stopLoadingBar();
+                console.error("Registration Error:", error);
+                authMsg.style.color = "var(--error)";
+                let msg = `Registration failed: ${error.code} - ${error.message}`;
+                if (error.code === 'auth/email-already-in-use') {
+                    msg = "An account with this email address already exists. Please sign in.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "Password should be at least 6 characters.";
+                } else if (error.code === 'auth/invalid-email') {
+                    msg = "The email address is not valid.";
+                }
+                authMsg.textContent = msg;
+
+                triggerBtn.disabled = false;
+                triggerBtn.classList.remove('btn-loading');
+                if (triggerBtn === skipCardBtn) {
+                    triggerBtn.textContent = "Skip — I'll Add a Card Later";
+                } else {
+                    triggerBtn.textContent = "⚡ Complete Sign-Up & Claim 100 Pts";
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.textContent = "Sign In";
+            }
+        }
+
+        // Action: Skip Card
+        skipCardBtn.addEventListener('click', () => {
+            executeRegistration({ status: 'card_later' }, skipCardBtn);
+        });
+
+        // Action: Finish with Card
+        signupFinishBtn.addEventListener('click', () => {
+            const rawCard = signupCardNumber.value.trim();
+            let paymentData = { status: 'card_later' };
+
+            if (rawCard) {
+                try {
+                    paymentData = tokenizePaymentMethod({
+                        cardNumber: rawCard,
+                        expiry: signupCardExpiry.value.trim(),
+                        cvc: signupCardCvc.value.trim(),
+                        zip: signupCardZip.value.trim()
+                    });
+                } catch (cardErr) {
+                    authMsg.style.color = "var(--error)";
+                    authMsg.textContent = cardErr.message || "Invalid card details.";
+                    return;
+                }
+            }
+
+            executeRegistration(paymentData, signupFinishBtn);
+        });
+
+        // Standard Sign-In submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (isSignUpMode) return;
+
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
-            const name = nameInput.value.trim();
 
             if (!email || !password) {
                 authMsg.style.color = "var(--error)";
@@ -434,31 +1379,20 @@
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-busy', 'true');
             submitBtn.classList.add('btn-loading');
-            submitBtn.innerHTML = `<span class="gold-spinner" aria-hidden="true"></span><span>${isSignUpMode ? 'Creating Account...' : 'Signing In...'}</span>`;
+            submitBtn.innerHTML = `<span class="gold-spinner" aria-hidden="true"></span><span>Signing In...</span>`;
             startLoadingBar();
             startAuthLockout({
                 submitBtn,
-                container: document.querySelector('.auth-card') || document.body
+                container: authCard || document.body
             });
 
             try {
-                let userCredential;
-                if (isSignUpMode) {
-                    userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    if (name && userCredential.user) {
-                        await updateProfile(userCredential.user, { displayName: name });
-                    }
-                } else {
-                    userCredential = await signInWithEmailAndPassword(auth, email, password);
-                }
-
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 const userData = await ensureUserDocument(user);
 
                 authMsg.style.color = "var(--success)";
-                authMsg.textContent = isSignUpMode
-                    ? "Success! 100 points welcome bonus transferred. Redirecting..."
-                    : "Success! Redirecting...";
+                authMsg.textContent = "Success! Redirecting...";
 
                 const defaultTarget = (userData && userData.isAdmin) ? 'admin.html' : 'account.html';
 
@@ -512,7 +1446,7 @@
                 submitBtn.disabled = false;
                 submitBtn.removeAttribute('aria-busy');
                 submitBtn.classList.remove('btn-loading');
-                submitBtn.textContent = isSignUpMode ? 'Sign Up & Claim 100 Pts' : 'Sign In';
+                submitBtn.textContent = 'Sign In';
             }
         });
     </script>
