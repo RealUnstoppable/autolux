@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2024-05-30 - [Mass Assignment in Support Tickets Collection]
+**Vulnerability:** The `support_tickets` collection in `firestore.rules` lacked a strict schema check (`hasOnly()`), making it vulnerable to mass assignment where an attacker could inject arbitrary fields during ticket creation or update.
+**Learning:** For user-editable collections like `support_tickets`, explicit schema validation with `request.resource.data.keys().hasOnly()` is critical to prevent malicious data injection, even if partial field validation (like `status`) is implemented.
+**Prevention:** Always use `.keys().hasOnly(['valid_fields'])` on Firestore `create` and `update` rules to strictly validate schemas for user-generated data.
