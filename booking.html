@@ -306,8 +306,9 @@
                     </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group" id="vehicle-group">
                     <label for="vehicle">Vehicle (Year, Make, Model & Color) <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <select id="saved-vehicle-select" class="smart-dropdown" style="display: none; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-gold); color: white; border-radius: var(--radius-sm); font-size: 0.95rem; cursor: pointer; margin-bottom: 8px;" aria-label="Choose saved vehicle from garage"></select>
                     <input type="text" id="vehicle" placeholder="e.g. 2024 Porsche 911 GT3 - Chalk" required autocomplete="off">
                 </div>
 
@@ -318,6 +319,7 @@
 
                 <div class="input-group" id="address-group">
                     <label for="address">Service Address <span aria-hidden="true" style="color: var(--error);">*</span></label>
+                    <select id="saved-address-select" class="smart-dropdown" style="display: none; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-gold); color: white; border-radius: var(--radius-sm); font-size: 0.95rem; cursor: pointer; margin-bottom: 8px;" aria-label="Choose saved address"></select>
                     <div id="saved-addresses-container" style="display: none; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
                         <!-- Saved address buttons will be injected here -->
                     </div>
@@ -439,10 +441,18 @@
     <!-- Logic Script -->
     <script type="module">
         import { auth, db, getAuthStatePromise, validateReferralCode, ensureUserDocument, startAuthLockout, stopAuthLockout } from './js/auth.js';
-        import { collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, addDoc, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
         import { submitDetailingRequest, submitDetailingPlan, AUTOLUX_STRIPE_PACKAGES } from './js/api.js';
         import { initNavbar } from './js/navbar.js';
+        import {
+            saveBookingDraftToLocal,
+            getBookingDraftFromLocal,
+            clearBookingDraftFromLocal,
+            debounceSyncBookingDraft,
+            setupSmartSavedDropdowns,
+            getLocationGlyph
+        } from './js/form_autosave.js';
 
         let currentUser = null;
         let currentUserData = null;
@@ -551,9 +561,6 @@
             if (totalEl) totalEl.textContent = `$${finalTotal.toFixed(2)}`;
         }
 
-        packageSelect.addEventListener('change', updateInvestmentSummary);
-        document.querySelectorAll('.addon-checkbox').forEach(cb => cb.addEventListener('change', updateInvestmentSummary));
-
         // Manage VIP Club Perks Banner dynamically
         function updateClubBanner() {
             const val = packageSelect.value || '';
@@ -577,8 +584,108 @@
                 banner.style.display = 'none';
             }
         }
-        packageSelect.addEventListener('change', updateClubBanner);
-        updateClubBanner();
+
+        // Real-Time Form Auto-Save
+        function collectBookingState() {
+            const addOns = [];
+            document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                const k = cb.getAttribute('data-key');
+                if (k) addOns.push(k);
+            });
+
+            const totalEl = document.getElementById('summary-total-price');
+            const totalPrice = totalEl ? (parseFloat(totalEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+
+            return {
+                package: packageSelect.value || '',
+                addOns: addOns,
+                totalPrice: totalPrice,
+                vehicle: document.getElementById('vehicle')?.value.trim() || '',
+                appointmentDate: document.getElementById('date')?.value || '',
+                address: document.getElementById('address')?.value.trim() || '',
+                referralCode: document.getElementById('referral-code')?.value.trim().toUpperCase() || '',
+                notes: document.getElementById('notes')?.value.trim() || ''
+            };
+        }
+
+        function triggerBookingAutoSave() {
+            const state = collectBookingState();
+            saveBookingDraftToLocal(state);
+            if (currentUser && currentUser.uid) {
+                debounceSyncBookingDraft(currentUser.uid, state, 500);
+            }
+        }
+
+        function applyBookingDraft(draft) {
+            if (!draft) return;
+
+            if (draft.package && !pkgParam) {
+                packageSelect.value = draft.package;
+            }
+            if (Array.isArray(draft.addOns)) {
+                document.querySelectorAll('.addon-checkbox').forEach(cb => {
+                    const k = cb.getAttribute('data-key');
+                    cb.checked = draft.addOns.includes(k);
+                });
+            }
+            if (draft.vehicle && !vehicleParam) {
+                const vehicleInput = document.getElementById('vehicle');
+                if (vehicleInput) vehicleInput.value = draft.vehicle;
+            }
+            if (draft.appointmentDate && !dateParam) {
+                const dateInput = document.getElementById('date');
+                if (dateInput) dateInput.value = draft.appointmentDate;
+            }
+            if (draft.address) {
+                const addressInput = document.getElementById('address');
+                if (addressInput) addressInput.value = draft.address;
+            }
+            if (draft.referralCode) {
+                const referralInput = document.getElementById('referral-code');
+                if (referralInput) {
+                    referralInput.value = draft.referralCode;
+                    validateAndApplyReferralCode(draft.referralCode);
+                }
+            }
+            if (draft.notes) {
+                const notesInput = document.getElementById('notes');
+                if (notesInput) notesInput.value = draft.notes;
+            }
+
+            updateInvestmentSummary();
+            updateClubBanner();
+        }
+
+        // Hydrate from localStorage draft immediately on script load
+        const initialDraft = getBookingDraftFromLocal();
+        if (initialDraft) {
+            applyBookingDraft(initialDraft);
+        } else {
+            updateInvestmentSummary();
+            updateClubBanner();
+        }
+
+        // Bind auto-save listeners across all inputs
+        packageSelect.addEventListener('change', () => {
+            updateInvestmentSummary();
+            updateClubBanner();
+            triggerBookingAutoSave();
+        });
+
+        document.querySelectorAll('.addon-checkbox').forEach(cb => {
+            cb.addEventListener('change', () => {
+                updateInvestmentSummary();
+                triggerBookingAutoSave();
+            });
+        });
+
+        ['vehicle', 'date', 'address', 'referral-code', 'notes'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', triggerBookingAutoSave);
+                el.addEventListener('change', triggerBookingAutoSave);
+            }
+        });
 
         // Set min date to today
         const dateInput = document.getElementById('date');
@@ -596,32 +703,62 @@
                     currentUser = user;
                     bookingForm.style.display = 'block';
 
-                    // Fetch user's saved addresses
                     try {
                         const userData = await ensureUserDocument(user);
+                        currentUserData = userData;
+
+                        // If local draft wasn't present, check Firestore draftBooking
+                        if (!initialDraft && userData && userData.draftBooking) {
+                            applyBookingDraft(userData.draftBooking);
+                        }
+
+                        // Setup Smart Saved Dropdowns
+                        const vehicleSelect = document.getElementById('saved-vehicle-select');
+                        const vehicleInput = document.getElementById('vehicle');
+                        const addressSelect = document.getElementById('saved-address-select');
+                        const addressInput = document.getElementById('address');
+
+                        setupSmartSavedDropdowns({
+                            userData: userData,
+                            vehicleSelect: vehicleSelect,
+                            vehicleInput: vehicleInput,
+                            addressSelect: addressSelect,
+                            addressInput: addressInput,
+                            onSelectionChange: triggerBookingAutoSave
+                        });
+
+                        // Populate legacy address chips if container exists
                         if (userData && userData.addresses && userData.addresses.length > 0) {
                             const container = document.getElementById('saved-addresses-container');
-                            const addressInput = document.getElementById('address');
-                            container.style.display = 'flex';
+                            if (container) {
+                                container.style.display = 'flex';
+                                container.innerHTML = '';
+                                const fragment = document.createDocumentFragment();
+                                userData.addresses.forEach(addr => {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = 'address-badge-btn';
+                                    const label = addr.label || 'Saved';
+                                    const glyph = getLocationGlyph(label);
+                                    btn.textContent = `${glyph} ${label}`;
+                                    btn.title = addr.address;
 
-                            const fragment = document.createDocumentFragment();
-                            userData.addresses.forEach(addr => {
-                                const btn = document.createElement('button');
-                                btn.type = 'button';
-                                btn.className = 'address-badge-btn';
-                                btn.textContent = '📍 ' + addr.label;
-                                btn.title = addr.address;
+                                    btn.addEventListener('click', () => {
+                                        addressInput.value = addr.address;
+                                        if (addressSelect) {
+                                            addressSelect.value = addr.address;
+                                            addressInput.style.display = 'none';
+                                        }
+                                        triggerBookingAutoSave();
+                                    });
 
-                                btn.addEventListener('click', () => {
-                                    addressInput.value = addr.address;
+                                    fragment.appendChild(btn);
                                 });
-
-                                fragment.appendChild(btn);
-                            });
-                            container.appendChild(fragment);
+                                container.appendChild(fragment);
+                            }
                         }
                     } catch (err) {
-                        console.error('Failed to load saved addresses:', err);
+                        console.error('Failed to load user profile in booking:', err);
                     }
 
                 } else {
@@ -745,6 +882,18 @@
                 if (!selectedPackage || !vehicle || !appointmentDate || !address) {
                     msgEl.style.color = "var(--error)";
                     msgEl.textContent = "Please fill in all required fields (Package, Vehicle, Date & Address) before proceeding to checkout.";
+                    if (!selectedPackage) packageSelect.focus();
+                    else if (!vehicle) {
+                        const vehicleInput = document.getElementById('vehicle');
+                        vehicleInput.style.display = 'block';
+                        vehicleInput.focus();
+                    } else if (!appointmentDate) {
+                        document.getElementById('date').focus();
+                    } else if (!address) {
+                        const addressInput = document.getElementById('address');
+                        addressInput.style.display = 'block';
+                        addressInput.focus();
+                    }
                     return;
                 }
 
@@ -803,6 +952,13 @@
                         await submitDetailingRequest(bookingDoc);
                     }
 
+                    clearBookingDraftFromLocal();
+                    if (currentUser) {
+                        try {
+                            await setDoc(doc(db, 'users', currentUser.uid), { draftBooking: null }, { merge: true });
+                        } catch (e) {}
+                    }
+
                     // Direct Stripe Checkout URL
                     const checkoutTargetUrl = stripePkg?.paymentLinkUrl || (isDetailingPlan ? "https://buy.stripe.com/aFa6oG0I07BRf3R3T79AA0f" : "https://buy.stripe.com/fZu28q3Ucf4jcVJgFT9AA02");
                     msgEl.style.color = "var(--gold)";
@@ -841,7 +997,19 @@
 
             if (!selectedPackage || !vehicle || !appointmentDate || !address) {
                 msgEl.style.color = "var(--error)";
-                msgEl.textContent = "Please fill in all required fields.";
+                msgEl.textContent = "Please fill in all required fields (Package, Vehicle, Date & Address).";
+                if (!selectedPackage) packageSelect.focus();
+                else if (!vehicle) {
+                    const vehicleInput = document.getElementById('vehicle');
+                    vehicleInput.style.display = 'block';
+                    vehicleInput.focus();
+                } else if (!appointmentDate) {
+                    document.getElementById('date').focus();
+                } else if (!address) {
+                    const addressInput = document.getElementById('address');
+                    addressInput.style.display = 'block';
+                    addressInput.focus();
+                }
                 return;
             }
 
@@ -891,6 +1059,13 @@
 
                 if (!result || !result.success) {
                     throw new Error(result?.error || 'Failed to submit booking request.');
+                }
+
+                clearBookingDraftFromLocal();
+                if (currentUser) {
+                    try {
+                        await setDoc(doc(db, 'users', currentUser.uid), { draftBooking: null }, { merge: true });
+                    } catch (e) {}
                 }
 
                 msgEl.style.color = "var(--success)";

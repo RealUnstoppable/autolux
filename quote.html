@@ -301,24 +301,103 @@
 
     <!-- Logic Script -->
     <script type="module">
+        import { auth, db, getAuthStatePromise, ensureUserDocument } from './js/auth.js';
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { submitQuoteRequest } from './js/api.js';
         import { initNavbar } from './js/navbar.js';
+        import {
+            saveQuoteDraftToLocal,
+            getQuoteDraftFromLocal,
+            clearQuoteDraftFromLocal,
+            debounceSyncQuoteDraft
+        } from './js/form_autosave.js';
 
+        let currentUser = null;
         const form = document.getElementById('quote-form');
         const submitBtn = document.getElementById('submit-btn');
         const msgEl = document.getElementById('msg');
 
+        function collectQuoteState() {
+            return {
+                name: document.getElementById('name')?.value.trim() || '',
+                email: document.getElementById('email')?.value.trim() || '',
+                phone: document.getElementById('phone')?.value.trim() || '',
+                details: document.getElementById('vehicle')?.value.trim() || '',
+                serviceRequested: document.getElementById('service')?.value || '',
+                additionalNotes: document.getElementById('notes')?.value.trim() || ''
+            };
+        }
+
+        function triggerQuoteAutoSave() {
+            const draft = collectQuoteState();
+            saveQuoteDraftToLocal(draft);
+            if (currentUser && currentUser.uid) {
+                debounceSyncQuoteDraft(currentUser.uid, draft, 500);
+            }
+        }
+
+        function applyQuoteDraft(draft) {
+            if (!draft) return;
+            if (draft.name) document.getElementById('name').value = draft.name;
+            if (draft.email) document.getElementById('email').value = draft.email;
+            if (draft.phone) document.getElementById('phone').value = draft.phone;
+            if (draft.details) document.getElementById('vehicle').value = draft.details;
+            if (draft.serviceRequested) document.getElementById('service').value = draft.serviceRequested;
+            if (draft.additionalNotes) document.getElementById('notes').value = draft.additionalNotes;
+        }
+
+        // Hydrate from localStorage draft immediately on load
+        const initialQuoteDraft = getQuoteDraftFromLocal();
+        if (initialQuoteDraft) {
+            applyQuoteDraft(initialQuoteDraft);
+        }
+
+        ['name', 'email', 'phone', 'vehicle', 'service', 'notes'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', triggerQuoteAutoSave);
+                el.addEventListener('change', triggerQuoteAutoSave);
+            }
+        });
+
+        // Initialize auth in quote.html
+        async function initQuoteAuth() {
+            try {
+                const user = await getAuthStatePromise();
+                if (user) {
+                    currentUser = user;
+                    const userData = await ensureUserDocument(user);
+
+                    // Prefill profile values if fields are currently empty
+                    const nameEl = document.getElementById('name');
+                    const emailEl = document.getElementById('email');
+                    const phoneEl = document.getElementById('phone');
+
+                    if (nameEl && !nameEl.value && (user.displayName || userData?.displayName || userData?.fullName)) {
+                        nameEl.value = user.displayName || userData?.displayName || userData?.fullName;
+                    }
+                    if (emailEl && !emailEl.value && user.email) {
+                        emailEl.value = user.email;
+                    }
+                    if (phoneEl && !phoneEl.value && (userData?.phone || userData?.phoneNumber)) {
+                        phoneEl.value = userData?.phone || userData?.phoneNumber;
+                    }
+
+                    // If local draft wasn't present, check Firestore draftQuote
+                    if (!initialQuoteDraft && userData && userData.draftQuote) {
+                        applyQuoteDraft(userData.draftQuote);
+                    }
+                }
+            } catch (err) {
+                console.warn('Quote page auth init:', err);
+            }
+        }
+        initQuoteAuth();
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const quoteData = {
-                name: document.getElementById('name').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                details: document.getElementById('vehicle').value.trim(),
-                serviceRequested: document.getElementById('service').value,
-                additionalNotes: document.getElementById('notes').value.trim()
-            };
+            const quoteData = collectQuoteState();
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
@@ -328,6 +407,13 @@
                 const result = await submitQuoteRequest(quoteData);
 
                 if (result && result.success) {
+                    clearQuoteDraftFromLocal();
+                    if (currentUser) {
+                        try {
+                            await setDoc(doc(db, 'users', currentUser.uid), { draftQuote: null }, { merge: true });
+                        } catch (err) {}
+                    }
+
                     msgEl.style.color = "var(--success)";
                     msgEl.textContent = "Quote request submitted successfully! Our concierge team will contact you soon.";
                     form.reset();
