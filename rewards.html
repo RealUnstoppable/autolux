@@ -432,7 +432,7 @@
 
     <!-- Logic Script -->
     <script type="module">
-        import { auth, db, getAuthStatePromise, ensureUserDocument, signOut } from './js/auth.js';
+        import { auth, db, getAuthStatePromise, ensureUserDocument, signOut, getCachedUserDoc } from './js/auth.js';
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getAvailableRewards, redeemReward, getUserRewards, getUserTransfers } from './js/rewards.js';
         import { escapeHTML } from './js/utils.js';
@@ -523,7 +523,7 @@
 
         async function loadUserPoints(uid, preloadedUserData = null) {
             try {
-                let userData = preloadedUserData;
+                let userData = preloadedUserData || getCachedUserDoc(uid);
                 if (!userData) {
                     const userDoc = await getDoc(doc(db, "users", uid));
                     if (userDoc.exists()) {

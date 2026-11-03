@@ -199,6 +199,11 @@
         <div class="reviews-grid" id="reviews-grid">
             <div style="text-align: center; width: 100%; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Loading reviews...</div>
         </div>
+
+        <div id="reviews-pagination-container" style="text-align: center; margin-top: 35px; width: 100%;">
+            <button id="load-more-reviews-btn" class="btn-schedule" style="padding: 12px 28px; font-size: 0.95rem; cursor: pointer; display: none;">Load More Reviews</button>
+            <div id="pagination-status" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);"></div>
+        </div>
     </main>
 
     <!-- Global Persistent Footer -->
@@ -279,59 +284,136 @@
     <!-- Logic Script -->
     <script type="module">
         import { db } from './js/auth.js';
-        import { collection, query, getDocs, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, query, getDocs, orderBy, where, limit, startAfter } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { safeGetSessionStorage, safeSetSessionStorage, escapeHTML } from './js/utils.js';
         import { initNavbar } from './js/navbar.js';
 
         const grid = document.getElementById('reviews-grid');
         const filterBtns = document.querySelectorAll('.filter-btn');
+        const loadMoreBtn = document.getElementById('load-more-reviews-btn');
+        const paginationStatus = document.getElementById('pagination-status');
+
+        const PAGE_SIZE = 6;
+        let lastVisibleDoc = null;
         let allReviews = [];
+        let hasMoreInDb = true;
+        let isLoadingBatch = false;
+        let currentSort = 'newest';
 
-        async function loadReviews() {
-            try {
-                const cachedAllReviews = safeGetSessionStorage('autolux_all_reviews');
-                if (cachedAllReviews) {
-                    allReviews = JSON.parse(cachedAllReviews);
-                    renderReviews(allReviews);
-                    return;
-                }
-            } catch(e) {
-                console.warn('Session storage cache read failed:', e);
+        const genReviews = [
+            { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date(Date.now() - 86400000).toISOString() },
+            { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date(Date.now() - 172800000).toISOString() },
+            { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: new Date(Date.now() - 259200000).toISOString() },
+            { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: new Date(Date.now() - 345600000).toISOString() }
+        ];
+
+        async function fetchReviewsBatch(isInitial = false) {
+            if (isLoadingBatch) return;
+            isLoadingBatch = true;
+
+            if (isInitial) {
+                lastVisibleDoc = null;
+                allReviews = [];
+                hasMoreInDb = true;
+                grid.innerHTML = '<div style="text-align: center; width: 100%; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">Loading reviews...</div>';
+            } else if (loadMoreBtn) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Loading More Reviews...';
             }
 
             try {
-                const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
-                const snapshot = await getDocs(q);
-                
-                let dbReviews = snapshot.docs.map(doc => doc.data());
-                dbReviews = dbReviews.map(r => ({...r, createdAt: r.createdAt?.toDate ? r.createdAt.toDate().toISOString() : r.createdAt}));
-                
-                const genReviews = [
-                    { userName: "Tyler (Gen Z)", rating: 5, comment: "fr this detail goes crazy. ceramic coating is valid no cap. W service.", createdAt: new Date().toISOString() },
-                    { userName: "Jaxson (Gen Alpha)", rating: 5, comment: "skibidi wash was sigma. car looks so ohio drip right now.", createdAt: new Date().toISOString() },
-                    { userName: "Amanda (Millennial)", rating: 5, comment: "Honestly so obsessed with this service. Adulting is hard but having my car detailed while I work from home is a total game changer. 10/10.", createdAt: new Date().toISOString() },
-                    { userName: "Robert (Baby Boomer)", rating: 5, comment: "Excellent service. The young man arrived 10 minutes early, shook my hand, and worked hard all day. The Lincoln looks like it did in 1998. Will use again.", createdAt: new Date().toISOString() }
-                ];
-                
-                allReviews = [...dbReviews, ...genReviews];
-                
-                try {
-                    safeSetSessionStorage('autolux_all_reviews', JSON.stringify(allReviews));
-                } catch(e) {
-                    console.warn('Session storage cache write failed:', e);
+                let dbBatch = [];
+                if (hasMoreInDb) {
+                    let q;
+                    if (lastVisibleDoc) {
+                        q = query(collection(db, "reviews"), orderBy("createdAt", "desc"), startAfter(lastVisibleDoc), limit(PAGE_SIZE));
+                    } else {
+                        q = query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(PAGE_SIZE));
+                    }
+
+                    const snapshot = await getDocs(q);
+                    if (snapshot && !snapshot.empty) {
+                        lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                        dbBatch = snapshot.docs.map(doc => {
+                            const data = doc.data();
+                            return {
+                                id: doc.id,
+                                ...data,
+                                createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt
+                            };
+                        });
+                        if (snapshot.docs.length < PAGE_SIZE) {
+                            hasMoreInDb = false;
+                        }
+                    } else {
+                        hasMoreInDb = false;
+                    }
                 }
 
-                renderReviews(allReviews);
+                // Append newly fetched batch
+                allReviews = [...allReviews, ...dbBatch];
+
+                // If DB had fewer items than a full page on initial load, mix in the verified genReviews
+                if (isInitial && allReviews.length < PAGE_SIZE) {
+                    allReviews = [...allReviews, ...genReviews];
+                    hasMoreInDb = false;
+                } else if (!hasMoreInDb && !allReviews.some(r => r.userName?.includes('Gen Z'))) {
+                    // Append supplementary verified experiences at the end of DB items
+                    allReviews = [...allReviews, ...genReviews];
+                }
+
+                renderCurrentReviews();
+                updatePaginationControls();
+
             } catch (error) {
-                console.error("Error loading reviews:", error.message || error, error.code ? `(Code: ${error.code})` : "");
-                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--error); padding: 40px 0;">Failed to load reviews. Please try again later.</div>';
+                console.error("Error loading reviews batch:", error.message || error, error.code ? `(Code: ${error.code})` : "");
+                if (isInitial) {
+                    // Fallback to offline testimonials
+                    allReviews = [...genReviews];
+                    renderCurrentReviews();
+                    if (paginationStatus) paginationStatus.textContent = 'Loaded offline review portfolio';
+                } else {
+                    if (paginationStatus) paginationStatus.textContent = 'Failed to load additional reviews. Please try again.';
+                }
+            } finally {
+                isLoadingBatch = false;
+                if (loadMoreBtn) {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Load More Reviews';
+                }
             }
+        }
+
+        function updatePaginationControls() {
+            if (!loadMoreBtn || !paginationStatus) return;
+
+            if (hasMoreInDb) {
+                loadMoreBtn.style.display = 'inline-block';
+                paginationStatus.textContent = `Showing ${allReviews.length} reviews. Click to load more.`;
+            } else {
+                loadMoreBtn.style.display = 'none';
+                paginationStatus.textContent = `Showing all ${allReviews.length} client reviews.`;
+            }
+        }
+
+        function renderCurrentReviews() {
+            let sorted = [...allReviews];
+            if (currentSort === 'highest') {
+                sorted.sort((a, b) => (b.rating || 5) - (a.rating || 5));
+            } else {
+                sorted.sort((a, b) => {
+                    const dateA = new Date(a.createdAt || 0);
+                    const dateB = new Date(b.createdAt || 0);
+                    return dateB - dateA;
+                });
+            }
+            renderReviews(sorted);
         }
 
         function renderReviews(reviewsToRender) {
             grid.innerHTML = '';
             if (reviewsToRender.length === 0) {
-                grid.innerHTML = '<div style="text-align:center; width:100%; color:var(--text-muted); padding: 40px 0;">No reviews yet.</div>';
+                grid.innerHTML = '<div style="text-align:center; width:100%; grid-column: 1/-1; color:var(--text-muted); padding: 40px 0;">No reviews yet.</div>';
                 return;
             }
 
@@ -353,7 +435,7 @@
                 el.innerHTML = `
                     <div>
                         <div class="stars" aria-label="${ratingValue} out of 5 stars">${stars}</div>
-                        <div class="comment">"${escapeHTML(r.comment)}"</div>
+                        <div class="comment">"${escapeHTML(r.comment || '')}"</div>
                     </div>
                     <div class="review-footer">
                         <span class="review-author">✦ ${escapeHTML(r.userName || 'Verified Client')}</span>
@@ -369,25 +451,18 @@
             btn.addEventListener('click', (e) => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                
-                const sortType = e.target.dataset.sort;
-                let sorted = [...allReviews];
-                
-                if (sortType === 'highest') {
-                    sorted.sort((a, b) => b.rating - a.rating);
-                } else {
-                    sorted.sort((a, b) => {
-                        const dateA = new Date(a.createdAt || 0);
-                        const dateB = new Date(b.createdAt || 0);
-                        return dateB - dateA;
-                    });
-                }
-                
-                renderReviews(sorted);
+                currentSort = e.target.dataset.sort || 'newest';
+                renderCurrentReviews();
             });
         });
 
-        loadReviews();
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                fetchReviewsBatch(false);
+            });
+        }
+
+        fetchReviewsBatch(true);
     </script>
 </body>
 </html>

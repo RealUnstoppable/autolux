@@ -4,6 +4,7 @@
  */
 
 import { getAuthStatePromise, ensureUserDocument } from './auth.js';
+import './loading_bar.js';
 
 export function getNavbarHTML(activeRoute = '') {
     return `

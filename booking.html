@@ -700,7 +700,8 @@
 
                 stripeCheckoutBtn.disabled = true;
                 stripeCheckoutBtn.setAttribute('aria-busy', 'true');
-                stripeCheckoutBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px;display:inline-block;margin-right:8px;vertical-align:middle;"></div> Redirecting to Secure Stripe Checkout...';
+                stripeCheckoutBtn.classList.add('btn-loading');
+                stripeCheckoutBtn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span> Redirecting to Secure Stripe Checkout...';
                 msgEl.textContent = '';
 
                 if (referralCode) {
@@ -708,6 +709,7 @@
                     if (!isValid) {
                         stripeCheckoutBtn.disabled = false;
                         stripeCheckoutBtn.removeAttribute('aria-busy');
+                        stripeCheckoutBtn.classList.remove('btn-loading');
                         stripeCheckoutBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> <span>⚡ Instant Checkout (Apple Pay / Google Pay / Card)</span>';
                         return;
                     }
@@ -766,14 +768,16 @@
                     msgEl.textContent = "Could not initialize Stripe checkout. You may still submit to pay on-site.";
                     stripeCheckoutBtn.disabled = false;
                     stripeCheckoutBtn.removeAttribute('aria-busy');
+                    stripeCheckoutBtn.classList.remove('btn-loading');
                     stripeCheckoutBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> <span>⚡ Instant Checkout (Apple Pay / Google Pay / Card)</span>';
                 }
             });
         }
 
+        let isBookingSubmitting = false;
         bookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return;
+            if (isBookingSubmitting || !currentUser) return;
 
             const selectedPackage = packageSelect.value;
             const vehicle = document.getElementById('vehicle').value.trim();
@@ -791,9 +795,11 @@
                 return;
             }
 
+            isBookingSubmitting = true;
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-busy', 'true');
-            submitBtn.textContent = 'Validating...';
+            submitBtn.classList.add('btn-loading');
+            submitBtn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Validating...</span>';
             msgEl.textContent = '';
 
             if (referralCode) {
@@ -801,12 +807,14 @@
                 if (!isValid) {
                     submitBtn.disabled = false;
                     submitBtn.removeAttribute('aria-busy');
-                    submitBtn.textContent = 'Submit Booking Request';
+                    submitBtn.classList.remove('btn-loading');
+                    submitBtn.innerHTML = 'Submit Booking Request';
+                    isBookingSubmitting = false;
                     return;
                 }
             }
 
-            submitBtn.textContent = 'Submitting...';
+            submitBtn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Booking Appointment...</span>';
 
             try {
                 const bookingDoc = {
@@ -850,8 +858,10 @@
                 if (error && error.code) console.error('Error code:', error.code);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.setAttribute('aria-busy', 'false');
-                submitBtn.textContent = 'Submit Booking Request';
+                submitBtn.removeAttribute('aria-busy');
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.innerHTML = 'Submit Booking Request';
+                isBookingSubmitting = false;
             }
         });
     </script>

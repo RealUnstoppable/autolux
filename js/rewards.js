@@ -1,5 +1,5 @@
 import { db } from './auth.js';
-import { collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { collection, getDocs, query, orderBy, where, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-functions.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
@@ -44,14 +44,29 @@ export const DEFAULT_REWARDS = [
     }
 ];
 
+let rewardsMemoryCache = null;
+let rewardsCacheTimestamp = 0;
+const REWARDS_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+export function clearRewardsCache() {
+    rewardsMemoryCache = null;
+    rewardsCacheTimestamp = 0;
+}
+
 /**
  * Fetch available rewards from Firestore, falling back to default catalog if empty
  */
-export async function getAvailableRewards() {
+export async function getAvailableRewards(options = {}) {
     try {
         if (!db) return DEFAULT_REWARDS;
+
+        const isBrowser = typeof window !== 'undefined';
+        if (isBrowser && !options.forceRefresh && rewardsMemoryCache && (Date.now() - rewardsCacheTimestamp < REWARDS_CACHE_TTL_MS)) {
+            return rewardsMemoryCache;
+        }
+
         const rewardsRef = collection(db, "rewards");
-        const q = query(rewardsRef, orderBy("cost", "asc"));
+        const q = query(rewardsRef, orderBy("cost", "asc"), limit(20));
         const snapshot = await getDocs(q);
 
         const rewards = [];
@@ -60,6 +75,8 @@ export async function getAvailableRewards() {
         });
 
         if (rewards.length > 0) {
+            rewardsMemoryCache = rewards;
+            rewardsCacheTimestamp = Date.now();
             return rewards;
         }
         // Fallback to default catalog if no rewards seeded in Firestore yet
@@ -101,7 +118,7 @@ export async function getUserRewards() {
         if (!user || !db) return [];
 
         const userRewardsRef = collection(db, "user_rewards");
-        const q = query(userRewardsRef, where("userId", "==", user.uid), orderBy("redeemedAt", "desc"));
+        const q = query(userRewardsRef, where("userId", "==", user.uid), orderBy("redeemedAt", "desc"), limit(10));
         const snapshot = await getDocs(q);
 
         const rewards = [];
@@ -116,7 +133,7 @@ export async function getUserRewards() {
             console.warn("Missing index for user_rewards. Returning unsorted list.");
             try {
                 const userRewardsRef = collection(db, "user_rewards");
-                const q = query(userRewardsRef, where("userId", "==", user.uid));
+                const q = query(userRewardsRef, where("userId", "==", user.uid), limit(10));
                 const snapshot = await getDocs(q);
 
                 const rewards = [];
@@ -143,7 +160,7 @@ export async function getUserTransfers(user, userData = null) {
     try {
         if (db) {
             const notifRef = collection(db, "notifications");
-            const q = query(notifRef, where("userId", "==", user.uid));
+            const q = query(notifRef, where("userId", "==", user.uid), limit(10));
             const snap = await getDocs(q);
             if (snap && typeof snap.forEach === 'function') {
                 snap.forEach(docSnap => {

@@ -298,6 +298,7 @@
     <script type="module">
         import { auth, db, getUserRedirectPath, safeRedirect, ensureUserDocument, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, getAuthStatePromise } from './js/auth.js';
         import { initNavbar } from './js/navbar.js';
+        import { startLoadingBar, stopLoadingBar } from './js/loading_bar.js';
 
         let isSignUpMode = false;
 
@@ -379,7 +380,10 @@
 
             authMsg.textContent = '';
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
+            submitBtn.setAttribute('aria-busy', 'true');
+            submitBtn.classList.add('btn-loading');
+            submitBtn.innerHTML = `<span class="gold-spinner" aria-hidden="true"></span><span>${isSignUpMode ? 'Creating Account...' : 'Signing In...'}</span>`;
+            startLoadingBar();
 
             try {
                 let userCredential;
@@ -436,6 +440,7 @@
                 }, 400);
 
             } catch (error) {
+                stopLoadingBar();
                 console.error("Auth Error:", error);
                 authMsg.style.color = "var(--error)";
                 let msg = `Authentication failed: ${error.code} - ${error.message}`;
@@ -448,7 +453,9 @@
                 }
                 authMsg.textContent = msg;
                 submitBtn.disabled = false;
-                submitBtn.textContent = isSignUpMode ? 'Sign Up' : 'Sign In';
+                submitBtn.removeAttribute('aria-busy');
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.textContent = isSignUpMode ? 'Sign Up & Claim 100 Pts' : 'Sign In';
             }
         });
     </script>

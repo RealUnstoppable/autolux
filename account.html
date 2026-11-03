@@ -740,8 +740,8 @@
     </div>
 
     <script type="module">
-        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument } from './js/auth.js';
-        import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { auth, db, getAuthStatePromise, safeRedirect, onAuthStateChanged, signOut, clearUserDocumentCache, ensureUserDocument, getCachedUserDoc } from './js/auth.js';
+        import { collection, query, where, getDocs, doc, getDoc, setDoc, addDoc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, linkUnAccount } from './js/utils.js';
         import { fetchUserServiceLogs } from './js/service_logs.js';
         import { matchVehicle } from './js/vehicle_images.js';
@@ -860,39 +860,13 @@
 
                 currentUser = user;
 
-                const userRef = doc(db, "users", user.uid);
-
-                let userSnap = null;
-                let appointmentsSnap = { empty: true, docs: [] };
-                let notificationsSnap = { empty: true, docs: [] };
-
-                try {
-                    userSnap = await getDoc(userRef);
-                } catch (e) {
-                    console.warn("Could not fetch user document:", e);
-                }
-
-                try {
-                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid));
-                    appointmentsSnap = await getDocs(appointmentsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch appointments:", e);
-                }
-
-                try {
-                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid));
-                    notificationsSnap = await getDocs(notificationsQuery);
-                } catch (e) {
-                    console.warn("Could not fetch notifications:", e);
-                }
-
-                userData = userSnap && userSnap.exists() ? userSnap.data() : null;
-
+                // Optimization: use cached user data resolved by getAuthStatePromise
+                userData = getCachedUserDoc(user.uid);
                 if (!userData || !userData.referralCode) {
                     userData = await ensureUserDocument(user, { forceRefresh: true });
                 }
 
-                // Render User Info - fallback gracefully if missing
+                // Render Core User Info immediately to prevent latency freeze
                 userNameEl.textContent = userData?.name || user.displayName || 'Valued Client';
                 userEmailEl.textContent = user.email || userData?.email || 'N/A';
 
@@ -917,6 +891,30 @@
                     if (heroPts) heroPts.textContent = points.toLocaleString();
                 }
 
+                // Update UN Account status & balance in Client Profile
+                updateClientProfileUnUi(userData);
+
+                // Reveal dashboard UI immediately without waiting for secondary collections
+                overlay.style.display = 'none';
+
+                // Fetch relational data with optimized queries & limits to reduce payload sizes
+                let appointmentsSnap = { empty: true, docs: [] };
+                let notificationsSnap = { empty: true, docs: [] };
+
+                try {
+                    const appointmentsQuery = query(collection(db, "bookings"), where("userId", "==", user.uid), limit(5));
+                    appointmentsSnap = await getDocs(appointmentsQuery);
+                } catch (e) {
+                    console.warn("Could not fetch appointments:", e);
+                }
+
+                try {
+                    const notificationsQuery = query(collection(db, "notifications"), where("userId", "==", user.uid), limit(5));
+                    notificationsSnap = await getDocs(notificationsQuery);
+                } catch (e) {
+                    console.warn("Could not fetch notifications:", e);
+                }
+
                 loadReferralsHistory(user);
                 renderBookings(appointmentsSnap);
                 await loadTickets(user);
@@ -933,11 +931,6 @@
 
                 // Initialize Flo-inspired Maintenance Calendar
                 initMaintenanceCalendar(logs, appointmentsSnap);
-
-                // Update UN Account status & balance in Client Profile
-                updateClientProfileUnUi(userData);
-
-                overlay.style.display = 'none';
             } catch (error) {
                 console.error("Error loading user profile or bookings:", error.message, error.code ? `Code: ${error.code}` : "");
                 overlay.style.display = 'none';
@@ -1217,9 +1210,10 @@
             });
         });
 
+        let isVehicleSubmitting = false;
         document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return;
+            if (isVehicleSubmitting || !currentUser) return;
             const input = document.getElementById('new-vehicle');
             const val = input.value.trim();
             const msgEl = document.getElementById('vehicle-msg');
@@ -1231,9 +1225,11 @@
             }
 
             const btn = document.getElementById('add-vehicle-btn');
-            const originalText = btn.textContent;
-            btn.textContent = 'Adding...';
+            isVehicleSubmitting = true;
             btn.disabled = true;
+            btn.setAttribute('aria-busy', 'true');
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Adding Vehicle...</span>';
 
             try {
                 const userRef = doc(db, "users", currentUser.uid);
@@ -1254,8 +1250,11 @@
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Failed to add vehicle.";
             } finally {
-                btn.textContent = originalText;
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
+                btn.classList.remove('btn-loading');
+                btn.innerHTML = 'Add Vehicle';
+                isVehicleSubmitting = false;
             }
         });
 
@@ -1604,7 +1603,7 @@
 
         async function loadTickets(user) {
             try {
-                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid));
+                const ticketsQuery = query(collection(db, "support_tickets"), where("userId", "==", user.uid), limit(5));
                 const ticketsSnap = await getDocs(ticketsQuery);
                 const tickets = ticketsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -1682,11 +1681,19 @@
 
         ticketsListEl?.addEventListener('click', async (e) => {
             if (e.target.classList.contains('reply-btn')) {
-                const ticketId = e.target.dataset.id;
-                const inputEl = e.target.previousElementSibling;
-                const replyText = inputEl.value.trim();
+                const btn = e.target;
+                if (btn.disabled || btn.getAttribute('aria-busy') === 'true') return;
+
+                const ticketId = btn.dataset.id;
+                const inputEl = btn.previousElementSibling;
+                const replyText = inputEl ? inputEl.value.trim() : '';
 
                 if (!replyText) return;
+
+                btn.disabled = true;
+                btn.setAttribute('aria-busy', 'true');
+                btn.classList.add('btn-loading');
+                btn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Sending...</span>';
 
                 if (ticketId === 'dummy-ticket-1') {
                     if (DUMMY_ASSETS.ticket) {
@@ -1695,15 +1702,15 @@
                             isAdmin: false,
                             timestamp: new Date().toISOString()
                         });
-                        inputEl.value = '';
+                        if (inputEl) inputEl.value = '';
                         renderTicketsList([DUMMY_ASSETS.ticket]);
                     }
+                    btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
+                    btn.classList.remove('btn-loading');
+                    btn.innerHTML = 'Reply';
                     return;
                 }
-
-                const originalText = e.target.textContent;
-                e.target.textContent = '...';
-                e.target.disabled = true;
 
                 try {
                     const ticketRef = doc(db, "support_tickets", ticketId);
@@ -1714,13 +1721,16 @@
                             timestamp: new Date().toISOString()
                         })
                     });
-                    inputEl.value = '';
-                    loadTickets(currentUser);
+                    if (inputEl) inputEl.value = '';
+                    await loadTickets(currentUser);
                 } catch (error) {
                     console.error("Error replying to ticket:", error);
                     alert("Failed to send reply.");
-                    e.target.textContent = originalText;
-                    e.target.disabled = false;
+                } finally {
+                    btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
+                    btn.classList.remove('btn-loading');
+                    btn.innerHTML = 'Reply';
                 }
             }
         });
@@ -1898,9 +1908,10 @@
             list.appendChild(fragment);
         }
 
+        let isAddressSubmitting = false;
         document.getElementById('add-address-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return;
+            if (isAddressSubmitting || !currentUser) return;
             const labelInput = document.getElementById('new-address-label');
             const addressInput = document.getElementById('new-address-val');
 
@@ -1915,9 +1926,11 @@
             }
 
             const btn = document.getElementById('add-address-btn');
-            const originalText = btn.textContent;
-            btn.textContent = 'Adding...';
+            isAddressSubmitting = true;
             btn.disabled = true;
+            btn.setAttribute('aria-busy', 'true');
+            btn.classList.add('btn-loading');
+            btn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Adding Address...</span>';
 
             const newAddressObj = { label, address };
 
@@ -1946,13 +1959,19 @@
 
                 labelInput.value = '';
                 addressInput.value = '';
+                msgEl.style.color = "var(--success)";
+                msgEl.textContent = "Address added successfully!";
+                setTimeout(() => { msgEl.textContent = ''; }, 3000);
             } catch (err) {
                 console.error("Error adding address:", err);
                 msgEl.style.color = "var(--error)";
                 msgEl.textContent = "Failed to add address.";
             } finally {
-                btn.textContent = originalText;
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
+                btn.classList.remove('btn-loading');
+                btn.innerHTML = 'Add Address';
+                isAddressSubmitting = false;
             }
         });
 
@@ -2010,7 +2029,7 @@
             const historyEl = document.getElementById('referrals-history-container');
             if (!user || !historyEl) return;
             try {
-                const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid));
+                const q = query(collection(db, 'referrals'), where('referrerId', '==', user.uid), limit(5));
                 const snap = await getDocs(q);
                 if (snap.empty) {
                     if (DUMMY_ASSETS.referral?.history && (!userData?.referralCount && !snap.size)) {

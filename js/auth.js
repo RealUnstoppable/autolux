@@ -91,6 +91,20 @@ function deserializeUserData(jsonStr) {
 }
 
 /**
+ * Safely retrieves cached user doc from memory or sessionStorage.
+ * @param {string} uid - User ID
+ * @returns {Object|null}
+ */
+export function getCachedUserDoc(uid) {
+    if (!uid) return null;
+    const memEntry = userDocMemoryCache.get(uid);
+    if (memEntry && (Date.now() - memEntry.timestamp < USER_CACHE_TTL_MS)) {
+        return memEntry.data;
+    }
+    return getCachedUserDocFromSession(uid);
+}
+
+/**
  * Safely retrieves cached user doc from sessionStorage.
  * @param {string} uid - User ID
  * @returns {Object|null}
@@ -244,18 +258,20 @@ export async function ensureUserDocument(user, options = {}) {
                 data = userDoc.data();
                 const updates = {};
                 let referralCode = data.referralCode;
+                let referralCodeGenerated = false;
                 if (!referralCode) {
                     referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
                     updates.referralCode = referralCode;
                     data.referralCode = referralCode;
+                    referralCodeGenerated = true;
                 }
                 if (data.referralCredits === undefined) {
                     updates.referralCredits = 0;
                     data.referralCredits = 0;
                 }
 
-                // Sync referral code mapping to referral_codes lookup collection
-                if (data.referralCode) {
+                // Sync referral code mapping to referral_codes lookup collection only if generated
+                if (referralCodeGenerated && data.referralCode) {
                     try {
                         const refCodeRef = doc(db, "referral_codes", data.referralCode);
                         await setDoc(refCodeRef, {
@@ -469,6 +485,9 @@ export function safeRedirect(targetUrl) {
 
         if (currentPath !== targetPath) {
             try {
+                if (typeof window !== 'undefined' && window.AutoLuxLoader) {
+                    window.AutoLuxLoader.start();
+                }
                 window.location.replace(targetUrl);
             } catch (err) {
                 console.warn('window.location.replace failed, falling back to href:', err);

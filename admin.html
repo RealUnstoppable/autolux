@@ -642,6 +642,7 @@
 
    <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath, safeRedirect, onAuthStateChanged, signOut } from './js/auth.js';
+        import './js/loading_bar.js';
         import { escapeHTML } from './js/utils.js';
         import { createServiceLog } from './js/service_logs.js';
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -1497,6 +1498,55 @@
                     }
                 } catch (err) {
                     console.error("Error modifying quote:", { code: err.code, message: err.message, details: err });
+                }
+            });
+
+            // Support Tickets Action Buttons
+            document.getElementById('support-tickets-list-body')?.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.action-btn');
+                if (!btn || btn.dataset.type !== 'support-ticket') return;
+                const action = btn.dataset.action;
+                const id = btn.dataset.id;
+                const row = btn.closest('tr');
+
+                if (action === 'reply') {
+                    const textarea = row.querySelector('.ticket-reply-text');
+                    const replyText = textarea ? textarea.value.trim() : '';
+                    if (!replyText) return;
+
+                    btn.disabled = true;
+                    btn.setAttribute('aria-busy', 'true');
+                    btn.classList.add('btn-loading');
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<span class="gold-spinner" aria-hidden="true"></span><span>Sending...</span>';
+
+                    try {
+                        const ticketRef = doc(db, "support_tickets", id);
+                        await updateDoc(ticketRef, {
+                            messages: arrayUnion({
+                                text: replyText,
+                                isAdmin: true,
+                                timestamp: new Date().toISOString()
+                            })
+                        });
+                        if (textarea) textarea.value = '';
+                        alert('Reply sent successfully!');
+                    } catch (err) {
+                        console.error("Error replying to support ticket:", err);
+                        alert("Failed to send reply.");
+                    } finally {
+                        btn.disabled = false;
+                        btn.removeAttribute('aria-busy');
+                        btn.classList.remove('btn-loading');
+                        btn.innerHTML = originalHtml;
+                    }
+                } else if (action === 'delete' && confirm("Delete this support ticket?")) {
+                    try {
+                        await deleteDoc(doc(db, "support_tickets", id));
+                        row.remove();
+                    } catch (err) {
+                        console.error("Error deleting support ticket:", err);
+                    }
                 }
             });
 

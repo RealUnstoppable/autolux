@@ -1134,7 +1134,7 @@
     <!-- Logic & Frontend-Backend Integration -->
     <script type="module">
         import { auth, db, getAuthStatePromise, ensureUserDocument, getUserRedirectPath } from './js/auth.js';
-        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { escapeHTML, safeSetSessionStorage, safeGetSessionStorage } from './js/utils.js';
         import { initNavbar } from './js/navbar.js';
 
@@ -1342,7 +1342,7 @@
             }
 
             try {
-                const q = query(collection(db, "reviews"), where("status", "==", "approved"));
+                const q = query(collection(db, "reviews"), where("status", "==", "approved"), limit(6));
                 const querySnapshot = await getDocs(q);
                 let reviews = [];
                 for (let i = 0; i < querySnapshot.docs.length; i++) {
