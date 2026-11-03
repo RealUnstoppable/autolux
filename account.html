@@ -20,6 +20,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The Garage Client Dashboard for AUTOLUX Detailing Studio. Track vehicle maintenance cycles, view recent clean media, and manage luxury appointments.">
     <title>The Garage | AUTOLUX Detailing Studio</title>
+    <meta name="keywords" content="luxury car garage, AutoLux client portal, Buford mobile detailing account, car care schedule">
+    <meta name="geo.position" content="34.1207;-84.0044">
+    <meta name="ICBM" content="34.1207, -84.0044">
+    <link rel="canonical" href="https://autolux.realunstoppable.store/account.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/account.html">
+    <meta property="og:title" content="The Garage Client Dashboard | AUTOLUX Detailing Studio">
+    <meta property="og:description" content="The Garage Client Dashboard for AUTOLUX Detailing Studio. Track vehicle maintenance cycles, loyalty points, and luxury mobile detailing appointments in Buford, GA. Call (404) 542-2712.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=1200&auto=format">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://autolux.realunstoppable.store/account.html">
+    <meta name="twitter:title" content="The Garage Client Dashboard | AUTOLUX Detailing Studio">
+    <meta name="twitter:description" content="The Garage Client Dashboard for AUTOLUX Detailing Studio in Buford, GA. Call (404) 542-2712.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=1200&auto=format">
+
+    <!-- JSON-LD LocalBusiness / AutoWash Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["AutoWash", "LocalBusiness"],
+      "name": "AUTOLUX Detailing Studio - The Garage",
+      "image": "https://autolux.realunstoppable.store/favicon.png",
+      "@id": "https://autolux.realunstoppable.store/account.html#garage",
+      "url": "https://autolux.realunstoppable.store/account.html",
+      "telephone": "(404) 542-2712",
+      "email": "coiner.double0y@icloud.com",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Buford & 30-Mile Vicinity",
+        "addressLocality": "Buford",
+        "addressRegion": "GA",
+        "postalCode": "30518",
+        "addressCountry": "US"
+      }
+    }
+    </script>
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -269,13 +310,15 @@
 
             <!-- Navigation Links -->
             <div class="nav-links" id="nav-links">
-                <a href="index.html" class="nav-link" data-route="home">Home</a>
-                <a href="index.html#process" class="nav-link" data-route="process">Process</a>
-                <a href="index.html#pricing" class="nav-link" data-route="pricing">Pricing</a>
-                <a href="index.html#gallery" class="nav-link" data-route="gallery">Gallery</a>
-                <a href="reviews.html" class="nav-link" data-route="reviews">Reviews</a>
-                <a href="rewards.html" class="nav-link" data-route="rewards">Rewards</a>
-                <a href="quote.html" class="nav-link" data-route="quote">Custom Quote</a>
+                <div class="nav-items-wrapper" id="nav-items-wrapper">
+                    <a href="index.html#process" class="nav-link" data-route="process" id="nav-item-process">Process</a>
+                    <a href="index.html#pricing" class="nav-link" data-route="pricing" id="nav-item-pricing">Pricing</a>
+                    <a href="index.html#gallery" class="nav-link" data-route="gallery" id="nav-item-gallery">Gallery</a>
+                    <a href="reviews.html" class="nav-link" data-route="reviews" id="nav-item-reviews">Reviews</a>
+                    <a href="rewards.html" class="nav-link" data-route="rewards" id="nav-item-rewards">Rewards</a>
+                    <a href="quote.html" class="nav-link" data-route="quote" id="nav-item-quote">Custom Quote</a>
+                    <span class="nav-gold-underline" id="nav-gold-underline" aria-hidden="true"></span>
+                </div>
                 <div class="nav-actions">
                     <a href="booking.html" class="nav-cta btn-gold" data-route="booking">Book Now</a>
                     <button class="btn-logout" id="logout-btn" aria-label="Sign out of account">Sign Out</button>
@@ -360,7 +403,8 @@
                         <a href="booking.html?package=club" class="btn-schedule" style="background: var(--gold); color: black; width: 100%; text-align: center; text-decoration: none; font-weight: 700; box-sizing: border-box; display: block;">Join AutoLux Club ($129/mo)</a>
                         <a href="https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1" target="_blank" rel="noopener noreferrer" class="btn-outline" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.82rem; padding: 8px; box-sizing: border-box; text-decoration: none; border: 1px solid var(--border-gold); color: var(--gold); border-radius: 6px;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                            Checkout on Unstoppable Store &rarr;
+                            <span>Checkout on Unstoppable Store &rarr;</span>
+                            <span class="badge-x2-points">✦ x2 POINTS</span>
                         </a>
                     </div>
                 </div>
@@ -2177,15 +2221,15 @@
                 <h4>Concierge</h4>
                 <div class="footer-contact-item">
                     <span>📞</span>
-                    <a href="tel:+15551234567">(555) 123-4567</a>
+                    <a href="tel:4045422712">(404) 542-2712</a>
                 </div>
                 <div class="footer-contact-item">
                     <span>✉️</span>
-                    <a href="mailto:booking@autolux.com">booking@autolux.com</a>
+                    <a href="mailto:coiner.double0y@icloud.com">coiner.double0y@icloud.com</a>
                 </div>
                 <div class="footer-contact-item">
                     <span>📍</span>
-                    <span>Buford, GA &amp; Surrounding 30-Mile Area</span>
+                    <span>Buford, GA & 30-Mile Vicinity</span>
                 </div>
                 <div style="margin-top: 15px;">
                     <a href="donate.html" class="nav-link" style="padding: 6px 0; color: var(--gold); display: inline-flex; align-items: center; gap: 6px;">
@@ -2198,11 +2242,11 @@
         <div class="footer-bottom">
             <div>&copy; 2026 Unstoppable Detailing Services / AUTOLUX. All rights reserved. Buford, GA.</div>
             <div class="footer-social-links">
-                <a href="#" aria-label="Instagram">Instagram</a>
+                <a href="https://www.instagram.com/autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
                 <span>&bull;</span>
-                <a href="#" aria-label="Facebook">Facebook</a>
+                <a href="https://www.tiktok.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a>
                 <span>&bull;</span>
-                <a href="#" aria-label="YouTube">YouTube</a>
+                <a href="https://www.youtube.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
             </div>
         </div>
     </footer>

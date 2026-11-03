@@ -16,17 +16,83 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AUTOLUX Detailing Services - Buford, GA's premier luxury mobile detailing studio. Showroom perfection delivered directly to your driveway.">
-    <meta name="keywords" content="auto detailing, Buford GA mobile detailing, luxury car wash, ceramic coating, paint correction">
-    <title>AUTOLUX Detailing | Premier Luxury Mobile Care</title>
+    <title>AUTOLUX Detailing | Premier Luxury Mobile Detailing in Buford &amp; Atlanta, GA</title>
+    <meta name="description" content="Buford &amp; Atlanta's premier luxury mobile detailing studio. Showroom perfection delivered directly to your driveway with pH-neutral safe foam, machine polishing, and ceramic coating protection. Call (404) 542-2712.">
+    <meta name="keywords" content="auto detailing, Buford GA mobile detailing, luxury car wash, Atlanta auto detailing, ceramic coating, Buford mobile detailer">
     <meta name="geo.region" content="US-GA">
     <meta name="geo.placename" content="Buford, GA">
+    <meta name="geo.position" content="34.1207;-84.0044">
+    <meta name="ICBM" content="34.1207, -84.0044">
     <link rel="canonical" href="https://autolux.realunstoppable.store/">
-    <meta property="og:title" content="AUTOLUX Detailing | Premier Luxury Mobile Care">
-    <meta property="og:description" content="Buford, GA's premier luxury mobile detailing studio. We bring the showroom back to your driveway.">
-    <meta property="og:url" content="https://autolux.realunstoppable.store/">
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AUTOLUX Detailing">
+    <meta property="og:title" content="AUTOLUX Detailing | Premier Luxury Mobile Detailing in Buford &amp; Atlanta, GA">
+    <meta property="og:description" content="Buford &amp; Atlanta's premier luxury mobile detailing studio. Showroom perfection delivered directly to your driveway. Call (404) 542-2712.">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/">
     <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AUTOLUX Detailing | Premier Luxury Mobile Detailing in Buford &amp; Atlanta, GA">
+    <meta name="twitter:description" content="Buford &amp; Atlanta's premier luxury mobile detailing studio. Showroom perfection delivered directly to your driveway. Call (404) 542-2712.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=2000&auto=format">
+
+    <!-- JSON-LD LocalBusiness / AutoWash Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["AutoWash", "LocalBusiness"],
+      "name": "AUTOLUX Detailing",
+      "image": "https://autolux.realunstoppable.store/favicon.png",
+      "@id": "https://autolux.realunstoppable.store/#business",
+      "url": "https://autolux.realunstoppable.store/",
+      "telephone": "(404) 542-2712",
+      "email": "coiner.double0y@icloud.com",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Buford",
+        "addressRegion": "GA",
+        "postalCode": "30518",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 34.1207,
+        "longitude": -84.0044
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Buford"
+        },
+        {
+          "@type": "AdministrativeArea",
+          "name": "Gwinnett County"
+        },
+        {
+          "@type": "AdministrativeArea",
+          "name": "Greater Atlanta Metropolitan Area"
+        }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "opens": "08:00",
+          "closes": "18:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.instagram.com/autoluxdetailing",
+        "https://www.tiktok.com/@autoluxdetailing",
+        "https://www.youtube.com/@autoluxdetailing"
+      ]
+    }
+    </script>
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -587,13 +653,15 @@
 
             <!-- Navigation Links -->
             <div class="nav-links" id="nav-links">
-                <a href="index.html" class="nav-link active" data-route="home">Home</a>
-                <a href="#process" class="nav-link" data-route="process">Process</a>
-                <a href="#pricing" class="nav-link" data-route="pricing">Pricing</a>
-                <a href="#gallery" class="nav-link" data-route="gallery">Gallery</a>
-                <a href="reviews.html" class="nav-link" data-route="reviews">Reviews</a>
-                <a href="rewards.html" class="nav-link" data-route="rewards">Rewards</a>
-                <a href="quote.html" class="nav-link" data-route="quote">Custom Quote</a>
+                <div class="nav-items-wrapper" id="nav-items-wrapper">
+                    <a href="#process" class="nav-link" data-route="process" id="nav-item-process">Process</a>
+                    <a href="#pricing" class="nav-link" data-route="pricing" id="nav-item-pricing">Pricing</a>
+                    <a href="#gallery" class="nav-link" data-route="gallery" id="nav-item-gallery">Gallery</a>
+                    <a href="reviews.html" class="nav-link" data-route="reviews" id="nav-item-reviews">Reviews</a>
+                    <a href="rewards.html" class="nav-link" data-route="rewards" id="nav-item-rewards">Rewards</a>
+                    <a href="quote.html" class="nav-link" data-route="quote" id="nav-item-quote">Custom Quote</a>
+                    <span class="nav-gold-underline" id="nav-gold-underline" aria-hidden="true"></span>
+                </div>
                 <div class="nav-actions">
                     <a href="booking.html" class="nav-cta btn-gold" data-route="booking">Book Now</a>
                     <a href="sign in beta.html" class="auth-btn nav-auth-link" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
@@ -731,17 +799,14 @@
             <div class="grid">
                 <div class="price-card luxury-card">
                     <div>
-                        <span class="badge-popular" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border-color: rgba(56, 189, 248, 0.3);">90%+ Defect Removal</span>
+                        <span class="badge-popular" style="background: rgba(212, 175, 55, 0.18); color: #ffd700; border-color: rgba(212, 175, 55, 0.4); display: inline-block; margin-bottom: 8px;">Future Specialty Service — Coming Soon at Additional Fee</span>
                         <h3>Multi-Stage Paint Correction</h3>
                         <div class="price">$500.00</div>
-                        <p>Rotary &amp; dual-action compound and polish eliminating swirl marks, water etchings, and scratches for flawless mirror reflection.</p>
+                        <p>Rotary &amp; dual-action compound and polish eliminating swirl marks, water etchings, and scratches for flawless mirror reflection. <em>(Future Specialty Service — Coming Soon at Additional Fee).</em></p>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 14px;">
-                        <a href="booking.html?package=paint_correction" class="btn-outline" style="width: 100%; justify-content: center;">Book Correction</a>
-                        <a href="https://buy.stripe.com/5kQ5kC3Uc3lB2h5dtH9AA06" target="_blank" rel="noopener noreferrer" class="btn-primary btn-gold" style="width: 100%; justify-content: center; font-size: 0.88rem; padding: 10px; display: inline-flex; align-items: center; gap: 6px;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                            ⚡ Instant Checkout &bull; $500
-                        </a>
+                        <span class="btn-outline" style="width: 100%; justify-content: center; opacity: 0.7; cursor: not-allowed; border-color: rgba(212, 175, 55, 0.4); color: var(--gold);" aria-disabled="true">Coming Soon (Specialty Service)</span>
+                        <a href="https://buy.stripe.com/5kQ5kC3Uc3lB2h5dtH9AA06" target="_blank" rel="noopener noreferrer" class="btn-outline" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 8px; display: none;">Stripe Checkout Reference ($500.00)</a>
                     </div>
                 </div>
 
@@ -897,7 +962,8 @@
                 </a>
                 <a href="https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1" target="_blank" rel="noopener noreferrer" class="btn-outline" style="padding: 14px 26px; font-size: 1.02rem; display: inline-flex; align-items: center; gap: 8px;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    Buy via Unstoppable Store
+                    <span>Buy via Unstoppable Store</span>
+                    <span class="badge-x2-points">✦ x2 POINTS</span>
                 </a>
             </div>
 
@@ -999,7 +1065,7 @@
             <div class="milestone-card"><span class="milestone-goal">$5k</span><span class="milestone-reward">Premium Detail</span></div>
             <div class="milestone-card"><span class="milestone-goal">$10k</span><span class="milestone-reward">Ceramic Coating</span></div>
             <div class="milestone-card"><span class="milestone-goal">$15k</span><span class="milestone-reward">Interior Overhaul</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$20k</span><span class="milestone-reward">Paint Correction</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$20k</span><span class="milestone-reward">Ceramic Shield Upgrade</span></div>
             <div class="milestone-card"><span class="milestone-goal">$25k</span><span class="milestone-reward">1 Month Pro</span></div>
             <div class="milestone-card"><span class="milestone-goal">$50k</span><span class="milestone-reward">3 Months Pro</span></div>
             <div class="milestone-card"><span class="milestone-goal">$75k</span><span class="milestone-reward">6 Months Pro</span></div>
@@ -1101,11 +1167,11 @@
                 <h4>Concierge</h4>
                 <div class="footer-contact-item">
                     <span>📞</span>
-                    <a href="tel:+15551234567">(555) 123-4567</a>
+                    <a href="tel:4045422712">(404) 542-2712</a>
                 </div>
                 <div class="footer-contact-item">
                     <span>✉️</span>
-                    <a href="mailto:booking@autolux.com">booking@autolux.com</a>
+                    <a href="mailto:coiner.double0y@icloud.com">coiner.double0y@icloud.com</a>
                 </div>
                 <div class="footer-contact-item">
                     <span>📍</span>
@@ -1122,11 +1188,11 @@
         <div class="footer-bottom">
             <div>&copy; 2026 Unstoppable Detailing Services / AUTOLUX. All rights reserved. Buford, GA.</div>
             <div class="footer-social-links">
-                <a href="#" aria-label="Instagram">Instagram</a>
+                <a href="https://www.instagram.com/autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
                 <span>&bull;</span>
-                <a href="#" aria-label="Facebook">Facebook</a>
+                <a href="https://www.tiktok.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a>
                 <span>&bull;</span>
-                <a href="#" aria-label="YouTube">YouTube</a>
+                <a href="https://www.youtube.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
             </div>
         </div>
     </footer>
