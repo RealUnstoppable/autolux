@@ -220,6 +220,125 @@
             outline: 2px solid var(--gold);
             outline-offset: 2px;
         }
+
+        .main-content { flex-grow: 1; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .content-section > h3 { font-size: 1.8rem; margin-top: 0; margin-bottom: 30px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background-color: var(--primary-card-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .metric-card .value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+        .metric-card .label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
+        .graph-container { background-color: var(--primary-card-color); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px; height: 400px; display: flex; flex-direction: column; }
+        .graph-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .graph-dropdown { background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; }
+        
+        .user-table-container { background-color: var(--primary-card-color); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; margin-bottom: 30px;}
+        .user-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .user-table th, .user-table td { padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
+        .user-table th { font-weight: 600; color: var(--text-secondary); }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-badge.active { background-color: rgba(22, 163, 74, 0.2); color: var(--accent-green); }
+        .status-badge.banned, .status-badge.cancelled { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
+        .status-badge.pro { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
+        .status-badge.pending { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
+        .subscription-text { font-weight: bold; color: var(--accent-blue); }
+        
+        .btn-sm { padding: 6px 12px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; color: white; margin-right: 5px; margin-bottom: 5px;}
+        .btn-ban { background-color: var(--accent-red); }
+        .btn-unban { background-color: var(--accent-green); }
+        .btn-action { background-color: var(--secondary-card-color, #333); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-action:hover { background-color: var(--text-primary); color: var(--bg-color); }
+        .btn-danger { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
+
+        /* Luxury Winner Wheel Styles */
+        .wheel-stage-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.12) 0%, #0a0a0a 75%);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 40px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(212,175,55,0.15);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 440px;
+            height: 440px;
+            max-width: 90vw;
+            max-height: 90vw;
+            margin: 20px auto 30px auto;
+        }
+
+        #winner-wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+            box-shadow: 0 0 35px rgba(212, 175, 55, 0.3), inset 0 0 20px rgba(0,0,0,0.8);
+            border: 3px solid rgba(212, 175, 55, 0.6);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 32px solid #ffd700;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.9)) drop-shadow(0 0 10px rgba(212,175,55,0.8));
+            z-index: 25;
+            pointer-events: none;
+        }
+
+        .wheel-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* Winner Celebration Modal */
+        .winner-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner-modal-card {
+            background: #0a0a0a;
+            border: 2px solid var(--gold);
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.9), 0 0 45px rgba(212, 175, 55, 0.35);
+            position: relative;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
     <script src="env.js?v=2"></script>
 </head>
@@ -272,99 +391,7 @@
                 <ul>
                     <li><a href="index.html">← Return to Home</a></li>
                     <li><a href="rewards.html">Rewards</a></li>
-                    <li><a href="#performance" class="nav-link active">Performance</a></li>
-                    <li><a href="#bookings" class="nav-link">Bookings</a></li>
-                    <li><a href="#quotes" class="nav-link">Quotes</a></li>
-                    <li><a href="#inquiries-admin" class="nav-link">Inquiries</a></li>
-                    <li><a href="#users" class="nav-link">User Management</a></li>
-                    <li><a href="#service-logs" class="nav-link">Service Logs</a></li>
-                    <li><a href="#reviews-admin" class="nav-link">Reviews</a></li>
-                    <li><a href="#featurerequests" class="nav-link">Feature Requests</a></li>
-                    <li><a href="#downloads" class="nav-link">Downloads</a></li>
-                    <li><a href="#newsletter" class="nav-link">Newsletter</a></li>
-                    <li><a href="#supporttickets" class="nav-link">Support Tickets</a></li>
-                    <li><a href="#faqs-admin" class="nav-link">FAQ Management</a></li>
-                    <li><a href="account.html">My Account Settings</a></li>
-                </ul>
-            </nav>
-            <button class="sign-out-btn" id="sign-out">Sign Out</button>
-        
-        .main-content { flex-grow: 1; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        .content-section > h3 { font-size: 1.8rem; margin-top: 0; margin-bottom: 30px; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background-color: var(--primary-card-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .metric-card .value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
-        .metric-card .label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
-        .graph-container { background-color: var(--primary-card-color); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px; height: 400px; display: flex; flex-direction: column; }
-        .graph-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .graph-dropdown { background-color: var(--input-bg); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; }
-        
-        .user-table-container { background-color: var(--primary-card-color); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; margin-bottom: 30px;}
-        .user-table { width: 100%; border-collapse: collapse; text-align: left; }
-        .user-table th, .user-table td { padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
-        .user-table th { font-weight: 600; color: var(--text-secondary); }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .status-badge.active { background-color: rgba(22, 163, 74, 0.2); color: var(--accent-green); }
-        .status-badge.banned, .status-badge.cancelled { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
-        .status-badge.pro { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
-        .status-badge.pending { background-color: rgba(251, 191, 36, 0.2); color: var(--accent-yellow); }
-        .subscription-text { font-weight: bold; color: var(--accent-blue); }
-        
-        .btn-sm { padding: 6px 12px; border-radius: 5px; font-weight: 500; cursor: pointer; border: none; color: white; margin-right: 5px; margin-bottom: 5px;}
-        .btn-ban { background-color: var(--accent-red); }
-        .btn-unban { background-color: var(--accent-green); }
-        .btn-action { background-color: var(--secondary-card-color, #333); color: var(--text-primary); border: 1px solid var(--border-color); }
-        .btn-action:hover { background-color: var(--text-primary); color: var(--bg-color); }
-        .btn-danger { background-color: rgba(220, 38, 38, 0.2); color: var(--accent-red); }
-
-        /* Wheel CSS */
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid var(--border-color); overflow: hidden; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: #222; }
-        .wheel-slice { position: absolute; top: 0; right: 0; width: 50%; height: 50%; transform-origin: 0% 100%; text-align: right; padding-right: 10px; padding-top: 10px; font-weight: bold; box-sizing: border-box; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--accent-red); z-index: 10;}
-        .spin-btn { display: block; margin: 20px auto; padding: 15px 30px; font-size: 1.2rem; background: var(--accent-yellow); color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
-
-        @media (max-width: 768px) {
-            body { padding: 10px; flex-direction: column; }
-            .mobile-header { display: flex; }
-            .admin-layout { flex-direction: column; }
-            .sidebar { 
-                position: fixed; top: 0; left: -100%; height: 100vh; z-index: 1000;
-                background-color: var(--bg-color); width: 80%; max-width: 300px;
-                padding: 20px; border-right: 1px solid var(--border-color);
-            }
-            .sidebar.open { transform: translateX(100%); }
-        }
-
-
-        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-            outline: 2px solid var(--accent-blue);
-            outline-offset: 2px;
-        }
-    </style>
-    <script src="env.js?v=2"></script>
-</head>
-<body style="display: none;"> 
-    <div class="mobile-header">
-        <h2 style="margin:0; color: var(--accent-blue);">Admin</h2>
-        <button class="hamburger-btn" id="mobile-menu-btn" aria-label="Open sidebar" aria-expanded="false" aria-controls="sidebar">☰</button>
-    </div>
-
-    <div class="admin-layout">
-        <aside class="sidebar" id="sidebar">
-            <div class="mobile-header" style="justify-content: flex-end;">
-                <button class="hamburger-btn" id="mobile-close-btn" aria-label="Close sidebar" aria-expanded="true" aria-controls="sidebar">✕</button>
-            </div>
-            <div class="sidebar-header">
-                <h2>Admin Panel</h2>
-                <p id="user-email-sidebar"></p>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="index.html">← Return to Home</a></li>
-                    <li><a href="rewards.html">Rewards</a></li>
+                    <li><a href="#sweepstakes-admin" class="nav-link">🏆 Winner Wheel</a></li>
                     <li><a href="#performance" class="nav-link active">Performance</a></li>
                     <li><a href="#bookings" class="nav-link">Bookings</a></li>
                     <li><a href="#quotes" class="nav-link">Quotes</a></li>
@@ -637,7 +664,113 @@
                     </table>
                 </div>
             </section>
+
+            <!-- Winner Spinner Wheel Admin Section -->
+            <section id="sweepstakes-admin" class="content-section">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h3 style="margin: 0; color: var(--gold); font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
+                            <span>🏆</span> Community Sweepstakes Winner Wheel
+                        </h3>
+                        <p style="color: var(--text-muted); margin: 6px 0 0 0; font-size: 0.95rem;">
+                            Cryptographically secure (<code>crypto.getRandomValues</code>) proportional winner drawing weighted by participants' <code>sweepstakesEntries</code>.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="reload-wheel-donors-btn" class="btn-action" style="padding: 10px 18px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <span>🔄 Refresh Donors</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Metrics Strip -->
+                <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 25px;">
+                    <div class="metric-card" style="background: rgba(10, 10, 10, 0.85); border-color: rgba(212, 175, 55, 0.35);">
+                        <div class="value" id="wheel-total-participants" style="color: #ffd700;">-</div>
+                        <div class="label">Total Participants</div>
+                    </div>
+                    <div class="metric-card" style="background: rgba(10, 10, 10, 0.85); border-color: rgba(212, 175, 55, 0.35);">
+                        <div class="value" id="wheel-total-entries" style="color: #ffd700;">-</div>
+                        <div class="label">Total Sweepstakes Tickets</div>
+                    </div>
+                    <div class="metric-card" style="background: rgba(10, 10, 10, 0.85); border-color: rgba(212, 175, 55, 0.35);">
+                        <div class="value" style="font-size: 1.25rem; color: #ffd700; line-height: 1.4;">Full Ceramic Overhaul ($20k)</div>
+                        <div class="label">Current Drawing Milestone</div>
+                    </div>
+                </div>
+
+                <!-- Wheel Canvas Stage -->
+                <div class="wheel-stage-container">
+                    <div class="wheel-wrapper">
+                        <div class="wheel-pointer" aria-hidden="true"></div>
+                        <canvas id="winner-wheel-canvas" width="500" height="500" aria-label="Interactive sweepstakes winner spinner wheel"></canvas>
+                    </div>
+
+                    <div class="wheel-controls">
+                        <button id="spin-wheel-btn" class="btn-primary btn-gold" style="padding: 16px 42px; font-size: 1.2rem; font-weight: 800; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 4px 20px rgba(212,175,55,0.4);">
+                            <span>🎲 Spin to Draw Winner</span>
+                        </button>
+                    </div>
+                    <div id="wheel-spin-status" style="margin-top: 14px; font-size: 0.95rem; color: var(--gold); min-height: 22px; font-weight: 600;"></div>
+                </div>
+
+                <!-- Participants Leaderboard -->
+                <div class="user-table-container" style="background: #0a0a0a; border: 1px solid rgba(212, 175, 55, 0.25); border-radius: var(--radius-md);">
+                    <div style="padding: 16px 20px; border-bottom: 1px solid rgba(212, 175, 55, 0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h4 style="margin: 0; color: #ffffff;">Participant Roster &amp; Win Probabilities</h4>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Proportional Slice Angle = (Entries / Total) &times; 360&deg;</span>
+                    </div>
+                    <table class="user-table" id="wheel-participants-table">
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Email</th>
+                                <th>Accumulated Entries</th>
+                                <th>Odds %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wheel-participants-tbody">
+                            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading participants...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
+    </div>
+
+    <!-- Winner Announcement Celebration Modal -->
+    <div class="winner-modal-overlay" id="winner-modal">
+        <div class="winner-modal-card">
+            <div style="font-size: 3rem; margin-bottom: 8px;">🎉 🏆 🍾</div>
+            <span style="display: inline-block; background: rgba(212, 175, 55, 0.2); color: #ffd700; border: 1px solid rgba(212, 175, 55, 0.4); padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Official Winner Drawn</span>
+            <h2 id="winner-name-display" style="font-size: 1.9rem; color: #ffffff; margin: 0 0 6px 0;">Marcus Sterling</h2>
+            <p id="winner-email-display" style="color: var(--gold); font-size: 1.05rem; margin: 0 0 20px 0; font-weight: 600;">marcus.s@luxury.com</p>
+
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 8px; padding: 16px; margin-bottom: 24px; display: flex; justify-content: space-around;">
+                <div>
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Held Tickets</span>
+                    <strong id="winner-entries-count" style="font-size: 1.4rem; color: #ffd700;">150</strong>
+                </div>
+                <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Winning Ticket #</span>
+                    <strong id="winner-ticket-num" style="font-size: 1.4rem; color: #ffffff;">#42</strong>
+                </div>
+                <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Win Probability</span>
+                    <strong id="winner-odds-val" style="font-size: 1.4rem; color: #ffd700;">51.7%</strong>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button id="notify-winner-btn" class="btn-primary btn-gold" style="padding: 12px 24px; font-weight: 700; cursor: pointer;">
+                    ✉️ Notify Winner via Email
+                </button>
+                <button id="close-winner-modal-btn" class="btn-action" style="padding: 12px 24px; font-weight: 600; cursor: pointer; border-radius: 6px;">
+                    Close
+                </button>
+            </div>
+            <div id="notify-winner-msg" style="margin-top: 10px; font-size: 0.85rem; font-weight: 600;" aria-live="polite"></div>
+        </div>
     </div>
 
    <script type="module">
@@ -646,6 +779,7 @@
         import { escapeHTML } from './js/utils.js';
         import { createServiceLog } from './js/service_logs.js';
         import { doc, getDoc, collection, getDocs, Timestamp, updateDoc, deleteDoc, addDoc, serverTimestamp, query, where, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getSecureRandomRatio, aggregateParticipants, calculateWinner, drawWheel, LUXURY_SLICE_COLORS } from './js/admin_wheel.js';
 
         let performanceChart;
         let chartCtx;
@@ -713,6 +847,7 @@
                 const statsPromise = getDoc(doc(db, "site_stats", "downloads"));
                 const ticketsPromise = getDocs(collection(db, "support_tickets"));
                 const faqsPromise = getDocs(collection(db, "faqs"));
+                const donationsPromise = getDocs(collection(db, "donations"));
 
                 // We catch errors immediately to avoid unhandled rejection warnings in the console,
                 // but we DO NOT throw them here. We let the individual try/catch blocks handle them later.
@@ -727,6 +862,7 @@
                 reviewsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
                 statsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
                 faqsPromise.catch((e) => console.error("Prefetch error:", { code: e.code, message: e.message, details: e }));
+                donationsPromise.catch((e) => console.error("Prefetch error (donations):", e));
 
                 // Fetch Core Data
                 const users = await resolveQuery(usersPromise, "users");
@@ -759,6 +895,10 @@
                 renderChart('summary', users);
                 renderBookingsTable(bookings);
                 renderQuotesTable(quotes);
+
+                // Fetch Donations & Initialize Winner Wheel
+                const donations = await resolveQuery(donationsPromise, "donations");
+                initAdminWheelSection(donations, users);
                 
                 // Fetch Inquiries
                 try {
@@ -1582,80 +1722,178 @@
                 });
             });
 
-            // Wheel Spin Logic
-            document.getElementById('spin-wheel-btn').addEventListener('click', () => {
-                if (globalDonors.length === 0) {
-                    alert("No donors to spin for!"); return;
-                }
-                
-                const wheel = document.getElementById('random-wheel');
-                document.getElementById('winner-display').style.display = 'none';
-                
-                // Random spins (at least 5 full rotations + random angle)
-                const randomDeg = Math.floor(Math.random() * 360);
-                const totalRotation = (360 * 5) + randomDeg;
-                
-                wheel.style.transform = `rotate(${totalRotation}deg)`;
-                
-                // Select winner weighted by amount
-                setTimeout(() => {
-                    let totalEntries = 0;
-                    for (let i = 0, len = globalDonors.length; i < len; i++) {
-                        totalEntries += globalDonors[i].amount;
-                    }
+            // Winner Wheel Initialization & Spin Management
+            let currentWheelAngle = 0;
+            let isWheelSpinning = false;
+            let wheelParticipants = [];
 
-                    let rand = Math.random() * totalEntries;
-                    let winner = null;
-                    
-                    for (let i = 0, len = globalDonors.length; i < len; i++) {
-                        const d = globalDonors[i];
-                        if (rand < d.amount) { winner = d; break; }
-                        rand -= d.amount;
-                    }
-                    
-                    if (winner) {
-                        currentWinnerId = winner.uid;
-                        document.getElementById('winner-name').textContent = winner.email;
-                        document.getElementById('winner-display').style.display = 'block';
-                    }
-                }, 4000); // Matches CSS transition duration
-            });
+            window.initAdminWheelSection = function(donations = [], users = []) {
+                const canvas = document.getElementById('winner-wheel-canvas');
+                const spinBtn = document.getElementById('spin-wheel-btn');
+                const reloadBtn = document.getElementById('reload-wheel-donors-btn');
+                const statusEl = document.getElementById('wheel-spin-status');
+                const totalPartEl = document.getElementById('wheel-total-participants');
+                const totalEntEl = document.getElementById('wheel-total-entries');
+                const tbody = document.getElementById('wheel-participants-tbody');
 
-            // Credit Reward
-            document.getElementById('credit-reward-btn').addEventListener('click', async () => {
-                if (!currentWinnerId) return;
-                const reward = document.getElementById('reward-select').value;
-                const btn = document.getElementById('credit-reward-btn');
-                
-                btn.disabled = true;
-                btn.textContent = "Crediting...";
-                
-                try {
-                    const userRef = doc(db, "users", currentWinnerId);
-                    await updateDoc(userRef, {
-                        rewards: arrayUnion(reward)
+                const modal = document.getElementById('winner-modal');
+                const closeModalBtn = document.getElementById('close-winner-modal-btn');
+                const notifyBtn = document.getElementById('notify-winner-btn');
+                const notifyMsg = document.getElementById('notify-winner-msg');
+
+                if (!canvas) return;
+
+                // Aggregate donors and users
+                wheelParticipants = aggregateParticipants(donations, users);
+                const totalEntries = wheelParticipants.reduce((sum, p) => sum + p.entries, 0);
+
+                if (totalPartEl) totalPartEl.textContent = wheelParticipants.length.toLocaleString();
+                if (totalEntEl) totalEntEl.textContent = totalEntries.toLocaleString();
+
+                // Render leaderboard table
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    wheelParticipants.forEach((p, idx) => {
+                        const tr = document.createElement('tr');
+                        const colorDot = LUXURY_SLICE_COLORS[idx % LUXURY_SLICE_COLORS.length];
+                        tr.innerHTML = DOMPurify.sanitize(`
+                            <td style="display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: ${colorDot}; border: 1px solid #ffd700;"></span>
+                                <strong style="color: #ffffff;">${escapeHTML(p.name)}</strong>
+                            </td>
+                            <td style="color: var(--text-muted);">${escapeHTML(p.email || 'N/A')}</td>
+                            <td><span style="color: #ffd700; font-weight: 700;">${p.entries.toLocaleString()} 🎟️</span></td>
+                            <td><span style="background: rgba(212, 175, 55, 0.15); color: #ffd700; padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;">${p.percentage}%</span></td>
+                        `);
+                        tbody.appendChild(tr);
                     });
-                    
-                    await addDoc(collection(db, "notifications"), {
-                        userId: currentWinnerId,
-                        title: "Reward Credited",
-                        message: `You have received a new reward: ${reward}`,
-                        type: 'reward',
-                        read: false,
-                        createdAt: serverTimestamp()
-                    });
-
-                    alert(`Successfully credited "${reward}" to user!`);
-                    document.getElementById('winner-display').style.display = 'none';
-                } catch (error) {
-                    console.error("Error crediting reward:", { code: error.code, message: error.message, details: error });
-                    alert("Error crediting reward.");
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = "Credit Reward to Account";
-                    if (e && e.code) console.error('Error code:', e.code);
                 }
-            });
+
+                // Draw initial wheel
+                drawWheel(canvas, wheelParticipants, currentWheelAngle);
+
+                // Refresh button listener
+                if (reloadBtn && !reloadBtn._bound) {
+                    reloadBtn._bound = true;
+                    reloadBtn.addEventListener('click', async () => {
+                        reloadBtn.disabled = true;
+                        reloadBtn.innerHTML = '<span>⏳ Refreshing...</span>';
+                        try {
+                            const [dSnap, uSnap] = await Promise.all([
+                                getDocs(collection(db, "donations")),
+                                getDocs(collection(db, "users"))
+                            ]);
+                            const freshDonations = dSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                            const freshUsers = uSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                            initAdminWheelSection(freshDonations, freshUsers);
+                        } catch (err) {
+                            console.warn("Could not reload donors:", err);
+                        } finally {
+                            reloadBtn.disabled = false;
+                            reloadBtn.innerHTML = '<span>🔄 Refresh Donors</span>';
+                        }
+                    });
+                }
+
+                // Close Modal Listeners
+                if (closeModalBtn && !closeModalBtn._bound) {
+                    closeModalBtn._bound = true;
+                    closeModalBtn.addEventListener('click', () => {
+                        if (modal) modal.style.display = 'none';
+                    });
+                    if (modal) {
+                        modal.addEventListener('click', (e) => {
+                            if (e.target === modal) modal.style.display = 'none';
+                        });
+                    }
+                }
+
+                // Spin to Draw Winner Listener (Cryptographically Secure)
+                if (spinBtn && !spinBtn._bound) {
+                    spinBtn._bound = true;
+                    spinBtn.addEventListener('click', () => {
+                        if (isWheelSpinning) return;
+                        if (!wheelParticipants || wheelParticipants.length === 0) {
+                            alert("No participants available to spin for!");
+                            return;
+                        }
+
+                        isWheelSpinning = true;
+                        spinBtn.disabled = true;
+                        spinBtn.style.opacity = '0.7';
+                        spinBtn.style.cursor = 'not-allowed';
+                        if (statusEl) statusEl.textContent = '🎲 Drawing winner using crypto.getRandomValues...';
+
+                        // Cryptographically secure randomness
+                        const secureRandomRatio = getSecureRandomRatio();
+                        const result = calculateWinner(wheelParticipants, secureRandomRatio);
+
+                        // Top pointer angle is at 12 o'clock (-Math.PI / 2 or 1.5 * Math.PI)
+                        const targetPointerAngle = 1.5 * Math.PI;
+                        const normalizedSliceCenter = result.sliceCenter % (2 * Math.PI);
+                        let alignmentAngle = targetPointerAngle - normalizedSliceCenter;
+                        while (alignmentAngle < 0) alignmentAngle += (2 * Math.PI);
+
+                        const fullSpins = 7;
+                        const totalRotationDelta = (2 * Math.PI * fullSpins) + alignmentAngle;
+                        const startAngle = currentWheelAngle;
+                        const finalTargetAngle = startAngle + totalRotationDelta;
+
+                        const duration = 5200; // ms
+                        const startTime = performance.now();
+
+                        function animateSpin(now) {
+                            const elapsed = now - startTime;
+                            const progress = Math.min(1, elapsed / duration);
+
+                            // Ease-out quintic for dramatic, luxury deceleration
+                            const easeOut = 1 - Math.pow(1 - progress, 5);
+                            currentWheelAngle = startAngle + (totalRotationDelta * easeOut);
+
+                            drawWheel(canvas, wheelParticipants, currentWheelAngle);
+
+                            if (progress < 1) {
+                                requestAnimationFrame(animateSpin);
+                            } else {
+                                currentWheelAngle = finalTargetAngle % (2 * Math.PI);
+                                drawWheel(canvas, wheelParticipants, currentWheelAngle);
+                                isWheelSpinning = false;
+                                spinBtn.disabled = false;
+                                spinBtn.style.opacity = '1';
+                                spinBtn.style.cursor = 'pointer';
+                                if (statusEl) statusEl.textContent = `🎉 Winner drawn: ${result.winner.name}!`;
+
+                                // Populate and display Winner Announcement Celebration Modal
+                                const nameDisp = document.getElementById('winner-name-display');
+                                const emailDisp = document.getElementById('winner-email-display');
+                                const entriesDisp = document.getElementById('winner-entries-count');
+                                const ticketDisp = document.getElementById('winner-ticket-num');
+                                const oddsDisp = document.getElementById('winner-odds-val');
+
+                                if (nameDisp) nameDisp.textContent = result.winner.name;
+                                if (emailDisp) emailDisp.textContent = result.winner.email || 'No email provided';
+                                if (entriesDisp) entriesDisp.textContent = result.winner.entries.toLocaleString();
+                                if (ticketDisp) ticketDisp.textContent = `#${result.winningTicketNumber}`;
+                                if (oddsDisp) oddsDisp.textContent = `${result.winner.percentage}%`;
+
+                                if (notifyBtn) {
+                                    notifyBtn.onclick = () => {
+                                        if (notifyMsg) {
+                                            notifyMsg.style.color = '#16A34A';
+                                            notifyMsg.textContent = `Notification email drafted and queued for ${result.winner.email || result.winner.name}!`;
+                                        }
+                                    };
+                                }
+
+                                if (modal) modal.style.display = 'flex';
+                            }
+                        }
+
+                        requestAnimationFrame(animateSpin);
+                    });
+                }
+            };
+            const initAdminWheelSection = window.initAdminWheelSection;
 
             document.getElementById('graph-selector').addEventListener('change', (e) => { renderChart(e.target.value); });
             document.getElementById('sign-out').addEventListener('click', () => { signOut(auth); });

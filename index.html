@@ -443,21 +443,53 @@
             margin-bottom: 0;
         }
 
-        /* Sweepstakes Section */
+        /* Jet-Black & Gold Community Sweepstakes Section */
         .sweepstakes-section {
-            background: linear-gradient(135deg, #131422 0%, #0F121E 100%);
-            border: 1px solid var(--border-gold);
+            background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.15) 0%, #0a0a0a 75%);
+            background-color: #0a0a0a;
+            border: 1px solid rgba(212, 175, 55, 0.35);
             border-radius: var(--radius-lg);
             padding: clamp(36px, 6vw, 56px) 24px;
-            margin: 60px auto;
+            margin: 40px auto;
             text-align: center;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 175, 55, 0.12);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sweepstakes-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #b8860b, #ffd700, #f5d77f, transparent);
+        }
+
+        .sweep-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.15);
+            color: #ffd700;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            padding: 4px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
         }
 
         .sweep-title {
             color: var(--gold);
             font-size: clamp(1.8rem, 4vw, 2.6rem);
             margin-bottom: 10px;
+            letter-spacing: -0.5px;
         }
 
         .sweep-subtitle {
@@ -465,27 +497,36 @@
             font-size: 1.05rem;
             max-width: 640px;
             margin: 0 auto 32px auto;
+            line-height: 1.5;
         }
 
         .progress-container {
             width: 100%;
             max-width: 720px;
-            height: 38px;
-            background-color: #1A1A22;
+            height: 42px;
+            background-color: #0d0d0d;
             border-radius: var(--radius-full);
             margin: 0 auto 30px auto;
             overflow: hidden;
             position: relative;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--border);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.35);
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2563EB, #D4AF37);
+            background: linear-gradient(90deg, #996515 0%, #d4af37 35%, #ffd700 70%, #fff1a8 100%);
+            background-size: 200% 100%;
+            animation: goldShimmer 3s ease infinite;
             width: 1.5%;
             border-radius: var(--radius-full);
-            transition: width 1s ease-in-out;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes goldShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .progress-text {
@@ -493,13 +534,13 @@
             width: 100%;
             text-align: center;
             font-weight: 800;
-            color: #FFFFFF;
-            line-height: 38px;
+            color: #ffffff;
+            line-height: 42px;
             z-index: 10;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
             pointer-events: none;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
         }
 
         .milestones-grid {
@@ -507,31 +548,44 @@
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 12px;
             margin-top: 24px;
-            max-width: 900px;
+            max-width: 960px;
             margin-left: auto;
             margin-right: auto;
         }
 
         .milestone-card {
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid var(--border);
+            background: rgba(15, 15, 15, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
             padding: 14px 10px;
             border-radius: var(--radius-sm);
             font-size: 0.85rem;
-            transition: border-color var(--transition-fast);
+            transition: all var(--transition-fast);
+            backdrop-filter: blur(8px);
+        }
+
+        .milestone-card:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
         }
 
         .milestone-goal {
             font-weight: 800;
-            color: var(--accent);
+            color: #ffd700;
             display: block;
             margin-bottom: 4px;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
         }
 
         .milestone-reward {
-            color: var(--text-muted);
+            color: #e5e5e5;
             font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .milestone-card.featured-milestone {
+            border: 1px solid rgba(212, 175, 55, 0.55);
+            background: rgba(212, 175, 55, 0.1);
         }
 
         .milestone-card.reached {
@@ -686,6 +740,40 @@
             </div>
         </div>
     </header>
+
+    <!-- Community Sweepstakes & Rewards Showcase (Top Section) -->
+    <section id="sweepstakes" class="sweepstakes-section">
+        <div class="sweep-badge">
+            <span>🏆</span> Community Sweepstakes &bull; Live Goal
+        </div>
+        <h2 class="sweep-title">Community Sweepstakes & Rewards</h2>
+        <p class="sweep-subtitle">Donate to unlock community milestones and earn entries to win detailing overhauls, ceramic coatings, and 1-Year VIP Memberships!</p>
+        
+        <div class="progress-container">
+            <div class="progress-text" id="home-sweep-text">$1,500 / $100,000 Raised!</div>
+            <div class="progress-bar-fill" id="home-sweep-fill" style="width: 1.5%;"></div>
+        </div>
+
+        <p style="font-size: 0.92rem; color: var(--text-muted); max-width: 640px; margin: 0 auto 24px auto;">
+            <strong style="color: var(--gold);">Extra Rewards Pool:</strong> We are giving away 100 50% Off Detail Cards and 50 Free Wash Recording Coupons randomly to donors along the way!
+        </p>
+
+        <div class="milestones-grid">
+            <div class="milestone-card"><span class="milestone-goal">$1k</span><span class="milestone-reward">Basic Wash Package</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$5k</span><span class="milestone-reward">Premium Detail</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$10k</span><span class="milestone-reward">Ceramic Coating</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$15k</span><span class="milestone-reward">Interior Overhaul</span></div>
+            <div class="milestone-card featured-milestone"><span class="milestone-goal">$20k</span><span class="milestone-reward" style="color: #ffd700; font-weight: 600;">Full Exterior & Interior Ceramic Overhaul</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$25k</span><span class="milestone-reward">1 Month Pro</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$50k</span><span class="milestone-reward">3 Months Pro</span></div>
+            <div class="milestone-card"><span class="milestone-goal">$75k</span><span class="milestone-reward">6 Months Pro</span></div>
+            <div class="milestone-card" style="border-color: rgba(212, 175, 55, 0.7); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);"><span class="milestone-goal">$100k</span><span class="milestone-reward" style="color: var(--gold); font-weight: bold;">1 Year Pro!</span></div>
+        </div>
+
+        <a href="donate.html" class="btn-primary btn-gold" style="margin-top: 32px; font-size: 1.05rem; padding: 14px 34px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+            <span>🎟️ Donate & Enter to Win</span>
+        </a>
+    </section>
 
     <!-- Our Process Section -->
     <section id="process">
@@ -1040,35 +1128,6 @@
         <div style="text-align: center; margin-top: 24px;">
             <a href="reviews.html" class="nav-link" style="color: var(--gold); font-weight: 600;">Browse All Reviews & Ratings &rarr;</a>
         </div>
-    </section>
-
-    <!-- Community Sweepstakes Section -->
-    <section id="sweepstakes" class="sweepstakes-section">
-        <h2 class="sweep-title">Community Sweepstakes & Rewards</h2>
-        <p class="sweep-subtitle">Donate to unlock community milestones and earn entries to win massive prizes!</p>
-        
-        <div class="progress-container">
-            <div class="progress-text" id="home-sweep-text">$1,500 / $100,000 Raised!</div>
-            <div class="progress-bar-fill" id="home-sweep-fill" style="width: 1.5%;"></div>
-        </div>
-
-        <p style="font-size: 0.92rem; color: var(--text-muted); max-width: 640px; margin: 0 auto 24px auto;">
-            <strong style="color: var(--gold);">Extra Rewards Pool:</strong> We are giving away 100 50% Off Detail Cards and 50 Free Wash Recording Coupons randomly to donors along the way!
-        </p>
-
-        <div class="milestones-grid">
-            <div class="milestone-card"><span class="milestone-goal">$1k</span><span class="milestone-reward">Basic Wash Package</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$5k</span><span class="milestone-reward">Premium Detail</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$10k</span><span class="milestone-reward">Ceramic Coating</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$15k</span><span class="milestone-reward">Interior Overhaul</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$20k</span><span class="milestone-reward">Ceramic Shield Upgrade</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$25k</span><span class="milestone-reward">1 Month Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$50k</span><span class="milestone-reward">3 Months Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$75k</span><span class="milestone-reward">6 Months Pro</span></div>
-            <div class="milestone-card"><span class="milestone-goal">$100k</span><span class="milestone-reward" style="color:var(--gold); font-weight:bold;">1 Year Pro!</span></div>
-        </div>
-
-        <a href="donate.html" class="btn-primary btn-gold" style="margin-top: 32px; font-size: 1.05rem; padding: 14px 32px; text-decoration: none;">Donate & Enter to Win</a>
     </section>
 
     <!-- Contact & Newsletter Section -->
@@ -1615,6 +1674,31 @@
                 }
             });
         }
+
+        // Live Sweepstakes Goal Progress Initialization
+        async function initSweepstakesProgress() {
+            const textEl = document.getElementById('home-sweep-text');
+            const fillEl = document.getElementById('home-sweep-fill');
+            if (!textEl || !fillEl) return;
+
+            let totalRaised = 1500;
+            try {
+                const snapshot = await getDocs(collection(db, "donations"));
+                snapshot.docs.forEach(d => {
+                    totalRaised += (d.data().amount || 0);
+                });
+            } catch (e) {
+                // Keep base $1,500
+            }
+
+            const goal = 100000;
+            const percentage = Math.min(100, Math.max(1.5, (totalRaised / goal) * 100));
+            textEl.textContent = `$${totalRaised.toLocaleString()} / $100,000 Raised!`;
+            setTimeout(() => {
+                fillEl.style.width = `${percentage}%`;
+            }, 100);
+        }
+        initSweepstakesProgress();
     </script>
 </body>
 </html>

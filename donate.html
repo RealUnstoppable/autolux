@@ -89,19 +89,35 @@
         }
 
         .hero-banner {
-            background: linear-gradient(135deg, #141525 0%, #0F121C 100%);
-            border: 1px solid var(--border-gold);
+            background: radial-gradient(circle at 50% -20%, rgba(212, 175, 55, 0.16) 0%, #0a0a0a 75%);
+            background-color: #0a0a0a;
+            border: 1px solid rgba(212, 175, 55, 0.35);
             border-radius: var(--radius-lg);
             padding: clamp(36px, 5vw, 64px) 24px;
             text-align: center;
             margin-bottom: 48px;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px var(--gold-glow-subtle);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(212, 175, 55, 0.12);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #b8860b, #ffd700, #f5d77f, transparent);
         }
 
         .hero-banner h1 {
             font-size: clamp(2rem, 5vw, 3.2rem);
             margin-bottom: 12px;
             color: var(--gold-light);
+            letter-spacing: -0.5px;
         }
 
         .hero-banner p {
@@ -115,22 +131,30 @@
         .progress-container {
             width: 100%;
             max-width: 720px;
-            height: 40px;
-            background-color: #1A1A22;
+            height: 42px;
+            background-color: #0d0d0d;
             border-radius: var(--radius-full);
             margin: 0 auto;
             overflow: hidden;
             position: relative;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--border);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.35);
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2563EB, #D4AF37);
+            background: linear-gradient(90deg, #996515 0%, #d4af37 35%, #ffd700 70%, #fff1a8 100%);
+            background-size: 200% 100%;
+            animation: goldShimmer 3s ease infinite;
             width: 1.5%;
             border-radius: var(--radius-full);
-            transition: width 1s ease-in-out;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes goldShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .progress-text {
@@ -138,13 +162,13 @@
             width: 100%;
             text-align: center;
             font-weight: 800;
-            color: #FFFFFF;
-            line-height: 40px;
+            color: #ffffff;
+            line-height: 42px;
             z-index: 10;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
             pointer-events: none;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
         }
 
         .tier-grid {
@@ -155,10 +179,10 @@
         }
 
         .tier-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: #0d0d0d;
+            border: 1px solid rgba(212, 175, 55, 0.22);
             border-radius: var(--radius-md);
-            padding: 32px 20px;
+            padding: 34px 22px;
             text-align: center;
             cursor: pointer;
             transition: all var(--transition-base);
@@ -167,19 +191,20 @@
             flex-direction: column;
             justify-content: center;
             font-family: inherit;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
         }
 
         .tier-card:hover {
-            border-color: var(--border-gold);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+            border-color: #ffd700;
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.2);
         }
 
         .tier-card.selected {
-            border-color: var(--gold);
-            background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, var(--bg-card) 70%);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 24px rgba(212, 175, 55, 0.2);
-            transform: translateY(-3px);
+            border-color: #ffd700;
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, #0d0d0d 100%);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.9), 0 0 28px rgba(212, 175, 55, 0.3);
+            transform: translateY(-4px);
         }
 
         .badge-popular {
@@ -187,7 +212,7 @@
             top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--gold-gradient);
+            background: linear-gradient(90deg, #b8860b, #ffd700, #f5d77f);
             color: #000000;
             font-size: 0.72rem;
             font-weight: 800;
@@ -195,24 +220,25 @@
             letter-spacing: 1px;
             padding: 4px 14px;
             border-radius: var(--radius-full);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.6);
         }
 
         .tier-amount {
-            font-size: 2.5rem;
+            font-size: 2.6rem;
             font-weight: 900;
-            color: var(--text-main);
+            color: #ffffff;
             margin-bottom: 6px;
+            letter-spacing: -0.5px;
         }
 
         .tier-card.selected .tier-amount {
-            color: var(--gold-light);
+            color: #ffd700;
         }
 
         .tier-entries {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffd700;
             margin-bottom: 8px;
         }
 
@@ -223,12 +249,13 @@
 
         .donate-action-bar {
             text-align: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            background: #0d0d0d;
+            border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: var(--radius-md);
-            padding: 28px;
-            max-width: 600px;
+            padding: 30px;
+            max-width: 620px;
             margin: 0 auto;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
         }
 
         .stripe-badge {
@@ -236,10 +263,10 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: rgba(99, 91, 255, 0.15);
-            border: 1px solid rgba(99, 91, 255, 0.35);
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.35);
             border-radius: var(--radius-full);
-            color: #A5B4FC;
+            color: #ffd700;
             font-size: 0.8rem;
             font-weight: 700;
             margin-bottom: 16px;
@@ -339,10 +366,10 @@
         </div>
 
         <div class="donate-action-bar">
-            <p id="selected-summary" style="font-size: 1.1rem; margin-bottom: 20px; font-weight: 600;">
-                Selected: <span style="color: var(--gold);">$25 Donation</span> &bull; <span style="color: var(--accent);">30 Entries</span>
+            <p id="selected-summary" style="font-size: 1.15rem; margin-bottom: 20px; font-weight: 700; color: #ffffff;">
+                Selected: <span style="color: #ffd700;">$25 Donation</span> &bull; <span style="color: #ffd700;">30 Entries</span>
             </p>
-            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 16px 40px; font-size: 1.15rem;">Proceed to Payment</button>
+            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 16px 44px; font-size: 1.15rem; font-weight: 800;">Proceed to Payment &bull; $25 (30 Entries)</button>
         </div>
     </main>
 
@@ -465,7 +492,7 @@
     <!-- Logic Script -->
     <script type="module">
         import { auth, db, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './js/auth.js';
-        import { collection, addDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, addDoc, getDocs, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { initNavbar } from './js/navbar.js';
 
         let selectedAmount = 25;
@@ -536,9 +563,10 @@
                 selectedAmount = parseInt(card.getAttribute('data-amount'), 10);
                 selectedEntries = parseInt(card.getAttribute('data-entries'), 10);
 
-                selectedSummary.innerHTML = `Selected: <span style="color: var(--gold);">$${selectedAmount} Donation</span> &bull; <span style="color: var(--accent);">${selectedEntries} Entries</span>`;
+                selectedSummary.innerHTML = `Selected: <span style="color: #ffd700;">$${selectedAmount} Donation</span> &bull; <span style="color: #ffd700;">${selectedEntries} Entries</span>`;
                 modalAmountLabel.textContent = `Donating $${selectedAmount} for ${selectedEntries} Sweepstakes Entries`;
                 payBtn.textContent = `Pay $${selectedAmount} & Enter Sweepstakes`;
+                openStripeBtn.textContent = `Proceed to Payment • $${selectedAmount} (${selectedEntries} Entries)`;
             });
         });
 
@@ -568,11 +596,10 @@
                     });
                 } catch(dbErr) {
                     console.warn("Could not load donations from db:", dbErr.message || dbErr);
-                    totalRaised += 350;
                 }
 
                 const goal = 100000;
-                const percentage = Math.min(100, Math.max(1, (totalRaised / goal) * 100));
+                const percentage = Math.min(100, Math.max(1.5, (totalRaised / goal) * 100));
 
                 progressTextEl.textContent = `$${totalRaised.toLocaleString()} / $100,000 Raised!`;
                 progressFillEl.style.width = `${percentage}%`;
@@ -606,6 +633,19 @@
                     userId: authenticatedUser ? authenticatedUser.uid : null,
                     createdAt: serverTimestamp()
                 });
+
+                if (authenticatedUser && authenticatedUser.uid) {
+                    try {
+                        const userRef = doc(db, "users", authenticatedUser.uid);
+                        const userSnap = await getDoc(userRef);
+                        const currentEntries = (userSnap.exists() && userSnap.data().sweepstakesEntries) ? userSnap.data().sweepstakesEntries : 0;
+                        await setDoc(userRef, {
+                            sweepstakesEntries: currentEntries + selectedEntries
+                        }, { merge: true });
+                    } catch (userErr) {
+                        console.warn("Could not increment sweepstakesEntries on user profile:", userErr);
+                    }
+                }
 
                 stripeMsg.style.color = "var(--success)";
                 stripeMsg.textContent = `Thank you, ${name}! Your $${selectedAmount} donation was successful. ${selectedEntries} entries added to your name!`;
