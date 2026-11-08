@@ -41,3 +41,8 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+
+## 2025-05-24 - [CRITICAL/HIGH] Mass Assignment in User Editable Collections
+**Vulnerability:** User-editable collections (`carts`, `customer_interactions`, `support_tickets`) lacked strict schema validation (`hasOnly()`) for `create` and `update` operations, enabling mass assignment vulnerabilities where users could inject unauthorized fields into documents.
+**Learning:** Without explicit field restrictions during writes, authenticated clients could manipulate the structure of documents they own (e.g., adding `isAdmin` or elevating privileges). Validating payload keys (`request.resource.data.keys().hasOnly(...)`) for new records and verifying affected keys for updates (`request.resource.data.diff(resource.data).affectedKeys().hasOnly(...)`) is critical.
+**Prevention:** Always strictly enforce schema boundaries on collections dynamically populated from the client by verifying payload fields during both `create` and `update` transitions in `firestore.rules`.
