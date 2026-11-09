@@ -1,6 +1,6 @@
 window.ENV = {
     FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-    FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com",
+    FIREBASE_AUTH_DOMAIN: "autolux-detailing.firebaseapp.com",
     FIREBASE_PROJECT_ID: "dts-hub-website",
     FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app",
     FIREBASE_MESSAGING_SENDER_ID: "48345990988",

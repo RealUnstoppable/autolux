@@ -24,6 +24,7 @@ try {
 
     // Validate auth domain to allow dts-hub-website and autolux domains
     const validAutoluxDomains = [
+        'autolux-detailing.firebaseapp.com',
         'autolux.realunstoppable.store',
         'autolux.store',
         'dts-hub-website.firebaseapp.com',
@@ -60,7 +61,7 @@ try {
     } else if (error.code === 'auth/invalid-api-key') {
         console.error("Invalid API key detected:", error.message);
     } else {
-        console.error("Firebase connection error:", { message: error.message, details: error });
+        console.error("Firebase connection error:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
     }
 }
 
