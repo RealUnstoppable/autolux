@@ -41,3 +41,11 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+
+## 2025-03-09 - Secure User-Editable Firestore Collections Against Mass Assignment
+
+**Vulnerability:** Client-side updates to Firestore collections `users`, `customer_interactions`, `carts`, and `support_tickets` lacked strict payload restrictions. A malicious authenticated user could attempt mass assignment attacks to set unauthorized fields (e.g., escalating privileges via `isAdmin: true` in user documents, or modifying admin-only notes in support tickets) during `create` or `update` operations.
+
+**Learning:** When developing Firebase Security Rules, relying only on field presence checks (`!('isAdmin' in request.resource.data)`) is insufficient if other undocumented or admin-reserved fields might exist. The `diff().affectedKeys().hasOnly([...])` pattern must be used for `update` operations to strictly lock down exactly what users can change, and `keys().hasOnly([...])` must be used for `create` operations. For the `users` collection specifically, explicit rules must verify that sensitive values like `isBanned`, `totalUnBalance`, `referralCredits`, and `loyaltyPoints` are preserved during updates to prevent IDOR/privilege escalation.
+
+**Prevention:** Always enforce strict schema validation for user-writable collections using `hasOnly([...])` restrictions. Explicitly list all allowable fields for create/update. For collections handling sensitive user state (like `users`), explicitly assert that protected fields remain unchanged (`request.resource.data.FIELD == resource.data.FIELD`).
