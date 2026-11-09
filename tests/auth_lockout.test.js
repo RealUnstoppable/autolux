@@ -20,7 +20,7 @@ describe('Phase 1: Firebase Reconnection, Auth Lockout Guard & Latency Optimizat
         test('env.js defines mandatory Firebase configuration matching dts-hub-website', () => {
             const envContent = fs.readFileSync(path.resolve(process.cwd(), 'env.js'), 'utf8');
             expect(envContent).toContain('FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw"');
-            expect(envContent).toContain('FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com"');
+            expect(envContent).toContain('FIREBASE_AUTH_DOMAIN: "autolux-detailing.firebaseapp.com"');
             expect(envContent).toContain('FIREBASE_PROJECT_ID: "dts-hub-website"');
             expect(envContent).toContain('FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app"');
             expect(envContent).toContain('FIREBASE_MESSAGING_SENDER_ID: "48345990988"');
@@ -39,7 +39,7 @@ describe('Phase 1: Firebase Reconnection, Auth Lockout Guard & Latency Optimizat
 
             for (const page of pages) {
                 const content = fs.readFileSync(path.resolve(process.cwd(), page), 'utf8');
-                expect(content).toContain('FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com"');
+                expect(content).toContain('FIREBASE_AUTH_DOMAIN: "autolux-detailing.firebaseapp.com"');
                 expect(content).toContain('FIREBASE_PROJECT_ID: "dts-hub-website"');
             }
         });
