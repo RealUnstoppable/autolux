@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2026-11-10 - [Timing Attack Vulnerability in Webhook Signature Verification]
+**Vulnerability:** The Stripe webhook signature verification in `functions/index.js` used a standard string comparison (`!==`) instead of a constant-time comparison to verify the expected signature.
+**Learning:** Using standard comparison operators for cryptographic signatures allows attackers to perform timing attacks. They can observe the time taken for the comparison to fail and incrementally guess the correct signature byte by byte.
+**Prevention:** Always use `crypto.timingSafeEqual` (with `Buffer.from` to ensure buffer comparisons) when comparing cryptographic hashes, signatures, or secrets.
