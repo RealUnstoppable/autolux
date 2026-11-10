@@ -298,11 +298,16 @@ exports.stripeWebhook = onRequest({ invoker: "public", cors: true }, async (req,
                 .update(`${timestamp}.${payload}`)
                 .digest("hex");
 
-            if (signature !== expectedSignature) {
-                console.warn("Stripe webhook signature mismatch, proceeding with verified payload");
+            const sigBuf = Buffer.isBuffer(signature) ? signature : Buffer.from(String(signature || ""));
+            const expectedBuf = Buffer.from(expectedSignature);
+
+            if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
+                console.warn("Stripe webhook signature mismatch");
+                return res.status(400).send("Webhook signature mismatch");
             }
         } catch (err) {
             console.warn("Signature verification error:", err.message);
+            return res.status(400).send("Webhook signature verification error");
         }
     }
 
