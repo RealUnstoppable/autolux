@@ -4,13 +4,27 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
-exports.redeemReward = onCall(async (request) => {
-    // 1. Check Auth
+/**
+ * Helper to run a transaction that requires authentication and user doc retrieval.
+ */
+async function runUserTransaction(request, errorMessage, transactionCallback) {
     if (!request.auth) {
-        throw new HttpsError("unauthenticated", "You must be signed in to redeem rewards.");
+        throw new HttpsError("unauthenticated", errorMessage);
     }
-
     const uid = request.auth.uid;
+    const userRef = db.collection("users").doc(uid);
+
+    return await db.runTransaction(async (t) => {
+        const userDoc = await t.get(userRef);
+        if (!userDoc.exists) {
+            throw new HttpsError("not-found", "User profile not found.");
+        }
+        return transactionCallback(t, userDoc, uid, userRef);
+    });
+}
+
+
+exports.redeemReward = onCall(async (request) => {
     const { rewardId, cost, title } = request.data;
 
     // 2. Validate input
@@ -18,18 +32,11 @@ exports.redeemReward = onCall(async (request) => {
         throw new HttpsError("invalid-argument", "Invalid reward data provided.");
     }
 
-    const userRef = db.collection("users").doc(uid);
     const rewardLogRef = db.collection("user_rewards").doc(); // Create new doc reference
 
     try {
         // 3. Run Transaction
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
-
+        const result = await runUserTransaction(request, "You must be signed in to redeem rewards.", async (t, userDoc, uid, userRef) => {
             const currentPoints = userDoc.data().loyaltyPoints || 0;
 
             if (currentPoints < cost) {
@@ -57,32 +64,20 @@ exports.redeemReward = onCall(async (request) => {
         return { success: true, message: "Reward redeemed successfully!", newBalance: result.newBalance };
     } catch (error) {
         console.error("Transaction failure:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error instanceof HttpsError) throw error;
         throw new HttpsError("internal", error.message || "Failed to process redemption.");
     }
 });
 
 exports.linkUnAccount = onCall(async (request) => {
-    // 1. Check Auth
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "You must be signed in to link your UN account.");
-    }
-
-    const uid = request.auth.uid;
     const { unAccountEmail } = request.data || {};
 
     if (!unAccountEmail || typeof unAccountEmail !== "string" || !unAccountEmail.includes("@")) {
         throw new HttpsError("invalid-argument", "Valid UN account email is required.");
     }
 
-    const userRef = db.collection("users").doc(uid);
-
     try {
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
+        const result = await runUserTransaction(request, "You must be signed in to link your UN account.", async (t, userDoc, uid, userRef) => {
 
             const userData = userDoc.data();
             const currentPoints = userData.loyaltyPoints || 0;
@@ -126,6 +121,7 @@ exports.linkUnAccount = onCall(async (request) => {
         };
     } catch (error) {
         console.error("Link UN Account transaction failure:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error instanceof HttpsError) throw error;
         throw new HttpsError("internal", error.message || "Failed to link UN account.");
     }
 });
@@ -167,7 +163,7 @@ exports.createProduct = onRequest({ invoker: "public", cors: true }, async (req,
         await productRef.set(productData, { merge: true });
         return res.status(200).json({ success: true, productId: id, product: productData });
     } catch (error) {
-        console.error("Error creating product:", error);
+        console.error("Error creating product:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return res.status(500).json({ error: error.message });
     }
 });
@@ -177,25 +173,16 @@ exports.createProduct = onRequest({ invoker: "public", cors: true }, async (req,
  * Sets up detailing plan, awards UN loyalty points, and records the order.
  */
 exports.subscribeToClub = onCall(async (request) => {
-    if (!request.auth) {
-        throw new HttpsError("unauthenticated", "You must be signed in to join the AutoLux Club.");
-    }
-    const uid = request.auth.uid;
     const { planType = "monthly", vehicle, appointmentDate, address, referralCode } = request.data || {};
 
     const isAnnual = planType === "annual";
     const price = isAnnual ? 1290 : 129;
     const planName = isAnnual ? "AutoLux Detailing Club Annual - $1,290/yr" : "AutoLux Detailing Club Plan - $129/mo";
-    const userRef = db.collection("users").doc(uid);
     const planRef = db.collection("detailingPlans").doc();
     const orderRef = db.collection("orders").doc();
 
     try {
-        const result = await db.runTransaction(async (t) => {
-            const userDoc = await t.get(userRef);
-            if (!userDoc.exists) {
-                throw new HttpsError("not-found", "User profile not found.");
-            }
+        const result = await runUserTransaction(request, "You must be signed in to join the AutoLux Club.", async (t, userDoc, uid, userRef) => {
             const userData = userDoc.data();
             const currentPoints = userData.loyaltyPoints || 0;
             const clubBonusPoints = isAnnual ? 1200 : 200;
@@ -258,7 +245,8 @@ exports.subscribeToClub = onCall(async (request) => {
             checkoutUrl: `https://realunstoppable.store/checkout.html?productId=${isAnnual ? "autolux-club-annual" : "autolux-detailing-club"}&quantity=1`
         };
     } catch (error) {
-        console.error("Club subscription transaction failure:", error);
+        console.error("Club subscription transaction failure:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        if (error instanceof HttpsError) throw error;
         throw new HttpsError("internal", error.message || "Failed to process club subscription.");
     }
 });
@@ -422,7 +410,7 @@ exports.stripeWebhook = onRequest({ invoker: "public", cors: true }, async (req,
 
         return res.status(200).json({ received: true });
     } catch (error) {
-        console.error("Error processing Stripe webhook:", error);
+        console.error("Error processing Stripe webhook:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
         return res.status(500).json({ error: error.message });
     }
 });
