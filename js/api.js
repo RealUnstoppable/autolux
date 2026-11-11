@@ -29,8 +29,14 @@ async function handleApiRequest(coreFunction, payload, type) {
     }
 }
 
+/**
+ * Submits a new detailing request to Firestore without dropping the connection.
+ * @param {object} bookingData - The data for the detailing request.
+ * @returns {Promise<object>} The result of the operation.
+ */
 export async function submitDetailingRequest(bookingData) {
-    const currentUser = auth?.currentUser;
+    try {
+        const currentUser = auth?.currentUser;
     const userId = currentUser ? currentUser.uid : bookingData?.userId;
     if (!userId) {
         console.error("Cannot submit detailing request: User is not authenticated.");
@@ -40,7 +46,18 @@ export async function submitDetailingRequest(bookingData) {
     if (bookingData.referralCode) {
         payload.referralCode = bookingData.referralCode.trim().toUpperCase();
     }
-    return handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
+    return await handleApiRequest(submitDetailingRequestCore, [userId, bookingData], "Detailing");
+    } catch (error) {
+        console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Error in submitDetailingRequest:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
+        return { success: false, error: "An error occurred while submitting your request. Please try again later.", code: error.code || 'UNKNOWN_ERROR' };
+    }
 }
 
 export async function submitQuoteRequest(quoteData) {

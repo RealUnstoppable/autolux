@@ -104,7 +104,8 @@ export async function submitToFirestore(collectionName, payloadData) {
  * @returns {Promise<object>} The result of the operation.
  */
 export async function submitDetailingRequestCore(userId, requestData) {
-    if (!userId) {
+    try {
+        if (!userId) {
         return { success: false, error: "User must be authenticated to submit a request." };
     }
 
@@ -113,6 +114,17 @@ export async function submitDetailingRequestCore(userId, requestData) {
         additionalData.referralCode = requestData.referralCode.trim().toUpperCase();
     }
     return await submitGenericRequest("bookings", requestData, additionalData);
+    } catch (error) {
+        console.error("Firebase connection error - Code:", error.code || 'UNKNOWN_ERROR');
+        if (error.code === 'app-check/fetch-status-error' || error.code === 'permission-denied') {
+            console.error("App Check or CORS issue detected:", error.message);
+        } else if (error.code === 'auth/invalid-api-key') {
+            console.error("Invalid API key detected:", error.message);
+        } else {
+            console.error("Error in submitDetailingRequestCore:", { code: error.code || 'UNKNOWN_ERROR', message: error.message, details: error });
+        }
+        return { success: false, error: "Failed to submit request.", code: error.code || 'UNKNOWN_ERROR' };
+    }
 }
 
 /**

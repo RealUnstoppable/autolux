@@ -7,9 +7,9 @@ export let app, auth, db;
 // Mandatory Firebase configuration sharing across pages without session drop
 export const firebaseConfig = {
     apiKey: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_API_KEY) || "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
-    authDomain: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_AUTH_DOMAIN) || "dts-hub-website.firebaseapp.com",
-    projectId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_PROJECT_ID) || "dts-hub-website",
-    storageBucket: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_STORAGE_BUCKET) || "dts-hub-website.firebasestorage.app",
+    authDomain: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_AUTH_DOMAIN) || "autolux.realunstoppable.store",
+    projectId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_PROJECT_ID) || "autolux-detailing",
+    storageBucket: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_STORAGE_BUCKET) || "autolux-detailing.appspot.com",
     messagingSenderId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_MESSAGING_SENDER_ID) || "48345990988",
     appId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_APP_ID) || "1:48345990988:web:e3662c9b508168546471e9",
     measurementId: (typeof window !== 'undefined' && window.ENV && window.ENV.FIREBASE_MEASUREMENT_ID) || "G-ZN3YJPHVGX"
@@ -26,16 +26,14 @@ try {
     const validAutoluxDomains = [
         'autolux.realunstoppable.store',
         'autolux.store',
-        'dts-hub-website.firebaseapp.com',
-        'dts-hub-website.web.app',
-        'localhost'
+                'localhost'
     ];
-    const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux') || env.FIREBASE_AUTH_DOMAIN.includes('dts-hub'));
+    const isDomainAutolux = env.FIREBASE_AUTH_DOMAIN && (validAutoluxDomains.includes(env.FIREBASE_AUTH_DOMAIN) || env.FIREBASE_AUTH_DOMAIN.includes('autolux') );
     if (isAutolux && env.FIREBASE_AUTH_DOMAIN && !isDomainAutolux) {
         throw new Error("Critical Error: Environment config auth domain does not match expected domain.");
     }
 
-    const validProjectIds = ['dts-hub-website', 'autolux-detailing'];
+    const validProjectIds = ['autolux-detailing'];
     if (isAutolux && env.FIREBASE_PROJECT_ID && !validProjectIds.includes(env.FIREBASE_PROJECT_ID)) {
         throw new Error("Strict check failed: Environment config project ID does not match expected project ID.");
     }
