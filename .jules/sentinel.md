@@ -41,3 +41,7 @@ Always load configuration dynamically from an environment object (e.g., `window.
 **Vulnerability:** Missing strict schema checks (`hasOnly()`) on public/user collections like `reviews` and `bookings`. Authenticated users could inject arbitrary fields into documents during creation.
 **Learning:** Even with checks to ensure the `userId` matches and `status` is `pending`, a lack of `.hasOnly()` allows clients to persist unauthorized fields to the database.
 **Prevention:** Always use `request.resource.data.keys().hasOnly(['expected', 'keys'])` when authorizing `create` or `update` operations on documents written directly by clients.
+## 2024-03-20 - [Fail-Open Authorization Bypass in Cloud Functions]
+**Vulnerability:** The `createProduct` Cloud Function in `functions/index.js` had a fail-open authorization check (`if (expectedApiKey && apiKey !== expectedApiKey)`). If the `STORE_API_KEY` environment variable was not set, `expectedApiKey` was undefined, bypassing the `if` condition completely and allowing unauthorized access.
+**Learning:** Checking if an expected secret exists *before* validating the provided secret can create a fail-open scenario if the configuration is missing, bypassing intended security checks.
+**Prevention:** Always fail securely (fail-closed). If a required secret or configuration (like `STORE_API_KEY`) is missing, explicitly throw an error or return a server error (e.g., HTTP 500) rather than allowing execution to proceed. Additionally, use constant-time string comparisons (`crypto.timingSafeEqual`) to prevent timing attacks.

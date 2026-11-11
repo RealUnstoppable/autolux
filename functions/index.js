@@ -139,9 +139,16 @@ exports.createProduct = onRequest({ invoker: "public", cors: true }, async (req,
         return res.status(405).json({ error: "Method Not Allowed" });
     }
     // 1. Verify Secret API Key from other sites
-    const apiKey = req.headers["x-unstoppable-api-key"];
+    const apiKey = req.headers["x-unstoppable-api-key"] || "";
     const expectedApiKey = process.env.STORE_API_KEY;
-    if (expectedApiKey && apiKey !== expectedApiKey) {
+    if (!expectedApiKey) {
+        console.error("CRITICAL: STORE_API_KEY is not set in environment.");
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+    const crypto = require("crypto");
+    const givenBuf = Buffer.from(apiKey);
+    const expectedBuf = Buffer.from(expectedApiKey);
+    if (givenBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(givenBuf, expectedBuf)) {
         return res.status(401).json({ error: "Unauthorized" });
     }
     const { id, name, price, description, imageUrl, category, sourceSite, costBasis, profitMargin } = req.body || {};
