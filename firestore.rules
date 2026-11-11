@@ -58,8 +58,8 @@ service cloud.firestore {
     // Customer Interactions Collection
     match /customer_interactions/{interactionId} {
       allow read: if isAdmin() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId));
+      allow create: if isOwner(request.resource.data.userId) && request.resource.data.keys().hasOnly(['userId', 'type', 'details', 'date', 'status', 'createdAt']);
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && isOwner(request.resource.data.userId) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['type', 'details', 'date', 'status']));
       allow delete: if isAdmin();
     }
 

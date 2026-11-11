@@ -9,26 +9,26 @@ describe('Phase 1: Firebase Reconnection, Auth Lockout Guard & Latency Optimizat
             const { firebaseConfig } = await import('../js/auth.js');
             expect(firebaseConfig).toBeDefined();
             expect(firebaseConfig.apiKey).toBe("AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw");
-            expect(firebaseConfig.authDomain).toBe("dts-hub-website.firebaseapp.com");
-            expect(firebaseConfig.projectId).toBe("dts-hub-website");
-            expect(firebaseConfig.storageBucket).toBe("dts-hub-website.firebasestorage.app");
+            expect(firebaseConfig.authDomain).toBe("autolux.realunstoppable.store");
+            expect(firebaseConfig.projectId).toBe("autolux-detailing");
+            expect(firebaseConfig.storageBucket).toBe("autolux-detailing.appspot.com");
             expect(firebaseConfig.messagingSenderId).toBe("48345990988");
             expect(firebaseConfig.appId).toBe("1:48345990988:web:e3662c9b508168546471e9");
             expect(firebaseConfig.measurementId).toBe("G-ZN3YJPHVGX");
         });
 
-        test('env.js defines mandatory Firebase configuration matching dts-hub-website', () => {
+        test('env.js defines mandatory Firebase configuration matching autolux-detailing', () => {
             const envContent = fs.readFileSync(path.resolve(process.cwd(), 'env.js'), 'utf8');
             expect(envContent).toContain('FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw"');
-            expect(envContent).toContain('FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com"');
-            expect(envContent).toContain('FIREBASE_PROJECT_ID: "dts-hub-website"');
-            expect(envContent).toContain('FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app"');
+            expect(envContent).toContain('FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store"');
+            expect(envContent).toContain('FIREBASE_PROJECT_ID: "autolux-detailing"');
+            expect(envContent).toContain('FIREBASE_STORAGE_BUCKET: "autolux-detailing.appspot.com"');
             expect(envContent).toContain('FIREBASE_MESSAGING_SENDER_ID: "48345990988"');
             expect(envContent).toContain('FIREBASE_APP_ID: "1:48345990988:web:e3662c9b508168546471e9"');
             expect(envContent).toContain('FIREBASE_MEASUREMENT_ID: "G-ZN3YJPHVGX"');
         });
 
-        test('HTML pages define window.ENV with dts-hub-website config', () => {
+        test('HTML pages define window.ENV with autolux-detailing config', () => {
             const pages = [
                 'index.html',
                 'sign in beta.html',
@@ -39,8 +39,8 @@ describe('Phase 1: Firebase Reconnection, Auth Lockout Guard & Latency Optimizat
 
             for (const page of pages) {
                 const content = fs.readFileSync(path.resolve(process.cwd(), page), 'utf8');
-                expect(content).toContain('FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com"');
-                expect(content).toContain('FIREBASE_PROJECT_ID: "dts-hub-website"');
+                expect(content).toContain('FIREBASE_AUTH_DOMAIN: "autolux.realunstoppable.store"');
+                expect(content).toContain('FIREBASE_PROJECT_ID: "autolux-detailing"');
             }
         });
 
