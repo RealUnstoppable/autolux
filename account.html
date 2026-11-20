@@ -92,6 +92,7 @@
 
     <style>
         .container {
+            width: 100%;
             max-width: 1280px;
             margin: 32px auto;
             padding: 0 20px;
@@ -100,12 +101,46 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 340px 1fr;
+            grid-template-columns: 340px minmax(0, 1fr);
             gap: 28px;
         }
 
+        .dashboard-grid > * {
+            min-width: 0;
+            max-width: 100%;
+        }
+
         @media (max-width: 980px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 16px auto;
+                padding: 0 12px;
+            }
+            .card {
+                padding: 18px 14px !important;
+                margin-bottom: 16px !important;
+            }
+            .card h2 {
+                font-size: 1.05rem;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+            }
+            .garage-hero {
+                padding: 20px 16px !important;
+                margin-bottom: 18px !important;
+            }
+            .garage-hero-title {
+                font-size: 1.45rem !important;
+            }
+            .garage-hero-subtitle {
+                font-size: 0.88rem !important;
+            }
         }
 
         .card {

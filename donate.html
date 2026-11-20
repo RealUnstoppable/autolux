@@ -173,9 +173,27 @@
 
         .tier-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
             gap: 20px;
             margin-bottom: 40px;
+        }
+
+        @media (max-width: 640px) {
+            .tier-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+                margin-bottom: 24px;
+            }
+            .tier-card {
+                padding: 20px 16px;
+            }
+            #open-stripe-btn {
+                padding: 14px 18px !important;
+                font-size: 1rem !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+            }
         }
 
         .tier-card {
@@ -369,7 +387,7 @@
             <p id="selected-summary" style="font-size: 1.15rem; margin-bottom: 20px; font-weight: 700; color: #ffffff;">
                 Selected: <span style="color: #ffd700;">$25 Donation</span> &bull; <span style="color: #ffd700;">30 Entries</span>
             </p>
-            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 16px 44px; font-size: 1.15rem; font-weight: 800;">Proceed to Payment &bull; $25 (30 Entries)</button>
+            <button class="btn-primary btn-gold" id="open-stripe-btn" style="padding: 14px 24px; font-size: clamp(1rem, 3.5vw, 1.15rem); font-weight: 800; max-width: 100%; white-space: normal; text-align: center;">Proceed to Payment &bull; $25 (30 Entries)</button>
         </div>
     </main>
 
