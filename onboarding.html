@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.ENV = {
+            FIREBASE_API_KEY: "AIzaSyBgrI9HwJPSc5b4pu2Egsv4DE7shNwptSw",
+            FIREBASE_AUTH_DOMAIN: "dts-hub-website.firebaseapp.com",
+            FIREBASE_PROJECT_ID: "dts-hub-website",
+            FIREBASE_STORAGE_BUCKET: "dts-hub-website.firebasestorage.app",
+            FIREBASE_MESSAGING_SENDER_ID: "48345990988",
+            FIREBASE_APP_ID: "1:48345990988:web:e3662c9b508168546471e9",
+            FIREBASE_MEASUREMENT_ID: "G-ZN3YJPHVGX"
+        };
+    </script>
+    <script src="env.js?v=2"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Onboarding | AUTOLUX Luxury Mobile Detailing</title>
+    <meta name="description" content="Start your luxury mobile detailing journey with AUTOLUX. Configure your vehicle, select your wash package and frequency, and book showroom-grade service in Buford & Atlanta, GA. Call (404) 542-2712.">
+    <meta name="keywords" content="client onboarding auto detailing, Buford mobile detailing signup, luxury car wash onboarding, Atlanta mobile detailer client funnel">
+    <meta name="geo.region" content="US-GA">
+    <meta name="geo.placename" content="Buford, GA">
+    <meta name="geo.position" content="34.1207;-84.0044">
+    <meta name="ICBM" content="34.1207, -84.0044">
+    <link rel="canonical" href="https://autolux.realunstoppable.store/onboarding.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://autolux.realunstoppable.store/onboarding.html">
+    <meta property="og:title" content="Client Onboarding | AUTOLUX Luxury Mobile Detailing">
+    <meta property="og:description" content="Configure your vehicle, select your wash package, and schedule premier mobile detailing to your driveway in Buford & Greater Atlanta. Call (404) 542-2712.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=1200&auto=format">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://autolux.realunstoppable.store/onboarding.html">
+    <meta name="twitter:title" content="Client Onboarding | AUTOLUX Luxury Mobile Detailing">
+    <meta name="twitter:description" content="Configure your vehicle, select your wash package, and schedule premier mobile detailing in Buford & Greater Atlanta. Call (404) 542-2712.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1614165936126-2ed18e471b3b?q=80&w=1200&auto=format">
+
+    <!-- JSON-LD LocalBusiness / AutoWash Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["AutoWash", "LocalBusiness"],
+      "name": "AUTOLUX Detailing - Client Onboarding",
+      "image": "https://autolux.realunstoppable.store/favicon.png",
+      "@id": "https://autolux.realunstoppable.store/onboarding.html#service",
+      "url": "https://autolux.realunstoppable.store/onboarding.html",
+      "telephone": "(404) 542-2712",
+      "email": "coiner.double0y@icloud.com",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Buford & 30-Mile Vicinity",
+        "addressLocality": "Buford",
+        "addressRegion": "GA",
+        "postalCode": "30518",
+        "addressCountry": "US"
+      }
+    }
+    </script>
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <!-- Fonts & Global Design System -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+
+    <style>
+        .onboarding-section {
+            padding: clamp(36px, 6vw, 72px) 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-grow: 1;
+            min-height: calc(100vh - 160px);
+        }
+
+        .onboarding-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: clamp(24px, 4vw, 44px);
+            width: 100%;
+            max-width: 780px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px var(--gold-glow-subtle);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .onboarding-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .onboarding-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: var(--radius-full);
+            color: var(--gold-light);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 12px;
+        }
+
+        .onboarding-card h1 {
+            font-size: clamp(1.75rem, 3.8vw, 2.3rem);
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .onboarding-card .desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* ----------------------------------------------------
+           Progress Indicator Bar
+        ---------------------------------------------------- */
+        .progress-wrapper {
+            margin: 20px 0 32px 0;
+        }
+
+        .progress-track {
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #996515 0%, #d4af37 35%, #ffd700 70%, #fff1a8 100%);
+            height: 100%;
+            width: 16.66%;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+        }
+
+        .steps-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .step-label-node {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .step-label-node .node-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+        }
+
+        .step-label-node.active {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .step-label-node.active .node-num {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold-light);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .step-label-node.completed .node-num {
+            border-color: var(--gold);
+            background: var(--gold);
+            color: #000000;
+        }
+
+        @media (max-width: 640px) {
+            .step-label-node .node-text {
+                display: none;
+            }
+            .step-label-node .node-num {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ----------------------------------------------------
+           Wizard Step Panels
+        ---------------------------------------------------- */
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        /* ----------------------------------------------------
+           Selection Grids & Cards
+        ---------------------------------------------------- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .selectable-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .selectable-card:hover {
+            border-color: var(--border-gold);
+            transform: translateY(-2px);
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .selectable-card.selected {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(10, 10, 14, 0.7) 100%);
+            box-shadow: 0 4px 18px rgba(212, 175, 55, 0.18);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+
+        .card-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .card-price {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--gold-light);
+            margin: 6px 0;
+        }
+
+        .card-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 0;
+        }
+
+        /* Frequency Cards */
+        .freq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .freq-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .freq-card:hover {
+            border-color: var(--border-gold);
+            background: rgba(212, 175, 55, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .freq-card.selected {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(10, 10, 14, 0.8) 100%);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .freq-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .freq-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .freq-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold-light);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .freq-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Chips */
+        .chips-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .chip-btn {
+            background: #181820;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chip-btn:hover {
+            border-color: var(--border-gold);
+            color: var(--text-main);
+        }
+
+        .chip-btn.active {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.16);
+            color: var(--gold-light);
+            font-weight: 700;
+        }
+
+        /* Step Action Footer */
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .wizard-actions .btn-primary,
+        .wizard-actions .btn-outline {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 640px) {
+            .wizard-actions {
+                flex-direction: column-reverse;
+            }
+            .wizard-actions button {
+                width: 100%;
+            }
+        }
+
+        /* Live Investment Summary Widget */
+        .investment-summary {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(10, 10, 14, 0.6) 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid rgba(212, 175, 55, 0.25);
+            padding-top: 10px;
+            margin-top: 8px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .summary-row.total .price-tag {
+            color: var(--gold);
+            font-size: 1.35rem;
+            font-weight: 900;
+        }
+
+        /* Step 6 Choice Container */
+        .account-choice-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .account-choice-box.featured {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(14, 14, 18, 0.7) 100%);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.12);
+        }
+
+        .choice-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000000;
+            background: var(--gold-gradient);
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            margin-bottom: 12px;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 28px 0;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .or-divider span {
+            padding: 0 14px;
+        }
+
+        /* Confirmation Receipt */
+        .confirmation-view {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .conf-check {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(22, 163, 74, 0.2);
+            border: 2px solid #16A34A;
+            color: #4ade80;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+
+        .conf-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            max-width: 580px;
+            margin: 24px auto;
+            text-align: left;
+        }
+
+        .conf-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .conf-row:last-child {
+            border-bottom: none;
+            padding-top: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Unified Global Persistent Navigation -->
+    <nav class="site-navbar" id="global-navbar" aria-label="Main Navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">
+                <span class="logo-text">AUTOLUX</span>
+                <svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" aria-label="Checker Flag" aria-hidden="true">
+                    <rect width="24" height="18" fill="#FFFFFF" rx="2"/>
+                    <rect x="0" y="0" width="6" height="4.5" fill="#000000"/>
+                    <rect x="12" y="0" width="6" height="4.5" fill="#000000"/>
+                    <rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="0" y="9" width="6" height="4.5" fill="#000000"/>
+                    <rect x="12" y="9" width="6" height="4.5" fill="#000000"/>
+                    <rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/>
+                    <rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/>
+                </svg>
+            </a>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button class="menu-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="nav-links" id="nav-links">
+                <div class="nav-items-wrapper" id="nav-items-wrapper">
+                    <a href="index.html#process" class="nav-link" data-route="process" id="nav-item-process">Process</a>
+                    <a href="index.html#pricing" class="nav-link" data-route="pricing" id="nav-item-pricing">Pricing</a>
+                    <a href="index.html#gallery" class="nav-link" data-route="gallery" id="nav-item-gallery">Gallery</a>
+                    <a href="reviews.html" class="nav-link" data-route="reviews" id="nav-item-reviews">Reviews</a>
+                    <a href="rewards.html" class="nav-link" data-route="rewards" id="nav-item-rewards">Rewards</a>
+                    <a href="quote.html" class="nav-link" data-route="quote" id="nav-item-quote">Custom Quote</a>
+                    <span class="nav-gold-underline" id="nav-gold-underline" aria-hidden="true"></span>
+                </div>
+                <div class="nav-actions">
+                    <a href="onboarding.html" class="nav-cta btn-gold active" data-route="booking">Book Now</a>
+                    <a href="sign in beta.html" class="auth-btn nav-auth-link" id="nav-auth-btn" aria-label="Sign in to your account">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Client Onboarding Funnel -->
+    <main class="onboarding-section">
+        <div class="onboarding-card luxury-card" id="onboarding-container">
+            <div class="onboarding-header">
+                <div class="onboarding-badge">
+                    <span>✦</span> Client Onboarding Experience
+                </div>
+                <h1>Welcome to AUTOLUX Detailing</h1>
+                <p class="desc">Configure your vehicle profile, select your detailing package &amp; frequency, and connect with Buford's premier mobile studio.</p>
+            </div>
+
+            <!-- Progress Track -->
+            <div class="progress-wrapper">
+                <div class="progress-track" aria-hidden="true">
+                    <div class="progress-fill" id="funnel-progress-fill"></div>
+                </div>
+                <div class="steps-labels" id="funnel-steps-labels">
+                    <div class="step-label-node active" id="node-1"><span class="node-num">1</span><span class="node-text">Vehicle</span></div>
+                    <div class="step-label-node" id="node-2"><span class="node-num">2</span><span class="node-text">Wash Package</span></div>
+                    <div class="step-label-node" id="node-3"><span class="node-num">3</span><span class="node-text">Frequency</span></div>
+                    <div class="step-label-node" id="node-4"><span class="node-num">4</span><span class="node-text">Location</span></div>
+                    <div class="step-label-node" id="node-5"><span class="node-num">5</span><span class="node-text">Contact</span></div>
+                    <div class="step-label-node" id="node-6"><span class="node-num">6</span><span class="node-text">Confirm</span></div>
+                </div>
+            </div>
+
+            <!-- Validation Message Banner -->
+            <div id="step-error-msg" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: #fca5a5; padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 0.9rem;" role="alert" aria-live="assertive"></div>
+
+            <form id="onboarding-form" novalidate>
+                <!-- =========================================================
+                     STEP 1: Vehicle & Classification
+                ========================================================== -->
+                <div class="wizard-step active" id="step-1" data-step="1">
+                    <div class="step-title"><span>🚗</span> Step 1: Tell Us About Your Vehicle</div>
+                    <div class="step-subtitle">We personalize each chemical ratio and foam thickness based on your vehicle's make, clear coat, and size class.</div>
+
+                    <!-- Optional NHTSA VIN Quick Decoder -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 20px;">
+                        <label for="vehicle-vin" style="font-size: 0.88rem; font-weight: 700; color: var(--gold-light); display: flex; justify-content: space-between;">
+                            <span>NHTSA VIN Instant Lookup (Optional)</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">Auto-decodes year, make &amp; model</span>
+                        </label>
+                        <div style="display: flex; gap: 8px; margin-top: 6px;">
+                            <input type="text" id="vehicle-vin" placeholder="Enter 17-character VIN" maxlength="17" style="text-transform: uppercase; font-family: monospace; letter-spacing: 1px;">
+                            <button type="button" id="vin-decode-btn" class="btn-outline" style="white-space: nowrap; border-color: var(--border-gold); color: var(--gold); padding: 10px 16px;">Decode VIN</button>
+                        </div>
+                        <div id="vin-feedback" style="font-size: 0.82rem; margin-top: 6px; font-weight: 600;"></div>
+                    </div>
+
+                    <!-- Year, Make, Model, Color -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div class="input-group">
+                            <label for="vehicle-year">Year <span style="color: var(--error);">*</span></label>
+                            <input type="number" id="vehicle-year" placeholder="e.g. 2024" min="1920" max="2028" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="vehicle-make">Make <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="vehicle-make" placeholder="e.g. Porsche" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="vehicle-model">Model <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="vehicle-model" placeholder="e.g. 911 GT3" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="vehicle-color">Paint Color <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="vehicle-color" placeholder="e.g. Chalk / Agate" required>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Category Selector -->
+                    <label style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: block;">
+                        Select Vehicle Category <span style="color: var(--error);">*</span>
+                    </label>
+                    <div class="cards-grid" id="vehicle-type-cards">
+                        <div class="selectable-card selected" data-type="sedan">
+                            <div class="card-top">
+                                <span class="card-icon">🏎️</span>
+                                <span class="card-badge">Coupe / Sedan</span>
+                            </div>
+                            <div class="card-title">Sedan / Sports Coupe</div>
+                            <p class="card-desc">Two or four door luxury sedans, convertibles, and sports cars.</p>
+                        </div>
+                        <div class="selectable-card" data-type="suv">
+                            <div class="card-top">
+                                <span class="card-icon">🚙</span>
+                                <span class="card-badge">SUV / Crossover</span>
+                            </div>
+                            <div class="card-title">Luxury SUV / Crossover</div>
+                            <p class="card-desc">Mid-size &amp; full-size SUVs, Cayennes, Range Rovers, and Escalades.</p>
+                        </div>
+                        <div class="selectable-card" data-type="truck">
+                            <div class="card-top">
+                                <span class="card-icon">🛻</span>
+                                <span class="card-badge">Heavy Duty</span>
+                            </div>
+                            <div class="card-title">Truck / Heavy-Duty</div>
+                            <p class="card-desc">Full-size pickups, Ford F-150 / Lightning, Ram TRX, and work trucks.</p>
+                        </div>
+                        <div class="selectable-card" data-type="van">
+                            <div class="card-top">
+                                <span class="card-icon">🚐</span>
+                                <span class="card-badge">Fleet / High Roof</span>
+                            </div>
+                            <div class="card-title">Sprinter / Executive Van</div>
+                            <p class="card-desc">Mercedes Sprinters, passenger transport, and extended wheelbase.</p>
+                        </div>
+                        <div class="selectable-card" data-type="exotic">
+                            <div class="card-top">
+                                <span class="card-icon">⚡</span>
+                                <span class="card-badge">Exotic / Supercar</span>
+                            </div>
+                            <div class="card-title">Exotic / Collector Car</div>
+                            <p class="card-desc">Ferrari, McLaren, Lamborghini, and ultra-high-end bespoke exotics.</p>
+                        </div>
+                    </div>
+
+                    <!-- Parking Environment & Storage -->
+                    <label style="font-size: 0.88rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block;">Primary Parking Environment</label>
+                    <div class="chips-row" id="parking-chips">
+                        <button type="button" class="chip-btn active" data-env="Garage Kept">🏠 Garage Kept</button>
+                        <button type="button" class="chip-btn" data-env="Covered Carport">🛡️ Covered Carport</button>
+                        <button type="button" class="chip-btn" data-env="Parked Outside">☀️ Parked Outside (Driveway)</button>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <a href="index.html" class="btn-outline" style="text-decoration: none;">&larr; Back to Site</a>
+                        <button type="button" class="btn-primary btn-gold" id="step1-next-btn">Next: Detailing Packages &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     STEP 2: Wash / Detailing Package & Add-Ons
+                ========================================================== -->
+                <div class="wizard-step" id="step-2" data-step="2">
+                    <div class="step-title"><span>✨</span> Step 2: Choose Your Detailing Package</div>
+                    <div class="step-subtitle">Select the level of showroom care you want for your vehicle today. All services include our swirl-free two-bucket wash and pH-neutral foam.</div>
+
+                    <!-- Package Cards Grid -->
+                    <div class="cards-grid" id="packages-cards-grid">
+                        <div class="selectable-card" data-package="Signature Exterior Concierge Detail - $125" data-price="125">
+                            <div class="card-top">
+                                <span class="card-icon">🫧</span>
+                                <span class="card-badge">Express Care</span>
+                            </div>
+                            <div class="card-title">Signature Exterior Concierge</div>
+                            <div class="card-price">$125</div>
+                            <p class="card-desc">Safe snow foam wash, wheel/tire detail, hand dry with plush microfiber, and ceramic spray sealant.</p>
+                        </div>
+
+                        <div class="selectable-card selected" data-package="Luxury Sedan - $150" data-price="150">
+                            <div class="card-top">
+                                <span class="card-icon">🏎️</span>
+                                <span class="card-badge">Popular Choice</span>
+                            </div>
+                            <div class="card-title">Luxury Sedan Detailing</div>
+                            <div class="card-price">$150</div>
+                            <p class="card-desc">Complete interior vacuum, dash/console wipe-down, glass cleaning, snow foam hand wash, rim detail &amp; ceramic shine.</p>
+                        </div>
+
+                        <div class="selectable-card" data-package="Complete Interior Detail & Restoration - $175" data-price="175">
+                            <div class="card-top">
+                                <span class="card-icon">🪑</span>
+                                <span class="card-badge">Interior Focus</span>
+                            </div>
+                            <div class="card-title">Complete Interior Restoration</div>
+                            <div class="card-price">$175</div>
+                            <p class="card-desc">Deep steam extraction, leather deep cleanse &amp; condition, pet hair removal, stain lift, UV protection &amp; ozone odor elimination.</p>
+                        </div>
+
+                        <div class="selectable-card" data-package="Luxury SUV - $250" data-price="250">
+                            <div class="card-top">
+                                <span class="card-icon">🚙</span>
+                                <span class="card-badge">SUV Overhaul</span>
+                            </div>
+                            <div class="card-title">Luxury SUV Detailing</div>
+                            <div class="card-price">$250</div>
+                            <p class="card-desc">Heavy foam bath, wheel barrel scrub, three-row interior vacuum &amp; steam cleanse, leather conditioning, and hydrophobic paint sealant.</p>
+                        </div>
+
+                        <div class="selectable-card" data-package="Premium Truck - $280" data-price="280">
+                            <div class="card-top">
+                                <span class="card-icon">🛻</span>
+                                <span class="card-badge">Heavy Duty</span>
+                            </div>
+                            <div class="card-title">Premium Truck Detailing</div>
+                            <div class="card-price">$280</div>
+                            <p class="card-desc">Thorough mud/road grime chemical pre-rinse, wheel wells &amp; rim decontam, full truck bed wash, and heavy interior restoration.</p>
+                        </div>
+
+                        <div class="selectable-card" data-package="Sprinter Van - $400" data-price="400">
+                            <div class="card-top">
+                                <span class="card-icon">🚐</span>
+                                <span class="card-badge">Fleet &amp; High-Roof</span>
+                            </div>
+                            <div class="card-title">Executive Sprinter Van</div>
+                            <div class="card-price">$400</div>
+                            <p class="card-desc">Complete high-roof hand wash, multi-row interior steam extraction, captain chair leather therapy, and glass clarity coating.</p>
+                        </div>
+
+                        <div class="selectable-card" data-package="Ceramic Coating (3 to 7 Year Warranty) - $850" data-price="850">
+                            <div class="card-top">
+                                <span class="card-icon">💎</span>
+                                <span class="card-badge">Master Shield</span>
+                            </div>
+                            <div class="card-title">Ceramic Coating (3-7 Year)</div>
+                            <div class="card-price">$850</div>
+                            <p class="card-desc">Multi-stage paint decontamination, single-stage gloss enhancement, and 9H professional ceramic coating across bodywork and glass.</p>
+                        </div>
+                    </div>
+
+                    <!-- Luxury Add-Ons Selection -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; margin-top: 14px;">
+                        <label style="font-weight: 700; color: var(--gold-light); font-size: 0.95rem; margin-bottom: 10px; display: block;">
+                            Customize with Luxury Upgrades (Optional)
+                        </label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" class="onboarding-addon" data-key="addon_engine_bay" data-price="75" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                                <span>⚙️ Engine Bay Detail (+$75)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" class="onboarding-addon" data-key="addon_headlight_restoration" data-price="95" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                                <span>💡 Headlight Ceramic Restoration (+$95)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" class="onboarding-addon" data-key="addon_ozone_odor" data-price="60" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                                <span>💨 Ozone Odor Elimination (+$60)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" class="onboarding-addon" data-key="addon_glass_coating" data-price="80" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                                <span>🌧️ Glass Ceramic Rain Shield (+$80)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" class="onboarding-addon" data-key="addon_leather_shield" data-price="150" style="width: 16px; height: 16px; accent-color: var(--gold);">
+                                <span>🪑 Leather Shield Ceramic (+$150)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Live Investment Breakdown -->
+                    <div class="investment-summary">
+                        <div class="summary-row">
+                            <span>Selected Package:</span>
+                            <span id="summary-pkg-name">Luxury Sedan Detailing</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Base Detailing Investment:</span>
+                            <span id="summary-base-price">$150.00</span>
+                        </div>
+                        <div class="summary-row" id="summary-addons-row" style="display: none;">
+                            <span>Selected Add-Ons:</span>
+                            <span id="summary-addons-price">+$0.00</span>
+                        </div>
+                        <div class="summary-row" id="summary-discount-row" style="display: none; color: #16A34A;">
+                            <span id="summary-discount-label">Detaling Discount:</span>
+                            <span id="summary-discount-price">-$0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Estimated Investment:</span>
+                            <span class="price-tag" id="summary-total-price">$150.00</span>
+                        </div>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-outline" id="step2-back-btn">&larr; Back to Vehicle</button>
+                        <button type="button" class="btn-primary btn-gold" id="step2-next-btn">Next: Detailing Frequency &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     STEP 3: Frequency / How Regularly They Want It
+                ========================================================== -->
+                <div class="wizard-step" id="step-3" data-step="3">
+                    <div class="step-title"><span>🗓️</span> Step 3: How Regularly Would You Like Detailing?</div>
+                    <div class="step-subtitle">Maintain that permanent showroom perfection. Choose a recurring cadence for exclusive savings and priority scheduling, or select a single service.</div>
+
+                    <div class="freq-grid" id="frequency-cards">
+                        <!-- One-Time -->
+                        <div class="freq-card" data-freq="one_time">
+                            <div class="freq-header">
+                                <span class="freq-title">One-Time Service</span>
+                                <span class="freq-badge">Single Visit</span>
+                            </div>
+                            <p class="freq-desc">Book a single master-grade detail appointment with zero ongoing commitment. Perfect for an initial reset.</p>
+                        </div>
+
+                        <!-- Bi-Weekly -->
+                        <div class="freq-card" data-freq="bi_weekly">
+                            <div class="freq-header">
+                                <span class="freq-title">Bi-Weekly Detailing</span>
+                                <span class="freq-badge" style="background: rgba(22, 163, 74, 0.2); color: #4ade80; border-color: rgba(22, 163, 74, 0.4);">Save 10% Off</span>
+                            </div>
+                            <p class="freq-desc">Every 2 weeks. Keeps your vehicle pristine without lifting a finger. Automatic 10% discount on every detail.</p>
+                        </div>
+
+                        <!-- Monthly Detailing Club -->
+                        <div class="freq-card selected" data-freq="monthly_club">
+                            <div class="freq-header">
+                                <span class="freq-title">★ Monthly Detailing Club</span>
+                                <span class="freq-badge" style="background: rgba(212, 175, 55, 0.3); color: var(--gold-light); font-weight: 800;">15% Off + Perks</span>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 800; color: var(--gold); margin: 4px 0 8px 0;">$129 / month</div>
+                            <p class="freq-desc">Our flagship VIP subscription. Complete monthly upkeep, 15% discount on all extra services, priority weekend slots, and 200 UN loyalty points!</p>
+                        </div>
+
+                        <!-- Quarterly -->
+                        <div class="freq-card" data-freq="quarterly">
+                            <div class="freq-header">
+                                <span class="freq-title">Quarterly Refresh</span>
+                                <span class="freq-badge">Save 5% Off</span>
+                            </div>
+                            <p class="freq-desc">Every 3 months. Seasonal deep-clean overhaul, clay bar decontamination, and fresh hydrophobic ceramic sealant top-up.</p>
+                        </div>
+                    </div>
+
+                    <!-- Club Perks Highlight Banner -->
+                    <div id="club-perks-callout" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(10, 10, 14, 0.8) 100%); border: 1px solid var(--gold); border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--gold-light); font-size: 1rem; margin-bottom: 6px;">
+                            <span>🏆</span> <span>Detailing Club Member Privileges Activated:</span>
+                        </div>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">
+                            <li>15% instant discount applied to your chosen detailing package</li>
+                            <li>VIP priority slot reservation (morning driveway guaranteed)</li>
+                            <li>Direct access to our private Detailing Club community milestone pool</li>
+                            <li>Double points earned on all store purchases &bull; 
+                                <a href="https://realunstoppable.store/checkout.html?productId=autolux-detailing-club&quantity=1" target="_blank" rel="noopener noreferrer" style="color: var(--gold); text-decoration: underline;">
+                                    View in Unstoppable Store <span class="badge-x2-points">✦ x2 POINTS</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-outline" id="step3-back-btn">&larr; Back to Packages</button>
+                        <button type="button" class="btn-primary btn-gold" id="step3-next-btn">Next: Service Location &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     STEP 4: Service Address & Arrival Window
+                ========================================================== -->
+                <div class="wizard-step" id="step-4" data-step="4">
+                    <div class="step-title"><span>📍</span> Step 4: Where Should Our Mobile Studio Arrive?</div>
+                    <div class="step-subtitle">We bring the full studio (deionized spot-free water, whisper-quiet generator, safe steam equipment) directly to your driveway or office.</div>
+
+                    <div class="input-group">
+                        <label for="service-address">Street Address <span style="color: var(--error);">*</span></label>
+                        <input type="text" id="service-address" placeholder="e.g. 123 Luxury Way" required autocomplete="street-address">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div class="input-group">
+                            <label for="service-city">City <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="service-city" value="Buford" placeholder="e.g. Buford" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="service-state">State <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="service-state" value="GA" readonly style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted);">
+                        </div>
+                        <div class="input-group">
+                            <label for="service-zip">ZIP Code <span style="color: var(--error);">*</span></label>
+                            <input type="text" id="service-zip" placeholder="30518" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="service-gate">Gate Code / Parking Notes <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
+                        <input type="text" id="service-gate" placeholder="e.g. Gate code #1234, park on left side of driveway">
+                    </div>
+
+                    <!-- Location Type Chips -->
+                    <label style="font-size: 0.88rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: block;">Location Type</label>
+                    <div class="chips-row" id="address-type-chips">
+                        <button type="button" class="chip-btn active" data-glyph="🏠" data-label="Home">🏠 Residence / Home</button>
+                        <button type="button" class="chip-btn" data-glyph="🏢" data-label="Office">🏢 Workplace / Office</button>
+                        <button type="button" class="chip-btn" data-glyph="🏎️" data-label="Garage">🏎️ Private Garage / Storage</button>
+                    </div>
+
+                    <!-- Arrival Window Preference -->
+                    <div class="input-group" style="margin-top: 14px;">
+                        <label for="preferred-window">Preferred Time Window</label>
+                        <select id="preferred-window">
+                            <option value="Morning (8:00 AM - 12:00 PM)">Morning Window (8:00 AM - 12:00 PM)</option>
+                            <option value="Afternoon (12:00 PM - 4:00 PM)">Afternoon Window (12:00 PM - 4:00 PM)</option>
+                            <option value="Weekend Priority">Weekend Priority (Saturday VIP)</option>
+                            <option value="First Available">First Available Concierge Slot</option>
+                        </select>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-outline" id="step4-back-btn">&larr; Back to Frequency</button>
+                        <button type="button" class="btn-primary btn-gold" id="step4-next-btn">Next: Contact Info &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     STEP 5: Contact Info & Preferences
+                ========================================================== -->
+                <div class="wizard-step" id="step-5" data-step="5">
+                    <div class="step-title"><span>👤</span> Step 5: Client Contact Details</div>
+                    <div class="step-subtitle">How should our master detailer notify you upon arrival? We send prompt text alerts with GPS tracking.</div>
+
+                    <div class="input-group">
+                        <label for="client-name">Full Name <span style="color: var(--error);">*</span></label>
+                        <input type="text" id="client-name" placeholder="e.g. Sterling Archer" required autocomplete="name">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="client-phone">Phone Number (Mobile SMS) <span style="color: var(--error);">*</span></label>
+                        <input type="tel" id="client-phone" placeholder="e.g. (404) 542-2712" required autocomplete="tel">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="client-notes">Detailing Focus or Vehicle Notes <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
+                        <textarea id="client-notes" rows="3" placeholder="Tell us about specific swirl marks, pet hair, leather wear, or ceramic requests..."></textarea>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-outline" id="step5-back-btn">&larr; Back to Location</button>
+                        <button type="button" class="btn-primary btn-gold" id="step5-next-btn">Next: Review &amp; Finish &rarr;</button>
+                    </div>
+                </div>
+
+                <!-- =========================================================
+                     STEP 6: Account Creation & Completion
+                ========================================================== -->
+                <div class="wizard-step" id="step-6" data-step="6">
+                    <div class="step-title"><span>🏁</span> Step 6: Finalize Your Client Profile</div>
+                    <div class="step-subtitle">Review your detailing configuration below and complete your onboarding.</div>
+
+                    <!-- Client Summary Card -->
+                    <div class="conf-card" id="onboarding-summary-card" style="margin-top: 0; margin-bottom: 24px;">
+                        <div style="font-weight: 800; color: var(--gold-light); font-size: 1.05rem; margin-bottom: 12px; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 6px;">
+                            📋 Detailing Order Summary
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Client Name:</span>
+                            <span id="review-name" style="font-weight: 600; color: var(--text-main);">Sterling Archer</span>
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Vehicle:</span>
+                            <span id="review-vehicle" style="font-weight: 600; color: var(--text-main);">2024 Porsche 911 GT3 (Chalk)</span>
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Selected Service:</span>
+                            <span id="review-package" style="font-weight: 600; color: var(--text-main);">Luxury Sedan Detailing</span>
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Frequency:</span>
+                            <span id="review-frequency" style="font-weight: 600; color: var(--gold);">Monthly Detailing Club</span>
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Service Address:</span>
+                            <span id="review-address" style="font-weight: 600; color: var(--text-main);">123 Luxury Way, Buford, GA</span>
+                        </div>
+                        <div class="conf-row">
+                            <span style="color: var(--text-muted);">Total Investment:</span>
+                            <span id="review-total" style="font-weight: 900; color: var(--gold); font-size: 1.25rem;">$150.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Option A: Create AutoLux Account -->
+                    <div class="account-choice-box featured" id="create-account-box">
+                        <div class="choice-badge">✦ Recommended &bull; Claim 100 UN Loyalty Points</div>
+                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 1.2rem; color: var(--text-main);">Create Your AutoLux Account</h3>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5;">
+                            Save your vehicle to your private garage, track service history, view before/after photo logs, and manage recurring visits with one click.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                            <div class="input-group">
+                                <label for="account-email">Email Address <span style="color: var(--error);">*</span></label>
+                                <input type="email" id="account-email" placeholder="name@domain.com" autocomplete="email">
+                            </div>
+                            <div class="input-group">
+                                <label for="account-password">Create Password (Min 6 chars) <span style="color: var(--error);">*</span></label>
+                                <input type="password" id="account-password" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-primary btn-gold" id="btn-create-account-complete" style="width: 100%; padding: 14px; font-size: 1.05rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>⚡ Complete Onboarding &amp; Create Account (+100 Pts)</span>
+                        </button>
+                    </div>
+
+                    <div class="or-divider">
+                        <span>OR CONTINUE WITHOUT AN ACCOUNT</span>
+                    </div>
+
+                    <!-- Option B: Continue as Guest Client (No Account / No Email) -->
+                    <div class="account-choice-box" id="guest-account-box" style="text-align: center; border-color: rgba(255, 255, 255, 0.15);">
+                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 1.15rem; color: var(--text-main);">Continue as Guest Client</h3>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; max-width: 540px; margin-left: auto; margin-right: auto;">
+                            No email or password needed! We will store your vehicle, wash package, and service address securely under your name (<span id="guest-name-preview" style="color: var(--gold-light); font-weight: 700;">Valued Client</span>).
+                        </p>
+
+                        <button type="button" class="btn-outline" id="btn-guest-complete" style="width: 100%; max-width: 440px; padding: 14px; font-size: 1rem; border-color: var(--border-gold); color: var(--gold-light); cursor: pointer;">
+                            ✓ Continue as Guest Client (No Account / No Email)
+                        </button>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-outline" id="step6-back-btn">&larr; Back to Contact</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- =========================================================
+                 CONFIRMATION VIEW (Shown after successful submission)
+            ========================================================== -->
+            <div id="confirmation-view" class="confirmation-view" style="display: none;">
+                <div class="conf-check">✓</div>
+                <div class="onboarding-badge">
+                    <span>✦</span> Booking Request Confirmed
+                </div>
+                <h2 style="font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 8px;">Welcome to AutoLux, <span id="conf-client-name">Valued Client</span>!</h2>
+                <p style="color: var(--text-muted); max-width: 580px; margin: 0 auto 24px auto; font-size: 1rem; line-height: 1.6;">
+                    Your mobile detailing onboarding is complete. Our concierge team has received your vehicle details and will dispatch our mobile studio to your driveway.
+                </p>
+
+                <div class="conf-card">
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Reference ID:</span>
+                        <span id="conf-ref-id" style="font-weight: 700; color: var(--gold); font-family: monospace;">ALX-98421</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Account Type:</span>
+                        <span id="conf-account-type" style="font-weight: 600; color: var(--text-main);">Registered Member (+100 Loyalty Points)</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Vehicle:</span>
+                        <span id="conf-vehicle" style="font-weight: 600; color: var(--text-main);">2024 Porsche 911 GT3 (Chalk)</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Service Package:</span>
+                        <span id="conf-package" style="font-weight: 600; color: var(--text-main);">Luxury Sedan Detailing</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Frequency:</span>
+                        <span id="conf-frequency" style="font-weight: 600; color: var(--gold);">Monthly Detailing Club</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Service Location:</span>
+                        <span id="conf-address" style="font-weight: 600; color: var(--text-main);">123 Luxury Way, Buford, GA</span>
+                    </div>
+                    <div class="conf-row">
+                        <span style="color: var(--text-muted);">Total Investment:</span>
+                        <span id="conf-total" style="font-weight: 900; color: var(--gold); font-size: 1.25rem;">$150.00</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 24px;">
+                    <a href="account.html" class="btn-primary btn-gold" id="conf-account-btn" style="text-decoration: none; padding: 14px 28px;">Go to My Client Garage &rarr;</a>
+                    <a href="index.html" class="btn-outline" style="text-decoration: none; padding: 14px 28px;">Return to Homepage</a>
+                    <a href="tel:4045422712" class="btn-outline" style="text-decoration: none; padding: 14px 24px; border-color: var(--border-gold); color: var(--gold);">📞 Call Concierge (404) 542-2712</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Persistent Footer -->
+    <footer class="site-footer" id="site-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="logo" aria-label="AutoLux Detailing Home">
+                    <span class="logo-text">AUTOLUX</span>
+                    <svg class="checker-flag" viewBox="0 0 24 18" width="1.1em" height="0.85em" aria-label="Checker Flag" aria-hidden="true">
+                        <rect width="24" height="18" fill="#FFFFFF" rx="2"/>
+                        <rect x="0" y="0" width="6" height="4.5" fill="#000000"/>
+                        <rect x="12" y="0" width="6" height="4.5" fill="#000000"/>
+                        <rect x="6" y="4.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="18" y="4.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="0" y="9" width="6" height="4.5" fill="#000000"/>
+                        <rect x="12" y="9" width="6" height="4.5" fill="#000000"/>
+                        <rect x="6" y="13.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="18" y="13.5" width="6" height="4.5" fill="#000000"/>
+                        <rect x="0" y="0" width="24" height="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" rx="2"/>
+                    </svg>
+                </a>
+                <p>Buford's premier luxury mobile detailing studio. We bring the showroom back to your driveway with precision craftsmanship, pH-neutral safe foam, and ceramic protection.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#process">Our Process</a></li>
+                    <li><a href="index.html#pricing">Packages &amp; Pricing</a></li>
+                    <li><a href="index.html#gallery">Recent Gallery</a></li>
+                    <li><a href="reviews.html">Client Reviews</a></li>
+                    <li><a href="rewards.html">Loyalty Rewards</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="onboarding.html?package=sedan">Luxury Sedan Detail</a></li>
+                    <li><a href="onboarding.html?package=suv">Luxury SUV Package</a></li>
+                    <li><a href="onboarding.html?package=truck">Heavy-Duty Truck</a></li>
+                    <li><a href="onboarding.html?package=van">Executive Sprinter Van</a></li>
+                    <li><a href="onboarding.html?package=club">Detailing Club Plan ($129/mo)</a></li>
+                    <li><a href="quote.html">Custom Fleet / PPF Quote</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Concierge</h4>
+                <div class="footer-contact-item">
+                    <span>📞</span>
+                    <a href="tel:4045422712">(404) 542-2712</a>
+                </div>
+                <div class="footer-contact-item">
+                    <span>✉️</span>
+                    <a href="mailto:coiner.double0y@icloud.com">coiner.double0y@icloud.com</a>
+                </div>
+                <div class="footer-contact-item">
+                    <span>📍</span>
+                    <span>Buford, GA & 30-Mile Vicinity</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2026 Unstoppable Detailing Services / AUTOLUX. All rights reserved. Buford, GA.</div>
+            <div class="footer-social-links">
+                <a href="https://www.instagram.com/autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+                <span>&bull;</span>
+                <a href="https://www.tiktok.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a>
+                <span>&bull;</span>
+                <a href="https://www.youtube.com/@autoluxdetailing" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic Script -->
+    <script type="module">
+        import { auth, db, getAuthStatePromise } from './js/auth.js';
+        import { createUserWithEmailAndPassword, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { doc, setDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { initNavbar } from './js/navbar.js';
+        import {
+            VEHICLE_TYPES,
+            WASH_PACKAGES,
+            FREQUENCIES,
+            calculateOnboardingInvestment,
+            validateVehicleStep,
+            validateServiceStep,
+            validateFrequencyStep,
+            validateAddressStep,
+            validateContactStep,
+            validateAccountCreationStep,
+            formatOnboardingUserPayload,
+            formatOnboardingBookingPayload,
+            saveOnboardingDraft,
+            getOnboardingDraft,
+            clearOnboardingDraft,
+            decodeVinWithNhtsa
+        } from './js/onboarding.js';
+        import { submitDetailingRequest, submitDetailingPlan, submitQuoteRequest } from './js/api.js';
+
+        // State variables
+        let currentStep = 1;
+        const totalSteps = 6;
+
+        let onboardingData = {
+            vehicle: {
+                year: '',
+                make: '',
+                model: '',
+                color: '',
+                vehicleType: 'sedan',
+                vin: '',
+                parkingEnvironment: 'Garage Kept'
+            },
+            service: {
+                washPackage: 'Luxury Sedan - $150',
+                packagePrice: 150,
+                addOns: [],
+                notes: ''
+            },
+            frequency: {
+                frequency: 'monthly_club'
+            },
+            address: {
+                address: '',
+                city: 'Buford',
+                state: 'GA',
+                zip: '30518',
+                gateCode: '',
+                glyph: '🏠',
+                glyphLabel: 'Home',
+                preferredWindow: 'Morning (8:00 AM - 12:00 PM)'
+            },
+            contact: {
+                name: '',
+                phone: '',
+                notes: ''
+            }
+        };
+
+        // DOM elements
+        const progressFill = document.getElementById('funnel-progress-fill');
+        const errorBanner = document.getElementById('step-error-msg');
+        const onboardingForm = document.getElementById('onboarding-form');
+        const confirmationView = document.getElementById('confirmation-view');
+
+        function showError(msg) {
+            if (!errorBanner) return;
+            errorBanner.textContent = msg;
+            errorBanner.style.display = 'block';
+            errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function clearError() {
+            if (!errorBanner) return;
+            errorBanner.textContent = '';
+            errorBanner.style.display = 'none';
+        }
+
+        function updateProgress() {
+            const percentage = ((currentStep) / totalSteps) * 100;
+            if (progressFill) {
+                progressFill.style.width = `${percentage}%`;
+            }
+
+            for (let i = 1; i <= totalSteps; i++) {
+                const node = document.getElementById(`node-${i}`);
+                if (!node) continue;
+                node.classList.remove('active', 'completed');
+                if (i === currentStep) {
+                    node.classList.add('active');
+                } else if (i < currentStep) {
+                    node.classList.add('completed');
+                }
+            }
+        }
+
+        function goToStep(stepNum) {
+            clearError();
+            if (stepNum < 1 || stepNum > totalSteps) return;
+
+            document.querySelectorAll('.wizard-step').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            const targetPanel = document.getElementById(`step-${stepNum}`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+
+            currentStep = stepNum;
+            updateProgress();
+
+            if (currentStep === 6) {
+                populateReviewSummary();
+            }
+
+            saveOnboardingDraft({
+                currentStep,
+                onboardingData
+            });
+
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function refreshInvestment() {
+            const pkgPrice = onboardingData.service.packagePrice || 150;
+            let addOnsTotal = 0;
+            document.querySelectorAll('.onboarding-addon:checked').forEach(cb => {
+                addOnsTotal += Number(cb.getAttribute('data-price')) || 0;
+            });
+
+            const freqKey = onboardingData.frequency.frequency || 'one_time';
+            const calc = calculateOnboardingInvestment({
+                packagePrice: pkgPrice,
+                addOnsTotal: addOnsTotal,
+                frequencyId: freqKey
+            });
+
+            const pkgNameEl = document.getElementById('summary-pkg-name');
+            const basePriceEl = document.getElementById('summary-base-price');
+            const addonsRow = document.getElementById('summary-addons-row');
+            const addonsPriceEl = document.getElementById('summary-addons-price');
+            const discountRow = document.getElementById('summary-discount-row');
+            const discountLabel = document.getElementById('summary-discount-label');
+            const discountPriceEl = document.getElementById('summary-discount-price');
+            const totalPriceEl = document.getElementById('summary-total-price');
+
+            if (pkgNameEl) pkgNameEl.textContent = onboardingData.service.washPackage.split(' - ')[0] || 'Selected Package';
+            if (basePriceEl) basePriceEl.textContent = `$${calc.basePrice.toFixed(2)}`;
+
+            if (addonsRow && addonsPriceEl) {
+                if (addOnsTotal > 0) {
+                    addonsRow.style.display = 'flex';
+                    addonsPriceEl.textContent = `+$${addOnsTotal.toFixed(2)}`;
+                } else {
+                    addonsRow.style.display = 'none';
+                }
+            }
+
+            if (discountRow && discountPriceEl) {
+                if (calc.discountAmount > 0) {
+                    discountRow.style.display = 'flex';
+                    if (discountLabel) discountLabel.textContent = `${calc.frequencyLabel} Discount (${calc.discountPercent}%):`;
+                    discountPriceEl.textContent = `-$${calc.discountAmount.toFixed(2)}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
+
+            if (totalPriceEl) totalPriceEl.textContent = `$${calc.finalTotal.toFixed(2)}`;
+            onboardingData.service.totalInvestment = calc.finalTotal;
+            onboardingData.service.addOnsTotal = addOnsTotal;
+        }
+
+        function populateReviewSummary() {
+            const v = onboardingData.vehicle;
+            const s = onboardingData.service;
+            const f = onboardingData.frequency;
+            const a = onboardingData.address;
+            const c = onboardingData.contact;
+
+            const nameEl = document.getElementById('review-name');
+            const vehicleEl = document.getElementById('review-vehicle');
+            const pkgEl = document.getElementById('review-package');
+            const freqEl = document.getElementById('review-frequency');
+            const addrEl = document.getElementById('review-address');
+            const totalEl = document.getElementById('review-total');
+            const guestPreview = document.getElementById('guest-name-preview');
+
+            const vehicleSummary = `${v.year} ${v.make} ${v.model} (${v.color})`.trim() || 'Custom Vehicle';
+            const fullAddress = `${a.address}, ${a.city}, ${a.state} ${a.zip}`.trim();
+            const clientName = c.name.trim() || 'Valued Client';
+
+            if (nameEl) nameEl.textContent = clientName;
+            if (guestPreview) guestPreview.textContent = clientName;
+            if (vehicleEl) vehicleEl.textContent = `${vehicleSummary} [${v.vehicleType.toUpperCase()}]`;
+            if (pkgEl) pkgEl.textContent = s.washPackage;
+            if (freqEl) freqEl.textContent = FREQUENCIES[f.frequency]?.label || f.frequency;
+            if (addrEl) addrEl.textContent = fullAddress;
+            if (totalEl) totalEl.textContent = `$${(s.totalInvestment || 150).toFixed(2)}`;
+        }
+
+        // =========================================================
+        // Step 1: Vehicle & VIN
+        // =========================================================
+        const vinBtn = document.getElementById('vin-decode-btn');
+        const vinInput = document.getElementById('vehicle-vin');
+        const vinFeedback = document.getElementById('vin-feedback');
+
+        if (vinBtn && vinInput) {
+            vinBtn.addEventListener('click', async () => {
+                const vin = vinInput.value.trim();
+                if (!vin) {
+                    vinFeedback.style.color = "var(--error)";
+                    vinFeedback.textContent = "Please enter a VIN to decode.";
+                    return;
+                }
+                vinBtn.disabled = true;
+                vinFeedback.style.color = "var(--gold)";
+                vinFeedback.textContent = "Connecting to NHTSA VPIC database...";
+
+                const res = await decodeVinWithNhtsa(vin);
+                vinBtn.disabled = false;
+                if (res.success) {
+                    vinFeedback.style.color = "var(--success)";
+                    vinFeedback.textContent = `✓ Decoded: ${res.year} ${res.make} ${res.model}`;
+                    if (res.year) document.getElementById('vehicle-year').value = res.year;
+                    if (res.make) document.getElementById('vehicle-make').value = res.make;
+                    if (res.model) document.getElementById('vehicle-model').value = res.model;
+
+                    // Match body class to category
+                    const body = (res.bodyClass || '').toLowerCase();
+                    let matchedType = 'sedan';
+                    if (body.includes('sport utility') || body.includes('suv') || body.includes('crossover')) matchedType = 'suv';
+                    else if (body.includes('truck') || body.includes('pickup')) matchedType = 'truck';
+                    else if (body.includes('van')) matchedType = 'van';
+
+                    selectVehicleType(matchedType);
+                } else {
+                    vinFeedback.style.color = "var(--error)";
+                    vinFeedback.textContent = res.error || "Could not decode VIN.";
+                }
+            });
+        }
+
+        function selectVehicleType(typeKey) {
+            onboardingData.vehicle.vehicleType = typeKey;
+            document.querySelectorAll('#vehicle-type-cards .selectable-card').forEach(c => {
+                if (c.getAttribute('data-type') === typeKey) {
+                    c.classList.add('selected');
+                } else {
+                    c.classList.remove('selected');
+                }
+            });
+        }
+
+        document.querySelectorAll('#vehicle-type-cards .selectable-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const t = card.getAttribute('data-type');
+                if (t) selectVehicleType(t);
+            });
+        });
+
+        document.querySelectorAll('#parking-chips .chip-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#parking-chips .chip-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                onboardingData.vehicle.parkingEnvironment = btn.getAttribute('data-env') || 'Garage Kept';
+            });
+        });
+
+        document.getElementById('step1-next-btn')?.addEventListener('click', () => {
+            const vData = {
+                year: document.getElementById('vehicle-year')?.value,
+                make: document.getElementById('vehicle-make')?.value,
+                model: document.getElementById('vehicle-model')?.value,
+                color: document.getElementById('vehicle-color')?.value,
+                vehicleType: onboardingData.vehicle.vehicleType,
+                vin: vinInput?.value,
+                parkingEnvironment: onboardingData.vehicle.parkingEnvironment
+            };
+
+            const val = validateVehicleStep(vData);
+            if (!val.isValid) {
+                const firstKey = Object.keys(val.errors)[0];
+                showError(val.errors[firstKey]);
+                return;
+            }
+
+            onboardingData.vehicle = vData;
+            goToStep(2);
+            refreshInvestment();
+        });
+
+        // =========================================================
+        // Step 2: Wash Packages & Add-Ons
+        // =========================================================
+        document.querySelectorAll('#packages-cards-grid .selectable-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#packages-cards-grid .selectable-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                const pkg = card.getAttribute('data-package');
+                const price = Number(card.getAttribute('data-price')) || 150;
+                onboardingData.service.washPackage = pkg;
+                onboardingData.service.packagePrice = price;
+                refreshInvestment();
+            });
+        });
+
+        document.querySelectorAll('.onboarding-addon').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const selectedAddons = [];
+                document.querySelectorAll('.onboarding-addon:checked').forEach(c => {
+                    selectedAddons.push({
+                        key: c.getAttribute('data-key'),
+                        price: Number(c.getAttribute('data-price')) || 0
+                    });
+                });
+                onboardingData.service.addOns = selectedAddons;
+                refreshInvestment();
+            });
+        });
+
+        document.getElementById('step2-back-btn')?.addEventListener('click', () => goToStep(1));
+        document.getElementById('step2-next-btn')?.addEventListener('click', () => {
+            const val = validateServiceStep({ washPackage: onboardingData.service.washPackage });
+            if (!val.isValid) {
+                showError(val.errors.washPackage);
+                return;
+            }
+            goToStep(3);
+        });
+
+        // =========================================================
+        // Step 3: Frequency
+        // =========================================================
+        document.querySelectorAll('#frequency-cards .freq-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('#frequency-cards .freq-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                const f = card.getAttribute('data-freq');
+                onboardingData.frequency.frequency = f;
+
+                const clubCallout = document.getElementById('club-perks-callout');
+                if (clubCallout) {
+                    clubCallout.style.display = (f === 'monthly_club') ? 'block' : 'none';
+                }
+                refreshInvestment();
+            });
+        });
+
+        document.getElementById('step3-back-btn')?.addEventListener('click', () => goToStep(2));
+        document.getElementById('step3-next-btn')?.addEventListener('click', () => {
+            const val = validateFrequencyStep({ frequency: onboardingData.frequency.frequency });
+            if (!val.isValid) {
+                showError(val.errors.frequency);
+                return;
+            }
+            goToStep(4);
+        });
+
+        // =========================================================
+        // Step 4: Service Address & Location
+        // =========================================================
+        document.querySelectorAll('#address-type-chips .chip-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#address-type-chips .chip-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                onboardingData.address.glyph = btn.getAttribute('data-glyph') || '🏠';
+                onboardingData.address.glyphLabel = btn.getAttribute('data-label') || 'Home';
+            });
+        });
+
+        document.getElementById('step4-back-btn')?.addEventListener('click', () => goToStep(3));
+        document.getElementById('step4-next-btn')?.addEventListener('click', () => {
+            const aData = {
+                address: document.getElementById('service-address')?.value,
+                city: document.getElementById('service-city')?.value,
+                state: document.getElementById('service-state')?.value || 'GA',
+                zip: document.getElementById('service-zip')?.value,
+                gateCode: document.getElementById('service-gate')?.value,
+                glyph: onboardingData.address.glyph,
+                glyphLabel: onboardingData.address.glyphLabel,
+                preferredWindow: document.getElementById('preferred-window')?.value
+            };
+
+            const val = validateAddressStep(aData);
+            if (!val.isValid) {
+                const firstKey = Object.keys(val.errors)[0];
+                showError(val.errors[firstKey]);
+                return;
+            }
+
+            onboardingData.address = aData;
+            goToStep(5);
+        });
+
+        // =========================================================
+        // Step 5: Contact Info
+        // =========================================================
+        document.getElementById('step5-back-btn')?.addEventListener('click', () => goToStep(4));
+        document.getElementById('step5-next-btn')?.addEventListener('click', () => {
+            const cData = {
+                name: document.getElementById('client-name')?.value,
+                phone: document.getElementById('client-phone')?.value,
+                notes: document.getElementById('client-notes')?.value
+            };
+
+            const val = validateContactStep(cData);
+            if (!val.isValid) {
+                const firstKey = Object.keys(val.errors)[0];
+                showError(val.errors[firstKey]);
+                return;
+            }
+
+            onboardingData.contact = cData;
+            goToStep(6);
+        });
+
+        document.getElementById('step6-back-btn')?.addEventListener('click', () => goToStep(5));
+
+        // =========================================================
+        // Step 6: Submission Engine (Create Account VS Guest Client)
+        // =========================================================
+        async function executeOnboarding({ isCreatingAccount, email = null, password = null, triggerBtn }) {
+            clearError();
+            if (triggerBtn) {
+                triggerBtn.disabled = true;
+                triggerBtn.classList.add('btn-loading');
+            }
+
+            try {
+                let uid = null;
+                let userRecord = null;
+
+                if (isCreatingAccount) {
+                    // 1. Firebase Auth Registration
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    userRecord = userCredential.user;
+                    uid = userRecord.uid;
+                } else {
+                    // 2. Guest Client Mode: Store as user with their name and no email!
+                    try {
+                        const anonCred = await signInAnonymously(auth);
+                        if (anonCred && anonCred.user) {
+                            userRecord = anonCred.user;
+                            uid = anonCred.user.uid;
+                        }
+                    } catch (anonErr) {
+                        console.warn("signInAnonymously unavailable, falling back to client guest ID:", anonErr);
+                    }
+
+                    if (!uid) {
+                        uid = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+                    }
+                }
+
+                // 3. Construct Firestore User Document
+                const userPayload = formatOnboardingUserPayload({
+                    uid: uid,
+                    name: onboardingData.contact.name,
+                    email: isCreatingAccount ? email : null, // explicitly null for guest!
+                    phone: onboardingData.contact.phone,
+                    vehicleData: onboardingData.vehicle,
+                    serviceData: onboardingData.service,
+                    frequencyData: onboardingData.frequency,
+                    addressData: onboardingData.address,
+                    isGuest: !isCreatingAccount
+                });
+
+                // Write to Firestore users collection
+                try {
+                    await setDoc(doc(db, "users", uid), {
+                        ...userPayload,
+                        createdAt: serverTimestamp(),
+                        signupDate: serverTimestamp()
+                    }, { merge: true });
+                } catch (fsErr) {
+                    console.warn("Could not write directly to users collection, saving locally:", fsErr);
+                    // Store fallback in localStorage
+                    try {
+                        const guestProfiles = JSON.parse(localStorage.getItem('autolux_guest_clients') || '[]');
+                        guestProfiles.push(userPayload);
+                        localStorage.setItem('autolux_guest_clients', JSON.stringify(guestProfiles));
+                    } catch(e) {}
+                }
+
+                // 4. Submit Booking Request
+                const bookingPayload = formatOnboardingBookingPayload({
+                    userId: uid,
+                    customerName: onboardingData.contact.name,
+                    customerEmail: isCreatingAccount ? email : '',
+                    customerPhone: onboardingData.contact.phone,
+                    vehicleSummary: `${onboardingData.vehicle.year} ${onboardingData.vehicle.make} ${onboardingData.vehicle.model} (${onboardingData.vehicle.color})`,
+                    servicePackage: onboardingData.service.washPackage,
+                    addOns: (onboardingData.service.addOns || []).map(a => a.key || a),
+                    frequency: onboardingData.frequency.frequency,
+                    address: `${onboardingData.address.address}, ${onboardingData.address.city}, ${onboardingData.address.state} ${onboardingData.address.zip}`,
+                    preferredWindow: onboardingData.address.preferredWindow,
+                    notes: onboardingData.contact.notes,
+                    totalAmount: onboardingData.service.totalInvestment || 150
+                });
+
+                const isClub = onboardingData.frequency.frequency === 'monthly_club';
+                if (isClub) {
+                    await submitDetailingPlan({
+                        ...bookingPayload,
+                        planType: 'monthly',
+                        price: 129
+                    });
+                } else {
+                    await submitDetailingRequest(bookingPayload);
+                }
+
+                // 5. Clean up draft
+                clearOnboardingDraft();
+
+                // 6. Show Confirmation View
+                onboardingForm.style.display = 'none';
+                confirmationView.style.display = 'block';
+
+                const confName = document.getElementById('conf-client-name');
+                const confRef = document.getElementById('conf-ref-id');
+                const confType = document.getElementById('conf-account-type');
+                const confVeh = document.getElementById('conf-vehicle');
+                const confPkg = document.getElementById('conf-package');
+                const confFreq = document.getElementById('conf-frequency');
+                const confAddr = document.getElementById('conf-address');
+                const confTot = document.getElementById('conf-total');
+                const confBtn = document.getElementById('conf-account-btn');
+
+                const refCode = `ALX-${Math.floor(10000 + Math.random() * 90000)}`;
+
+                if (confName) confName.textContent = onboardingData.contact.name;
+                if (confRef) confRef.textContent = refCode;
+                if (confType) {
+                    confType.textContent = isCreatingAccount ? 'Registered Account (100 Welcome Points Credited)' : 'Guest Client (Stored by Name, No Email)';
+                }
+                if (confVeh) confVeh.textContent = `${onboardingData.vehicle.year} ${onboardingData.vehicle.make} ${onboardingData.vehicle.model} (${onboardingData.vehicle.color})`;
+                if (confPkg) confPkg.textContent = onboardingData.service.washPackage;
+                if (confFreq) confFreq.textContent = FREQUENCIES[onboardingData.frequency.frequency]?.label || onboardingData.frequency.frequency;
+                if (confAddr) confAddr.textContent = `${onboardingData.address.address}, ${onboardingData.address.city}, ${onboardingData.address.state} ${onboardingData.address.zip}`;
+                if (confTot) confTot.textContent = `$${(onboardingData.service.totalInvestment || 150).toFixed(2)}`;
+
+                if (confBtn) {
+                    if (isCreatingAccount) {
+                        confBtn.style.display = 'inline-block';
+                        confBtn.href = 'account.html';
+                        confBtn.textContent = 'Go to My Client Garage &rarr;';
+                    } else {
+                        confBtn.style.display = 'none';
+                    }
+                }
+
+                window.scrollTo({ top: 100, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error("Onboarding submission error:", err);
+                let msg = err.message || "Failed to complete onboarding. Please try again.";
+                if (err.code === 'auth/email-already-in-use') {
+                    msg = "An account with this email already exists. Please sign in or use another email.";
+                } else if (err.code === 'auth/weak-password') {
+                    msg = "Password should be at least 6 characters.";
+                }
+                showError(msg);
+            } finally {
+                if (triggerBtn) {
+                    triggerBtn.disabled = false;
+                    triggerBtn.classList.remove('btn-loading');
+                }
+            }
+        }
+
+        // Action: Create Account & Complete
+        document.getElementById('btn-create-account-complete')?.addEventListener('click', () => {
+            const email = document.getElementById('account-email')?.value;
+            const password = document.getElementById('account-password')?.value;
+            const val = validateAccountCreationStep({ email, password }, true);
+            if (!val.isValid) {
+                const firstKey = Object.keys(val.errors)[0];
+                showError(val.errors[firstKey]);
+                return;
+            }
+
+            executeOnboarding({
+                isCreatingAccount: true,
+                email,
+                password,
+                triggerBtn: document.getElementById('btn-create-account-complete')
+            });
+        });
+
+        // Action: Continue as Guest Client (Name and NO email)
+        document.getElementById('btn-guest-complete')?.addEventListener('click', () => {
+            executeOnboarding({
+                isCreatingAccount: false,
+                email: null,
+                password: null,
+                triggerBtn: document.getElementById('btn-guest-complete')
+            });
+        });
+
+        // Parse query params (e.g. ?package=suv or ?type=truck)
+        const urlParams = new URLSearchParams(window.location.search);
+        const pkgParam = urlParams.get('package');
+        if (pkgParam) {
+            const p = pkgParam.toLowerCase();
+            if (p.includes('suv')) {
+                selectVehicleType('suv');
+                onboardingData.service.washPackage = 'Luxury SUV - $250';
+                onboardingData.service.packagePrice = 250;
+            } else if (p.includes('truck')) {
+                selectVehicleType('truck');
+                onboardingData.service.washPackage = 'Premium Truck - $280';
+                onboardingData.service.packagePrice = 280;
+            } else if (p.includes('van') || p.includes('sprinter')) {
+                selectVehicleType('van');
+                onboardingData.service.washPackage = 'Sprinter Van - $400';
+                onboardingData.service.packagePrice = 400;
+            } else if (p.includes('club')) {
+                onboardingData.frequency.frequency = 'monthly_club';
+            }
+        }
+
+        // Restore draft if present
+        const savedDraft = getOnboardingDraft();
+        if (savedDraft && savedDraft.onboardingData) {
+            onboardingData = { ...onboardingData, ...savedDraft.onboardingData };
+            if (onboardingData.vehicle) {
+                if (onboardingData.vehicle.year) document.getElementById('vehicle-year').value = onboardingData.vehicle.year;
+                if (onboardingData.vehicle.make) document.getElementById('vehicle-make').value = onboardingData.vehicle.make;
+                if (onboardingData.vehicle.model) document.getElementById('vehicle-model').value = onboardingData.vehicle.model;
+                if (onboardingData.vehicle.color) document.getElementById('vehicle-color').value = onboardingData.vehicle.color;
+                if (onboardingData.vehicle.vehicleType) selectVehicleType(onboardingData.vehicle.vehicleType);
+            }
+            if (onboardingData.address) {
+                if (onboardingData.address.address) document.getElementById('service-address').value = onboardingData.address.address;
+                if (onboardingData.address.city) document.getElementById('service-city').value = onboardingData.address.city;
+                if (onboardingData.address.zip) document.getElementById('service-zip').value = onboardingData.address.zip;
+            }
+            if (onboardingData.contact) {
+                if (onboardingData.contact.name) document.getElementById('client-name').value = onboardingData.contact.name;
+                if (onboardingData.contact.phone) document.getElementById('client-phone').value = onboardingData.contact.phone;
+            }
+        }
+
+        updateProgress();
+        refreshInvestment();
+    </script>
+</body>
+</html>

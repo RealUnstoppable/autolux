@@ -89,6 +89,7 @@
     <link rel="modulepreload" href="./js/auth.js">
     <link rel="modulepreload" href="./js/vehicle_images.js">
     <link rel="modulepreload" href="./js/maintenance_calendar.js">
+    <link rel="modulepreload" href="./js/car_selector.js">
 
     <style>
         .container {
@@ -718,6 +719,9 @@
                         </div>
                     </div>
 
+                    <!-- Chick-fil-A Inspired Gamified Car Selector Container -->
+                    <div id="cfa-car-selector-container"></div>
+
                     <!-- Add Vehicle Form with Quick Suggestions & Live Visualizer -->
                     <div class="vehicle-add-box" style="margin-top: 24px;">
                         <span style="font-size: 0.82rem; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Add Vehicle to Garage</span>
@@ -1028,6 +1032,7 @@
         import { fetchUserServiceLogs } from './js/service_logs.js';
         import { matchVehicle } from './js/vehicle_images.js';
         import { generateMonthData, calculateProtectionScore, calculateAiPredictedDetailDate, getRetentionSpaNotification } from './js/maintenance_calendar.js';
+        import { ChickFilACarSelector, soundFx, triggerCelebration } from './js/car_selector.js';
 
         const overlay = document.getElementById('loading-overlay');
         const userNameEl = document.getElementById('user-name');
@@ -1646,6 +1651,9 @@
             'purple': { name: 'Viola Metallic', hex: '#9333ea' }
         };
 
+        let carSelectorInstance = null;
+        let isSyncingFromCfa = false;
+
         function updateLiveVisualizer(inputVal) {
             const preview = document.getElementById('vehicle-visualizer-preview');
             if (!preview) return;
@@ -1674,6 +1682,43 @@
             if (colorBadge) colorBadge.textContent = detectedColor.name;
             if (titleEl) titleEl.textContent = clean || '2024 Porsche 911 GT3';
             if (recEl) recEl.textContent = `Recommended: ${matched.recommendedService} every ${matched.recommendedWashInterval} days`;
+
+            // Sync with Chick-fil-A Car Selector if updated externally
+            if (carSelectorInstance && !isSyncingFromCfa && clean) {
+                carSelectorInstance.parseAndSetVehicle(clean);
+                carSelectorInstance.render();
+                carSelectorInstance.attachEventListeners();
+                carSelectorInstance.calculateProgress();
+            }
+        }
+
+        // Initialize Chick-fil-A Inspired Gamified Car Selector
+        const cfaMount = document.getElementById('cfa-car-selector-container');
+        if (cfaMount) {
+            carSelectorInstance = new ChickFilACarSelector(cfaMount, {
+                initialVehicle: '2024 Porsche 911 GT3',
+                onVehicleChange: (data) => {
+                    isSyncingFromCfa = true;
+                    const input = document.getElementById('new-vehicle');
+                    if (input && input.value !== data.fullName) {
+                        input.value = data.fullName;
+                        updateLiveVisualizer(data.fullName);
+                    }
+                    isSyncingFromCfa = false;
+                },
+                onAddVehicle: (data) => {
+                    const input = document.getElementById('new-vehicle');
+                    if (input) input.value = data.fullName;
+                    const form = document.getElementById('add-vehicle-form');
+                    if (form) {
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                        } else {
+                            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                        }
+                    }
+                }
+            });
         }
 
         const newVehicleInput = document.getElementById('new-vehicle');
@@ -1727,7 +1772,13 @@
                 renderVehicles(userData.vehicles);
                 input.value = '';
                 msgEl.style.color = '#16A34A';
-                msgEl.textContent = `✓ ${val} added to your garage!`;
+                msgEl.textContent = `✓ ${val} added to your garage! +150 XP Earned! 🏆`;
+                try {
+                    soundFx.play('victory');
+                    triggerCelebration(document.getElementById('cfa-selector-root') || btn);
+                } catch {
+                    // Safe celebration trigger
+                }
                 setTimeout(() => { msgEl.textContent = ''; }, 4000);
             } catch (err) {
                 console.error("Error adding vehicle:", err.message || err, err.code ? `(Code: ${err.code})` : "");

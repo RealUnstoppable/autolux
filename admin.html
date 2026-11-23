@@ -1076,7 +1076,7 @@
                 
                 row.innerHTML = `
                     <td>${escapeHTML(user.username) || escapeHTML(user.name) || "N/A"}</td>
-                    <td>${escapeHTML(user.email)}</td>
+                    <td>${escapeHTML(user.email) || '<span style="color: var(--text-secondary); font-style: italic;">No Email (Guest)</span>'}</td>
                     <td>${signupDate}</td>
                     <td>${subStatus}</td>
                     <td>${statusBadge}</td>

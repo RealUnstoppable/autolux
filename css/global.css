@@ -1816,4 +1816,592 @@ textarea:focus {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* ==========================================================================
+   CHICK-FIL-A INSPIRED GAMIFIED CAR SELECTOR & GARAGE CONFIGURATOR
+   ========================================================================== */
+
+.cfa-car-selector-card {
+    background: linear-gradient(180deg, rgba(21, 21, 26, 0.98) 0%, rgba(10, 10, 12, 0.99) 100%);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius-lg, 16px);
+    padding: clamp(16px, 3vw, 26px);
+    margin-top: 24px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px var(--gold-glow-subtle);
+    position: relative;
+    overflow: hidden;
+}
+
+.cfa-car-selector-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.cfa-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+}
+
+.cfa-subhead {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.cfa-title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.cfa-hud-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cfa-badge {
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: var(--radius-full, 9999px);
+    border: 1px solid var(--border-gold);
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--gold);
+    transition: all var(--transition-fast);
+}
+
+.cfa-sound-btn, .cfa-randomize-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm, 6px);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cfa-sound-btn:hover, .cfa-randomize-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    transform: translateY(-1px);
+}
+
+/* Gamified Build Readiness Progress */
+.cfa-progress-container {
+    margin-bottom: 18px;
+}
+
+.cfa-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-bottom: 6px;
+}
+
+.cfa-progress-title {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.cfa-progress-score {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.cfa-progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius-full, 9999px);
+    overflow: hidden;
+}
+
+.cfa-progress-meter {
+    height: 100%;
+    background: linear-gradient(90deg, #38BDF8 0%, var(--gold) 60%, #16A34A 100%);
+    border-radius: var(--radius-full, 9999px);
+    transition: width 0.4s ease;
+}
+
+/* Studio Turntable Stage */
+.cfa-stage-wrapper {
+    position: relative;
+    border-radius: var(--radius-md, 12px);
+    margin-bottom: 20px;
+    background: radial-gradient(circle at 50% 70%, rgba(212, 175, 55, 0.08) 0%, rgba(13, 13, 17, 0.8) 60%, #070709 100%);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    padding: 24px 16px 16px 16px;
+}
+
+.cfa-stage-glass {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.cfa-car-avatar-box {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.chickfila-car-svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.7));
+    transition: transform 0.3s ease;
+}
+
+.chickfila-car-svg.car-bounce {
+    animation: cfaCarBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cfaCarBounce {
+    0% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(-16px) scale(1.02); }
+    50% { transform: translateY(5px) scale(0.97); }
+    75% { transform: translateY(-3px) scale(1.01); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+.cfa-stage-toggles {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 14px;
+    z-index: 2;
+}
+
+.cfa-toggle-chip {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all var(--transition-fast);
+}
+
+.cfa-toggle-chip:hover {
+    color: var(--text-main);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cfa-toggle-chip.active {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.cfa-live-spec-tag {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(10, 10, 14, 0.85);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-full, 9999px);
+    padding: 4px 12px;
+    font-size: 0.78rem;
+}
+
+.cfa-tag-icon {
+    font-size: 0.95rem;
+}
+
+.cfa-tag-name {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.cfa-tag-color {
+    color: var(--text-muted);
+    padding-left: 6px;
+    font-weight: 600;
+}
+
+/* Chick-fil-A Segmented Stepper Tabs */
+.cfa-steps-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 4px;
+    border-radius: var(--radius-md, 10px);
+    border: 1px solid var(--border);
+    margin-bottom: 18px;
+}
+
+@media (max-width: 580px) {
+    .cfa-steps-tabs {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cfa-step-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all var(--transition-fast);
+}
+
+.cfa-step-tab .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.cfa-step-tab.active {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--gold);
+    border: 1px solid var(--border-gold);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cfa-step-tab.active .step-num {
+    background: var(--gold);
+    color: #0A0A0C;
+    font-weight: 800;
+}
+
+/* Step Panes */
+.cfa-step-content {
+    display: none;
+    animation: cfaFadeIn 0.3s ease;
+}
+
+.cfa-step-content.active {
+    display: block;
+}
+
+@keyframes cfaFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Step 1: Body Types Grid */
+.cfa-body-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.cfa-body-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 10px);
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.cfa-body-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.cfa-body-card.selected {
+    background: rgba(212, 175, 55, 0.12);
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+}
+
+.cfa-body-icon {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.cfa-body-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 2px;
+}
+
+.cfa-body-card.selected .cfa-body-name {
+    color: var(--gold);
+}
+
+.cfa-body-desc {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    line-height: 1.25;
+}
+
+/* Step 2: Palette Swatches */
+.cfa-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+    gap: 10px;
+}
+
+.cfa-swatch-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md, 10px);
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cfa-swatch-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.cfa-swatch-btn.selected {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.25);
+}
+
+.cfa-swatch-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s ease;
+}
+
+.cfa-swatch-btn.selected .cfa-swatch-circle {
+    transform: scale(1.15);
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+.cfa-swatch-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.cfa-swatch-btn.selected .cfa-swatch-label {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* Step 3: Spec & Trim */
+.cfa-spec-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cfa-input-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+
+.cfa-makes-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cfa-pill-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cfa-pill-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-main);
+}
+
+.cfa-pill-btn.selected {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.cfa-fields-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cfa-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 110px;
+}
+
+.cfa-field-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.cfa-field-group input {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    border-radius: var(--radius-sm, 6px);
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.cfa-field-group input:focus {
+    border-color: var(--gold);
+}
+
+.cfa-nick-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cfa-nick-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cfa-nick-chip:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* Footer Action Bar */
+.cfa-footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.cfa-footer-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.cfa-meta-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.cfa-meta-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.cfa-save-btn {
+    background: var(--gold-gradient, linear-gradient(180deg, #FFE885 0%, #D4AF37 50%, #997300 100%));
+    color: #0A0A0C !important;
+    font-weight: 800;
+    font-size: 0.92rem;
+    padding: 10px 22px;
+    border-radius: var(--radius-md, 10px);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cfa-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.5);
+}
+
+.cfa-xp-pill {
+    background: rgba(0, 0, 0, 0.25);
+    color: #0A0A0C;
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 9999px;
+}
+
+
 
