@@ -213,7 +213,7 @@ export const soundFx = new SoundFx();
  * Confetti celebration burst
  */
 export function triggerCelebration(originEl) {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return;
 
     const colors = ['#d4af37', '#ffffff', '#ef4444', '#38bdf8', '#22c55e', '#fbbf24'];
     const count = 45;
@@ -561,11 +561,32 @@ export class ChickFilACarSelector {
             }
         }
 
+        // Check popular makes
+        let foundMake = '';
+        for (const m of POPULAR_MAKES) {
+            if (lower.includes(m.toLowerCase())) {
+                foundMake = m;
+                break;
+            }
+        }
+
         // Clean name
         const cleanName = input.replace(/\b(19\d\d|20\d\d)\b/, '').trim();
-        const parts = cleanName.split(' ');
-        if (parts[0]) this.state.make = parts[0];
-        if (parts.length > 1) this.state.model = parts.slice(1).join(' ');
+        if (/bmw\s+m\d/i.test(cleanName)) {
+            this.state.make = 'BMW M';
+            this.state.model = cleanName.replace(/^bmw\s+/i, '').trim();
+        } else if (foundMake) {
+            this.state.make = foundMake;
+            const regex = new RegExp('^' + foundMake.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\b', 'i');
+            const remainder = cleanName.replace(regex, '').trim();
+            if (remainder) {
+                this.state.model = remainder;
+            }
+        } else {
+            const parts = cleanName.split(' ');
+            if (parts[0]) this.state.make = parts[0];
+            if (parts.length > 1) this.state.model = parts.slice(1).join(' ');
+        }
     }
 
     init() {
@@ -604,8 +625,11 @@ export class ChickFilACarSelector {
 
     getFullName() {
         const yr = this.state.year ? `${this.state.year} ` : '';
-        const mk = this.state.make ? `${this.state.make} ` : '';
         const md = this.state.model || 'Custom Build';
+        if (this.state.make === 'BMW M' && /^M\d/i.test(md)) {
+            return `${yr}BMW ${md}`.trim();
+        }
+        const mk = this.state.make ? `${this.state.make} ` : '';
         return `${yr}${mk}${md}`.trim();
     }
 
@@ -911,25 +935,27 @@ export class ChickFilACarSelector {
         });
     }
 
-    setBodyType(bodyId) {
+    setBodyType(bodyId, updateDefaultModel = true) {
         if (!BODY_TYPES[bodyId]) return;
         this.state.bodyType = bodyId;
         const b = BODY_TYPES[bodyId];
 
-        // Update default model if unset or generic
-        if (!this.state.model || this.state.model === 'Custom Build') {
+        // Update default model if requested or unset/generic
+        if (updateDefaultModel) {
             this.state.make = b.defaultMake;
             this.state.model = b.defaultModel;
-            const yInput = this.container.querySelector('#cfa-year-input');
-            const mInput = this.container.querySelector('#cfa-model-input');
+            const yInput = this.container.querySelector ? this.container.querySelector('#cfa-year-input') : null;
+            const mInput = this.container.querySelector ? this.container.querySelector('#cfa-model-input') : null;
             if (mInput) mInput.value = b.defaultModel;
             if (yInput && !yInput.value) yInput.value = '2024';
         }
 
         // Highlight card
-        this.container.querySelectorAll('.cfa-body-card').forEach(c => {
-            c.classList.toggle('selected', c.getAttribute('data-body') === bodyId);
-        });
+        if (this.container.querySelectorAll) {
+            this.container.querySelectorAll('.cfa-body-card').forEach(c => {
+                c.classList.toggle('selected', c.getAttribute('data-body') === bodyId);
+            });
+        }
 
         this.refreshCarSvg(true);
         this.updateLabels();
